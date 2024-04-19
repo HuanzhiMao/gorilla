@@ -50,8 +50,8 @@ def load_file(test_category):
 if __name__ == "__main__":
     args = get_args()
     handler = build_handler(args.model, args.temperature, args.top_p, args.max_tokens)
-    if handler.model_style == ModelStyle.OSSMODEL:
-       result = handler.inference(question_file="eval_data_total.json",test_category=args.test_category,num_gpus=args.num_gpus)
+    if handler.model_style == ModelStyle.OSSMODEL or (handler.model_style == ModelStyle.Gorilla and args.model == "gorilla-openfunctions-v2-local"):
+       result = handler.inference("eval_data_total.json",args.test_category,args.num_gpus)
        for res in result[0]:
            handler.write(res, "result.json")
     else:

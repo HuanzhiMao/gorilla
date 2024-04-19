@@ -120,12 +120,14 @@ If decided to run OSS model, openfunction evaluation uses vllm and therefore req
 
 ### Running the Inference
 
-You can run inference on local LLM with `handler_runner.py` script, navigate to `./berkeley-function-call-leaderboard/` and run the following command, e.g, inference on gorilla-llm/gorilla-openfunctions-v2 checkpoint from HuggingFace
+You can run inference on local LLM with `openfunctions_evaluation.py` script and run the following command, e.g, inference on gorilla-llm/gorilla-openfunctions-v2 checkpoint from HuggingFace
+
+(Note: we also provide free-to-use endpoint deployment for Openfunctions-v2. You can use it by setting model name as `gorilla-openfunctions-v2`. If you want to host an openfunctions yourself, you should set the model name as `gorilla-openfunctions-v2-local`)
 
 (Note: you need to make sure the model-name is registered in `handler_map.py`)
 
 ```bash
-python /model_handler/handler_runner.py --data-path ./data/gorilla_openfunctions_v1_test_all.json --model-name gorilla-llm/gorilla-openfunctions-v2 --model-path {PATH_TO_MODEL}/gorilla-openfunctions-v2/
+python  openfunctions_evaluation.py --model-name gorilla-llm/gorilla-openfunctions-v2-local 
 ```
 The result will be generated under the following folder:
 
