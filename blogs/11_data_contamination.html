@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NRZJLJCSH6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-NRZJLJCSH6');
+    </script>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.6">
+    <title>Rethink BFCL - Data Contamination Detection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" />
+    <link rel="stylesheet" href="../assets/css/api-explorer.css" />
+    <link rel="stylesheet" href="../assets/css/common-styles.css" />
+    <link rel="stylesheet" href="../assets/css/Highlight-Clean-leaderboard.css" />
+    <link rel="stylesheet" href="../assets/css/model_info_dashboard.css" />
+    <link rel="stylesheet" href="../assets/css/contact.css">
+    <!-- <link rel="stylesheet" href="assets/css/blog_11.css" /> -->
+
+    <style>
+        /* Bars to separate titles in nav bar */
+        .navbar a:not(:last-child)::after {
+            content: "|";
+            margin: 0 10px;
+            color: #000;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js" integrity="sha384-..."
+        crossorigin="anonymous"></script>
+
+
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="/index.html">Home</a>
+        <a href="/blog.html">Blogs</a>
+        <a href="/leaderboard.html">Leaderboard</a>
+        <a href="/apizoo/">API Zoo Index</a>
+    </div>
+
+
+    <div class="highlight-clean-blog" style="padding-bottom: 10px;">
+        <h1 class="text-center" style="padding-bottom: 10px;"> 🦍 Gorilla: Large Language Model Connected with Massive
+            APIs</h1>
+
+
+
+        <div class="box-index">
+            <h3>Data Contamination Detection</h3>
+            <ul>
+                <ul>
+                    <li><a href="10_checker_manual.html#categories">Evaluation Categories 📊</a>
+                    </li>
+                    <li><a href="10_checker_manual.html#metrics">Evaluation Metrics📈</a></li>
+                    <li><a href="10_checker_manual.html#ast">Abstract Syntax Tree (AST) Evaluation</a></li>
+                    <li><a href="10_checker_manual.html#exec">Executable Function Evaluation</a></li>
+                    <li><a href="10_checker_manual.html#result">Evaluation Results</a></li>
+                    <li><a href="10_checker_manual.html#citation">Citation</a></li>
+                    <li class="more-blogs">
+                        <a href="javascript:void(0);" onclick="toggleMoreBlogs()">More Blogs <span
+                                class="caret">&#9654;</span></a>
+                        <ul class="sub-menu">
+                            <li><a href="7_open_functions_v2.html">Gorilla OpenFunctions-v2</a></li>
+                            <li><a href="6_api_zoo.html">The API Zoo: A Keystone for Building API-connected LLMs</a>
+                            </li>
+                            <li><a href="5_how_to_gorilla.html">How to Use Gorilla: A Step-by-Step Walkthrough
+                            <li><a href="4_open_functions.html">Gorilla OpenFunctions
+                                </a></li>
+                            </a>
+                    </li>
+                    <!-- Add more blog entries as needed -->
+                </ul>
+                </li>
+            </ul>
+            <!-- Add more entries as needed -->
+            </ul>
+        </div>
+
+
+        <div class="blog-container">
+            <div class="blog-post">
+                <h2 class="blog-title">Rethink BFCL - Data Contamination Detection</h2>
+                <div class="col-md-12">
+                    <h4 class="text-center" style="margin: 0px;">
+                        <p></p>
+                        <a class="author" href="https://fanjia-yan.github.io/">Fanjia Yan<sup>*</sup></a>
+                        <a class="author" href="https://huanzhimao.com/">Huanzhi Mao<sup>*</sup></a>
+                        <a class="author" href="https://charliejcj.github.io/">Charlie Cheng-Jie Ji<sup>*</sup></a>
+                        <a class="author" href="https://people.eecs.berkeley.edu/~shishirpatil/">Shishir G. Patil</a>
+                        <a class="author" href="https://tianjunz.github.io">Tianjun Zhang</a>
+                        <p></p>
+                    </h4>
+                </div>
+
+
+                <div>
+                    <p>
+                        In the V2.0 release of the <a href="https://gorilla.cs.berkeley.edu/leaderboard.html">Berkeley
+                            Function-Calling Leaderboard</a> (BFCL), we introduced a more advanced
+                        Abstract Syntax Tree (AST) evaluation checker. Previously, we broadly introduced the evaluation
+                        pipeline in the <a href="8_berkeley_function_calling_leaderboard.html#metrics">BFCL V1 blog</a>.
+                        In this blog, we
+                        want to dive deeper and provide a
+                        comprehensive manual on how the scores on the leaderboard are calculated.
+                    </p>
+                    <p>
+                        Quick Links:
+                    <ul>
+                        <li>Live Leaderboard: <a href="https://gorilla.cs.berkeley.edu/leaderboard.html">Website</a>
+                        </li>
+                        <li>BFCL Evaluation Dataset: <a
+                                href="https://huggingface.co/datasets/gorilla-llm/Berkeley-Function-Calling-Leaderboard">
+                                HuggingFace Dataset 🤗</a></li>
+                        <li>Gradio Demo: <a
+                                href="https://huggingface.co/spaces/gorilla-llm/berkeley-function-calling-leaderboard">
+                                HuggingFace Space 🤗 </a></li>
+                        <li>Reproducibility: <a
+                                href="https://github.com/ShishirPatil/gorilla/tree/main/berkeley-function-call-leaderboard">Github
+                                Code</a></li>
+                        <li>OpenFunctions-v2 (6.91B) on HuggingFace 🤗: <a
+                                href="https://huggingface.co/gorilla-llm/gorilla-openfunctions-v2">gorilla-llm/gorilla-openfunctions-v2</a>
+                        </li>
+                    </ul>
+                    </p>
+                </div>
+
+                <div>
+                    <h3 id="categories">Evaluation Categories
+                    </h3>
+                    <p>Our system categorizes evaluations into four types:
+                    </p>
+                    <ul>
+                        <li>
+                            Simple Function
+                        </li>
+                        <li>Multiple/Parallel/Parallel-Multiple Function
+                        </li>
+                        <li>
+                            Executable (Except REST API)
+                        </li>
+                        <li>Executable (REST API Only)
+                        </li>
+                    </ul>
+                    <p>
+                        Each category has a dedicated checker, ensuring nuanced and accurate assessment across different
+                        function call types. For all these fields, we always use the human-verified possible answers as
+                        the ground truth.
+                    </p>
+                </div>
+
+
+
+                
+
+                <div>
+                    <h3 id="result">Evaluation Results
+                    </h3>
+                    <p>
+                        In this section, we present the results of the BFCL V2 evaluation based on our updated
+                        evaluation pipeline.
+                    </p>
+                    <img src="../assets/img/blog_post_10_bar_plot.png">
+                    <p width="80%" style="text-align:center; margin-left:10%; margin-right:10%; padding-bottom: -10px">
+                        <i style="font-size: 0.9em;">
+                            This stacked bar chart illustrates the distribution of error frequencies across twelve test
+                            categories, which include evaluations based on the Abstract Syntax Tree (AST) and Executable
+                            evaluations. The models are arranged in descending order of their rank from left to right,
+                            with the leftmost model representing the one that has achieved the highest overall accuracy.
+                        </i>
+                    </p>
+                    <img src="../assets/img/blog_post_10_heatmap_error_prop.jpg">
+                    <p width="80%" style="text-align:center; margin-left:10%; margin-right:10%; padding-bottom: -10px">
+                        <i style="font-size: 0.9em;">
+                            This heatmap shows the error rates of all 12 detailed test categories for each model. The
+                            models
+                            are arranged based on their overall accuracy. The top one is the model with the highest
+                            overall accuracy.
+                            Each number represents a model's error rate in a test category.
+                        </i>
+                    </p>
+                    <p>
+                        Additionally, our leaderboard now includes an <a
+                            href="https://gorilla.cs.berkeley.edu/leaderboard.html#treemap">interactive treemap</a>🌲
+                        that
+                        visualizes the distribution of error types across various models. Check it out and explore the
+                        specific
+                        failure modes each model exhibits.
+                        For more detailed analysis, stay tuned for our <a
+                            href="https://gorilla.cs.berkeley.edu/leaderboard.html#treemap">insight blog</a>🔬 on the
+                        error statistics across each model.
+                    </p>
+                </div>
+
+                <div class="body">
+                    <p>
+                        We hope you enjoyed this blog post. We would love to hear from you on <a
+                            href="https://discord.gg/SwTyuTAxX3">Discord</a>, <a
+                            href="https://twitter.com/shishirpatil_/status/1661780076277678082">Twitter
+                            (#GorillaLLM)</a>, and <a href="https://github.com/ShishirPatil/gorilla/">GitHub</a>.<br>
+                    </p>
+                </div>
+                <h4 id="citation">Citation</h4>
+                <div class="body">
+                    <p id="gorilla-bibtex">
+                        If you would like to cite Gorilla:<br>
+                        @inproceedings{berkeley-function-calling-leaderboard,<br>
+                        &nbsp; title={Rethink BFCL - Data Contamination Detection},<br>
+                        &nbsp; author={Fanjia Yan and Huanzhi Mao and Charlie Cheng-Jie Ji and
+                        Shishir G. Patil and Tianjun Zhang},<br>
+                        &nbsp; year={2024},<br>
+                        &nbsp;
+                        howpublished={\url{https://gorilla.cs.berkeley.edu/blogs/11_data_contamination.html}},<br>
+                        }</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: white;
+            justify-content: center;
+            align-items: center;
+            width: auto
+        }
+
+        .centered-text {
+            text-align: center;
+            display: block;
+            /* Ensure the <i> element takes up the full width available */
+            margin: 0 auto;
+            /* Center the element horizontally */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+        }
+
+        .code-block {
+            width: 100%;
+            padding: 10px;
+            flex: 1;
+            /* This makes each code block take equal width */
+        }
+
+        .blog-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .blog-post {
+            margin: 20px;
+            padding: 20px;
+            width: auto;
+            /* max-width: 1000px;  */
+            max-width: 1000px;
+            justify-content: center;
+        }
+
+        .blog-post code {
+            background-color: #eee;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .blog-post img {
+            display: block;
+            margin: 0 auto;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .blog-title {
+            color: #055ada;
+            text-align: center;
+        }
+
+        .author {
+            font-size: 16px;
+            color: #1E90FF;
+            margin-right: 20px;
+        }
+
+        .date {
+            font-size: 16px;
+            color: #7e8790;
+        }
+
+        .preview {
+            text-align: justify;
+            text-justify: inter-word;
+        }
+
+        .highlight-clean-blog {
+            color: #313437;
+            background-color: #fff;
+            padding: 50px 0;
+        }
+
+        .box-index {
+            position: fixed;
+            top: 50%;
+            left: 0px;
+            transform: translateY(-50%);
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 150px;
+        }
+
+        .box-index h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .box-index ul {
+            list-style-type: disc;
+            padding: 0;
+        }
+
+        .box-index ul li {
+            margin-bottom: 10px;
+        }
+
+        .box-index ul li a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .box-index ul li a:hover {
+            color: #1E90FF;
+        }
+
+        .more-blogs .sub-menu {
+            display: none;
+        }
+
+        .more-blogs .sub-menu.expanded {
+            display: block;
+            max-height: 200px;
+            /* Adjust the max height as needed */
+            overflow-y: auto;
+        }
+
+        .more-blogs .sub-menu li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .more-blogs .sub-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .more-blogs .caret {
+            transition: transform 0.3s ease-in-out;
+            display: inline-block;
+            transform: rotate(0deg);
+            font-size: 12px;
+            /* Adjust the font size to change the caret size */
+        }
+
+        .more-blogs.expanded .caret {
+            transform: rotate(90deg);
+        }
+
+        @media screen and (max-width: 1200px) {
+            .blog-post {
+                padding: 10px;
+                /* Adjust spacing for smaller screens */
+                max-width: 90%
+            }
+
+            .blog-post img {
+                max-width: 90%;
+            }
+
+            .box-index {
+                display: none;
+                /* Hide the index on smaller screens */
+            }
+        }
+    </style>
+</body>
+
+</html>
+
+<script>
+    function toggleMoreBlogs() {
+        var subMenu = document.querySelector('.more-blogs .sub-menu');
+        var parentItem = document.querySelector('.more-blogs');
+        subMenu.classList.toggle('expanded');
+        parentItem.classList.toggle('expanded');
+    }
+</script>
