@@ -40,6 +40,8 @@ COLUMNS = [
     "Latency Mean (s)",
     "Latency Standard Deviation (s)",
     "Latency 95th Percentile (s)",
+    "AST Summary Private",
+    "Relevance Detection Private",
 ]
 
 # Note that we don't need to substitute `_` with `/` in the model name here.
@@ -325,7 +327,7 @@ MODEL_METADATA_MAPPING = {
         "https://huggingface.co/Snowflake/snowflake-arctic-instruct",
         "Snowflake",
         "apache-2.0",
-    ]
+    ],
 }
 
 INPUT_PRICE_PER_MILLION_TOKEN = {
@@ -769,6 +771,32 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
         rest_simple_exec = value.get("rest", {"accuracy": 0, "total_count": 0})
         relevance = value.get("relevance", {"accuracy": 0, "total_count": 0})
 
+        private_python_simple_ast = value.get(
+            "private_simple", {"accuracy": 0, "total_count": 0}
+        )
+        private_python_multiple_ast = value.get(
+            "private_multiple_function", {"accuracy": 0, "total_count": 0}
+        )
+        private_python_parallel_ast = value.get(
+            "private_parallel_function", {"accuracy": 0, "total_count": 0}
+        )
+        private_python_parallel_multiple_ast = value.get(
+            "private_parallel_multiple_function", {"accuracy": 0, "total_count": 0}
+        )
+
+        private_relenvance = value.get(
+            "private_relevance", {"accuracy": 0, "total_count": 0}
+        )
+
+        private_simple_ast = calculate_unweighted_accuracy(
+            [
+                private_python_simple_ast,
+                private_python_multiple_ast,
+                private_python_parallel_ast,
+                private_python_parallel_multiple_ast,
+            ]
+        )
+
         cost_data = value.get("cost", {"input_data": [], "output_data": []})
         latency_data = value.get("latency", {"data": []})
 
@@ -843,6 +871,8 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
                 latency_mean,
                 latency_std,
                 percentile_95_latency,
+                private_simple_ast,
+                private_relenvance,
             ]
         )
 
@@ -850,10 +880,12 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
     for i in range(len(data)):
         data[i][0] = str(i + 1)
         data[i][1] = "{:.2f}%".format(data[i][1] * 100)
-        for j in range(6, len(data[i]) - 4):
+        for j in range(6, len(data[i]) - 6):
             data[i][j] = "{:.2f}%".format(data[i][j] * 100)
-        for j in range(len(data[i]) - 4, len(data[i])):
+        for j in range(len(data[i]) - 6, len(data[i]) - 2):
             data[i][j] = str(data[i][j])
+        for j in range(len(data[i]) - 2, len(data[i])):
+            data[i][j] = "{:.2f}%".format(data[i][j] * 100)
 
     data.insert(0, COLUMNS)
 
