@@ -155,4 +155,9 @@ TEST_CATEGORIES = {
     "javascript": "gorilla_openfunctions_v1_test_javascript.json",
     "rest": "gorilla_openfunctions_v1_test_rest.json",
     "sql": "gorilla_openfunctions_v1_test_sql.json",
+    "private_simple": "gorilla_openfunctions_v1_test_private_simple.json",
+    "private_parallel_function": "gorilla_openfunctions_v1_test_private_parallel_function.json",
+    "private_multiple_function": "gorilla_openfunctions_v1_test_private_multiple_function.json",
+    "private_parallel_multiple_function": "gorilla_openfunctions_v1_test_private_parallel_multiple_function.json",
+    "private_relevance": "gorilla_openfunctions_v1_test_private_relevance.json",
 }

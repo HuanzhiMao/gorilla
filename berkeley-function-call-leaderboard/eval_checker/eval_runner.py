@@ -460,6 +460,13 @@ ARG_PARSE_MAPPING = {
         "executable_parallel_multiple_function",
         "rest",
     ],
+    "private": [
+        "private_simple",
+        "private_multiple_function",
+        "private_parallel_function",
+        "private_parallel_multiple_function",
+        "private_relevance",
+    ],
 }
 
 
