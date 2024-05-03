@@ -107,14 +107,44 @@
 
 
                 <div>
+                    <h3>Introduction</h3>
                     <p>
-                        In the V2.0 release of the <a href="https://gorilla.cs.berkeley.edu/leaderboard.html">Berkeley
-                            Function-Calling Leaderboard</a> (BFCL), we introduced a more advanced
-                        Abstract Syntax Tree (AST) evaluation checker. Previously, we broadly introduced the evaluation
-                        pipeline in the <a href="8_berkeley_function_calling_leaderboard.html#metrics">BFCL V1 blog</a>.
-                        In this blog, we
-                        want to dive deeper and provide a
-                        comprehensive manual on how the scores on the leaderboard are calculated.
+                        In the rapidly evolving field of Large Language Models (LLMs), the Berkeley Function-Calling
+                        Leaderboard (BFCL) emerges as a pioneering platform that evaluates the function-calling
+                        (tool-use) capabilities of LLMs such as GPT, Claude, Gemini, Llama, and Mistral. This initiative
+                        addresses the growing use of LLM for function-calling across various applications, highlighting
+                        the need for a comprehensive and fair assessment of their ability to execute functions (or
+                        tools) accurately in diverse contexts, including handling parallel and multiple function calls
+                        in various programming languages.
+                    </p>
+                    <p>
+                        To overcome the limitations of traditional dataset-based evaluations, such as data contamination
+                        and the inability of static datasets to keep pace with rapid advancements in LLM capabilities
+                        and evolving use cases, we introduce BFCL-Live. Traditional evaluations often suffer from data
+                        contamination, where models are tested on the data they were trained on, leading to inflated
+                        performance metrics that do not accurately reflect their effectiveness.
+                    </p>
+                    <p>
+                        BFCL-Live employs live, user-provided function documentation and queries, avoiding the drawbacks
+                        of dataset contamination and outdated benchmarks. By utilizing user-provided data, BFCL-Live
+                        aims to more faithfully measure the LLM's function-calling performance in real-world scenarios,
+                        emphasizing the importance of models performing effectively in diverse and dynamic environments.
+                    </p>
+                    <p>
+                        BFCL-Live features a diverse set of 2,000 question-function-answer pairs, including novel
+                        function documentation like "multiple function with 10+ functions" and "complex function doc
+                        with 10+ parameters / nested parameters.” The dataset also includes fresh user queries that vary
+                        in tone, are part of multi-turn interactions, cover specialized use cases, and span multiple
+                        languages. This dataset will be assessed using the BFCL Abstract Syntax Tree (AST) evaluation
+                        pipeline to ensure thorough and accurate analysis.
+                    </p>
+                    <p>
+                        In more detail, BFCL-Live comprises XXX simple, XXX multiple, XXX parallel, XXX parallel
+                        multiple, and XXX function relevance detection examples. Each test category is detailed in the
+                        <a
+                            href="https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html#categories">Evaluation
+                            Categories section</a>, designed to assess different function-calling scenarios
+                        comprehensively.
                     </p>
                     <p>
                         Quick Links:
@@ -130,9 +160,6 @@
                         <li>Reproducibility: <a
                                 href="https://github.com/ShishirPatil/gorilla/tree/main/berkeley-function-call-leaderboard">Github
                                 Code</a></li>
-                        <li>OpenFunctions-v2 (6.91B) on HuggingFace 🤗: <a
-                                href="https://huggingface.co/gorilla-llm/gorilla-openfunctions-v2">gorilla-llm/gorilla-openfunctions-v2</a>
-                        </li>
                     </ul>
                     </p>
                 </div>
@@ -163,7 +190,7 @@
 
 
 
-                
+
 
                 <div>
                     <h3 id="result">Evaluation Results
