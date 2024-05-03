@@ -231,6 +231,10 @@ For inferencing `Databrick-DBRX-instruct`, you need to create a Databrick Azure 
 
 
 ## Changelog
+
+* [May 3, 2024] [#397](https://github.com/ShishirPatil/gorilla/pull/397):
+    - Introducing the BFCL-Private dataset, consisting of 2k real-world function calling scenarios. The dataset is used to determine if the model is overfitting to the BFCL public dataset.
+    - Perplexity evaluation is also added to the leaderboard statistics.
 * [April 28, 2024] [#397](https://github.com/ShishirPatil/gorilla/pull/397): Add new model `snowflake/arctic` to the leaderboard. Note that there are multiple ways to inference the model, and we choose to do it via Nvidia API catalog. 
 * [April 27, 2024] [#390](https://github.com/ShishirPatil/gorilla/pull/390): Bug fix in cost and latency calculation for open-source models, which are now all calculated when serving the model with [vLLM](https://github.com/vllm-project/vllm) using 8 V100 GPUs for consistency. $$\text{Cost} = \text{Latency per 1000 function call} * (\text{8xV100 azure-pay-as-you-go-price per hour / 3600})$$
 * [April 25, 2024] [#386](https://github.com/ShishirPatil/gorilla/pull/386): Add 5 new models to the leaderboard: `meta-llama/Meta-Llama-3-8B-Instruct`, `meta-llama/Meta-Llama-3-70B-Instruct`, `gemini-1.5-pro-preview-0409`, `command-r-plus`, `command-r-plus-FC`.
