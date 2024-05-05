@@ -303,22 +303,41 @@ console.log('Hello again!');
                         <li>
                             <p>
                                 For function docs, we carefully revise each function doc to conform to the BFCL format,
-                                which
-                                imposes
-                                specific structural and content requirements. For example, the function doc must include
-                                fields
-                                such as 'name', 'description', and 'parameters'. The function parameters must be
-                                precisely
-                                defined—correctly categorized (e.g., one of "boolean", "array", "string", "integer",
-                                "float",
-                                "tuple", "any", "dict"), with all required parameters clearly indicated, and comply with
-                                detailed formatting
-                                guidelines. For instance, descriptions for dictionaries should include the “property“
-                                field
-                                while arrays should have the “items” field. Furthermore, any optional parameters should
-                                clearly
-                                specify their default values either as an additional field or as part of their parameter
-                                description.
+                                which imposes specific structural and content requirements:
+                            <ul>
+                                <li>
+                                    The function doc must include the fields 'name', 'description', and 'parameters'.
+                                </li>
+                                <li>
+                                    The function parameters must be precisely defined.
+                                    <ol>
+                                        <li>
+                                            Correctly categorized (e.g., one of "boolean", "array", "string", "integer",
+                                            "float", "tuple", "any", "dict").
+                                        </li>
+                                        <li>
+                                            All required parameters must be clearly indicated in the "required" field.
+                                        </li>
+                                        <li>
+                                            Comply with detailed formatting guidelines. Dictionary-type parameter should
+                                            include the “property“ field that details each key-value pair, while
+                                            array-type
+                                            parameter should have the “items” field that specifies the type of elements
+                                            in
+                                            the array.
+                                        </li>
+                                        <li>
+                                            Any optional parameters should clearly specify their default values either
+                                            as an additional "default" field or as part of their parameter description.
+                                        </li>
+                                    </ol>
+                                </li>
+                            </ul>
+                            We strictly apply the "minimum edits" principle, where default values are only added if
+                            they are missing, types are corrected (or inferred when absent) to align with the BFCL
+                            format, and any necessary fields are filled out to comply with type restrictions. This
+                            ensures that we enhance the usability of the documents in our evaluation pipeline
+                            without compromising their original intent or functionality.
                             </p>
                         </li>
                         <li>
