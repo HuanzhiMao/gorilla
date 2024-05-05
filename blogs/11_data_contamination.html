@@ -206,7 +206,7 @@
                             <ul>
 
                                 <li>
-                                    <p>Query Deduplication</p>
+                                    <p>Prompt Deduplication</p>
                                     <p>Deduplicate user queries against existing datasets identified from <a
                                             href="https://huggingface.co/spaces/Nexusflow/Nexus_Function_Calling_Leaderboard">NexusRaven</a>,
                                         <a
@@ -214,7 +214,7 @@
                                         <a
                                             href="https://gist.githubusercontent.com/kouroshHakha/6cfbe2bf4aaafc5db733d408044f9902/raw/984c40903df758a47aab67ba1a416d13d83b3a70/test_data.jsonl">Anyscale</a>,
                                         and <a
-                                            href="https://huggingface.co/datasets/NousResearch/func-calling-eval-glaive">NousResearch-Glaive-Function-Callin</a>.
+                                            href="https://huggingface.co/datasets/NousResearch/func-calling-eval-glaive">NousResearch-Glaive-Function-Calling</a>.
                                     </p>
                                 </li>
                                 <li>
@@ -228,7 +228,8 @@
                             </ul>
                         </li>
                         <li>
-                            Query Deduplication through Text Embedding Model. We use the text-embedding-3-small model to
+                            Prompt Deduplication through Text Embedding Model. We use the text-embedding-3-small model
+                            to
                             further deduplicate user queries, enhancing the uniqueness of our data.
                         </li>
                         <li>
@@ -252,12 +253,12 @@
                             This information includes parameter type, detailed parameter description (eg, its format and
                             possible value range), and the default value if it's an optional parameter.
                         </dd>
-                        <dt>High-Quality User Query</dt>
-                        <dd>The user query should align well with the function's intended use, utilize all required
+                        <dt>High-Quality User Prompt</dt>
+                        <dd>The user prompt should align well with the function's intended use, utilize all required
                             parameters effectively, and clearly specify all relevant parameters.
                         </dd>
                     </dl>
-                    Based on our definition, here are some examples of low-quality data:
+                    Based on the above definition, here are some examples of low-quality data:
                     <div class="code-toggle" onclick="toggleCode('codeSection1')">+ Show Low-Quality Function Document
                         Example
                     </div>
@@ -266,76 +267,76 @@
 console.log('Hello, World!');
                         </code>
                     </pre>
-                    <div class="code-toggle" onclick="toggleCode('codeSection2')">+ Show Low-Quality User Query Example
+                    <div class="code-toggle" onclick="toggleCode('codeSection2')">+ Show Low-Quality User Prompt Example
                     </div>
                     <pre id="codeSection2" style="display:none">
                         <code>
 console.log('Hello again!');
                         </code>
                     </pre>
+                    <div class="code-toggle" onclick="toggleCode('codeSection3')">+ Show Irrelevant User Prompt Example
+                    </div>
+                    <pre id="codeSection3" style="display:none">
+                        <code>
+console.log('Hello again!');
+                        </code>
+                    </pre>
+                    <p>
+                        As outlined in our framework, low-quality or irrelevant user queries are identified and used as
+                        the “Relevance Detection” test category, which evaluates the model's ability to generate
+                        non-function-calling responses to irrelevant queries. For more details, please refer to the <a
+                            href="https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html#categories">Evaluation
+                            Categories</a> section of our BFCL blog. These queries will be unmodified in subsequent
+                        data-cleaning phases.
+                    </p>
+                    <p>
+                        On the other hand, documents with low-quality functions will be excluded and will not proceed to
+                        the next stage of data cleaning.
+                    </p>
+                    <h5>Data Transformation</h5>
+                    <p>After filtering out low-quality documents and user prompts, it is important to ensure that the
+                        remaining function docs and user prompts are of high quality and are compatible with the current
+                        BFCL evaluation pipeline. This process involves minimal yet necessary modifications to maintain
+                        the integrity of the original real-world documents while adapting them to fit seamlessly into
+                        the pipeline.</p>
+                    <ul>
+                        <li>
+                            <p>
+                                For function docs, we carefully revise each function doc to conform to the BFCL format,
+                                which
+                                imposes
+                                specific structural and content requirements. For example, the function doc must include
+                                fields
+                                such as 'name', 'description', and 'parameters'. The function parameters must be
+                                precisely
+                                defined—correctly categorized (e.g., one of "boolean", "array", "string", "integer",
+                                "float",
+                                "tuple", "any", "dict"), with all required parameters clearly indicated, and comply with
+                                detailed formatting
+                                guidelines. For instance, descriptions for dictionaries should include the “property“
+                                field
+                                while arrays should have the “items” field. Furthermore, any optional parameters should
+                                clearly
+                                specify their default values either as an additional field or as part of their parameter
+                                description.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                For prompts, focus on enhancing their quality while strictly preserving the original
+                                format and semantic content. We ensure that the user prompts are relevant to the
+                                associated function doc and practically applicable in real-world scenarios. Special
+                                attention is given to clarity, emphasizing the presentation of specific, concrete
+                                parameter values that are necessary for function calls. We eliminate ambiguity to
+                                improve clarity and precision. We also replace any sensitive information with generic
+                                placeholders to maintain confidentiality.
+                            </p>
+                        </li>
+                    </ul>
+
                 </div>
 
 
-                <div>
-                    <h3 id="result">Evaluation Results
-                    </h3>
-                    <p>
-                        In this section, we present the results of the BFCL V2 evaluation based on our updated
-                        evaluation pipeline.
-                    </p>
-                    <img src="../assets/img/blog_post_10_bar_plot.png">
-                    <p width="80%" style="text-align:center; margin-left:10%; margin-right:10%; padding-bottom: -10px">
-                        <i style="font-size: 0.9em;">
-                            This stacked bar chart illustrates the distribution of error frequencies across twelve test
-                            categories, which include evaluations based on the Abstract Syntax Tree (AST) and Executable
-                            evaluations. The models are arranged in descending order of their rank from left to right,
-                            with the leftmost model representing the one that has achieved the highest overall accuracy.
-                        </i>
-                    </p>
-                    <img src="../assets/img/blog_post_10_heatmap_error_prop.jpg">
-                    <p width="80%" style="text-align:center; margin-left:10%; margin-right:10%; padding-bottom: -10px">
-                        <i style="font-size: 0.9em;">
-                            This heatmap shows the error rates of all 12 detailed test categories for each model. The
-                            models
-                            are arranged based on their overall accuracy. The top one is the model with the highest
-                            overall accuracy.
-                            Each number represents a model's error rate in a test category.
-                        </i>
-                    </p>
-                    <p>
-                        Additionally, our leaderboard now includes an <a
-                            href="https://gorilla.cs.berkeley.edu/leaderboard.html#treemap">interactive treemap</a>🌲
-                        that
-                        visualizes the distribution of error types across various models. Check it out and explore the
-                        specific
-                        failure modes each model exhibits.
-                        For more detailed analysis, stay tuned for our <a
-                            href="https://gorilla.cs.berkeley.edu/leaderboard.html#treemap">insight blog</a>🔬 on the
-                        error statistics across each model.
-                    </p>
-                </div>
-
-                <div class="body">
-                    <p>
-                        We hope you enjoyed this blog post. We would love to hear from you on <a
-                            href="https://discord.gg/SwTyuTAxX3">Discord</a>, <a
-                            href="https://twitter.com/shishirpatil_/status/1661780076277678082">Twitter
-                            (#GorillaLLM)</a>, and <a href="https://github.com/ShishirPatil/gorilla/">GitHub</a>.<br>
-                    </p>
-                </div>
-                <h4 id="citation">Citation</h4>
-                <div class="body">
-                    <p id="gorilla-bibtex">
-                        If you would like to cite Gorilla:<br>
-                        @inproceedings{berkeley-function-calling-leaderboard,<br>
-                        &nbsp; title={Rethink BFCL - Data Contamination Detection},<br>
-                        &nbsp; author={Fanjia Yan and Huanzhi Mao and Charlie Cheng-Jie Ji and
-                        Shishir G. Patil and Tianjun Zhang},<br>
-                        &nbsp; year={2024},<br>
-                        &nbsp;
-                        howpublished={\url{https://gorilla.cs.berkeley.edu/blogs/11_data_contamination.html}},<br>
-                        }</p>
-                </div>
 
             </div>
         </div>
