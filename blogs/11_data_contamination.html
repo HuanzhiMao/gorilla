@@ -35,6 +35,35 @@
             margin: 0 10px;
             color: #000;
         }
+
+        .code-toggle {
+            font-weight: bold;
+            color: #0056b3;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+
+        pre {
+            display: none;
+            /* Initially hide the code */
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f4f4f4;
+            border-left: 5px solid #0056b3;
+            /* Add a colored border to the left for style */
+            padding: 15px;
+            margin-top: 5px;
+            overflow: auto;
+            /* Ensures the code wraps inside the box */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            /* Adds subtle shadow for depth */
+            transition: all 0.5s ease-in-out;
+            /* Smooth transition for expanding and collapsing */
+        }
+
+        /* Improved visibility on hover for interactive elements */
+        .code-toggle:hover {
+            text-decoration: underline;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js" integrity="sha384-..."
         crossorigin="anonymous"></script>
@@ -170,18 +199,81 @@
                     <p>
                         Data preprocessing is essential for generating structured and fresh user data. This process
                         includes several key steps:
-                        <ol>
-                            <li>Deduplication Using ROGUE Score
-                                <ul>
-                                    <li>Documentation Deduplication</li>
-                                    <li>Query Deduplication</li>
-                                </ul>
-                            </li>
-                        </ol>
+                    <ol>
+                        <li>Deduplication through ROGUE Score.
+                            To ensure uniqueness, we employ the ROGUE-L score in two distinct ways:
+
+                            <ul>
+
+                                <li>
+                                    <p>Query Deduplication</p>
+                                    <p>Deduplicate user queries against existing datasets identified from <a
+                                            href="https://huggingface.co/spaces/Nexusflow/Nexus_Function_Calling_Leaderboard">NexusRaven</a>,
+                                        <a
+                                            href="https://huggingface.co/datasets/fireworks-ai/function-calling-eval-dataset-v0">Firefunctions</a>,
+                                        <a
+                                            href="https://gist.githubusercontent.com/kouroshHakha/6cfbe2bf4aaafc5db733d408044f9902/raw/984c40903df758a47aab67ba1a416d13d83b3a70/test_data.jsonl">Anyscale</a>,
+                                        and <a
+                                            href="https://huggingface.co/datasets/NousResearch/func-calling-eval-glaive">NousResearch-Glaive-Function-Callin</a>.
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>Documentation Deduplication</p>
+                                    <p>Repeated user-provided function documentation is deduplicated. This is crucial as
+                                        some users may submit the same or slightly modified documents multiple times for
+                                        testing.
+                                    </p>
+                                </li>
+
+                            </ul>
+                        </li>
+                        <li>
+                            Query Deduplication through Text Embedding Model. We use the text-embedding-3-small model to
+                            further deduplicate user queries, enhancing the uniqueness of our data.
+                        </li>
+                        <li>
+                            We parse the user-provided function documents to determine the number of functions they
+                            contain and to categorize them as simple, multiple, parallel, or parallel-multiple.
+                        </li>
+                    </ol>
                     </p>
+                    <h4>Dataset Cleaning</h4>
+                    <h5>Filtering of Low-Quality Data</h5>
+                    <p>Real-world user data often presents challenges due to its messy nature. This includes low-quality
+                        data that typically results from inadequately documented functions and prompts, which may lead
+                        to non-unique model responses and thus suboptimal for benchmarking purposes. In this section, we
+                        will describe how we define, determine, and manage low-quality data to enhance its utility in
+                        downstream applications. After transformation, these function documents will be compatible with
+                        our current BFCL evaluation procedure.</p>
+                    <dl>
+                        <dt>High-Quality Function Document</dt>
+                        <dd>The function document should have a clear JSON structure that includes essential fields such
+                            as the function's name, function description, and detailed information on each parameter.
+                            This information includes parameter type, detailed parameter description (eg, its format and
+                            possible value range), and the default value if it's an optional parameter.
+                        </dd>
+                        <dt>High-Quality User Query</dt>
+                        <dd>The user query should align well with the function's intended use, utilize all required
+                            parameters effectively, and clearly specify all relevant parameters.
+                        </dd>
+                    </dl>
+                    Based on our definition, here are some examples of low-quality data:
+                    <div class="code-toggle" onclick="toggleCode('codeSection1')">+ Show Low-Quality Function Document
+                        Example
+                    </div>
+                    <pre id="codeSection1" style="display:none">
+                        <code>
+console.log('Hello, World!');
+                        </code>
+                    </pre>
+                    <div class="code-toggle" onclick="toggleCode('codeSection2')">+ Show Low-Quality User Query Example
+                    </div>
+                    <pre id="codeSection2" style="display:none">
+                        <code>
+console.log('Hello again!');
+                        </code>
+                    </pre>
                 </div>
-
-
 
 
                 <div>
@@ -432,4 +524,17 @@
         subMenu.classList.toggle('expanded');
         parentItem.classList.toggle('expanded');
     }
+    function toggleCode(elementId) {
+        var x = document.getElementById(elementId);
+        var toggleText = document.querySelector('[onclick="toggleCode(\'' + elementId + '\')"]');
+        if (x.style.display === "none") {
+            x.style.display = "block"; // Show the code section
+            toggleText.textContent = toggleText.textContent.replace('+ Show', '- Hide');
+        } else {
+            x.style.display = "none"; // Hide the code section
+            toggleText.textContent = toggleText.textContent.replace('- Hide', '+ Show');
+        }
+    }
+
+
 </script>
