@@ -28,8 +28,18 @@ class BaseHandler:
         # This method is used to write the result to the file.
         if not os.path.exists("./result"):
             os.mkdir("./result")
-        if not os.path.exists("./result/" + self.model_name):
-            os.mkdir("./result/" + self.model_name)
+        if "/" not in self.model_name:
+            if not os.path.exists("./result/" + self.model_name):
+                os.mkdir("./result/" + self.model_name)
+        else:
+            path = self.model_name.split("/")
+            complete_path = "./result/"
+            for i in range(len(path)):
+                complete_path += path[i]
+                if not os.path.exists(complete_path):
+                    os.mkdir(complete_path)
+                complete_path += "/"
+
         with open(
             "./result/"
             + self.model_name

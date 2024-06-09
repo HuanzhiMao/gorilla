@@ -130,10 +130,19 @@ class OSSHandler(BaseHandler):
     def write(self, result, file_to_open):
         if not os.path.exists("./result"):
             os.mkdir("./result")
-        if not os.path.exists("./result/" + self.model_name.replace("/", "_")):
-            os.mkdir("./result/" + self.model_name.replace("/", "_"))
+        if "/" not in self.model_name:
+            if not os.path.exists("./result/" + self.model_name):
+                os.mkdir("./result/" + self.model_name)
+        else:
+            path = self.model_name.split("/")
+            complete_path = "./result/"
+            for i in range(len(path)):
+                complete_path += path[i]
+                if not os.path.exists(complete_path):
+                    os.mkdir(complete_path)
+                complete_path += "/"
         with open(
-            "./result/" + self.model_name.replace("/", "_") + "/" + file_to_open, "a+"
+            "./result/" + self.model_name + "/" + file_to_open, "a+"
         ) as f:
             f.write(json.dumps(result) + "\n")
 
