@@ -52,7 +52,7 @@ We use [vllm](https://docs.vllm.ai/en/latest/index.html) to perform offline LLM 
 ```bash
 # Replace the CUDA version "cu118" according to your system.
 # See available CUDA versions at https://pytorch.org/get-started/locally/
-# bfcl currently uses `v0.5.1` of vllm and it requires torch `v2.3.0`
+# bfcl currently uses `v0.5.0` of vllm and it requires torch `v2.3.0`
 $ pip install torch==2.3.0 --index-url https://download.pytorch.org/whl/cu118
 $ pip install -e ".[oss_eval]"
 ```
