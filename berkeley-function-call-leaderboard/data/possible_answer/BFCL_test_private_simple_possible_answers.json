@@ -1,0 +1,258 @@
+{"index": "4_0", "result": [{"get_user_info": {"user_id": [7890], "special": ["black"]}}]}
+{"index": "5_0", "result": [{"github_star": {"repos": ["ShishirPatil/gorilla,gorilla-llm/gorilla-cli"], "aligned": [true]}}]}
+{"index": "7_0", "result": [{"uber.ride": {"loc": ["2020 Addison Street, Berkeley, CA, USA"], "type": ["comfort"], "time": [600]}}]}
+{"index": "7_2", "result": [{"uber.ride": {"loc": ["221B Baker Street, Berkeley, CA, USA"], "type": ["plus"], "time": [600]}}]}
+{"index": "8_2", "result": [{"get_current_weather": {"location": ["Tel Aviv, Israel"], "unit": ["fahrenheit", ""]}}]}
+{"index": "8_9", "result": [{"get_current_weather": {"location": ["Divin\u00f3polis, MG"], "unit": ["fahrenheit", ""]}}]}
+{"index": "8_18", "result": [{"get_current_weather": {"location": ["San Francisco, CA"], "unit": ["fahrenheit", ""]}}]}
+{"index": "8_19", "result": [{"get_current_weather": {"location": ["Riga, Latvia"], "unit": ["fahrenheit", ""]}}]}
+{"index": "8_21", "result": [{"get_current_weather": {"location": ["London, UK"], "unit": ["fahrenheit", ""]}}]}
+{"index": "8_23", "result": [{"get_current_weather": {"location": ["Hyderabad, India"], "unit": ["fahrenheit", ""]}}]}
+{"index": "8_31", "result": [{"get_current_weather": {"location": ["Yosemite National Park, CA"], "unit": ["celsius"]}}]}
+{"index": "8_33", "result": [{"get_current_weather": {"location": ["Naples, FL"], "unit": ["", "fahrenheit"]}}]}
+{"index": "8_38", "result": [{"get_current_weather": {"location": ["New York, NY"], "unit": ["celsius"]}}]}
+{"index": "8_83", "result": [{"get_current_weather": {"location": ["Shanghai, China"], "unit": ["celsius"]}}]}
+{"index": "8_89", "result": [{"get_current_weather": {"location": ["Bangkok, Thailand"], "unit": ["", "fahrenheit"]}}]}
+{"index": "8_90", "result": [{"get_current_weather": {"location": ["Chennai, Tamil Nadu"], "unit": ["", "fahrenheit"]}}]}
+{"index": "8_92", "result": [{"get_current_weather": {"location": ["Lang Son, Vietnam"], "unit": ["", "fahrenheit"]}}]}
+{"index": "8_96", "result": [{"get_current_weather": {"location": ["Boston, MA"], "unit": ["", "fahrenheit"]}}]}
+{"index": "8_100", "result": [{"get_current_weather": {"location": ["Moscow, Russia"], "unit": ["", "fahrenheit"]}}]}
+{"index": "8_104", "result": [{"get_current_weather": {"location": ["Quintana Roo, Mexico"], "unit": ["celsius"]}}]}
+{"index": "10_0", "result": [{"change_food": {"food_item": ["burger"], "modification_request": ["no onions,extra cheese"]}}]}
+{"index": "10_1", "result": [{"change_food": {"food_item": ["chicken dish"], "modification_request": ["extra spicy"]}}]}
+{"index": "12_0", "result": [{"ChaFod": {"TheFod": ["BURGER"]}}]}
+{"index": "12_1", "result": [{"ChaFod": {"TheFod": ["PIZZA"]}}]}
+{"index": "12_2", "result": [{"ChaFod": {"TheFod": ["BURGER"]}}]}
+{"index": "12_3", "result": [{"ChaFod": {"TheFod": ["SALAD"]}}]}
+{"index": "19_0", "result": [{"uber.ride": {"loc": ["123 \u0110\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc, Berkeley, CA"], "type": ["plus"], "time": [10]}}]}
+{"index": "23_0", "result": [{"uber.eat.order": {"restaurant": ["uber pitada"], "items": [["burgers", "chicken wings"]], "quantities": [[5, 6]]}}]}
+{"index": "23_4", "result": [{"uber.eat.order": {"restaurant": ["\u80af\u5fb7\u57fa", "KFC"], "items": [["\u9ea6\u8fa3\u9e21\u817f\u5821", "\u53ef\u53e3\u53ef\u4e50", "\u6cb9\u70b8\u9e21\u7fc5", "\u85af\u6761"]], "quantities": [[10, 50, 30, 90]]}}]}
+{"index": "23_10", "result": [{"uber.eat.order": {"restaurant": ["McDonald's"], "items": [["pizza"]], "quantities": [[1]]}}]}
+{"index": "24_0", "result": [{"aws.lexv2_models.list_exports": {"botId": ["my-bot-id"], "botVersion": ["v2"], "sortBy": ["", "ASC"], "filterName": ["", null], "filterOperator": ["", "EQ"], "filterValue": ["", null], "maxResults": ["", 50], "nextToken": ["", null], "localeId": ["", null]}}]}
+{"index": "24_2", "result": [{"aws.lexv2_models.list_exports": {"botId": ["B12345"], "botVersion": ["v1"], "sortBy": ["DESC"], "filterName": ["", null], "filterOperator": ["", "EQ"], "filterValue": ["", null], "maxResults": ["", 50], "nextToken": ["", null], "localeId": ["", null]}}]}
+{"index": "26_0", "result": [{"answer.string": {"answer": ["Sure, here is the answer to the question:\\n\\n**Logistic regression is not present in the text, therefore I cannot answer this question.**"]}}]}
+{"index": "28_0", "result": [{"answer.string": {"answer": ["Sure, here is the answer to the question:\n\n**Logistic regression is not present in the text, therefore I cannot answer this question.**"]}}]}
+{"index": "29_0", "result": [{"answer.string": {"answer": ["**Logistic regression is not present in the text, therefore I cannot answer this question.**", "Logistic regression is not present in the text, therefore I cannot answer this question."]}}]}
+{"index": "30_0", "result": [{"answer.string": {"answer": ["Sure, here is the answer to the question:\\n\\n**Logistic regression is not present in the text, therefore I cannot answer this question.**"]}}]}
+{"index": "32_0", "result": [{"parseAnswer": {"answer": ["The text does not define logistic regression, therefore I cannot answer this question."]}}]}
+{"index": "34_0", "result": [{"parseAnswer": {"answer": ["\\n\\nThe text does not define logistic regression, therefore I cannot answer this question."]}}]}
+{"index": "37_0", "result": [{"get_current_weather": {"url": ["", "https://api.open-meteo.com/v1/forecast"], "location": ["Yosemite National Park, CA"], "unit": ["fahrenheit"]}}]}
+{"index": "38_0", "result": [{"fetch_weather_data": {"url": ["", "https://api.open-meteo.com/v1/forecast"], "latitude": [37.8651], "longitude": [-119.5383], "units": ["", "metric"], "language": ["", "en"]}}]}
+{"index": "51_0", "result": [{"ThinQ_Connect": {"body": [{"airConJobMode": ["AIR_CLEAN"], "windStrength": ["HIGH"], "monitoringEnabled": [true], "airCleanOperationMode": ["POWER_OFF", ""], "powerSaveEnabled": ["", false], "coolTargetTemperature": ["", 24], "targetTemperature": ["", 22]}]}}]}
+{"index": "51_1", "result": [{"ThinQ_Connect": {"body": [{"airConJobMode": ["AIR_DRY"], "windStrength": ["MID", ""], "monitoringEnabled": ["", false], "airCleanOperationMode": ["POWER_OFF", ""], "powerSaveEnabled": ["", false], "coolTargetTemperature": ["", 24], "targetTemperature": ["", 22]}]}}]}
+{"index": "51_2", "result": [{"ThinQ_Connect": {"body": [{"airConJobMode": ["", "COOL"], "windStrength": ["", "MID"], "monitoringEnabled": ["", false], "airCleanOperationMode": ["POWER_OFF", ""], "powerSaveEnabled": ["", false], "coolTargetTemperature": [22], "targetTemperature": ["", 22]}]}}]}
+{"index": "51_3", "result": [{"ThinQ_Connect": {"body": [{"airConJobMode": ["", "COOL"], "windStrength": ["HIGH"], "monitoringEnabled": ["", false], "airCleanOperationMode": ["POWER_OFF", ""], "powerSaveEnabled": ["", false], "coolTargetTemperature": ["", 24], "targetTemperature": ["", 22]}]}}]}
+{"index": "53_0", "result": [{"ThinQ_Connect": {"body": [{"airConJobMode": ["", "COOL"], "windStrength": ["", "MID"], "monitoringEnabled": ["", false], "airCleanOperationMode": ["STOP", ""], "airConOperationMode": ["POWER_ON"], "powerSaveEnabled": ["", false], "coolTargetTemperature": ["", 24], "targetTemperature": ["", 22]}]}}]}
+{"index": "53_3", "result": [{"ThinQ_Connect": {"body": [{"airConJobMode": ["", "COOL"], "windStrength": ["", "MID"], "monitoringEnabled": ["", false], "airCleanOperationMode": ["START"], "airConOperationMode": ["POWER_ON"], "powerSaveEnabled": ["", false], "coolTargetTemperature": [20], "targetTemperature": ["", 22]}]}}]}
+{"index": "57_0", "result": [{"ThinQ_Connect": {"airConJobMode": ["COOL"], "windStrength": ["MID"], "monitoringEnabled": [true], "airCleanOperationMode": ["START"], "airConOperationMode": ["POWER_ON"], "powerSaveEnabled": [false], "targetTemperature": [24]}}]}
+{"index": "62_0", "result": [{"multiply": {"a": [3], "b": [2]}}]}
+{"index": "78_0", "result": [{"find_beer": {"brewery": ["Sierra Nevada"], "taste": ["bitter"], "aroma": ["hoppy"], "color": ["pale"], "style": ["lager"], "abv_min": ["", 0.0], "abv_max": ["", 12.5], "ibu_min": ["", 0], "ibu_max": ["", 120], "pairings": ["", []]}}]}
+{"index": "78_3", "result": [{"find_beer": {"brewery": ["local"], "taste": ["slightly bitter"], "aroma": ["chocolatey"], "color": ["dark"], "style": ["porter"], "abv_min": ["", 0.0], "abv_max": ["", 12.5], "ibu_min": ["", 0], "ibu_max": ["", 120], "pairings": ["", []]}}]}
+{"index": "79_0", "result": [{"get_latest_carbon_intensity": {"zone": ["GB"]}}]}
+{"index": "80_0", "result": [{"ThinQ_Connect": {"body": [{"airConJobMode": ["COOL"], "windStrength": ["HIGH"], "airConOperationMode": ["POWER_ON"], "powerSaveEnabled": [true], "targetTemperature": [22], "relativeHourToStart": [1], "relativeMinuteToStart": [30]}, {"airConJobMode": ["COOL"], "windStrength": ["HIGH"], "powerSaveEnabled": [true], "targetTemperature": [22], "relativeHourToStart": [1], "relativeMinuteToStart": [30]}]}}]}
+{"index": "80_1", "result": [{"ThinQ_Connect": {"body": [{"airConJobMode": ["COOL"], "windStrength": ["MID"], "airConOperationMode": ["POWER_ON"], "targetTemperature": [20], "relativeHourToStop": [1]}]}}]}
+{"index": "81_0", "result": [{"todo_add": {"content": ["go for shopping at 9 pm"]}}]}
+{"index": "82_0", "result": [{"todo": {"type": ["delete"], "content": ["todo random"]}}]}
+{"index": "82_1", "result": [{"todo": {"type": ["add"], "content": ["go for shopping at 9 pm"]}}]}
+{"index": "95_0", "result": [{"todo_manager.handle_action": {"type": ["delete"], "content": ["go to gym"]}}]}
+{"index": "95_1", "result": [{"todo_manager.handle_action": {"type": ["add"], "content": ["go to sleep at 9 pm"]}}]}
+{"index": "101_0", "result": [{"get_movies": {"city": ["Mumbai"], "cinema_hall": ["", "All"], "movie_date": ["", null], "movie_language": ["", "All"], "movie_format": ["", "2D"]}}]}
+{"index": "102_0", "result": [{"get_movies": {"city": ["Mumbai"], "cinema_hall": ["", null], "movie_date": ["", null], "movie_language": ["", null], "movie_format": ["", "2D"]}}]}
+{"index": "104_0", "result": [{"todo": {"type": ["complete"], "content": ["Submit monthly financial report"]}}]}
+{"index": "104_1", "result": [{"todo": {"type": ["add"], "content": ["go to gym tomorrow"]}}]}
+{"index": "104_2", "result": [{"todo": {"type": ["delete"], "content": ["ravi"]}}]}
+{"index": "104_3", "result": [{"todo": {"type": ["add"], "content": ["go to sleep at 9 pm"]}}]}
+{"index": "104_4", "result": [{"todo": {"type": ["add"], "content": ["go to Goa"]}}]}
+{"index": "104_5", "result": [{"todo": {"type": ["add"], "content": ["Hi charlie"]}}]}
+{"index": "110_0", "result": [{"inventory.restock_check": {"item_ids": [[102, 103]], "threshold": [20], "include_discontinued": ["", false]}}]}
+{"index": "225_0", "result": [{"obtener_cotizacion_de_creditos": {"monto_del_credito": [1000000], "plazo_del_credito_mensual": [12], "tasa_interes_minima": ["", 5.0], "producto": ["auto"], "a\u00f1o_vehiculo": [2024], "enganche": [0.2]}}]}
+{"index": "279_0", "result": [{"sum": {"a": [5.0], "b": [3.0]}}]}
+{"index": "318_0", "result": [{"analysis_api.AnalysisApi.retrieve_analysis": {"project": ["SUPERFANCY"], "component": ["AB1010CD"], "vulnerability": ["ef903ac-893-f00"]}}]}
+{"index": "319_0", "result": [{"get_sensor_alerts": {"perPage": [10], "startingAfter": ["", null], "endingBefore": ["", null], "t0": ["", null], "t1": [""], "networkId": ["", []], "timespan": [""], "sensorSerial": ["Q3CC-CRT3-SZ2G"], "triggerMetric": ["", null]}}]}
+{"index": "325_0", "result": [{"extract_parameters_v1": {"demographics": [["millennials"]], "targets": [["brand:Apple"]], "metrics": [], "country": ["", null], "min_date": ["2022-07-01"], "max_date": ["", null], "interval": ["", null]}}]}
+{"index": "328_0", "result": [{"detect_beats_and_filter": {"capture_percentage": [50], "confidence_window_size": [0.5]}}]}
+{"index": "328_1", "result": [{"detect_beats_and_filter": {"capture_percentage": [90], "confidence_window_size": [0.25]}}]}
+{"index": "328_2", "result": [{"detect_beats_and_filter": {"capture_percentage": [70], "confidence_window_size": [0.8]}}]}
+{"index": "328_3", "result": [{"detect_beats_and_filter": {"capture_percentage": [93], "confidence_window_size": [0.5]}}]}
+{"index": "338_1", "result": [{"language_translator.translate": {"source_language": ["en"], "target_language": ["fr"], "text": ["What is your name?"]}}]}
+{"index": "339_0", "result": [{"weather.get": {"city": ["London"], "country": ["GB"], "units": ["", "metric"], "include_forecast": ["", false]}}]}
+{"index": "1652_0", "result": [{"send_email": {"to_address": ["cobus@humanfirst.ai"], "subject": ["Sales Forecast Request"], "body": ["Could you please provide the latest sales forecast spreadsheet?"], "cc_address": ["", ""], "bcc_address": ["", ""], "attachments": ["", []]}}]}
+{"index": "1656_0", "result": [{"search_hotels": {"location": ["San Diago, CA"]}}]}
+{"index": "1662_1", "result": [{"sitefinity_create_contentitem": {"Title": ["Breakthrough in Artificial Intelligence"], "Content": ["The content must cover the recent breakthroughs in machine learning algorithms."], "MetaTitle": ["AI Breakthrough \u2013 Latest Developments in Machine Learning"], "MetaDescription": ["An overview of the recent significant advancements in artificial intelligence and machine learning technology"], "UrlName": ["ai-breakthrough-latest-developments"]}}]}
+{"index": "1663_0", "result": [{"sitefinity_create_contentitem": {"ContentItem": ["NewsItem"], "Title": ["Julian is testing12"], "Content": ["", null], "MetaTitle": ["", null], "MetaDescription": ["", null], "UrlName": ["", null]}}]}
+{"index": "1664_0", "result": [{"sitefinity_create_contentitem": {"ContentItem": ["News"], "Title": ["Julian is testing"], "Content": ["", null], "MetaTitle": ["", null], "MetaDescription": ["", null], "UrlName": ["", null]}}]}
+{"index": "1665_0", "result": [{"sitefinity_create_contentitem": {"ContentItem": ["news"], "Title": ["Julian is Testing"], "Content": ["a detailed analysis on the impact of sleep patterns on productivity"], "MetaTitle": ["Productivity and Sleep Patterns"], "MetaDescription": ["Exploring how sleep affects work efficiency"], "UrlName": ["julian-testing-productivity"]}}]}
+{"index": "1701_0", "result": [{"get_coordinates_from_city": {"city_name": ["Seattle"]}}]}
+{"index": "1702_1", "result": [{"open_meteo_api.fetch_weather_data": {"coordinates": [[37.8715, -122.273]], "units": ["", "Celsius"]}}]}
+{"index": "1705_1", "result": [{"sort_array": {"array": [[1, 54, 3, 1, 76, 2343, 21]], "reverse": ["", false]}}]}
+{"index": "1710_0", "result": [{"get_current_loc": {"coordinate_format": ["DMS"], "include_altitude": [true], "timeout": ["", 30]}}]}
+{"index": "1711_1", "result": [{"log_food": {"food_name": ["chai tea"], "portion_amount": [16.0], "portion_unit": ["ounces"], "meal_name": ["snack"]}}]}
+{"index": "1712_1", "result": [{"interior_design_analysis.generate_report": {"user_preferences": ["{\"style\": \"modern\", \"color_scheme\": \"warm\", \"budget\": \"mid-range\"}"], "data_source": ["internal_database"], "output_format": ["DOCX"], "include_visuals": [true], "environmental_impact_focus": ["", false]}}]}
+{"index": "1722_0", "result": [{"temperature": {"location": ["Paris, France"], "units": ["", "Celsius"], "time": ["", null]}}]}
+{"index": "1726_0", "result": [{"fetchPerson": {"id": [4]}}]}
+{"index": "1728_0", "result": [{"play_artist": {"artist_name": ["K\u00e4\u00e4rij\u00e4"]}}]}
+{"index": "1729_0", "result": [{"play_artist": {"artist_name": ["K\u00e4\u00e4rij\u00e4"]}}]}
+{"index": "1730_0", "result": [{"play_song": {"artist_name": ["K\u00e4\u00e4rij\u00e4"], "song_name": ["Cha Cha Cha"]}}]}
+{"index": "1733_0", "result": [{"process_data": {"data": [[2.5, 3.6, 4.1, 5.2]], "normalize": [true], "categories": [["red", "blue", "green"]], "encoding_type": ["one-hot"], "missing_values": ["", "mean"]}}]}
+{"index": "1737_0", "result": [{"get_current_weather": {"location": ["Boston, MA"], "unit": ["", "fahrenheit"]}}]}
+{"index": "1737_1", "result": [{"get_current_weather": {"location": ["El Gastor, Andalusia"], "unit": ["", "fahrenheit"]}}]}
+{"index": "1744_0", "result": [{"get_weather_by_coordinates": {"city": ["Chennai"], "lat": [13.0827], "lon": [80.2707]}}]}
+{"index": "1747_1", "result": [{"connectBluetooth": {"device_name": ["ue boom"], "timeout": ["", 30], "auto_reconnect": ["", false]}}]}
+{"index": "1747_3", "result": [{"connectBluetooth": {"device_name": ["JBL Flip 4"], "timeout": ["", 30], "auto_reconnect": ["", false]}}]}
+{"index": "1752_0", "result": [{"askForSSID": {"prompt_message": ["Please enter the Wi-Fi network name you wish to connect to:"], "default_ssid": ["", "default_network"], "retry_attempts": ["", 3], "hide_input": ["", false]}}]}
+{"index": "1755_0", "result": [{"calculate_tax": {"purchase_amount": [59.99], "state": ["CA"], "county": ["", null], "city": ["San Francisco"], "tax_exempt": ["", false], "discount_rate": ["", 0.0], "apply_special_tax": ["", false]}}]}
+{"index": "1755_1", "result": [{"calculate_tax": {"purchase_amount": [999], "state": ["CA"], "county": ["", null], "city": ["", null], "tax_exempt": ["", false], "discount_rate": ["", 0.0], "apply_special_tax": ["", false]}}]}
+{"index": "1755_2", "result": [{"calculate_tax": {"purchase_amount": [250], "state": ["NY"], "county": ["", null], "city": ["", null], "tax_exempt": ["", false], "discount_rate": ["", 0.0], "apply_special_tax": ["", false]}}]}
+{"index": "1759_0", "result": [{"classify": {"clean_hello": [["hello"]], "faq_link_accounts_start": [["link my account", "connect my accounts"]]}}]}
+{"index": "1765_0", "result": [{"record": {"acc_routing_start": [["Please provide the routing number for my account.", "Which account number should I use for setting up eStatements?", "Please give me the account number for my business checking account."]], "activate_card_start": [["Activate my new card for loyalty program enrollment", "Can you walk me through the activation process for my new bank card?"]], "atm_finder_start": [["Looking for the closest ATM for cash withdrawal, can you assist me in finding one?", "Locate ATM for immediate cash needs", "I urgently need to find an ATM for cash withdrawal, can you help me locate the nearest one?", "Searching for ATM for money withdrawal", "Find ATM for urgent cash needs", "Need to find ATM for quick cash emergency"]], "auto_loan_payment_start": [], "bank_hours_start": [], "cancel_card_start": [["I want to cancel my card and ensure the safety of my account."]], "card_rewards_start": [["What rewards are offered for my card?", "What rewards are available on my card?", "What are the benefits of using my rewards points for entertainment?"]], "cashier_check_start": [["Can I purchase a cashier's check through this chat service?", "I need a cashier's check, how can I get one?"]], "clean_goodbye_start": [["I'm done here. Goodbye!", "Thanks for your assistance. Goodbye!", "You're amazing. Goodbye!"]]}}]}
+{"index": "1766_0", "result": [{"record": {"faq_describe_telephone_banking_start": [["How do I sign up for tele-banking services through the mobile app?", "Can I sign up for telephone banking services?", "Where can I find the application for telephone banking services?"]], "bank_hours_start": [["Are any banks open in Sri Lanka right now?"]], "faq_describe_accounts_start": [["I'm interested in opening a long term savings account. What options do you have?", "Do you offer any special accounts for individuals looking to save for a home purchase or renovation?", "Do you offer any special accounts for children or minors?"]]}}]}
+{"index": "1767_0", "result": [{"record": {"money_movement_start": [["Can you show me all outgoing wire transfers?"]], "get_transactions_start": [["I need to view all transactions labeled as \"checks\" on my account.", "Can you show me my recent Google Pay transactions?", "I would like to see the details of my most recent ATM withdrawal.", "Can you give me a summary of my recent debit card transactions?"]], "credit_limit_increase_start": [["I need my credit card limit raised.", "Can you assist me in getting a higher credit card limit?"]], "faq_link_accounts_start": [["Can you assist me in combining my personal and savings accounts?", "Please assist me in combining my accounts for a streamlined experience.", "How can I link my auto loan and savings accounts?"]]}}]}
+{"index": "1768_1", "result": [{"record": {"faq_auto_withdraw_start": [["Can I schedule automatic withdrawals for different dates?"]], "payment_information_start": [["How much do I owe on my home equity loan?"]], "pma_income_requirements_start": [["Can I use bonuses or commissions as part of my income for a loan application?", "Will my income be verified during the loan application process?", "Is there a minimum income threshold for loan approval?"]], "outofscope": ["", []]}}]}
+{"index": "1769_1", "result": [{"record": {"acc_routing_start": ["", []], "atm_finder_start": [["Need ATM location"]], "faq_link_accounts_start": ["", []], "get_balance_start": ["", []], "get_transactions_start": ["", []], "outofscope": ["", []]}}]}
+{"index": "1769_2", "result": [{"record": {"acc_routing_start": ["", []], "atm_finder_start": [["Where is the closest ATM to my current location?", "Find ATM for immediate cash needs"]], "faq_link_accounts_start": ["", []], "get_balance_start": [["What is my balance?", "Tell me my available balance, please", "What is my current available balance?", "Please provide my current account balance", "Show me my balance information.", "What is the balance in my account at this moment?", "How much money is in my account?", "Tell me my available balance"]], "get_transactions_start": ["", []], "outofscope": ["", []]}}]}
+{"index": "1773_0", "result": [{"record": {"acc_routing_start": [], "atm_finder_start": [], "faq_link_accounts_start": [], "get_balance_start": [], "get_transactions_start": [], "outofscope": [["what is the weather like"]]}}]}
+{"index": "1811_0", "result": [{"calculate_dynamic_pricing": {"geolocation": ["34.0522, -118.2437"], "base_price": [100.0], "minimum_price": [90.0], "location_multiplier": ["", 1.0]}}]}
+{"index": "1823_0", "result": [{"update_user_profile": {"user_id": [12345], "profile_data": [{"email": ["john.doe@example.com"], "age": [30], "bio": ["", ""]}], "notify": ["", true]}}]}
+{"index": "1831_0", "result": [{"calculate_sum": {"number1": [133.0], "number2": [34.0]}}]}
+{"index": "1832_0", "result": [{"sum_numbers": {"numbers_list": [[133.0, 34.0]]}}]}
+{"index": "1836_0", "result": [{"reverse_input": {"input_value": ["say hi"]}}]}
+{"index": "1839_0", "result": [{"get_temperature": {"units": ["Celsius"], "location": ["Hyderabad, India"], "time": ["", null]}}]}
+{"index": "1841_0", "result": [{"GetPrimeMinisters": {"countries": [["Australia", "Canada", "India"]]}}]}
+{"index": "1846_0", "result": [{"weather.forecast": {"location": ["Paris, France"], "start_date": ["2023-04-03"], "end_date": ["2023-04-05"], "temperature_unit": ["", "Celsius"], "include_precipitation": ["", true], "include_wind": ["", false]}}]}
+{"index": "1867_0", "result": [{"generate_chart": {"data_labels": [["Software Engineer", "Graphic Designer", "Data Analyst", "Sales Manager", "Nurse"]], "data_values": [[90000, 50000, 70000, 60000, 80000]]}}]}
+{"index": "1868_0", "result": [{"process_data": {"image_path": ["image.png"], "question": ["generate with technically complex attention to detail a description of what you see"], "model": ["vikhyatk/moondream2"]}}]}
+{"index": "1870_0", "result": [{"pipeline": {"image_path": ["http://www.thewowstyle.com/wp-content/uploads/2015/01/Home-Interior-Design-Hd-Wallpaper-Hd-Background-With-Simple-Staircase-And-Plasma-TV-Also-Nice-Laminate-Flooring-Ideas-With-Modern-Furniture-Interior-Minimalist-Design.jpg"], "question": ["How does the arrangement of furniture contribute to the minimalist design of the interior?"]}}]}
+{"index": "1883_0", "result": [{"get_tickets": {"customer": ["\u7ea2\u661f\u79d1\u6280"], "status": ["open"], "limit": [10]}}]}
+{"index": "1894_0", "result": [{"concat_strings": {"strings": [["John", "Doe"]], "separator": [" "]}}]}
+{"index": "1911_0", "result": [{"telemetry.flowrules.interfaceInfo.get": {"fabricName": ["Global-Fabric"], "nodeId": [1200], "podId": [3], "interfaceType": ["ethernet"], "infoType": ["status"]}}]}
+{"index": "1911_1", "result": [{"telemetry.flowrules.interfaceInfo.get": {"fabricName": ["test-de"], "nodeId": [5], "podId": [1], "interfaceType": ["ethernet"], "infoType": ["status"]}}]}
+{"index": "1914_0", "result": [{"requests.get": {"url": ["https://192.168.11.33/sedgeapi/v1/cisco-nir/api/api/telemetry/flowrules/nodes?fabricName=PEK-ACI"], "fabricName": ["PEK-ACI"]}}]}
+{"index": "1914_1", "result": [{"requests.get": {"url": ["https://3.321.3232.2/sedgeapi/v1/cisco-nir/api/api/telemetry/flowrules/nodes?fabricName=fab-ed"], "fabricName": ["fab-ed"]}}]}
+{"index": "1915_2", "result": [{"requests.get": {"url": ["https://192.120.45.67/sedgeapi/v1/cisco-nir/api/api/telemetry/flowrules/interfaceInfo"], "params": [{"fabricName": ["Network1"], "nodeId": [12], "podId": [10], "interfaceType": ["ethernet"], "infoType": ["statistics"]}]}}]}
+{"index": "1915_4", "result": [{"requests.get": {"url": ["https://192.120.45.67/sedgeapi/v1/cisco-nir/api/api/telemetry/flowrules/interfaceInfo"], "params": [{"fabricName": ["Network1"], "nodeId": [12], "podId": [10], "interfaceType": ["Ethernet"], "infoType": ["Speed"]}]}}]}
+{"index": "1916_0", "result": [{"requests.get": {"url": ["https://example.com/device-connector-versions.json"], "params": ["", {}]}}]}
+{"index": "1917_1", "result": [{"requests.get": {"url": ["https://api.example.com/recommendations"], "params": [{"advisoryId": ["dac"]}]}}]}
+{"index": "1919_0", "result": [{"requests.get": {"url": ["https://api.insights.com/groups"], "params": [{"limit": [20], "sort": ["desc"]}]}}]}
+{"index": "1920_0", "result": [{"requests.get": {"url": ["https://api.example.com/v1/data"], "params": [{"limit": [50]}]}}]}
+{"index": "1921_0", "result": [{"requests.get": {"url": ["https://192.168.1.1/api/v1/applications/topologies"], "params": [{"filter": ["accountName:AcmeCorp AND applicationName:SalesApp"]}]}}]}
+{"index": "1931_0", "result": [{"reschedule": {"identifier": ["Bob-123"], "dateOrTime": ["2023-11-01T18:00:00"], "timezone": ["Europe/Berlin"]}}]}
+{"index": "1932_0", "result": [{"reschedule": {"identifier": ["Bob-123"], "dateOrTime": ["2023-11-01T18:00:00"], "timezone": ["Europe/Berlin"]}}]}
+{"index": "1936_0", "result": [{"requests.get": {"url": ["https://192.168.1.1/sedgeapi/v1/cisco-nir/api/api/v1/anomalies/summary"], "params": [{"fabric": ["network222"], "insightsGroup": ["", "defaultInsightsGroup"]}]}}]}
+{"index": "1953_0", "result": [{"greet_partner": {"user_name": ["Emily"], "partner_name": ["Jeff"], "relationship": ["husband"]}}]}
+{"index": "1972_0", "result": [{"cmd_controller.execute": {"command": ["docker --version"], "unit": ["", "seconds"]}}]}
+{"index": "1972_2", "result": [{"cmd_controller.execute": {"command": ["dir Desktop"], "unit": ["", "seconds"]}}]}
+{"index": "1976_1", "result": [{"cmd_controller.execute": {"command": ["docker ps"], "unit": ["", "N/A"]}}]}
+{"index": "1976_2", "result": [{"cmd_controller.execute": {"command": ["taskkill /F /IM firefox.exe", "taskkill /IM firefox.exe /F"], "unit": ["", "N/A"]}}]}
+{"index": "1976_4", "result": [{"cmd_controller.execute": {"command": ["dir C:\\"], "unit": ["", "N/A"]}}]}
+{"index": "1976_6", "result": [{"cmd_controller.execute": {"command": ["start https://huggingface.co"], "unit": ["", "N/A"]}}]}
+{"index": "1976_8", "result": [{"cmd_controller.execute": {"command": ["taskkill /F /IM timer.exe"], "unit": ["", "N/A"]}}]}
+{"index": "1976_9", "result": [{"cmd_controller.execute": {"command": ["dir C:\\"], "unit": ["", "N/A"]}}]}
+{"index": "1976_10", "result": [{"cmd_controller.execute": {"command": ["echo hi"], "unit": ["", "N/A"]}}]}
+{"index": "1976_11", "result": [{"cmd_controller.execute": {"command": ["shutdown /s /t 0"], "unit": ["", "N/A"]}}]}
+{"index": "1976_12", "result": [{"cmd_controller.execute": {"command": ["netsh wlan disconnect"], "unit": ["", "N/A"]}}]}
+{"index": "1976_13", "result": [{"cmd_controller.execute": {"command": ["dir D:\\ && echo testing.txt > D:\\testing.txt"], "unit": ["", "N/A"]}}]}
+{"index": "1976_14", "result": [{"cmd_controller.execute": {"command": ["del \"%userprofile%\\Desktop\\putty.lnk\""], "unit": ["", "N/A"]}}]}
+{"index": "1976_15", "result": [{"cmd_controller.execute": {"command": ["start https://www.youtube.com/watch?v=dQw4w9WgXcQ"], "unit": ["", "N/A"]}}]}
+{"index": "1976_17", "result": [{"cmd_controller.execute": {"command": ["date /t", "echo %date%"], "unit": ["", "N/A"]}}]}
+{"index": "1976_18", "result": [{"cmd_controller.execute": {"command": ["dir C:\\"], "unit": ["", "N/A"]}}]}
+{"index": "1976_23", "result": [{"cmd_controller.execute": {"command": ["echo %time%"], "unit": ["", "N/A"]}}]}
+{"index": "1976_24", "result": [{"cmd_controller.execute": {"command": ["taskkill /IM code.exe /F", "taskkill /F /IM code.exe"], "unit": ["", "N/A"]}}]}
+{"index": "1976_26", "result": [{"cmd_controller.execute": {"command": ["timeout 10 && echo \"bring a condom\""], "unit": ["seconds"]}}]}
+{"index": "1976_29", "result": [{"cmd_controller.execute": {"command": ["start microsoft.windows.camera:"], "unit": ["", "N/A"]}}]}
+{"index": "1979_0", "result": [{"get_items": {"items": [["Blue square", "Red square", "Green square", "Yellow square", "Superman logo", "Iron Man logo", "Hulk logo", "Batman logo", "Fist", "Bat", "Face mask", "Outline"]]}}]}
+{"index": "1979_1", "result": [{"get_items": {"items": [["Red and blue circle logo", "Red and yellow circle logo", "Green circle logo", "Black circle logo"]]}}]}
+{"index": "1979_2", "result": [{"get_items": {"items": [["red logo", "yellow rectangle", "white text", "Lego characters", "movie title", "release date", "actor names"]]}}]}
+{"index": "2007_1", "result": [{"get_copyright_info": {"copyright_content": ["Coca-Cola logo"], "copyright_holder": ["The Coca-Cola Company"], "confidence_score": [100.0]}}]}
+{"index": "2008_0", "result": [{"extractor.extract_information": {"data": [[{"name": ["\u674e\u96f7"], "age": [18]}, {"name": ["\u674e\u4e3d"], "age": [21]}]], "schema": ["personal_info"]}}]}
+{"index": "2011_0", "result": [{"cmd_controller.execute": {"command": ["echo %time%"]}}]}
+{"index": "2011_1", "result": [{"cmd_controller.execute": {"command": ["tasklist /FI \"IMAGENAME eq Code.exe\""]}}]}
+{"index": "2011_2", "result": [{"cmd_controller.execute": {"command": ["start docker", "docker start"]}}]}
+{"index": "2011_3", "result": [{"cmd_controller.execute": {"command": ["d:/playground/pc_contoller/env/Scripts/python.exe d:/playground/pc_contoller/test.py"]}}]}
+{"index": "2011_4", "result": [{"cmd_controller.execute": {"command": ["dir C:\\"]}}]}
+{"index": "2011_5", "result": [{"cmd_controller.execute": {"command": ["echo %date%"]}}]}
+{"index": "2011_6", "result": [{"cmd_controller.execute": {"command": ["docker ps"]}}]}
+{"index": "2011_8", "result": [{"cmd_controller.execute": {"command": ["start calc"]}}]}
+{"index": "2015_0", "result": [{"get_service_id": {"service_id": [2], "unit": ["", 1]}}]}
+{"index": "2016_0", "result": [{"get_service_id": {"service_id": [2], "unit": ["", "session"]}}]}
+{"index": "2018_0", "result": [{"get_service_id": {"service_id": [2], "unit": ["", 1]}}]}
+{"index": "2019_0", "result": [{"get_service_id": {"service_id": [1], "unit": ["", 1]}}]}
+{"index": "2019_1", "result": [{"get_service_id": {"service_id": [2], "unit": ["", 1]}}]}
+{"index": "2022_0", "result": [{"get_service_id": {"service_id": [2], "province_id": [2]}}]}
+{"index": "2024_0", "result": [{"get_service_id": {"service_id": [2], "province_id": [1], "rating": [4.0]}}]}
+{"index": "2025_0", "result": [{"get_service_id": {"service_id": [2], "province_id": ["", 1], "district_name": ["Chatuchak"], "rating": [4.5]}}]}
+{"index": "2027_0", "result": [{"get_service_providers": {"service_id": [2], "province_id": [1], "district_name": ["Khlong Sam Wa"], "sub_district_name": ["Sai Kong"], "rating": [4.5]}}]}
+{"index": "2028_0", "result": [{"getDataForProfessional": {"avg_rating": [4.0], "province_id": [1], "districts_name": ["", "All districts"], "service_id": [1]}}]}
+{"index": "2029_0", "result": [{"getDataForProfessional": {"service_id": [1], "province_id": [1], "district_name": ["", null], "rating": [4.0]}}]}
+{"index": "2030_0", "result": [{"get_service_providers": {"service_id": [2], "province_id": [20], "district_name": ["", null], "sub_district_name": ["", null], "rating": [4.5], "start_available_date": ["2023-09-30"]}}]}
+{"index": "2035_0", "result": [{"get_service_providers": {"service_id": [2], "province_id": [3], "district_name": ["", null], "sub_district_name": ["", null], "rating": [4.5], "start_available_date": ["2024-03-12 16:00:00", "2024-12-03 16:00:00"], "end_available_date": ["2024-03-12 18:00:00", "2024-12-03 18:00:00"]}}]}
+{"index": "2036_0", "result": [{"get_service_providers": {"service_id": [2], "province_id": [20], "district_name": ["", "Any"], "sub_district_name": ["", "Any"], "rating": [4.5], "start_available_date": ["2024-03-12", "2024-12-03"], "end_available_date": ["2024-03-12", "2024-12-03"], "has_late_check_in": ["", false]}}]}
+{"index": "2037_0", "result": [{"getDataForProfessional": {"service_id": [2], "province_id": [1], "district_name": ["Sankampang"], "sub_district_name": ["Ton Pao"], "start_available_date": ["", null], "end_available_date": ["", null], "has_late_check_in": ["", false], "rating": [4.5]}}]}
+{"index": "2038_0", "result": [{"extractor.extract_information": {"data": [[{"name": ["Chester"], "age": [42]}, {"name": ["Jane"], "age": [43]}]]}}]}
+{"index": "2052_0", "result": [{"raptor.mpn.specs": {"identifier": ["ACHD"], "search_type": ["", "MPN"], "include_images": ["", false]}}]}
+{"index": "2052_1", "result": [{"raptor.mpn.specs": {"identifier": ["3pak7"], "search_type": ["", "MPN"], "include_images": ["", false]}}]}
+{"index": "2084_0", "result": [{"Weather_1_GetWeather": {"city": ["Pacifica"], "date": ["2023-04-11"]}}]}
+{"index": "2084_1", "result": [{"Weather_1_GetWeather": {"city": ["New York"], "date": ["2023-03-08"]}}]}
+{"index": "2084_2", "result": [{"Weather_1_GetWeather": {"city": ["Martinez"], "date": ["2023-04-25"]}}]}
+{"index": "2084_3", "result": [{"Weather_1_GetWeather": {"city": ["Palo Alto"], "date": ["2023-04-25"]}}]}
+{"index": "2084_4", "result": [{"Weather_1_GetWeather": {"city": ["Alameda"], "date": ["2023-04-27"]}}]}
+{"index": "2084_5", "result": [{"Weather_1_GetWeather": {"city": ["Stinson Beach"], "date": ["2023-04-05"]}}]}
+{"index": "2084_6", "result": [{"Weather_1_GetWeather": {"city": ["Healdsburg"], "date": ["2023-03-02"]}}]}
+{"index": "2084_7", "result": [{"Weather_1_GetWeather": {"city": ["Marshall"], "date": ["2023-03-05"]}}]}
+{"index": "2084_8", "result": [{"Weather_1_GetWeather": {"city": ["Fremont"], "date": ["2023-03-01"]}}]}
+{"index": "2084_9", "result": [{"Weather_1_GetWeather": {"city": ["Campbell"], "date": ["2023-03-04"]}}]}
+{"index": "2084_10", "result": [{"Weather_1_GetWeather": {"city": ["Foster City"], "date": ["2023-04-25"]}}]}
+{"index": "2084_11", "result": [{"Weather_1_GetWeather": {"city": ["Washington"], "date": ["2023-03-01"]}}]}
+{"index": "2084_12", "result": [{"Weather_1_GetWeather": {"city": ["Rutherford"], "date": ["2023-04-22"]}}]}
+{"index": "2084_13", "result": [{"Weather_1_GetWeather": {"city": ["Berkeley"], "date": ["2023-04-27"]}}]}
+{"index": "2084_14", "result": [{"Weather_1_GetWeather": {"city": ["London"], "date": ["2023-03-05"]}}]}
+{"index": "2084_15", "result": [{"Weather_1_GetWeather": {"city": ["Sacramento"], "date": ["2023-04-22"]}}]}
+{"index": "2117_0", "result": [{"Movies_3_FindMovies": {"directed_by": ["Quentin Tarantino"], "genre": ["", "dontcare"], "cast": ["Duane Whitaker"]}}]}
+{"index": "2117_2", "result": [{"Movies_3_FindMovies": {"directed_by": ["David Leitch"], "genre": ["", "dontcare"], "cast": ["Lori Pelenise Tuisano"]}}]}
+{"index": "2117_3", "result": [{"Movies_3_FindMovies": {"directed_by": ["", "dontcare"], "genre": ["Drama"], "cast": ["", "dontcare"]}}]}
+{"index": "2117_4", "result": [{"Movies_3_FindMovies": {"directed_by": ["", "dontcare"], "genre": ["Comedy"], "cast": ["James Corden"]}}]}
+{"index": "2117_5", "result": [{"Movies_3_FindMovies": {"directed_by": ["Edgar Wright"], "genre": ["Comedy"], "cast": ["", "dontcare"]}}]}
+{"index": "2117_6", "result": [{"Movies_3_FindMovies": {"directed_by": ["Tim Burton"], "genre": ["Offbeat"], "cast": ["", "dontcare"]}}]}
+{"index": "2117_7", "result": [{"Movies_3_FindMovies": {"directed_by": ["Nitesh Tiwari"], "genre": ["Comedy"], "cast": ["", "dontcare"]}}]}
+{"index": "2117_8", "result": [{"Movies_3_FindMovies": {"directed_by": ["", "dontcare"], "genre": ["Fantasy"], "cast": ["", "dontcare"]}}]}
+{"index": "2117_9", "result": [{"Movies_3_FindMovies": {"directed_by": ["David Leitch"], "genre": ["Action"], "cast": ["Alex King"]}}]}
+{"index": "2117_10", "result": [{"Movies_3_FindMovies": {"directed_by": ["Nitesh Tiwari"], "genre": ["", "dontcare"], "cast": ["", "dontcare"]}}]}
+{"index": "2117_11", "result": [{"Movies_3_FindMovies": {"directed_by": ["Paul Downs Colaizzo"], "genre": ["", "dontcare"], "cast": ["Michaela Watkins"]}}]}
+{"index": "2117_12", "result": [{"Movies_3_FindMovies": {"directed_by": ["Simon Curtis"], "genre": ["Drama"], "cast": ["McKinley Belcher III"]}}]}
+{"index": "2117_13", "result": [{"Movies_3_FindMovies": {"directed_by": ["Alexander Mackendrick"], "genre": ["Thriller"], "cast": ["", "dontcare"]}}]}
+{"index": "2117_14", "result": [{"Movies_3_FindMovies": {"directed_by": ["James Gray"], "genre": ["", "dontcare"], "cast": ["", "dontcare"]}}]}
+{"index": "2117_15", "result": [{"Movies_3_FindMovies": {"directed_by": ["Thurop Van Orman"], "genre": ["", "dontcare"], "cast": ["Sterling K. Brown"]}}]}
+{"index": "2117_17", "result": [{"Movies_3_FindMovies": {"directed_by": ["", "dontcare"], "genre": ["Fantasy"], "cast": ["", "dontcare"]}}]}
+{"index": "2117_18", "result": [{"Movies_3_FindMovies": {"directed_by": ["Tim Burton"], "genre": ["Offbeat"], "cast": ["Johnny Depp"]}}]}
+{"index": "2117_19", "result": [{"Movies_3_FindMovies": {"directed_by": ["Kirill Mikhanovsky"], "genre": ["Comedy-drama"], "cast": ["", "dontcare"]}}]}
+{"index": "2135_0", "result": [{"text_to_speech.convert": {"text": ["I am a pretty girl"], "language": ["es-ES"], "gender": ["", "female"], "format": ["", "mp3"], "speed": ["", 1.0]}}]}
+{"index": "2135_1", "result": [{"text_to_speech.convert": {"text": ["\u6211\u7231\u5b66\u4e60"], "language": ["de-DE"], "gender": ["male"], "format": ["wav"], "speed": ["", 1.0]}}]}
+{"index": "2136_0", "result": [{"text_to_speech.convert": {"text": ["I am a pretty girl"], "language": ["", "en-US"], "gender": ["", "female"], "speed": ["", 1.0]}}]}
+{"index": "2145_0", "result": [{"requests.get": {"anchor": ["user"]}}]}
+{"index": "2147_0", "result": [{"play_song": {"song_id": ["Roar"], "artist": ["Katy Perry", "Katty Perry"], "quality": ["high"], "device_id": ["", null]}}]}
+{"index": "2148_0", "result": [{"reschedule_event": {"event_identifier": ["456123"], "new_datetime": ["2022-10-23T16:30:00Z"]}}]}
+{"index": "2148_1", "result": [{"reschedule_event": {"event_identifier": ["med123"], "new_datetime": ["2021-04-15T13:45:00Z"]}}]}
+{"index": "2162_0", "result": [{"book_flight": {"departure_location": ["Paris, France"], "departure_time": ["12/03/2023 15:00"], "return_time": ["", null]}}]}
+{"index": "2162_1", "result": [{"book_flight": {"departure_location": ["New York, NY"], "departure_time": ["20/06/2022 17:00"], "return_time": ["", null]}}]}
+{"index": "2164_0", "result": [{"play_spotify_song": {"query": ["track:Friends artist:Marshmello"], "shuffle": ["", false], "volume": ["", 50]}}]}
+{"index": "2164_1", "result": [{"play_spotify_song": {"query": ["track:Dil Nu artist:Maninder Buttar"], "shuffle": ["", false], "volume": ["", 50]}}]}
+{"index": "2165_0", "result": [{"play_spotify_song": {"query": ["track:Wrecking Ball artist:Miley Cyrus"], "device_id": ["", "null"], "play": ["", true]}}]}
+{"index": "2165_1", "result": [{"play_spotify_song": {"query": ["track:Dil Nu artist:Maninder Buttar"], "device_id": ["", "null"], "play": ["", true]}}]}
+{"index": "2165_2", "result": [{"play_spotify_song": {"query": ["track:Shape of You artist:Ed Sheeran", "Shape of You"], "device_id": ["", "null"], "play": ["", true]}}]}
+{"index": "2165_3", "result": [{"play_spotify_song": {"query": ["Baby Shark"], "device_id": ["", "null"], "play": ["", true]}}]}
+{"index": "2165_4", "result": [{"play_spotify_song": {"query": ["Johnny Johnny Yes Papa", "Johnny Johnny Yes papa"], "device_id": ["", "null"], "play": ["", true]}}]}
+{"index": "2168_0", "result": [{"set_volume": {"volume": [20]}}]}
+{"index": "2168_1", "result": [{"set_volume": {"volume": [30]}}]}
+{"index": "2168_3", "result": [{"set_volume": {"volume": [70]}}]}
+{"index": "2171_0", "result": [{"book_flight": {"departure_location": ["JFK"], "departure_date": ["16/03/2024"], "departure_time": ["14:00"]}}]}
+{"index": "2172_0", "result": [{"book_flight": {"departure_location": ["New York, NY"], "departure_time": ["15/03/2024"]}}]}
+{"index": "2177_0", "result": [{"version_api.VersionApi.get_version": {}}]}
+{"index": "2178_0", "result": [{"acl_api.AclApi.retrieve_projects": {"uuid": ["12"], "excludeInactive": [true], "onlyRoot": [true]}}]}
+{"index": "2180_0", "result": [{"chat_with_friend": {"user_message": ["Hey bunny, How are you doing"]}}]}
+{"index": "2193_0", "result": [{"uber.eat.order": {"restaurants": ["McDonald's"], "items": [["Big Mac", "McFlurry"]], "quantities": [[2, 1]]}}]}
+{"index": "2195_0", "result": [{"flight.status.check": {"flight_id": ["6E123"], "passenger_name": ["Karan"], "ticket_number": ["IND4567"]}}]}
+{"index": "2196_0", "result": [{"flight.status.check": {"airlines": ["Indigo"], "person_name": ["Karan"], "ticket_number": ["IND4567"]}}]}
+{"index": "2208_1", "result": [{"uber.eat.order": {"restaurants": ["McDonlad"], "items": [["burgers", "chicken wings"]], "quantities": [[5, 6]]}}]}
+{"index": "2217_0", "result": [{"user.mandates": {"user_id": ["Parath"], "status": ["pending"]}}]}
+{"index": "2217_1", "result": [{"user.mandates": {"user_id": ["U123456"], "status": ["", "active"]}}]}
+{"index": "2231_0", "result": [{"answer_question": {"statement": ["I have had submit a compaint and I like to check its status"], "urgency": ["", "medium"], "language": ["", "en"]}}]}
+{"index": "2231_1", "result": [{"answer_question": {"statement": ["Can you tell me what is the minimum package arrival time?"], "urgency": ["", "medium"], "language": ["", "en"]}}]}
