@@ -12,6 +12,7 @@ from model_handler.gorilla_handler import GorillaHandler
 from model_handler.gpt_handler import OpenAIHandler
 from model_handler.hermes_handler import HermesHandler
 from model_handler.llama_handler import LlamaHandler
+from model_handler.llama_nvidia_handler import LlamaNvidiaHandler
 from model_handler.mistral_handler import MistralHandler
 from model_handler.nexus_handler import NexusHandler
 from model_handler.granite_handler import GraniteHandler
@@ -73,7 +74,7 @@ handler_map = {
     "gemini-1.5-flash-preview-0514": GeminiHandler,
     "google/gemma-7b-it": GemmaHandler,
     "glaiveai/glaive-function-calling-v1": GlaiveHandler,
-    "deepseek-ai/deepseek-coder-6.7b-instruct": DeepseekHandler,
+    "deepseek-ai/deepseek-coder-6.7b-instruct": NvidiaHandler,
     "meetkai/functionary-small-v3.1-FC": FunctionaryHandler,
     "meetkai/functionary-small-v3.2-FC": FunctionaryHandler,
     "meetkai/functionary-medium-v3.1-FC": FunctionaryHandler,
@@ -85,6 +86,8 @@ handler_map = {
     "NousResearch/Hermes-2-Theta-Llama-3-70B": HermesHandler,
     "meta-llama/Meta-Llama-3-8B-Instruct": LlamaHandler,
     "meta-llama/Meta-Llama-3-70B-Instruct": LlamaHandler,
+    "meta/llama-3.1-405b-instruct": LlamaNvidiaHandler,
+    "meta/llama-3.1-405b-instruct-FC": LlamaNvidiaHandler,
     "command-r-plus-FC": CohereHandler,
     "command-r-plus": CohereHandler,
     "command-r-plus-FC-optimized": CohereHandler,
