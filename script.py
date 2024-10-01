@@ -29,7 +29,7 @@ current_time = now.strftime("%b%d_%I%M%p")
 # Set up the OpenAI Azure client
 client = AzureOpenAI(
     azure_endpoint="https://gorilla2.openai.azure.com/",
-    api_key="596fcb8cd12747f8bf6a4ebb318bab49",
+    api_key="YOUR_API_KEY",
     api_version="2023-12-01-preview",
 )
 MODEL_IN_USE = "gorilla-4-1106"
