@@ -257,7 +257,7 @@
 {"id":"live_multiple_256-120-0","ground_truth":[{"vex_api.VexApi.export_project_as_cyclone_dx1":{"uuid":["123e4567-e89b-12d3-a456-426614174000"],"download":["",false]}}]}
 {"id":"live_multiple_257-121-0","ground_truth":[{"vex_api.VexApi.export_project_as_cyclone_dx1":{"uuid":["1a1a-c6"],"download":["",false]}}]}
 {"id":"live_multiple_258-122-0","ground_truth":[{"project_api.ProjectApi.get_project_by_name_and_version":{"name":["Orion"],"version":["2.1.3"]}}]}
-{"id":"live_multiple_259-123-0","ground_truth":[{"project_api.ProjectApi.get_project_by_name_and_version":{"name":["my_version_proj"],"version":["a"]}}]}
+{"id":"live_multiple_259-123-0","ground_truth":[{"project_api.ProjectApi.get_project_by_name_and_version":{"name":["my_version_proj"],"version":["1.2.3"]}}]}
 {"id":"live_multiple_260-124-0","ground_truth":[{"version_api.VersionApi.get_version":{}}]}
 {"id":"live_multiple_261-125-0","ground_truth":[{"rotateImageAction":{"degrees":[30],"image_format":["","JPEG"],"keep_original":["",true]}}]}
 {"id":"live_multiple_262-125-1","ground_truth":[{"rotateImageAction":{"degrees":[20],"image_format":["","JPEG"],"keep_original":["",true]}}]}
