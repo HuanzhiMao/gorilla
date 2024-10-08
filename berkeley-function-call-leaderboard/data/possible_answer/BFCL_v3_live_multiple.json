@@ -216,7 +216,7 @@
 {"id": "live_multiple_215-91-9", "ground_truth": [{"experiences_and_education": {"person_id": ["1234"], "include_experiences": ["", true], "include_education": [false], "years_experience": ["", 0]}}]}
 {"id": "live_multiple_216-92-0", "ground_truth": [{"find_flights": {"origin": ["BER"], "destination": ["JFK"], "date": ["2021-10-10"], "passengers": [2]}}]}
 {"id": "live_multiple_217-93-0", "ground_truth": [{"Subdomain": {"domain": ["google.com"]}}]}
-{"id": "live_multiple_218-94-0", "ground_truth": [{"get_sensor_readings_history_by_interval": {"perPage": [100], "startingAfter": ["", null], "endingBefore": ["", null], "networkIds": [["L_579838452023959405"]], "serials": ["", []], "metrics": [["temperature"]], "timespan": [3600], "models": ["", []]}}]}
+{"id": "live_multiple_218-94-0", "ground_truth": [{"get_sensor_readings_history_by_interval": {"perPage": [100], "startingAfter": ["", null], "endingBefore": ["", null], "networkIds": [["L_579838452023959405"]], "serials": ["", []], "metrics": [["temperature"]], "timespan": [3600], "t0": ["", null], "t1": ["", null], "interval": ["", 86400], "models": ["", []]}}]}
 {"id": "live_multiple_219-94-1", "ground_truth": [{"get_sensor_readings_history": {"perPage": ["", 10], "startingAfter": ["", null], "endingBefore": ["", null], "networkIds": ["", []], "serials": ["", []], "metrics": [["current"]], "timespan": [120], "t0": ["2024-03-10T15:30:00Z"], "t1": ["2024-03-10T15:32:00Z"]}}]}
 {"id": "live_multiple_220-94-2", "ground_truth": [{"get_sensor_readings_latest": {"perPage": [100], "startingAfter": ["", null], "endingBefore": ["", null], "networkIds": ["", []], "serials": ["", []], "metrics": [["temperature"]]}}]}
 {"id": "live_multiple_221-95-0", "ground_truth": [{"segment": {"img_path": ["./yoha.jpg"]}}]}
@@ -318,7 +318,7 @@
 {"id": "live_multiple_317-132-7", "ground_truth": [{"Movies_3_FindMovies": {"directed_by": ["Guillermo del Toro"], "genre": ["Fantasy"], "cast": ["Emma Watson"]}}]}
 {"id": "live_multiple_318-132-8", "ground_truth": [{"Movies_3_FindMovies": {"directed_by": ["", "dontcare"], "genre": ["", "dontcare"], "cast": ["Daniel Camp"]}}]}
 {"id": "live_multiple_319-132-9", "ground_truth": [{"Movies_3_FindMovies": {"directed_by": ["Gavin Hood"], "genre": ["Mystery"], "cast": ["Hattie Morahan"]}}]}
-{"id": "live_multiple_320-132-10", "ground_truth": [{"Movies_3_FindMovies": {"directed_by": ["Thurop Van Orman"], "genre": ["Animation"], "cast": ["Pete Davidson"]}}]}
+{"id": "live_multiple_320-132-10", "ground_truth": [{"Movies_3_FindMovies": {"directed_by": ["Thurop Van Orman"], "genre": ["", "dontcare"], "cast": ["Pete Davidson"]}}]}
 {"id": "live_multiple_321-132-11", "ground_truth": [{"Movies_3_FindMovies": {"directed_by": ["Quentin Tarantino"], "genre": ["Bizarre"], "cast": ["Maya Hawke"]}}]}
 {"id": "live_multiple_322-132-12", "ground_truth": [{"Movies_3_FindMovies": {"directed_by": ["Peter Jackson"], "genre": ["Fantasy"], "cast": ["Dominic Monaghan"]}}]}
 {"id": "live_multiple_323-132-13", "ground_truth": [{"Movies_3_FindMovies": {"directed_by": ["Steven Spielberg"], "genre": ["", "dontcare"], "cast": ["Josef Sommer"]}}]}
@@ -335,7 +335,7 @@
 {"id": "live_multiple_334-132-24", "ground_truth": [{"Movies_3_FindMovies": {"directed_by": ["", "dontcare"], "genre": ["Thriller"], "cast": ["Lisa Tharps"]}}]}
 {"id": "live_multiple_335-132-25", "ground_truth": [{"Movies_3_FindMovies": {"directed_by": ["Taika Waititi"], "genre": ["Comedy"], "cast": ["", "dontcare"]}}]}
 {"id": "live_multiple_336-133-0", "ground_truth": [{"Music_3_PlayMedia": {"track": ["Shape of You"], "artist": ["Ed Sheeran"], "device": ["Kitchen"], "album": ["", "dontcare"]}}]}
-{"id": "live_multiple_337-133-1", "ground_truth": [{"Music_3_PlayMedia": {"track": ["dontcare"], "artist": ["Carrie Underwood"], "device": ["", "Living room"], "album": ["", "dontcare"]}}]}
+{"id": "live_multiple_337-133-1", "ground_truth": [{"Music_3_PlayMedia": {"track": ["Remind Me"], "artist": ["Carrie Underwood"], "device": ["", "Living room"], "album": ["", "dontcare"]}}]}
 {"id": "live_multiple_338-133-2", "ground_truth": [{"Music_3_LookupMusic": {"artist": ["", "dontcare"], "album": ["", "dontcare"], "genre": ["Rock"], "year": ["", "dontcare"]}}]}
 {"id": "live_multiple_339-133-3", "ground_truth": [{"Music_3_LookupMusic": {"artist": ["", "dontcare"], "album": ["Speak Now"], "genre": ["", "dontcare"], "year": ["", 2010]}}]}
 {"id": "live_multiple_340-133-4", "ground_truth": [{"Music_3_LookupMusic": {"artist": ["", "dontcare"], "album": ["", "dontcare"], "genre": ["", "dontcare"], "year": [2022]}}]}
@@ -399,7 +399,7 @@
 {"id": "live_multiple_398-139-2", "ground_truth": [{"Events_3_FindEvents": {"event_type": ["Music"], "city": ["San Diego, CA"], "date": ["2023-05-02"]}}]}
 {"id": "live_multiple_399-139-3", "ground_truth": [{"Events_3_FindEvents": {"event_type": ["Theater"], "city": ["Chicago, IL"], "date": ["2023-05-02"]}}]}
 {"id": "live_multiple_400-139-4", "ground_truth": [{"Events_3_FindEvents": {"event_type": ["Theater"], "city": ["Chicago, IL"], "date": ["2023-10-02"]}}]}
-{"id": "live_multiple_401-139-5", "ground_truth": [{"Events_3_FindEvents": {"event_type": ["Music"], "city": ["Toronto, ON", "Toronto, Ontario", "Toronto, Canada"], "date": ["2023-10-02"]}}]}
+{"id": "live_multiple_401-139-5", "ground_truth": [{"Events_3_FindEvents": {"event_type": ["Music"], "city": ["Toronto, ON", "Toronto, Canada"], "date": ["2023-10-02"]}}]}
 {"id": "live_multiple_402-139-6", "ground_truth": [{"Events_3_FindEvents": {"event_type": ["Theater"], "city": ["London, UK"], "date": ["2023-10-02"]}}]}
 {"id": "live_multiple_403-139-7", "ground_truth": [{"Events_3_FindEvents": {"event_type": ["Theater"], "city": ["London, UK"], "date": ["2023-04-05"]}}]}
 {"id": "live_multiple_404-140-0", "ground_truth": [{"RideSharing_2_GetRide": {"destination": ["123 Beijing Street, San Francisco"], "number_of_seats": [1], "ride_type": ["Regular"]}}]}
@@ -514,7 +514,7 @@
 {"id": "live_multiple_513-150-1", "ground_truth": [{"Movies_1_FindMovies": {"location": ["New York, NY"], "theater_name": ["", "dontcare"], "genre": ["Action"], "show_type": ["", "dontcare"]}}]}
 {"id": "live_multiple_514-150-2", "ground_truth": [{"Movies_1_FindMovies": {"location": ["San Jose, CA"], "theater_name": ["Century 20"], "genre": ["", "dontcare"], "show_type": ["regular"]}}]}
 {"id": "live_multiple_515-150-3", "ground_truth": [{"Movies_1_FindMovies": {"location": ["San Jose, CA"], "theater_name": ["West Wind Capitol Drive-In", "West Wind Capitol"], "genre": ["Horror"], "show_type": ["", "dontcare"]}}]}
-{"id": "live_multiple_516-150-4", "ground_truth": [{"Movies_1_FindMovies": {"location": ["San Ramon, CA"], "theater_name": ["Regal"], "genre": ["", "dontcare"], "show_type": ["imax"]}}]}
+{"id": "live_multiple_516-150-4", "ground_truth": [{"Movies_1_FindMovies": {"location": ["San Ramon, CA"], "theater_name": ["Regal", "Regal Theater"], "genre": ["", "dontcare"], "show_type": ["imax"]}}]}
 {"id": "live_multiple_517-150-5", "ground_truth": [{"Movies_1_FindMovies": {"location": ["Los Angeles, CA"], "theater_name": ["", "dontcare"], "genre": ["Supernatural"], "show_type": ["regular"]}}]}
 {"id": "live_multiple_518-150-6", "ground_truth": [{"Movies_1_FindMovies": {"location": ["Sonoma, CA"], "theater_name": ["", "dontcare"], "genre": ["Action"], "show_type": ["", "dontcare"]}}]}
 {"id": "live_multiple_519-150-7", "ground_truth": [{"Movies_1_FindMovies": {"location": ["Los Angeles, CA"], "theater_name": ["", "dontcare"], "genre": ["Documentary"], "show_type": ["regular"]}}]}
