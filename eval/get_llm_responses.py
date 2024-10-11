@@ -17,9 +17,7 @@ import re
 import os 
 import sys
 import json
-from openai import OpenAI
-
-client = OpenAI(api_key=api_key)
+import openai
 import anthropic
 import multiprocessing as mp
 import time
@@ -28,7 +26,7 @@ from tenacity import retry, wait_exponential
 
 def encode_question(question, api_name):
     """Encode multiple prompt instructions into a single string."""
-
+    
     prompts = []
     if api_name == "torchhub":
         domains = "1. $DOMAIN is inferred from the task description and should include one of {Classification, Semantic Segmentation, Object Detection, Audio Separation, Video Classification, Text-to-Speech}."
@@ -57,14 +55,17 @@ def encode_question(question, api_name):
 def get_response(get_response_input, api_key):
     question, question_id, api_name, model = get_response_input
     question = encode_question(question, api_name)
-
+    
     try:
         if "gpt" in model:
-            responses = client.chat.completions.create(model=model,
-            messages=question,
-            n=1,
-            temperature=0)
-            response = responses.choices[0].message.content
+            openai.api_key = api_key
+            responses = openai.ChatCompletion.create(
+                model=model,
+                messages=question,
+                n=1,
+                temperature=0,
+            )
+            response = responses['choices'][0]['message']['content']
         elif "claude" in model:
             client = anthropic.Anthropic(api_key=api_key)
             responses = client.completions.create(
@@ -79,7 +80,7 @@ def get_response(get_response_input, api_key):
     except Exception as e:
         print("Error:", e)
         return None
-
+        
     print("=>",)
     return {'text': response, "question_id": question_id, "answer_id": "None", "model_id": model, "metadata": {}}
 
@@ -169,7 +170,7 @@ if __name__ == '__main__':
                 if data is not None:
                     tbl.add_data(*list(data.values()))
                     line_count+=1
-
+        
         # Log the Tale to W&B
         wandb.log({"llm_eval_responses": tbl})
         wandb.summary["response_count"] = line_count

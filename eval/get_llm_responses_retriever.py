@@ -15,9 +15,7 @@
 import argparse
 import sys
 import json
-from openai import OpenAI
-
-client = OpenAI(api_key=api_key)
+import openai
 import anthropic
 import multiprocessing as mp
 import os
@@ -27,7 +25,7 @@ from retrievers.build_json_index import JSONLReader
 
 def encode_question(question, api_name):
     """Encode multiple prompt instructions into a single string."""
-
+    
     prompts = []
     if api_name == "torchhub":
         domains = "1. $DOMAIN is inferred from the task description and should include one of {Classification, Semantic Segmentation, Object Detection, Audio Separation, Video Classification, Text-to-Speech}."
@@ -58,14 +56,17 @@ def get_response(get_response_input, api_key):
     question[-1]["content"] = question[-1]["content"] + "\nHere are some reference docs:"
     for i, doc in enumerate(retrieved_doc): 
         question[-1]["content"] = question[-1]["content"] + "\nAPI " + str(i) + ": " + str(doc)
-
+    
     try:
         if "gpt" in model:
-            responses = client.chat.completions.create(model=model,
-            messages=question,
-            n=1,
-            temperature=0)
-            response = responses.choices[0].message.content
+            openai.api_key = api_key
+            responses = openai.ChatCompletion.create(
+                model=model,
+                messages=question,
+                n=1,
+                temperature=0,
+            )
+            response = responses['choices'][0]['message']['content']
         elif "claude" in model:
             client = anthropic.Anthropic(api_key=api_key)
             responses = client.completions.create(
@@ -80,7 +81,7 @@ def get_response(get_response_input, api_key):
     except Exception as e:
         print("Error:", e)
         return None
-
+        
     print("=>",)
     return {'text': response, "question_id": question_id, "answer_id": "None", "model_id": model, "metadata": {}}
 
