@@ -54,7 +54,7 @@ class TradingBot:
             "num_shares": 10,
             "status": "Completed",
             },
-            12446: {
+            12445: {
                 "symbol": "GOOG",
                 "price": 2840.56,
                 "num_shares": 5,
