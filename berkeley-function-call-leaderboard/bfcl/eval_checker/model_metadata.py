@@ -1,3 +1,5 @@
+from bfcl.model_handler.handler_map import local_inference_handler_map
+
 MODEL_METADATA_MAPPING = {
     "o1-preview-2024-09-12": [
         "o1-preview-2024-09-12 (Prompt)",
@@ -203,12 +205,6 @@ MODEL_METADATA_MAPPING = {
         "MeetKai",
         "MIT",
     ],
-    "meetkai/functionary-small-v3.2-FC": [
-        "Functionary-Small-v3.2 (FC)",
-        "https://huggingface.co/meetkai/functionary-small-v3.2",
-        "MeetKai",
-        "MIT",
-    ],
     "meetkai/functionary-medium-v3.1-FC": [
         "Functionary-Medium-v3.1 (FC)",
         "https://huggingface.co/meetkai/functionary-medium-v3.1",
@@ -263,27 +259,63 @@ MODEL_METADATA_MAPPING = {
         "Fireworks",
         "Apache 2.0",
     ],
-    "gemini-1.5-pro-preview-0514-FC": [
-        "Gemini-1.5-Pro-Preview-0514 (FC)",
+    "gemini-1.5-pro-002": [
+        "Gemini-1.5-Pro-002 (Prompt)",
         "https://deepmind.google/technologies/gemini/pro/",
         "Google",
         "Proprietary",
     ],
-    "gemini-1.5-flash-preview-0514-FC": [
-        "Gemini-1.5-Flash-Preview-0514 (FC)",
+    "gemini-1.5-pro-002-FC": [
+        "Gemini-1.5-Pro-002 (FC)",
+        "https://deepmind.google/technologies/gemini/pro/",
+        "Google",
+        "Proprietary",
+    ],
+    "gemini-1.5-pro-001": [
+        "Gemini-1.5-Pro-001 (Prompt)",
+        "https://deepmind.google/technologies/gemini/pro/",
+        "Google",
+        "Proprietary",
+    ],
+    "gemini-1.5-pro-001-FC": [
+        "Gemini-1.5-Pro-001 (FC)",
+        "https://deepmind.google/technologies/gemini/pro/",
+        "Google",
+        "Proprietary",
+    ],
+    "gemini-1.5-flash-002": [
+        "Gemini-1.5-Flash-002 (Prompt)",
         "https://deepmind.google/technologies/gemini/flash/",
         "Google",
         "Proprietary",
     ],
-    "gemini-1.5-pro-preview-0409-FC": [
-        "Gemini-1.5-Pro-Preview-0409 (FC)",
-        "https://deepmind.google/technologies/gemini/#introduction",
+    "gemini-1.5-flash-002-FC": [
+        "Gemini-1.5-Flash-002 (FC)",
+        "https://deepmind.google/technologies/gemini/flash/",
         "Google",
         "Proprietary",
     ],
-    "gemini-1.0-pro-FC": [
-        "Gemini-1.0-Pro-001 (FC)",
-        "https://deepmind.google/technologies/gemini/#introduction",
+    "gemini-1.5-flash-001": [
+        "Gemini-1.5-Flash-001 (Prompt)",
+        "https://deepmind.google/technologies/gemini/flash/",
+        "Google",
+        "Proprietary",
+    ],
+    "gemini-1.5-flash-001-FC": [
+        "Gemini-1.5-Flash-001 (FC)",
+        "https://deepmind.google/technologies/gemini/flash/",
+        "Google",
+        "Proprietary",
+    ],
+    "gemini-1.0-pro-002": [
+        "Gemini-1.0-Pro-002 (Prompt)",
+        "https://deepmind.google/technologies/gemini/pro/",
+        "Google",
+        "Proprietary",
+    ],
+    "gemini-1.0-pro-002-FC": [
+        "Gemini-1.0-Pro-002 (FC)",
+        "https://deepmind.google/technologies/gemini/pro/",
         "Google",
         "Proprietary",
     ],
@@ -361,6 +393,54 @@ MODEL_METADATA_MAPPING = {
     ],
     "meta-llama/Meta-Llama-3-70B-Instruct": [
         "Meta-Llama-3-70B-Instruct (Prompt)",
+        "https://llama.meta.com/llama3",
+        "Meta",
+        "Meta Llama 3 Community",
+    ],
+    "meta-llama/Llama-3.1-8B-Instruct": [
+        "Llama-3.1-8B-Instruct (Prompt)",
+        "https://llama.meta.com/llama3",
+        "Meta",
+        "Meta Llama 3 Community",
+    ],
+    "meta-llama/Llama-3.1-70B-Instruct": [
+        "Llama-3.1-70B-Instruct (Prompt)",
+        "https://llama.meta.com/llama3",
+        "Meta",
+        "Meta Llama 3 Community",
+    ],
+    "meta-llama/Llama-3.2-1B-Instruct": [
+        "Llama-3.2-1B-Instruct (Prompt)",
+        "https://llama.meta.com/llama3",
+        "Meta",
+        "Meta Llama 3 Community",
+    ],
+    "meta-llama/Llama-3.2-3B-Instruct": [
+        "Llama-3.2-3B-Instruct (Prompt)",
+        "https://llama.meta.com/llama3",
+        "Meta",
+        "Meta Llama 3 Community",
+    ],
+    "meta-llama/Llama-3.1-8B-Instruct-FC": [
+        "Llama-3.1-8B-Instruct (FC)",
+        "https://llama.meta.com/llama3",
+        "Meta",
+        "Meta Llama 3 Community",
+    ],
+    "meta-llama/Llama-3.1-70B-Instruct-FC": [
+        "Llama-3.1-70B-Instruct (FC)",
+        "https://llama.meta.com/llama3",
+        "Meta",
+        "Meta Llama 3 Community",
+    ],
+    "meta-llama/Llama-3.2-1B-Instruct-FC": [
+        "Llama-3.2-1B-Instruct (FC)",
+        "https://llama.meta.com/llama3",
+        "Meta",
+        "Meta Llama 3 Community",
+    ],
+    "meta-llama/Llama-3.2-3B-Instruct-FC": [
+        "Llama-3.2-3B-Instruct (FC)",
         "https://llama.meta.com/llama3",
         "Meta",
         "Meta Llama 3 Community",
@@ -454,7 +534,79 @@ MODEL_METADATA_MAPPING = {
         "https://huggingface.co/MadeAgents/Hammer-7b",
         "MadeAgents",
         "cc-by-nc-4.0",
-    ]
+    ],
+    "microsoft/Phi-3-mini-4k-instruct": [
+        "Phi-3-mini-4k-instruct (Prompt)",
+        "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
+        "Microsoft",
+        "MIT",
+    ],
+    "microsoft/Phi-3-mini-128k-instruct": [
+        "Phi-3-mini-128k-instruct (Prompt)",
+        "https://huggingface.co/microsoft/Phi-3-mini-128k-instruct",
+        "Microsoft",
+        "MIT",
+    ],
+    "microsoft/Phi-3-small-8k-instruct": [
+        "Phi-3-small-8k-instruct (Prompt)",
+        "https://huggingface.co/microsoft/Phi-3-small-8k-instruct",
+        "Microsoft",
+        "MIT",
+    ],
+    "microsoft/Phi-3-small-128k-instruct": [
+        "Phi-3-small-128k-instruct (Prompt)",
+        "https://huggingface.co/microsoft/Phi-3-small-128k-instruct",
+        "Microsoft",
+        "MIT",
+    ],
+    "microsoft/Phi-3-medium-4k-instruct": [
+        "Phi-3-medium-4k-instruct (Prompt)",
+        "https://huggingface.co/microsoft/Phi-3-medium-4k-instruct",
+        "Microsoft",
+        "MIT",
+    ],
+    "microsoft/Phi-3-medium-128k-instruct": [
+        "Phi-3-medium-128k-instruct (Prompt)",
+        "https://huggingface.co/microsoft/Phi-3-medium-128k-instruct",
+        "Microsoft",
+        "MIT",
+    ],
+    "microsoft/Phi-3.5-mini-instruct": [
+        "Phi-3.5-mini-instruct (Prompt)",
+        "https://huggingface.co/microsoft/Phi-3.5-mini-instruct",
+        "Microsoft",
+        "MIT",
+    ],
+    "Qwen/Qwen2-1.5B-Instruct": [
+        "Qwen2-1.5B-Instruct (Prompt)",
+        "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct",
+        "Qwen",
+        "apache-2.0",
+    ],
+    "Qwen/Qwen2-7B-Instruct": [
+        "Qwen2-7B-Instruct (Prompt)",
+        "https://huggingface.co/Qwen/Qwen2-7B-Instruct",
+        "Qwen",
+        "apache-2.0",
+    ],
+    "Qwen/Qwen2.5-1.5B-Instruct": [
+        "Qwen2.5-1.5B-Instruct (Prompt)",
+        "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct",
+        "Qwen",
+        "apache-2.0",
+    ],
+    "Qwen/Qwen2.5-7B-Instruct": [
+        "Qwen2.5-7B-Instruct (Prompt)",
+        "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
+        "Qwen",
+        "apache-2.0",
+    ],
+    "Team-ACE/ToolACE-8B": [
+        "ToolACE-8B (FC)",
+        "https://huggingface.co/Team-ACE/ToolACE-8B",
+        "Huawei Noah & USTC",
+        "Apache-2.0",
+    ],
 }
 
 INPUT_PRICE_PER_MILLION_TOKEN = {
@@ -497,10 +649,16 @@ INPUT_PRICE_PER_MILLION_TOKEN = {
     "gpt-4-0613-FC": 30,
     "gpt-3.5-turbo-0125": 0.5,
     "gpt-3.5-turbo-0125-FC": 0.5,
-    "gemini-1.0-pro-FC": 0.5,
-    "gemini-1.5-pro-preview-0409-FC": 3.5,
-    "gemini-1.5-pro-preview-0514-FC": 3.5,
-    "gemini-1.5-flash-preview-0514-FC": 0.35,
+    "gemini-1.5-pro-002": 1.25,
+    "gemini-1.5-pro-002-FC": 1.25,
+    "gemini-1.5-pro-001": 1.25,
+    "gemini-1.5-pro-001-FC": 1.25,
+    "gemini-1.5-flash-002": 0.075 ,
+    "gemini-1.5-flash-002-FC": 0.075 ,
+    "gemini-1.5-flash-001": 0.075 ,
+    "gemini-1.5-flash-001-FC": 0.075 ,
+    "gemini-1.0-pro-002": 0.5,
+    "gemini-1.0-pro-002-FC": 0.5,
     "databricks-dbrx-instruct": 2.25,
     "command-r-plus-FC": 3,
     "command-r-plus": 3,
@@ -549,10 +707,16 @@ OUTPUT_PRICE_PER_MILLION_TOKEN = {
     "gpt-4-0613-FC": 60,
     "gpt-3.5-turbo-0125": 1.5,
     "gpt-3.5-turbo-0125-FC": 1.5,
-    "gemini-1.0-pro-FC": 1.5,
-    "gemini-1.5-pro-preview-0409-FC": 10.50,
-    "gemini-1.5-pro-preview-0514-FC": 10.50,
-    "gemini-1.5-flash-preview-0514-FC": 0.53,
+    "gemini-1.5-pro-002": 5,
+    "gemini-1.5-pro-002-FC": 5,
+    "gemini-1.5-pro-001": 5,
+    "gemini-1.5-pro-001-FC": 5,
+    "gemini-1.5-flash-002": 0.30,
+    "gemini-1.5-flash-002-FC": 0.30,
+    "gemini-1.5-flash-001": 0.30,
+    "gemini-1.5-flash-001-FC": 0.30,
+    "gemini-1.0-pro-002": 1.5,
+    "gemini-1.0-pro-002-FC": 1.5,
     "databricks-dbrx-instruct": 6.75,
     "command-r-plus-FC": 15,
     "command-r-plus": 15,
@@ -565,34 +729,17 @@ OUTPUT_PRICE_PER_MILLION_TOKEN = {
 # Because we do batching when generating the data, so the latency is not accurate from the result data.
 # This is the latency for the whole batch of data, when using 8 V100 GPUs.
 OSS_LATENCY = {
-    "deepseek-ai/deepseek-coder-6.7b-instruct": 909,
-    "google/gemma-7b-it": 95,
-    "NousResearch/Hermes-2-Pro-Mistral-7B": 135,
-    "NousResearch/Hermes-2-Pro-Llama-3-8B": 77,
-    "NousResearch/Hermes-2-Theta-Llama-3-8B": 73,
-    "NousResearch/Hermes-2-Theta-Llama-3-70B": 716,
-    "NousResearch/Hermes-2-Pro-Llama-3-70B": 674,
-    "meta-llama/Meta-Llama-3-8B-Instruct": 73,
-    "meta-llama/Meta-Llama-3-70B-Instruct": 307,
-    "gorilla-openfunctions-v2": 83,
-    "THUDM/glm-4-9b-chat": 223,
 }
 
-
-NO_COST_MODELS = [
+# All OSS models will have no cost shown on the leaderboard. 
+NO_COST_MODELS = list(local_inference_handler_map.keys())
+# The following models will also have no cost, even though they are queries through the API.
+NO_COST_MODELS += [
     "Nexusflow-Raven-v2",
     "firefunction-v1-FC",
     "firefunction-v2-FC",
     "meetkai/functionary-small-v3.1-FC",
-    "meetkai/functionary-small-v3.2-FC",
     "meetkai/functionary-medium-v3.1-FC",
     "snowflake/arctic",
     "nvidia/nemotron-4-340b-instruct",
-    "ibm-granite/granite-20b-functioncalling",
-    "THUDM/glm-4-9b-chat",
-    "Salesforce/xLAM-1b-fc-r",
-    "Salesforce/xLAM-7b-fc-r",
-    "Salesforce/xLAM-7b-r",
-    "Salesforce/xLAM-8x7b-r",
-    "Salesforce/xLAM-8x22b-r",
 ]
