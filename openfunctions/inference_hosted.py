@@ -1,8 +1,11 @@
 import openai
+from openai import OpenAI
+
+client = OpenAI(api_key="EMPTY")
 import json
 
-openai.api_key = "EMPTY"
-openai.api_base = "http://luigi.millennium.berkeley.edu:8000/v1"
+# TODO: The 'openai.api_base' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(base_url="http://luigi.millennium.berkeley.edu:8000/v1")'
+# openai.api_base = "http://luigi.millennium.berkeley.edu:8000/v1"
 
 # Example dummy function hard coded to return the same weather
 # In production, this could be your backend API or an external API
@@ -36,13 +39,11 @@ def run_conversation():
             },
         }
     ]
-    completion = openai.ChatCompletion.create(
-        model='gorilla-openfunctions-v2',
-        messages=messages,
-        functions=functions,
-        function_call="auto",  # auto is default, but we'll be explicit
-    )
-    
+    completion = client.chat.completions.create(model='gorilla-openfunctions-v2',
+    messages=messages,
+    functions=functions,
+    function_call="auto")
+
     print("--------------------")
     print(f"Function call strings(s): {completion.choices[0].message.content}")
     print("--------------------")
