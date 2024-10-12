@@ -11,7 +11,7 @@
 {"id": "live_multiple_10-4-2", "ground_truth": [{"ControlAppliance.execute": {"command": ["\ub2e4\uc6a9\ub3c4\uc2e4, \ud1b5\ub3cc\uc774, \uc911\uc9c0", "Multipurpose room, whirlpool, stop"]}}]}
 {"id": "live_multiple_11-4-3", "ground_truth": [{"HNA_WQA.search": {"keyword": ["ji sung park", "Ji Sung Park"], "result_format": ["", "text"], "language": ["", "EN"], "max_results": ["", 10]}}]}
 {"id": "live_multiple_12-4-4", "ground_truth": [{"HNA_WQA.search": {"keyword": ["Park Ji Sung"], "result_format": ["", "text"], "language": ["", "EN"], "max_results": ["", 10]}}]}
-{"id": "live_multiple_13-4-5", "ground_truth": [{"OpenWeatherMap.get_current_weather": {"location": ["Big Sur, USA"], "units": ["metric"], "api_key": ["", "YOUR_API_KEY_HERE"]}}]}
+{"id": "live_multiple_13-4-5", "ground_truth": [{"OpenWeatherMap.get_current_weather": {"location": ["Big Sur, USA"], "units": ["imperial"], "api_key": ["", "YOUR_API_KEY_HERE"]}}]}
 {"id": "live_multiple_14-4-6", "ground_truth": [{"ControlAppliance.execute": {"command": ["\ub2e4\uc6a9\ub3c4\uc2e4, \ud1b5\ub3cc\uc774, \uc911\uc9c0"]}}]}
 {"id": "live_multiple_15-4-7", "ground_truth": [{"HNA_NEWS.search": {"keyword": ["Son's latest goal"], "category": ["Sports"], "date_range": ["", "null"], "sort_by": ["", "date"], "language": ["", "EN"]}}]}
 {"id": "live_multiple_16-4-8", "ground_truth": [{"HNA_NEWS.search": {"keyword": ["\ubc15\uc9c0\uc131", "Park Ji-Sung"], "category": ["", "General"], "date_range": ["", "null"], "sort_by": ["", "date"], "language": ["", "EN"]}}]}
