@@ -8,19 +8,19 @@
 {"id": "live_multiple_7-3-2", "ground_truth": [{"create_workspace": {"name": ["DevelopersHub"], "base_branch": ["master"]}}]}
 {"id": "live_multiple_8-4-0", "ground_truth": [{"cookbook.search_recipe": {"keyword": ["steak"], "cuisine": ["Indian"], "max_results": ["", 10]}}]}
 {"id": "live_multiple_9-4-1", "ground_truth": [{"HNA_WQA.search": {"keyword": ["Imjin war"], "result_format": ["", "text"], "language": ["", "EN"], "max_results": ["", 10]}}]}
-{"id": "live_multiple_10-4-2", "ground_truth": [{"ControlAppliance.execute": {"command": ["\ub2e4\uc6a9\ub3c4\uc2e4, \ud1b5\ub3cc\uc774, \uc911\uc9c0"]}}]}
+{"id": "live_multiple_10-4-2", "ground_truth": [{"ControlAppliance.execute": {"command": ["\ub2e4\uc6a9\ub3c4\uc2e4, \ud1b5\ub3cc\uc774, \uc911\uc9c0", "Multipurpose room, whirlpool, stop"]}}]}
 {"id": "live_multiple_11-4-3", "ground_truth": [{"HNA_WQA.search": {"keyword": ["ji sung park", "Ji Sung Park"], "result_format": ["", "text"], "language": ["", "EN"], "max_results": ["", 10]}}]}
 {"id": "live_multiple_12-4-4", "ground_truth": [{"HNA_WQA.search": {"keyword": ["Park Ji Sung"], "result_format": ["", "text"], "language": ["", "EN"], "max_results": ["", 10]}}]}
 {"id": "live_multiple_13-4-5", "ground_truth": [{"OpenWeatherMap.get_current_weather": {"location": ["Big Sur, USA"], "units": ["imperial"], "api_key": ["", "YOUR_API_KEY_HERE"]}}]}
-{"id": "live_multiple_14-4-6", "ground_truth": [{"ControlAppliance.execute": {"command": ["\ub2e4\uc6a9\ub3c4\uc2e4, \ud1b5\ub3cc\uc774, \uc911\uc9c0"]}}]}
+{"id": "live_multiple_14-4-6", "ground_truth": [{"ControlAppliance.execute": {"command": ["\ub2e4\uc6a9\ub3c4\uc2e4, \ud1b5\ub3cc\uc774, \uc911\uc9c0", "Multipurpose room, whirlpool, stop"]}}]}
 {"id": "live_multiple_15-4-7", "ground_truth": [{"HNA_NEWS.search": {"keyword": ["Son's latest goal"], "category": ["Sports"], "date_range": ["", "null"], "sort_by": ["", "date"], "language": ["", "EN"]}}]}
-{"id": "live_multiple_16-4-8", "ground_truth": [{"HNA_NEWS.search": {"keyword": ["\ubc15\uc9c0\uc131"], "category": ["", "General"], "date_range": ["", "null"], "sort_by": ["", "date"], "language": ["", "EN"]}}]}
+{"id": "live_multiple_16-4-8", "ground_truth": [{"HNA_NEWS.search": {"keyword": ["\ubc15\uc9c0\uc131", "Park Ji-sung"], "category": ["", "General"], "date_range": ["", "null"], "sort_by": ["", "date"], "language": ["", "EN"]}}]}
 {"id": "live_multiple_17-4-9", "ground_truth": [{"cookbook.search_recipe": {"keyword": ["sikhae"], "cuisine": ["", "Italian"], "max_results": ["", 10]}}]}
 {"id": "live_multiple_18-4-10", "ground_truth": [{"HNA_NEWS.search": {"keyword": ["artificial intelligence", "ai"], "category": ["", "General"], "date_range": ["2023-10-01 to 2023-10-07"], "sort_by": ["", "date"], "language": ["", "EN"]}}]}
-{"id": "live_multiple_19-4-11", "ground_truth": [{"ControlAppliance.execute": {"command": ["\uac70\uc2e4, \uc5d0\uc5b4\ucee8, \uc2e4\ud589"]}}]}
-{"id": "live_multiple_20-4-12", "ground_truth": [{"ControlAppliance.execute": {"command": ["\ub2e4\uc6a9\ub3c4\uc2e4, \ud1b5\ub3cc\uc774, \uc911\uc9c0"]}}]}
-{"id": "live_multiple_21-4-13", "ground_truth": [{"cookbook.search_recipe": {"keyword": ["\uc2a4\ud14c\uc774\ud06c"], "cuisine": ["", "Italian"], "max_results": ["", 10]}}]}
-{"id": "live_multiple_22-4-14", "ground_truth": [{"HNA_WQA.search": {"keyword": ["\uc784\uc9c4\uc65c\ub780"], "result_format": ["", "text"], "language": ["", "EN"], "max_results": ["", 10]}}]}
+{"id": "live_multiple_19-4-11", "ground_truth": [{"ControlAppliance.execute": {"command": ["\uac70\uc2e4, \uc5d0\uc5b4\ucee8, \uc2e4\ud589", "Living room, air conditioning, running"]}}]}
+{"id": "live_multiple_20-4-12", "ground_truth": [{"ControlAppliance.execute": {"command": ["\ub2e4\uc6a9\ub3c4\uc2e4, \ud1b5\ub3cc\uc774, \uc911\uc9c0", "Multipurpose room, whirlpool, stop"]}}]}
+{"id": "live_multiple_21-4-13", "ground_truth": [{"cookbook.search_recipe": {"keyword": ["\uc2a4\ud14c\uc774\ud06c", "steak"], "cuisine": ["", "Italian"], "max_results": ["", 10]}}]}
+{"id": "live_multiple_22-4-14", "ground_truth": [{"HNA_WQA.search": {"keyword": ["\uc784\uc9c4\uc65c\ub780", "Imjin War"], "result_format": ["", "text"], "language": ["", "EN"], "max_results": ["", 10]}}]}
 {"id": "live_multiple_23-5-0", "ground_truth": [{"search_products": {"color": ["red"], "size": ["8"], "category": ["shoes"], "price_min": ["", 0.0], "price_max": ["", null], "brand": ["", null]}}]}
 {"id": "live_multiple_24-5-1", "ground_truth": [{"search_products": {"color": ["", null], "size": ["XL", "Extra Large"], "category": ["clothing"], "price_min": ["", 0.0], "price_max": ["", null], "brand": ["", null]}}]}
 {"id": "live_multiple_25-6-0", "ground_truth": [{"recall_memory_search": {"query": ["when is shishir's birthday", "when's shishir's birthday", "shishir birthday", "shishir's birthday"], "page": ["", 0], "request_heartbeat": ["", false]}}]}
@@ -129,7 +129,7 @@
 {"id": "live_multiple_128-50-0", "ground_truth": [{"generate_human_image": {"prompt": ["a man wearing a red dress"], "image_quality": ["high", ""], "image_format": ["PNG", ""], "include_metadata": ["", false]}}]}
 {"id": "live_multiple_129-50-1", "ground_truth": [{"search_engine.query": {"prompt": ["current prime minister of India"], "include_after_year": [true], "source": ["", "Google"]}}]}
 {"id": "live_multiple_130-50-2", "ground_truth": [{"english_llm": {"q": ["I'd like to read a poem about kites. Could you generate one with a creative touch?"], "max_tokens": ["", 50], "temperature": [0.8], "return_probabilities": ["", false]}}]}
-{"id": "live_multiple_131-50-3", "ground_truth": [{"multilingual_llm": {"q": ["\u091a\u093e\u092f \u0915\u0948\u0938\u0947 \u092c\u0928\u093e\u090f\u0902?"], "language": ["Hindi"], "max_length": ["", 150], "temperature": ["", 0.5]}}]}
+{"id": "live_multiple_131-50-3", "ground_truth": [{"multilingual_llm": {"q": ["\u091a\u093e\u092f \u0915\u0948\u0938\u0947 \u092c\u0928\u093e\u090f\u0902?", "How to make tea?"], "language": ["Hindi"], "max_length": ["", 150], "temperature": ["", 0.5]}}]}
 {"id": "live_multiple_132-50-4", "ground_truth": [{"search_engine.query": {"prompt": ["who is the current pm of india"], "include_after_year": [true], "source": ["", "Google"]}}]}
 {"id": "live_multiple_133-50-5", "ground_truth": [{"multilingual_llm": {"q": ["chai kaise bnaye"], "language": ["", "Hindi"], "max_length": ["", 150], "temperature": ["", 0.5]}}]}
 {"id": "live_multiple_134-51-0", "ground_truth": [{"stock_price.get": {"ticker": ["AAPL"], "exchange": ["NYSE"]}}]}
@@ -194,8 +194,8 @@
 {"id": "live_multiple_193-87-0", "ground_truth": [{"CalcProduct": {"a": [394], "b": [213]}}]}
 {"id": "live_multiple_194-87-1", "ground_truth": [{"CalcProduct": {"a": [443], "b": [349]}}]}
 {"id": "live_multiple_195-87-2", "ground_truth": [{"getCurrentTime": {"timezone": ["America/Los_Angeles"], "include_date": [true]}}]}
-{"id": "live_multiple_196-88-0", "ground_truth": [{"get_tickets": {"customer": ["\u963f\u8fea\u8fbe\u65af"]}}]}
-{"id": "live_multiple_197-89-0", "ground_truth": [{"get_tickets": {"customer": ["\u963f\u8fea\u8fbe\u65af"], "priority": [4]}}]}
+{"id": "live_multiple_196-88-0", "ground_truth": [{"get_tickets": {"customer": ["\u963f\u8fea\u8fbe\u65af", "Adidas"]}}]}
+{"id": "live_multiple_197-89-0", "ground_truth": [{"get_tickets": {"customer": ["\u963f\u8fea\u8fbe\u65af", "Adidas"], "priority": [4]}}]}
 {"id": "live_multiple_198-90-0", "ground_truth": [{"adriel_contact": {}}]}
 {"id": "live_multiple_199-90-1", "ground_truth": [{"adriel_tech_stack": {}}]}
 {"id": "live_multiple_200-90-2", "ground_truth": [{"adriel_list_projects": {"user_id": ["3"], "include_completed": ["", false], "sort_order": ["", "asc"]}}]}
