@@ -528,7 +528,7 @@ class GorillaFileSystem:
            return {"error": f"Argument not supported"}
 
         try:
-            result = subprocess.run([command] + args, capture_output=True, text=True)
+            result = subprocess.run([command] + args, capture_output=True, text=True, timeout=10)
             return {"output": result.stdout, "error": result.stderr}
         except Exception as e:
             return {"error": str(e)}

@@ -462,129 +462,135 @@ def runner(model_names, test_categories, api_sanity_check):
 
         # Find and process all JSON files in the subdirectory
         for model_result_json in subdir.glob("*.json"):
-            test_category = extract_test_category(model_result_json)
-            if test_categories is not None and test_category not in test_categories:
-                continue
+            try:
+                test_category = extract_test_category(model_result_json)
+                if test_categories is not None and test_category not in test_categories:
+                    continue
+                if (SCORE_PATH / model_name / f"{VERSION_PREFIX}_{test_category}_score.json").exists():
+                    continue
+                
+                handler = get_handler(model_name_escaped)
 
-            handler = get_handler(model_name_escaped)
+                # We don't evaluate chatable and SQL models in our current leaderboard
+                if is_chatable(test_category) or is_sql(test_category):
+                    continue
 
-            # We don't evaluate chatable and SQL models in our current leaderboard
-            if is_chatable(test_category) or is_sql(test_category):
-                continue
+                language = "Python"
+                if is_java(test_category):
+                    language = "Java"
+                if is_js(test_category):
+                    language = "JavaScript"
 
-            language = "Python"
-            if is_java(test_category):
-                language = "Java"
-            if is_js(test_category):
-                language = "JavaScript"
+                print(f"🔍 Running test: {test_category}")
 
-            print(f"🔍 Running test: {test_category}")
+                model_result = load_file(model_result_json)
+                record_cost_latency(LEADERBOARD_TABLE, model_name, model_result)
 
-            model_result = load_file(model_result_json)
-            record_cost_latency(LEADERBOARD_TABLE, model_name, model_result)
+                # Find the corresponding test file
+                prompt_file = find_file_with_suffix(PROMPT_PATH, test_category)
+                prompt = load_file(prompt_file)
 
-            # Find the corresponding test file
-            prompt_file = find_file_with_suffix(PROMPT_PATH, test_category)
-            prompt = load_file(prompt_file)
-
-            if is_relevance_or_irrelevance(test_category):
-                accuracy, total_count = relevance_file_runner(
-                    handler, model_result, prompt, model_name, test_category
-                )
-                record_result(
-                    LEADERBOARD_TABLE, model_name, test_category, accuracy, total_count
-                )
-                print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy}")
-                continue
-
-            if is_executable(test_category):
-                # We only test the API with ground truth once
-                if not API_TESTED and api_sanity_check:
-                    print("---- Sanity checking API status ----")
-                    try:
-                        api_status_sanity_check_rest()
-                    except BadAPIStatusError as e:
-                        API_STATUS_ERROR_REST = e
-
-                    try:
-                        api_status_sanity_check_executable()
-                    except BadAPIStatusError as e:
-                        API_STATUS_ERROR_EXECUTABLE = e
-
-                    display_api_status_error(
-                        API_STATUS_ERROR_REST,
-                        API_STATUS_ERROR_EXECUTABLE,
-                        display_success=True,
+                if is_relevance_or_irrelevance(test_category):
+                    accuracy, total_count = relevance_file_runner(
+                        handler, model_result, prompt, model_name, test_category
                     )
-                    print("Continuing evaluation...")
-
-                    API_TESTED = True
-
-                if (
-                    test_category not in EXECUTABLE_TEST_CATEGORIES_HAVE_RUN
-                    and not is_rest(test_category)
-                ):
-                    print(
-                        f"---- Getting real-time execution result from ground truth for {test_category} ----"
+                    record_result(
+                        LEADERBOARD_TABLE, model_name, test_category, accuracy, total_count
                     )
-                    get_executable_expected_output(prompt_file)
-                    print(
-                        f"---- Ground truth real-time execution result obtained for {test_category} 🌟 ----"
+                    print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy}")
+                    continue
+
+                if is_executable(test_category):
+                    # We only test the API with ground truth once
+                    if not API_TESTED and api_sanity_check:
+                        print("---- Sanity checking API status ----")
+                        try:
+                            api_status_sanity_check_rest()
+                        except BadAPIStatusError as e:
+                            API_STATUS_ERROR_REST = e
+
+                        try:
+                            api_status_sanity_check_executable()
+                        except BadAPIStatusError as e:
+                            API_STATUS_ERROR_EXECUTABLE = e
+
+                        display_api_status_error(
+                            API_STATUS_ERROR_REST,
+                            API_STATUS_ERROR_EXECUTABLE,
+                            display_success=True,
+                        )
+                        print("Continuing evaluation...")
+
+                        API_TESTED = True
+
+                    if (
+                        test_category not in EXECUTABLE_TEST_CATEGORIES_HAVE_RUN
+                        and not is_rest(test_category)
+                    ):
+                        print(
+                            f"---- Getting real-time execution result from ground truth for {test_category} ----"
+                        )
+                        get_executable_expected_output(prompt_file)
+                        print(
+                            f"---- Ground truth real-time execution result obtained for {test_category} 🌟 ----"
+                        )
+                        EXECUTABLE_TEST_CATEGORIES_HAVE_RUN.append(test_category)
+                        # Need to re-load the prompt file after getting the expected output, as the prompt file has been updated
+                        prompt = load_file(prompt_file)
+
+                    accuracy, total_count = executable_file_runner(
+                        handler, model_result, prompt, model_name, test_category
                     )
-                    EXECUTABLE_TEST_CATEGORIES_HAVE_RUN.append(test_category)
-                    # Need to re-load the prompt file after getting the expected output, as the prompt file has been updated
-                    prompt = load_file(prompt_file)
+                    record_result(
+                        LEADERBOARD_TABLE, model_name, test_category, accuracy, total_count
+                    )
+                    print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy}")
 
-                accuracy, total_count = executable_file_runner(
-                    handler, model_result, prompt, model_name, test_category
-                )
-                record_result(
-                    LEADERBOARD_TABLE, model_name, test_category, accuracy, total_count
-                )
-                print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy}")
+                    continue
 
-                continue
+                # Find the corresponding possible answer file
+                possible_answer_file = find_file_with_suffix(
+                    POSSIBLE_ANSWER_PATH, test_category
+                )
+                possible_answer = load_file(possible_answer_file)
 
-            # Find the corresponding possible answer file
-            possible_answer_file = find_file_with_suffix(
-                POSSIBLE_ANSWER_PATH, test_category
-            )
-            possible_answer = load_file(possible_answer_file)
-
-            if is_multi_turn(test_category):
-                accuracy, total_count = multi_turn_runner(
-                    handler,
-                    model_result,
-                    prompt,
-                    possible_answer,
-                    model_name,
-                    test_category,
-                )
-                record_result(
-                    LEADERBOARD_TABLE, model_name, test_category, accuracy, total_count
-                )
-                print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy}")
-            # Single turn test
-            else:
-                accuracy, total_count = ast_file_runner(
-                    handler,
-                    model_result,
-                    prompt,
-                    possible_answer,
-                    language,
-                    test_category,
-                    model_name,
-                )
-                record_result(
-                    LEADERBOARD_TABLE, model_name, test_category, accuracy, total_count
-                )
-                print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy}")
+                if is_multi_turn(test_category):
+                    accuracy, total_count = multi_turn_runner(
+                        handler,
+                        model_result,
+                        prompt,
+                        possible_answer,
+                        model_name,
+                        test_category,
+                    )
+                    record_result(
+                        LEADERBOARD_TABLE, model_name, test_category, accuracy, total_count
+                    )
+                    print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy}")
+                # Single turn test
+                else:
+                    accuracy, total_count = ast_file_runner(
+                        handler,
+                        model_result,
+                        prompt,
+                        possible_answer,
+                        language,
+                        test_category,
+                        model_name,
+                    )
+                    record_result(
+                        LEADERBOARD_TABLE, model_name, test_category, accuracy, total_count
+                    )
+                    print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy}")
+            except Exception as e:
+                print(e)
+                pass
 
     # This function reads all the score files from local folder and updates the leaderboard table.
     # This is helpful when you only want to run the evaluation for a subset of models and test categories.
-    update_leaderboard_table_with_score_file(LEADERBOARD_TABLE, SCORE_PATH)
+    # update_leaderboard_table_with_score_file(LEADERBOARD_TABLE, SCORE_PATH)
     # Write the leaderboard table to a file
-    generate_leaderboard_csv(LEADERBOARD_TABLE, SCORE_PATH, model_names, test_categories)
+    # generate_leaderboard_csv(LEADERBOARD_TABLE, SCORE_PATH, model_names, test_categories)
 
     # Clean up the executable expected output files
     # They should be re-generated the next time the evaluation is run
@@ -600,28 +606,6 @@ def runner(model_names, test_categories, api_sanity_check):
     print(
         f"See {SCORE_PATH / 'data_live.csv'} and {SCORE_PATH / 'data_non_live.csv'} for evaluation results on BFCL V2 Live and Non-Live categories respectively."
     )
-
-
-def main(model, test_category, api_sanity_check):
-    test_categories = None
-    if test_category is not None:
-        test_categories = []
-        for category in test_category:
-            if category in TEST_COLLECTION_MAPPING:
-                test_categories.extend(TEST_COLLECTION_MAPPING[category])
-            else:
-                test_categories.append(category)
-
-    model_names = None
-    if model is not None:
-        model_names = []
-        for model_name in model:
-            # Runner takes in the model name that contains "_", instead of "/", for the sake of file path issues.
-            # This is differnet than the model name format that the generation script "openfunctions_evaluation.py" takes in (where the name contains "/").
-            # We patch it here to avoid confusing the user.
-            model_names.append(model_name.replace("/", "_"))
-
-    runner(model_names, test_categories, api_sanity_check)
 
 
 def main(model, test_category, api_sanity_check):
