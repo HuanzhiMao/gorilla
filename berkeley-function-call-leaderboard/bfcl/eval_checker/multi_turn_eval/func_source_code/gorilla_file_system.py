@@ -192,7 +192,7 @@ class GorillaFileSystem:
                 scenario["root"][list(scenario["root"].keys())[0]]["contents"],
                 root_dir
             )
-            self._current_dir = self.root
+        self._current_dir = self.root
 
     def _load_directory(
         self, current: dict, parent: Optional[Directory] = None
