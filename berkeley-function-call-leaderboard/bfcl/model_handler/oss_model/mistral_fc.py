@@ -1,5 +1,6 @@
 from bfcl.model_handler.oss_model.base_oss_handler import OSSHandler
-from bfcl.model_handler.utils import func_doc_language_specific_pre_processing
+from bfcl.model_handler.utils import func_doc_language_specific_pre_processing, convert_system_prompt_into_user_prompt, combine_consecutive_user_prompts
+from bfcl.model_handler.constant import DEFAULT_SYSTEM_PROMPT
 import json
 
 class MistralFCHandler(OSSHandler):
@@ -36,9 +37,9 @@ class MistralFCHandler(OSSHandler):
         for tool in functions:
             func_doc = '{"type": "function", "function": {'
             func_doc += ', '.join(
-                            f'"{key}": "{val}"' if isinstance(val, str) else f'"{key}": {json.dumps(val)}' 
-                            for key, val in tool.items() if key != "return"
-                        )
+                f'"{key}": "{val}"' if isinstance(val, str) else f'"{key}": {json.dumps(val)}' 
+                for key, val in tool.items() if key != "return"
+            )
             func_doc += "}}"
             func_docs.append(func_doc)
 
@@ -47,6 +48,9 @@ class MistralFCHandler(OSSHandler):
 
     def _format_prompt(self, messages, function):
         """
+        "bos_token": "<s>"
+        "eos_token": "</s>"
+
         {%- if messages[0]["role"] == "system" %}
             {%- set system_message = messages[0]["content"] %}
             {%- set loop_messages = messages[1:] %}
@@ -135,42 +139,19 @@ class MistralFCHandler(OSSHandler):
             {%- endif %}
         {%- endfor %}
         """
-        bos_token="<|begin_of_text|>", eos_token="<|end_of_text|>"
-        # Step 1: Handle system message
-        if messages[0]["role"] == "system":
-            system_message = messages[0]["content"]
-            loop_messages = messages[1:]
-        else:
-            loop_messages = messages
+        bos_token="<s>"
+        eos_token="</s>"
 
-        # Step 2: Initialize the namespace index for role alternation check
-        ns_index = 0
+        formatted_prompt = bos_token
 
-        # Step 3: Role alternation check and exceptions
+        user_messages = [msg for msg in messages if msg["role"] == "user"]
 
-
-        # Step 4: Start building the formatted template with beginning of the sequence token
-        formatted_chat = bos_token
-
-        # Step 5: Loop through messages and build the formatted output
-        user_messages = [msg for msg in loop_messages if msg["role"] == "user"]
-
-        for message in loop_messages:
+        for message in messages:
             if message["role"] == "user":
-                if tools and message == user_messages[-1]:  # If tools are defined and this is the last user message
-                    tool_parts = []
-                    for tool in tools:
-                        tool_function = tool["function"]
-                        tool_call = ', '.join(
-                            f'"{key}": "{val}"' if isinstance(val, str) else f'"{key}": {val}' 
-                            for key, val in tool_function.items() if key != "return"
-                        )
-                        tool_parts.append(f'{{"type": "function", "function": {{{tool_call}}}}}')
-                    formatted_chat += f"[AVAILABLE_TOOLS] [{', '.join(tool_parts)}][/AVAILABLE_TOOLS]"
-                if message == loop_messages[-1] and "system_message" in locals():
-                    formatted_chat += f'[INST] {system_message}\n\n{message["content"]}[/INST]'
-                else:
-                    formatted_chat += f'[INST] {message["content"]}[/INST]'
+                if function and message == user_messages[-1]:  # If tools are defined and this is the last user message
+                    formatted_prompt += self._construct_func_doc(function)
+
+                formatted_prompt += f'[INST] {message["content"]}[/INST]'
             
             elif message.get("tool_calls") is not None:
                 tool_calls_parts = []
@@ -180,21 +161,18 @@ class MistralFCHandler(OSSHandler):
                         raise Exception("Tool call IDs should be alphanumeric strings with length 9!")
                     tool_call_json["id"] = tool_call["id"]
                     tool_calls_parts.append(tool_call_json)
-                formatted_chat += f'[TOOL_CALLS] {tool_calls_parts}{eos_token}'
+                formatted_prompt += f'[TOOL_CALLS] {tool_calls_parts}{eos_token}'
 
             elif message["role"] == "assistant":
-                formatted_chat += f" {message['content'].strip()}{eos_token}"
+                formatted_prompt += f" {message['content'].strip()}{eos_token}"
 
-            elif message["role"] == "tool_results" or message["role"] == "tool":
-                content = message["content"].get("content", message["content"]) if message.get("content") else ""
-                if "tool_call_id" not in message or len(message["tool_call_id"]) != 9:
-                    raise Exception("Tool call IDs should be alphanumeric strings with length 9!")
-                formatted_chat += f'[TOOL_RESULTS] {{"content": "{content}", "call_id": "{message["tool_call_id"]}"}}[/TOOL_RESULTS]'
+            elif message["role"] == "tool":
+                formatted_prompt += '[TOOL_RESULTS] {"content": ' + message["content"] + ", " + '"call_id": "' + message["tool_call_id"] + '"}[/TOOL_RESULTS]'
             
             else:
                 raise Exception("Only user and assistant roles are supported, with the exception of an initial optional system message!")
 
-        return formatted_chat
+        return formatted_prompt
 
 
     def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
@@ -202,7 +180,28 @@ class MistralFCHandler(OSSHandler):
         test_category: str = test_entry["id"].rsplit("_", 1)[0]
 
         functions = func_doc_language_specific_pre_processing(functions, test_category)
-
-        # Llama use its own system prompt
-
+        # We don't add system prompt 
+        for round_idx in range(len(test_entry["question"])):
+            test_entry["question"][round_idx] = convert_system_prompt_into_user_prompt(
+                test_entry["question"][round_idx]
+            )
+            test_entry["question"][round_idx] = combine_consecutive_user_prompts(
+                test_entry["question"][round_idx]
+            )
         return {"message": [], "function": functions}
+    
+    def _add_execution_results_prompting(
+        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+    ) -> dict:
+        for execution_result, tool_call_id in zip(
+            execution_results, model_response_data["tool_call_ids"]
+        ):
+            inference_data["message"].append(
+                {
+                    "role": "tool",
+                    "tool_call_id": tool_call_id,
+                    "content": execution_result,
+                }
+            )
+
+        return inference_data
