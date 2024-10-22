@@ -1,9 +1,49 @@
 from bfcl.model_handler.oss_model.base_oss_handler import OSSHandler
-
+from bfcl.model_handler.utils import func_doc_language_specific_pre_processing
+import json
 
 class MistralFCHandler(OSSHandler):
     def __init__(self, model_name, temperature) -> None:
         super().__init__(model_name, temperature)
+    
+    @staticmethod
+    def _construct_func_doc(functions):
+        """
+        {{- "[AVAILABLE_TOOLS] [" }}
+        {%- for tool in tools %}
+            {%- set tool = tool.function %}
+            {{- '{"type": "function", "function": {' }}
+            {%- for key, val in tool.items() if key != "return" %}
+                {%- if val is string %}
+                    {{- '"' + key + '": "' + val + '"' }}
+                {%- else %}
+                    {{- '"' + key + '": ' + val|tojson }}
+                {%- endif %}
+                {%- if not loop.last %}
+                    {{- ", " }}
+                {%- endif %}
+            {%- endfor %}
+            {{- "}}" }}
+            {%- if not loop.last %}
+                {{- ", " }}
+            {%- else %}
+                {{- "]" }}
+            {%- endif %}
+        {%- endfor %}
+        {{- "[/AVAILABLE_TOOLS]" }}
+        """
+        func_docs = []
+        for tool in functions:
+            func_doc = '{"type": "function", "function": {'
+            func_doc += ', '.join(
+                            f'"{key}": "{val}"' if isinstance(val, str) else f'"{key}": {json.dumps(val)}' 
+                            for key, val in tool.items() if key != "return"
+                        )
+            func_doc += "}}"
+            func_docs.append(func_doc)
+
+        result_str = "[AVAILABLE_TOOLS] [" + ', '.join(func_docs) + "][/AVAILABLE_TOOLS]"
+        return result_str
 
     def _format_prompt(self, messages, function):
         """
@@ -107,11 +147,7 @@ class MistralFCHandler(OSSHandler):
         ns_index = 0
 
         # Step 3: Role alternation check and exceptions
-        for message in loop_messages:
-            if not (message["role"] == "tool" or message["role"] == "tool_results" or (message.get("tool_calls") is not None)):
-                if (message["role"] == "user") != (ns_index % 2 == 0):
-                    raise Exception("After the optional system message, conversation roles must alternate user/assistant/user/assistant/...")
-                ns_index += 1
+
 
         # Step 4: Start building the formatted template with beginning of the sequence token
         formatted_chat = bos_token
@@ -160,3 +196,13 @@ class MistralFCHandler(OSSHandler):
 
         return formatted_chat
 
+
+    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+        functions: list = test_entry["function"]
+        test_category: str = test_entry["id"].rsplit("_", 1)[0]
+
+        functions = func_doc_language_specific_pre_processing(functions, test_category)
+
+        # Llama use its own system prompt
+
+        return {"message": [], "function": functions}
