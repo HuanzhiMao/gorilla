@@ -154,7 +154,7 @@ HANDLER_MAP = {**api_inference_handler_map, **local_inference_handler_map}
 
 
 """
-python openfunctions_evaluation.py --test-category single_turn --num-threads 5 --model
+python openfunctions_evaluation.py --num-threads 3 --model mistral-large-2407  mistral-large-2407-FC  mistral-medium-2312  mistral-small-2402  mistral-small-2402-FC 
 
 
 gorilla-openfunctions-v2  o1-preview-2024-09-12  o1-mini-2024-09-12  gpt-4o-2024-08-06  gpt-4o-2024-08-06-FC  gpt-4o-mini-2024-07-18  gpt-4o-mini-2024-07-18-FC  gpt-4-turbo-2024-04-09  gpt-4-turbo-2024-04-09-FC  gpt-3.5-turbo-0125  gpt-3.5-turbo-0125-FC  claude-3-opus-20240229  claude-3-opus-20240229-FC claude-3-haiku-20240307  claude-3-haiku-20240307-FC  claude-3-5-sonnet-20240620  claude-3-5-sonnet-20240620-FC  open-mistral-nemo-2407  open-mistral-nemo-2407-FC  open-mixtral-8x22b  open-mixtral-8x22b-FC  open-mixtral-8x7b  mistral-large-2407  mistral-large-2407-FC  mistral-medium-2312  mistral-small-2402  mistral-small-2402-FC  firefunction-v1-FC  firefunction-v2-FC  Nexusflow-Raven-v2  gemini-1.5-pro-002  gemini-1.5-pro-002-FC  gemini-1.5-pro-001  gemini-1.5-pro-001-FC  gemini-1.5-flash-002  gemini-1.5-flash-002-FC  gemini-1.5-flash-001  gemini-1.5-flash-001-FC  gemini-1.0-pro-002  gemini-1.0-pro-002-FC  databricks-dbrx-instruct  command-r-plus-FC  command-r-plus 

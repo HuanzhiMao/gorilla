@@ -459,7 +459,8 @@ def runner(model_names, test_categories, api_sanity_check):
         model_name_escaped = model_name.replace("_", "/")
 
         print(f"🦍 Model: {model_name}")
-
+        if len(list(subdir.glob("*.json"))) != 22:
+            continue
         # Find and process all JSON files in the subdirectory
         for model_result_json in subdir.glob("*.json"):
             try:
@@ -588,9 +589,9 @@ def runner(model_names, test_categories, api_sanity_check):
 
     # This function reads all the score files from local folder and updates the leaderboard table.
     # This is helpful when you only want to run the evaluation for a subset of models and test categories.
-    # update_leaderboard_table_with_score_file(LEADERBOARD_TABLE, SCORE_PATH)
+    update_leaderboard_table_with_score_file(LEADERBOARD_TABLE, SCORE_PATH)
     # Write the leaderboard table to a file
-    # generate_leaderboard_csv(LEADERBOARD_TABLE, SCORE_PATH, model_names, test_categories)
+    generate_leaderboard_csv(LEADERBOARD_TABLE, SCORE_PATH, model_names, test_categories)
 
     # Clean up the executable expected output files
     # They should be re-generated the next time the evaluation is run
