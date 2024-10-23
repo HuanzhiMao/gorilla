@@ -202,6 +202,15 @@ class TicketAPI:
             return {"success": True}
         return {"success": False}
 
+    def ticket_get_login_status(self) -> Dict[str, bool]:
+        """
+        Get the username of the currently authenticated user.
+
+        Returns:
+            result (bool): Result of the login status check.
+        """
+        return {"username": bool(self.current_user)}
+    
     def logout(self) -> Dict[str, bool]:
         """
         Log out the current user.

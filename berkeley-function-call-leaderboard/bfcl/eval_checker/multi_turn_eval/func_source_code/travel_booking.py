@@ -103,6 +103,7 @@ class TravelAPI:
     ) -> Dict[str, Union[int, str]]:
         """
         Authenticate the user with the travel API
+
         Args:
             client_id (str): [Required] The client applications client_id supplied by App Management
             client_secret (str): [Required] The client applications client_secret supplied by App Management
@@ -128,6 +129,16 @@ class TravelAPI:
             "token_type": "Bearer",
             "scope": grant_type,
         }
+        
+    def travel_get_login_status(self) -> Dict[str, bool]:
+        """
+        Get the status of the login
+
+        Returns:
+            status (bool): The status of the login
+        """
+        is_not_loggedin = self.token_expires_in is None or self.token_expires_in == 0
+        return {"status": not is_not_loggedin}
 
     def get_budget_fiscal_year(
         self,
@@ -136,6 +147,7 @@ class TravelAPI:
     ) -> Dict[str, str]:
         """
         Get the budget fiscal year
+
         Args:
             lastModifiedAfter (Optional[str]): Use this field if you only want Fiscal Years that were changed after the supplied date. The supplied date will be interpreted in the UTC time zone. If lastModifiedAfter is not supplied, the service will return all Fiscal Years, regardless of modified date. Example: 2016-03-29T16:12:20. Return in the format of YYYY-MM-DDTHH:MM:SS.
             includeRemoved (Optional[str]): If true, the service will return all Fiscal Years, including those that were previously removed. If not supplied, this field defaults to false.
@@ -154,6 +166,7 @@ class TravelAPI:
     ) -> Dict[str, Union[str, Dict[str, str]]]:
         """
         Register a credit card
+
         Args:
             access_token (str): [Required] The access token obtained from the authenticate method
             card_number (str): [Required] The credit card number
@@ -186,6 +199,7 @@ class TravelAPI:
     def _set_card_balance(self, card_id: str, balance: float) -> None:
         """
         Set the balance of a credit card
+
         Args:
             card_id (str): [Required] The ID of the credit card
             balance (float): [Required] The balance of the credit card
@@ -197,6 +211,7 @@ class TravelAPI:
     ) -> float:
         """
         Get the cost of a flight in USD based on location, date, and class
+
         Args:
             travel_from (str): [Required] The 3 letter code of the departing airport
             travel_to (str): [Required] The 3 letter code of the arriving airport
@@ -440,6 +455,7 @@ class TravelAPI:
     ) -> Dict[str, Union[str, bool]]:
         """
         Book a flight given the travel information. From and To should be the airport codes in the IATA format.
+
         Args:
             access_token (str): [Required] The access token obtained from the authenticate
             card_id (str): [Required] The ID of the credit card to use for the booking
@@ -506,6 +522,7 @@ class TravelAPI:
     ) -> Dict[str, Union[Dict[str, Union[str, float]], str]]:
         """
         Retrieve the invoice for a booking
+
         Args:
             access_token (str): [Required] The access token obtained from the authenticate
             booking_id (Optional[str]): Optional The ID of the booking
@@ -535,6 +552,7 @@ class TravelAPI:
     def list_all_airports(self) -> List[str]:
         """
         List all available airports
+
         Returns:
             airports (List[str]): A list of all available airports
         """
@@ -569,6 +587,7 @@ class TravelAPI:
     ) -> Dict[str, Union[bool, str]]:
         """
         Cancel a booking
+
         Args:
             access_token (str): [Required] The access token obtained from the authenticate
             booking_id (str): [Required] The ID of the booking
@@ -594,6 +613,7 @@ class TravelAPI:
     ) -> float:
         """
         Compute the exchange rate between two currencies
+
         Args:
             base_currency (str): [Required] The base currency
             target_currency (str): [Required] The target currency
@@ -626,6 +646,7 @@ class TravelAPI:
     ) -> Dict[str, Union[bool, str]]:
         """
         Verify the traveler information
+
         Args:
             first_name (str): [Required] The first name of the traveler
             last_name (str): [Required] The last name of the traveler
@@ -679,6 +700,7 @@ class TravelAPI:
     ) -> Dict[str, Union[float, str]]:
         """
         Set the budget limit for the user
+
         Args:
             access_token (str): [Required] The access token obtained from the authentication process or initial configuration.
             budget_limit (float): [Required] The budget limit to set in USD
@@ -696,6 +718,7 @@ class TravelAPI:
     def get_nearest_airport_by_city(self, location: str) -> Dict[str, str]:
         """
         Get the nearest airport to the given location
+
         Args:
             location (str): [Required] The name of the location.
         Returns:
@@ -739,6 +762,7 @@ class TravelAPI:
     ) -> Dict[str, Union[str, bool]]:
         """
         Purchase insurance
+
         Args:
             access_token (str): [Required] The access token obtained from the authenticate
             insurance_type (str): [Required] The type of insurance to purchase
@@ -770,6 +794,7 @@ class TravelAPI:
     def contact_customer_support(self, booking_id: str, message: str) -> Dict[str, str]:
         """
         Contact customer support
+
         Args:
             booking_id (str): [Required] The ID of the booking
             message (str): [Required] The message to send to customer support
@@ -786,6 +811,7 @@ class TravelAPI:
     def get_all_credit_cards(self) -> Dict[str, Dict[str, Union[str, int, float]]]:
         """
         Get all registered credit cards
+        
         Args:
             None
         Returns:

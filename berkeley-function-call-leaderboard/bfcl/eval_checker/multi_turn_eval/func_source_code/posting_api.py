@@ -54,6 +54,15 @@ class TwitterAPI:
             return {"authentication_status": True}
         return {"authentication_status": False}
 
+    def posting_get_login_status(self) -> Dict[str, Union[bool, str]]:
+        """
+        Get the login status of the current user.
+
+        Returns:
+            login_status (bool): True if the current user is logged in, False otherwise.
+        """
+        return {"login_status": bool(self.authenticated)}
+
     def post_tweet(
         self, content: str, tags: List[str] = [], mentions: List[str] = []
     ) -> Dict[str, Union[int, str, List[str]]]:

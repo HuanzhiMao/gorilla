@@ -431,6 +431,16 @@ class TradingBot:
         self.authenticated = True
         return {"status": "Logged in successfully"}
 
+    def trading_get_login_status(self) -> Dict[str, bool]:
+        """
+        Get the login status.
+
+        Returns:
+            status (bool): Login status.
+        """
+        
+        return {"status": bool(self.authenticated)}
+    
     def trading_logout(self) -> Dict[str, str]:
         """
         Handle user logout for trading system.

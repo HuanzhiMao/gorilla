@@ -157,7 +157,16 @@ class MessageAPI:
             "login_status": True,
             "message": f"User '{user_id}' logged in successfully.",
         }
+    
+    def message_get_login_status(self) -> Dict[str, bool]:
+        """
+        Get the login status of the current user.
 
+        Returns:
+            login_status (bool): True if the current user is logged in, False otherwise.
+        """
+        return {"login_status": bool(self.current_user)}
+    
     def send_message(
         self, receiver_id: str, message: str
     ) -> Dict[str, Union[str, bool]]:
