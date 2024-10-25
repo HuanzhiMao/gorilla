@@ -152,8 +152,8 @@ class TicketAPI:
             updates (dict): Dictionary containing the fields to be updated.
                 - title (str) : [Optional] New title for the ticket.
                 - description (str): [Optional] New description for the ticket.
-                - status (Optional[str]): [Optional] New status for the ticket.
-                - priority (Optional[int]): [Optional] New priority for the ticket.
+                - status (str): [Optional] New status for the ticket.
+                - priority (int): [Optional] New priority for the ticket.
 
         Returns:
             result (dict): Result of the update operation.
@@ -182,7 +182,7 @@ class TicketAPI:
             ticket_id (int): ID of the ticket to find.
 
         Returns:
-            ticket (dict): Ticket object if found, None otherwise. Optional parameter.
+            ticket (Dict): Ticket object if found, None otherwise. Optional parameter.
                 - id (int): Unique identifier of the ticket.
                 - title (str): Title of the ticket.
                 - description (str): Description of the ticket.
@@ -204,7 +204,7 @@ class TicketAPI:
             password (str): Password of the user.
 
         Returns:
-            result (dict): Result of the login operation.
+            result (Dict): Result of the login operation.
                 success (bool): True if login was successful, False otherwise.
         """
         # In a real system, you would validate the credentials against a database
