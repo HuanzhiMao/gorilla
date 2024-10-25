@@ -267,7 +267,7 @@ class GorillaFileSystem:
         List the contents of the current directory.
 
         Args:
-            a (bool, optional): Show hidden files and directories. Defaults to False.
+            a (bool): [Optional] Show hidden files and directories. Defaults to False.
 
         Returns:
             current_directory_content (list): A list of the contents of the specified directory.
@@ -358,7 +358,7 @@ class GorillaFileSystem:
 
         Args:
             content (str): The content to write or display.
-            file_name (str, optional): The name of the file at current directory to write the content to. Defaults to None.
+            file_name (str): [Optional] The name of the file at current directory to write the content to. Defaults to None.
 
         Returns:
             terminal_output (str): The content if no file name is provided, or None if written to file.
@@ -408,11 +408,10 @@ class GorillaFileSystem:
 
         Args:
             path (str): The directory path to start the search. Defaults to the current directory (".").
-            name (Optional[str]): The name of the file or directory to search for. If None, all items are returned.
+            name (str): [Optional] The name of the file or directory to search for. If None, all items are returned.
 
         Returns:
-            Dict[str, List[str]]: A dictionary with a single key "matches" containing a list of
-            matching file and directory paths relative to the given path.
+            matches (List[str]): A list of matching file and directory paths relative to the given path.
 
         Note:
             This method performs a recursive search through all subdirectories of the given path.
@@ -440,7 +439,8 @@ class GorillaFileSystem:
             mode (str): Mode of operation ('l' for lines, 'w' for words, 'c' for characters).
 
         Returns:
-            dict: Dictionary containing line count, word count, and byte count.
+            count: The count of the number of lines, words, or characters in the file.
+            type: The type of unit we are counting. [Enum]: ["lines", "words", "characters"]
         """
         if mode not in ["l", "w", "c"]:
             return {"error": f"wc: invalid mode '{mode}'"}
@@ -452,15 +452,15 @@ class GorillaFileSystem:
 
                 if mode == "l":
                     line_count = len(content.splitlines())
-                    return {"lines": line_count}
+                    return {"count": line_count, "type": "lines"}
 
                 elif mode == "w":
                     word_count = len(content.split())
-                    return {"words": word_count}
+                    return {"count": word_count, "type": "words"}
 
                 elif mode == "c":
                     char_count = len(content)
-                    return {"characters": char_count}
+                    return {"count": char_count, "type": "characters"}
 
         return {"error": f"wc: {file_name}: No such file or directory"}
 
@@ -513,7 +513,7 @@ class GorillaFileSystem:
 
         Args:
             command (str): The command to execute with arguments.
-            file_name (str, optional): The file containing arguments. Defaults to None.
+            file_name (str): [Optional] The file containing arguments. Defaults to None.
 
         Returns:
             output (str): The result of the command execution.
@@ -802,7 +802,7 @@ class GorillaFileSystem:
         Navigate to a specified directory path from the current directory.
 
         Args:
-            path (str, optional): The path to navigate to. Defaults to None (current directory).
+            path (str): [Optional] The path to navigate to. Defaults to None (current directory).
 
         Returns:
             target_directory (Directory or dict): The target directory object or error message.
