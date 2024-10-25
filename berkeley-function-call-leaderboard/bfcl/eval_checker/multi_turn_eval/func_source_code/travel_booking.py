@@ -1,9 +1,9 @@
 import random
+from copy import deepcopy
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple, Union
 
 from .long_context import BOOKING_RECORD_EXTENSION, CREDIT_CARD_EXTENSION
-from copy import deepcopy
 
 DEFAULT_STATE = {
     "random_seed": 141053,
@@ -17,6 +17,7 @@ DEFAULT_STATE = {
     "user_last_name": None,
     "budget_limit": None,
 }
+
 
 class TravelAPI:
     # Adapted from source : https://developer.concur.com/api-reference/
@@ -43,15 +44,27 @@ class TravelAPI:
             scenario (Dict[str, str]): The scenario to load
         """
         DEFAULT_STATE_COPY = deepcopy(DEFAULT_STATE)
-        self._random = random.Random((scenario.get("random_seed", DEFAULT_STATE_COPY["random_seed"])))
-        self.credit_card_list = scenario.get("credit_card_list", DEFAULT_STATE_COPY["credit_card_list"])
-        self.booking_record = scenario.get("booking_record", DEFAULT_STATE_COPY["booking_record"])
+        self._random = random.Random(
+            (scenario.get("random_seed", DEFAULT_STATE_COPY["random_seed"]))
+        )
+        self.credit_card_list = scenario.get(
+            "credit_card_list", DEFAULT_STATE_COPY["credit_card_list"]
+        )
+        self.booking_record = scenario.get(
+            "booking_record", DEFAULT_STATE_COPY["booking_record"]
+        )
         self.access_token = scenario.get("access_token", DEFAULT_STATE_COPY["access_token"])
         self.token_type = scenario.get("token_type", DEFAULT_STATE_COPY["token_type"])
-        self.token_expires_in = scenario.get("token_expires_in", DEFAULT_STATE_COPY["token_expires_in"])
+        self.token_expires_in = scenario.get(
+            "token_expires_in", DEFAULT_STATE_COPY["token_expires_in"]
+        )
         self.token_scope = scenario.get("token_scope", DEFAULT_STATE_COPY["token_scope"])
-        self.user_first_name = scenario.get("user_first_name", DEFAULT_STATE_COPY["user_first_name"])
-        self.user_last_name = scenario.get("user_last_name", DEFAULT_STATE_COPY["user_last_name"])
+        self.user_first_name = scenario.get(
+            "user_first_name", DEFAULT_STATE_COPY["user_first_name"]
+        )
+        self.user_last_name = scenario.get(
+            "user_last_name", DEFAULT_STATE_COPY["user_last_name"]
+        )
         self.budget_limit = scenario.get("budget_limit", DEFAULT_STATE_COPY["budget_limit"])
         self.long_context = long_context
 
@@ -129,7 +142,7 @@ class TravelAPI:
             "token_type": "Bearer",
             "scope": grant_type,
         }
-        
+
     def travel_get_login_status(self) -> Dict[str, bool]:
         """
         Get the status of the login
@@ -389,9 +402,7 @@ class TravelAPI:
         elif travel_class == "first":
             factor = 5
         else:
-            raise ValueError(
-                "Invalid travel class. Options are: economy, business, first."
-            )
+            raise ValueError("Invalid travel class. Options are: economy, business, first.")
 
         # Determine the multiplier based on the travel date
         digit_sum = sum(int(char) for char in travel_date if char.isdigit())
@@ -811,7 +822,7 @@ class TravelAPI:
     def get_all_credit_cards(self) -> Dict[str, Dict[str, Union[str, int, float]]]:
         """
         Get all registered credit cards
-        
+
         Args:
             None
         Returns:

@@ -1,11 +1,12 @@
-from typing import Dict, List, Optional, Union
 from copy import deepcopy
+from typing import Dict, List, Optional, Union
 
 DEFAULT_STATE = {
     "ticket_queue": [],
     "ticket_counter": 1,
     "current_user": None,
 }
+
 
 class TicketAPI:
     """
@@ -39,7 +40,9 @@ class TicketAPI:
         """
         DEFAULT_STATE_COPY = deepcopy(DEFAULT_STATE)
         self.ticket_queue = scenario.get("ticket_queue", DEFAULT_STATE_COPY["ticket_queue"])
-        self.ticket_counter = scenario.get("ticket_counter", DEFAULT_STATE_COPY["ticket_counter"])
+        self.ticket_counter = scenario.get(
+            "ticket_counter", DEFAULT_STATE_COPY["ticket_counter"]
+        )
         self.current_user = scenario.get("current_user", DEFAULT_STATE_COPY["current_user"])
 
     def create_ticket(
@@ -210,7 +213,7 @@ class TicketAPI:
             result (bool): Result of the login status check.
         """
         return {"username": bool(self.current_user)}
-    
+
     def logout(self) -> Dict[str, bool]:
         """
         Log out the current user.

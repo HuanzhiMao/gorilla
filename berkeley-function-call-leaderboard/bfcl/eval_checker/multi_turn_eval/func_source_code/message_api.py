@@ -1,6 +1,6 @@
 import random
-from typing import Dict, List, Optional, Union
 from copy import deepcopy
+from typing import Dict, List, Optional, Union
 
 DEFAULT_STATE = {
     "generated_ids": set(),
@@ -25,7 +25,8 @@ DEFAULT_STATE = {
     "message_count": 3,
     "current_user": None,
 }
-    
+
+
 class MessageAPI:
     """
     A class representing a Message API for managing user interactions in a workspace.
@@ -73,11 +74,15 @@ class MessageAPI:
         """
         DEFAULT_STATE_COPY = deepcopy(DEFAULT_STATE)
         self._random = random.Random((scenario.get("random_seed", 200191)))
-        self.generated_ids = scenario.get("generated_ids", DEFAULT_STATE_COPY["generated_ids"])
+        self.generated_ids = scenario.get(
+            "generated_ids", DEFAULT_STATE_COPY["generated_ids"]
+        )
         self.user_count = scenario.get("user_count", DEFAULT_STATE_COPY["user_count"])
         self.user_map = scenario.get("user_map", DEFAULT_STATE_COPY["user_map"])
         self.inbox = scenario.get("inbox", DEFAULT_STATE_COPY["inbox"])
-        self.message_count = scenario.get("message_count", DEFAULT_STATE_COPY["message_count"])
+        self.message_count = scenario.get(
+            "message_count", DEFAULT_STATE_COPY["message_count"]
+        )
         self.current_user = scenario.get("current_user", DEFAULT_STATE_COPY["current_user"])
 
     def __eq__(self, value: object) -> bool:
@@ -148,7 +153,7 @@ class MessageAPI:
             "login_status": True,
             "message": f"User '{user_id}' logged in successfully.",
         }
-    
+
     def message_get_login_status(self) -> Dict[str, bool]:
         """
         Get the login status of the current user.
@@ -157,10 +162,8 @@ class MessageAPI:
             login_status (bool): True if the current user is logged in, False otherwise.
         """
         return {"login_status": bool(self.current_user)}
-    
-    def send_message(
-        self, receiver_id: str, message: str
-    ) -> Dict[str, Union[str, bool]]:
+
+    def send_message(self, receiver_id: str, message: str) -> Dict[str, Union[str, bool]]:
         """
         Send a message to a user.
         Args:
@@ -188,9 +191,7 @@ class MessageAPI:
             "message": f"Message sent to '{receiver_id}' successfully.",
         }
 
-    def delete_message(
-        self, receiver_id: str
-    ) -> Dict[str, Union[bool, str]]:
+    def delete_message(self, receiver_id: str) -> Dict[str, Union[bool, str]]:
         """
         Delete the latest message sent to a receiver.
         Args:
@@ -203,7 +204,7 @@ class MessageAPI:
         """
         if not self.current_user:
             return {"error": "No user is currently logged in."}
-        
+
         # Loop through the inbox in reverse order to find the first message sent to the receiver
         for message in self.inbox[::-1]:
             receiver, _ = list(message.items())[0]
@@ -214,7 +215,7 @@ class MessageAPI:
                     "message_id": receiver,
                     "message": f"Receiver {receiver_id}'s first message deleted successfully.",
                 }
-        return {"error": f"Receiver ID {receiver_id} not found."}    
+        return {"error": f"Receiver ID {receiver_id} not found."}
 
     def view_messages_sent(self) -> Dict[str, Union[Dict[str, List[str]], str]]:
         """

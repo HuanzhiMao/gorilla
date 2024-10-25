@@ -1,7 +1,8 @@
 import datetime
 import subprocess
-from typing import Dict, List, Optional, Union
 from copy import deepcopy
+from typing import Dict, List, Optional, Union
+
 from .long_context import FILE_CONTENT_EXTENSION, FILES_TAIL_USED
 
 
@@ -129,9 +130,8 @@ class Directory:
         return self.name == other.name and self.contents == other.contents
 
 
-DEFAULT_STATE = {
-    "root": Directory("/", None)
-}
+DEFAULT_STATE = {"root": Directory("/", None)}
+
 
 class GorillaFileSystem:
 
@@ -193,8 +193,7 @@ class GorillaFileSystem:
         if "root" in scenario:
             root_dir = Directory(list(scenario["root"].keys())[0], None)
             self.root = self._load_directory(
-                scenario["root"][list(scenario["root"].keys())[0]]["contents"],
-                root_dir
+                scenario["root"][list(scenario["root"].keys())[0]]["contents"], root_dir
             )
         self._current_dir = self.root
 
@@ -226,10 +225,10 @@ class GorillaFileSystem:
                     content += FILE_CONTENT_EXTENSION
                 new_file = File(dir_name, content)
                 parent.contents[dir_name] = new_file
-        
+
         if is_bottommost and self.long_context:
             self._populate_directory(parent, 30)
-        
+
         return parent
 
     def _populate_directory(
@@ -529,7 +528,7 @@ class GorillaFileSystem:
             else:
                 return {"error": f"xargs: {file_name}: No such file or directory"}
         else:
-           return {"error": f"Argument not supported"}
+            return {"error": f"Argument not supported"}
 
         try:
             result = subprocess.run([command] + args, capture_output=True, text=True)
@@ -649,9 +648,11 @@ class GorillaFileSystem:
 
         if not isinstance(item, (File, Directory)):
             return {"error": f"mv: cannot move '{source}': Not a file or directory"}
-        
+
         if "/" in destination:
-            return {"error": f"mv: no path allowed in destination. Only file name and folder name is supported for this operation."}
+            return {
+                "error": f"mv: no path allowed in destination. Only file name and folder name is supported for this operation."
+            }
 
         # Check if the destination is an existing directory
         if destination in self._current_dir.contents:
@@ -761,7 +762,9 @@ class GorillaFileSystem:
             return {"error": f"cp: cannot copy '{source}': Not a file or directory"}
 
         if "/" in destination:
-            return {"error": f"cp: don't allow path in destination. Only file name and folder name is supported for this operation."}
+            return {
+                "error": f"cp: don't allow path in destination. Only file name and folder name is supported for this operation."
+            }
         # Check if the destination is an existing directory
         if destination in self._current_dir.contents:
             dest_item = self._current_dir._get_item(destination)

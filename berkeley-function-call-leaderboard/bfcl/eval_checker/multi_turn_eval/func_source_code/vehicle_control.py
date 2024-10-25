@@ -1,4 +1,5 @@
 import random
+from copy import deepcopy
 from typing import Dict, List, Union
 
 from .long_context import (
@@ -7,7 +8,6 @@ from .long_context import (
     LONG_WEATHER_EXTENSION,
     PARKING_BRAKE_INSTRUCTION,
 )
-from copy import deepcopy
 
 MAX_FUEL_LEVEL = 50
 MIN_FUEL_LEVEL = 0.0
@@ -44,6 +44,7 @@ DEFAULT_STATE = {
     "rearRightTirePressure": 30.0,
 }
 
+
 class VehicleControlAPI:
 
     def __init__(self):
@@ -79,10 +80,18 @@ class VehicleControlAPI:
             scenario (dict): The scenario to load.
         """
         DEFAULT_STATE_COPY = deepcopy(DEFAULT_STATE)
-        self._random = random.Random((scenario.get("random_seed", DEFAULT_STATE_COPY["random_seed"])))
-        self.fuelLevel = scenario.get("fuelLevel", DEFAULT_STATE_COPY["fuelLevel"])  # in gallons
-        self.batteryVoltage = scenario.get("batteryVoltage", DEFAULT_STATE_COPY["batteryVoltage"])  # in volts
-        self.engine_state = scenario.get("engineState", DEFAULT_STATE_COPY["engine_state"])  # running, stopped
+        self._random = random.Random(
+            (scenario.get("random_seed", DEFAULT_STATE_COPY["random_seed"]))
+        )
+        self.fuelLevel = scenario.get(
+            "fuelLevel", DEFAULT_STATE_COPY["fuelLevel"]
+        )  # in gallons
+        self.batteryVoltage = scenario.get(
+            "batteryVoltage", DEFAULT_STATE_COPY["batteryVoltage"]
+        )  # in volts
+        self.engine_state = scenario.get(
+            "engineState", DEFAULT_STATE_COPY["engine_state"]
+        )  # running, stopped
         self.remainingUnlockedDoors = scenario.get(
             "remainingUnlockedDoors", DEFAULT_STATE_COPY["remainingUnlockedDoors"]
         )  # driver, passenger, rear_left, rear_right
@@ -93,23 +102,47 @@ class VehicleControlAPI:
         self.remainingUnlockedDoors = 4 - len(
             [1 for door in self.doorStatus.keys() if self.doorStatus[door] == "locked"]
         )
-        self.acTemperature = scenario.get("acTemperature", DEFAULT_STATE_COPY["acTemperature"])  # in degree Celsius
+        self.acTemperature = scenario.get(
+            "acTemperature", DEFAULT_STATE_COPY["acTemperature"]
+        )  # in degree Celsius
         self.fanSpeed = scenario.get("fanSpeed", DEFAULT_STATE_COPY["fanSpeed"])  # 0 to 100
-        self.acMode = scenario.get("acMode", DEFAULT_STATE_COPY["acMode"])  # auto, cool, heat, defrost
-        self.humidityLevel = scenario.get("humidityLevel", DEFAULT_STATE_COPY["humidityLevel"])  # in percentage
-        self.headLightStatus = scenario.get("headLightStatus", DEFAULT_STATE_COPY["headLightStatus"])  # on, off
-        self.brakeStatus = scenario.get("brakeStatus", DEFAULT_STATE_COPY["brakeStatus"])  # released, engaged
-        self.brakeForce = scenario.get("brakeForce", DEFAULT_STATE_COPY["brakeForce"])  # in Newtons
-        self.slopeAngle = scenario.get("slopeAngle", DEFAULT_STATE_COPY["slopeAngle"])  # in degrees
+        self.acMode = scenario.get(
+            "acMode", DEFAULT_STATE_COPY["acMode"]
+        )  # auto, cool, heat, defrost
+        self.humidityLevel = scenario.get(
+            "humidityLevel", DEFAULT_STATE_COPY["humidityLevel"]
+        )  # in percentage
+        self.headLightStatus = scenario.get(
+            "headLightStatus", DEFAULT_STATE_COPY["headLightStatus"]
+        )  # on, off
+        self.brakeStatus = scenario.get(
+            "brakeStatus", DEFAULT_STATE_COPY["brakeStatus"]
+        )  # released, engaged
+        self.brakeForce = scenario.get(
+            "brakeForce", DEFAULT_STATE_COPY["brakeForce"]
+        )  # in Newtons
+        self.slopeAngle = scenario.get(
+            "slopeAngle", DEFAULT_STATE_COPY["slopeAngle"]
+        )  # in degrees
         self.distanceToNextVehicle = scenario.get(
             "distanceToNextVehicle", DEFAULT_STATE_COPY["distanceToNextVehicle"]
         )  # in meters
-        self.cruiseStatus = scenario.get("cruiseStatus", DEFAULT_STATE_COPY["cruiseStatus"])  # active, inactive
+        self.cruiseStatus = scenario.get(
+            "cruiseStatus", DEFAULT_STATE_COPY["cruiseStatus"]
+        )  # active, inactive
         self.destination = scenario.get("destination", DEFAULT_STATE_COPY["destination"])
-        self.frontLeftTirePressure = scenario.get("frontLeftTirePressure", DEFAULT_STATE_COPY["frontLeftTirePressure"])
-        self.frontRightTirePressure = scenario.get("frontRightTirePressure", DEFAULT_STATE_COPY["frontRightTirePressure"])
-        self.rearLeftTirePressure = scenario.get("rearLeftTirePressure", DEFAULT_STATE_COPY["rearLeftTirePressure"])
-        self.rearRightTirePressure = scenario.get("rearRightTirePressure", DEFAULT_STATE_COPY["rearRightTirePressure"])
+        self.frontLeftTirePressure = scenario.get(
+            "frontLeftTirePressure", DEFAULT_STATE_COPY["frontLeftTirePressure"]
+        )
+        self.frontRightTirePressure = scenario.get(
+            "frontRightTirePressure", DEFAULT_STATE_COPY["frontRightTirePressure"]
+        )
+        self.rearLeftTirePressure = scenario.get(
+            "rearLeftTirePressure", DEFAULT_STATE_COPY["rearLeftTirePressure"]
+        )
+        self.rearRightTirePressure = scenario.get(
+            "rearRightTirePressure", DEFAULT_STATE_COPY["rearRightTirePressure"]
+        )
 
         self.long_context = long_context
 

@@ -1,6 +1,7 @@
+from copy import deepcopy
 from datetime import datetime, time
 from typing import Dict, List, Optional, Union
-from copy import deepcopy
+
 from .long_context import (
     AUTOMOBILE_EXTENSION,
     MA_5_EXTENSION,
@@ -117,6 +118,7 @@ DEFAULT_STATE = {
     "transaction_history": [],
 }
 
+
 class TradingBot:
     """
     A class representing a trading bot for executing stock trades and managing a trading account.
@@ -155,14 +157,25 @@ class TradingBot:
         DEFAULT_STATE_COPY = deepcopy(DEFAULT_STATE)
         self.orders = scenario.get("orders", DEFAULT_STATE_COPY["orders"])
         # Convert all string keys that can be interpreted as integers to integer keys
-        self.orders = {int(k) if isinstance(k, str) and k.isdigit() else k: v for k, v in self.orders.items()}
+        self.orders = {
+            int(k) if isinstance(k, str) and k.isdigit() else k: v
+            for k, v in self.orders.items()
+        }
         self.account_info = scenario.get("account_info", DEFAULT_STATE_COPY["account_info"])
-        self.authenticated = scenario.get("authenticated", DEFAULT_STATE_COPY["authenticated"])
-        self.market_status = scenario.get("market_status", DEFAULT_STATE_COPY["market_status"])
-        self.order_counter = scenario.get("order_counter", DEFAULT_STATE_COPY["order_counter"]) # Start counter from the next order ID
+        self.authenticated = scenario.get(
+            "authenticated", DEFAULT_STATE_COPY["authenticated"]
+        )
+        self.market_status = scenario.get(
+            "market_status", DEFAULT_STATE_COPY["market_status"]
+        )
+        self.order_counter = scenario.get(
+            "order_counter", DEFAULT_STATE_COPY["order_counter"]
+        )  # Start counter from the next order ID
         self.stocks = scenario.get("stocks", DEFAULT_STATE_COPY["stocks"])
         self.watch_list = scenario.get("watch_list", DEFAULT_STATE_COPY["watch_list"])
-        self.transaction_history = scenario.get("transaction_history", DEFAULT_STATE_COPY["transaction_history"])
+        self.transaction_history = scenario.get(
+            "transaction_history", DEFAULT_STATE_COPY["transaction_history"]
+        )
         self.long_context = long_context
 
     def get_current_time(self) -> str:
@@ -438,9 +451,9 @@ class TradingBot:
         Returns:
             status (bool): Login status.
         """
-        
+
         return {"status": bool(self.authenticated)}
-    
+
     def trading_logout(self) -> Dict[str, str]:
         """
         Handle user logout for trading system.
