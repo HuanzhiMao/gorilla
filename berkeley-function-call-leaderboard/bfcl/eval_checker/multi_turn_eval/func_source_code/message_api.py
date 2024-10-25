@@ -203,8 +203,8 @@ class MessageAPI:
         """
         if not self.current_user:
             return {"error": "No user is currently logged in."}
-        # Check if the message exists in the inbox
-        # Ensure the current user is either the sender or receiver of the message
+        
+        # Loop through the inbox in reverse order to find the first message sent to the receiver
         for message in self.inbox[::-1]:
             receiver, _ = list(message.items())[0]
             if receiver == receiver_id:
