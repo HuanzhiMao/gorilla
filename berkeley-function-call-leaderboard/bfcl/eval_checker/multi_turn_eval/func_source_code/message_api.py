@@ -200,7 +200,7 @@ class MessageAPI:
         Args:
             receiver_id (str): User ID of the user to send the message to.
             message_id (int): ID of the message to be deleted.
-        Returns:.
+        Returns:
             deleted_status (bool): True if the message was deleted successfully, False otherwise.
             message_id (int): ID of the deleted message.
             message (str): A message describing the result of the deletion attempt.
