@@ -132,7 +132,7 @@ class MessageAPI:
             user (str): User name of the user.
 
         Returns:
-            user_id (str): User ID of the user, or None if not found.
+            user_id (str): [Optional] User ID of the user, or None if not found.
         """
         if user not in self.user_map:
             return {"error": f"User '{user}' not found in the workspace."}
