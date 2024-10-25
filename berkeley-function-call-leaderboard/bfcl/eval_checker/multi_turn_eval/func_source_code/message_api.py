@@ -13,19 +13,16 @@ DEFAULT_STATE = {
     },
     "inbox": [
         {
-            "receiver_id": "USR002",
-            "message": "My name is Alice. I want to connect.",
+            "USR002": "My name is Alice. I want to connect.",
         },
         {
-            "receiver_id": "USR003",
-            "message": "Could you upload the file?",
+            "USR003": "Could you upload the file?",
         },
         {
-            "receiver_id": "USR004",
-            "message": "Could you upload the file?",
+            "USR004": "Could you upload the file?",
         },
     ],
-    "message_count": 0,
+    "message_count": 3,
     "current_user": None,
 }
     
@@ -63,7 +60,7 @@ class MessageAPI:
         self.generated_ids: set
         self.user_count: int
         self.user_map: Dict[str, str]
-        self.inbox: List[Dict[str, List]]
+        self.inbox: List[Dict[str, str]]
         self.message_count: int
         self.current_user: Optional[str]
 
