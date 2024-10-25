@@ -248,7 +248,7 @@ class MessageAPI:
             user_name (str): User name of contact to be added.
         Returns:
             added_status (bool): True if the contact was added successfully, False otherwise.
-            ser_id (str): User ID of the added contact.
+            user_id (str): User ID of the added contact.
             message (str): A message describing the result of the addition attempt.
         """
         if user_name in self.user_map:
