@@ -12,18 +12,9 @@ DEFAULT_STATE = {
         "Daniel": "USR004",
     },
     "inbox": [
-        {
-            "receiver_id": "USR002",
-            "message": "My name is Alice. I want to connect.",
-        },
-        {
-            "receiver_id": "USR003",
-            "message": "Could you upload the file?",
-        },
-        {
-            "receiver_id": "USR004",
-            "message": "Could you upload the file?",
-        },
+        {"USR002":"My name is Alice. I want to connect."},
+        {"USR003": "Could you upload the file?"},
+        {"USR004": "Could you upload the file?"},
     ],
     "message_count": 0,
     "current_user": None,
@@ -50,7 +41,7 @@ class MessageAPI:
         login(user_id: str): Log in a user.
         send_message(receiver_id: str, message: str): Send a message to another user.
         view_messages_sent(): View messages sent by the current user.
-        delete_message(receiver_id: str): Delete a sent message.
+        delete_message(receiver_id: str, message_index: int): Delete a sent message.
         add_contact(name: str, user_id: str): Add a new contact to the workspace.
         search_messages(keyword: str): Search for messages containing a keyword.
         get_message_stats(): Get messaging statistics for the current user.
@@ -198,6 +189,7 @@ class MessageAPI:
         Delete the latest message sent to a receiver.
         Args:
             receiver_id (str): User ID of the user to send the message to.
+            message_id (int): ID of the message to be deleted.
         Returns:
             deleted_status (bool): True if the message was deleted successfully, False otherwise.
             message_id (int): ID of the deleted message.
