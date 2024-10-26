@@ -383,6 +383,7 @@ class TravelAPI:
             ("ATV", "GFD"): 240,
             ("PHV", "GFD"): 220,
             ("LHR", "CDG"): 100,
+            ("OKD", "LAX"): 220
         }
 
         # Ensure the travel_from and travel_to is a tuple in the correct order (from, to)
