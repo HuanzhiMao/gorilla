@@ -124,14 +124,14 @@ class TradingBot:
     A class representing a trading bot for executing stock trades and managing a trading account.
 
     Attributes:
-        orders (Dict[int, Dict[str, Union[str, float, int]]]): A dictionary of orders, keyed by order ID.
+        orders (Dict[int, Dict[str, Union[str, float, int]]]): A dictionary of orders for purchasing and selling of stock, keyed by order ID.
         account_info (Dict[str, Union[int, float]]): Information about the trading account.
         authenticated (bool): Whether the user is currently authenticated.
         market_status (str): The current status of the market ('Open' or 'Closed').
         order_counter (int): A counter for generating unique order IDs.
         stocks (Dict[str, Dict[str, Union[float, int]]]): Information about various stocks.
         watch_list (List[str]): A list of stock symbols being watched.
-        transaction_history (List[Dict[str, Union[str, float, int]]]): A history of transactions.
+        transaction_history (List[Dict[str, Union[str, float, int]]]): A history of trading account related transactions.
     """
 
     def __init__(self):
@@ -483,7 +483,7 @@ class TradingBot:
             return {"error": "Funding amount must be positive."}
         self.account_info["balance"] += amount
         self.transaction_history.append(
-            {"type": "funding", "amount": amount, "timestamp": self.get_current_time()}
+            {"type": "deposit", "amount": amount, "timestamp": self.get_current_time()}
         )
         return {
             "status": "Account funded successfully",
