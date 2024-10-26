@@ -129,6 +129,7 @@ def multi_turn_runner(
         
         # if not irrelevance_checker_result["valid"] or not accuracy_checker_result["valid"]:
         temp = {}
+        temp["id"] = index
         temp["log"] = accuracy_checker_result
             # temp["id"] = index
             # temp["model_name"] = model_name
