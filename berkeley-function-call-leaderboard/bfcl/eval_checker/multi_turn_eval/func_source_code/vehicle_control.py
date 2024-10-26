@@ -542,6 +542,7 @@ class VehicleControlAPI:
             cityB (str): The zipcode of the second city.
         Returns:
             distance (float): The distance between the two cities in km.
+            intermediaryCities (List[str]): [Optional] The list of intermediary cities between the two cities.
         """
         if (cityA == "83214" and cityB == "74532") or (
             cityA == "74532" and cityB == "83214"
@@ -584,7 +585,7 @@ class VehicleControlAPI:
 
         if self.long_context:
             distance["intermediaryCities"] = INTERMEDIARY_CITIES
-        return {"distance": distance}
+        return distance
 
     def get_zipcode_based_on_city(self, city: str) -> Dict[str, str]:
         """
