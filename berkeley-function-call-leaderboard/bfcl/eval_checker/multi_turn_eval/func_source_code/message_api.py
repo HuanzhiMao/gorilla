@@ -100,7 +100,7 @@ class MessageAPI:
 
         return True
 
-    def generate_id(self):
+    def _generate_id(self):
         """
         Generate a unique ID for a message.
 
