@@ -75,11 +75,9 @@ def multi_turn_checker(
                     is_evaL_run=True,
                 )
             )
+            temp.append({"func_call": model_response, "result": sub_round_model_execution_results})
             single_turn_model_execution_results.extend(sub_round_model_execution_results)
-        for item, item_result in zip(
-            single_turn_model_response_list, single_turn_model_execution_results
-        ):
-            temp.append({"func_call": item, "result": item_result})
+
         log.append(temp)
         ## Check after each turn ##
         # assert len(model_instances) == len(
