@@ -182,7 +182,7 @@ class VehicleControlAPI:
                     ]
                 )
             }
-        if self.brakeStatus == "released":
+        if self.brakeStatus == "engage":
             return {"error": "Press the parking brake before starting the engine."}
         if self.fuelLevel < MIN_FUEL_LEVEL:
             return {"error": "Fuel tank is empty."}
