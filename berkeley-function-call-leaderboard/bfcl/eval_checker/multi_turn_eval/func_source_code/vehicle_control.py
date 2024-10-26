@@ -642,12 +642,16 @@ class VehicleControlAPI:
                 - healthy_tire_pressure (bool): True if the tire pressure is healthy, False otherwise.
                 - car_info (Dict): The metadata of the car.
         """
+        # This is the healthy standard the vehicle use, though the user might have different preferences
         healthy_tire_pressure = (
-            self.frontLeftTirePressure
-            + self.frontRightTirePressure
-            + self.rearLeftTirePressure
-            + self.rearRightTirePressure
-        ) / 4 < 35
+            30 <= (
+                self.frontLeftTirePressure
+                + self.frontRightTirePressure
+                + self.rearLeftTirePressure
+                + self.rearRightTirePressure
+            ) / 4 <= 35
+        )
+
         tire_status = {
             "frontLeftTirePressure": self.frontLeftTirePressure,
             "frontRightTirePressure": self.frontRightTirePressure,
