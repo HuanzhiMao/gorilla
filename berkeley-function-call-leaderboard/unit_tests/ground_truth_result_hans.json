@@ -4522,12 +4522,12 @@
             ]
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
         },
         {
             "Question": [
@@ -4643,12 +4643,12 @@
             ]
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
         },
         {
             "Question": [
@@ -4791,12 +4791,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 0.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -4937,12 +4937,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -5041,12 +5041,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 10.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -5180,12 +5180,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         }
     ]
 }
@@ -5347,12 +5347,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -5461,12 +5461,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -5540,12 +5540,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 10.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -5679,12 +5679,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 49.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -5781,12 +5781,12 @@
             ]
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -5864,12 +5864,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 43.85, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -5943,12 +5943,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
         },
         {
             "Question": [
@@ -6077,12 +6077,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 13.96, \"batteryVoltage\": 12.6}"
         },
         {
             "func_call": "displayCarStatus(option='battery')",
@@ -6180,12 +6180,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 40.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -6291,12 +6291,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         }
     ]
 }
@@ -6417,12 +6417,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -6581,12 +6581,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.57, \"batteryVoltage\": 12.6}"
         },
         {
             "func_call": "post_tweet(content='Just started my journey!', tags=['#RoadTrip'], mentions=['@carenthusiast'])",
@@ -6648,12 +6648,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.038536, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -6767,12 +6767,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -6874,12 +6874,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -6981,12 +6981,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 25.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -7073,12 +7073,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.04, \"batteryVoltage\": 12.6}"
         },
         {
             "func_call": "displayCarStatus(option='fuel')",
@@ -7304,12 +7304,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
         },
         {
             "Question": [
@@ -7760,12 +7760,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
         },
         {
             "Question": [
@@ -7777,7 +7777,7 @@
         },
         {
             "func_call": "setCruiseControl(speed=65, activate=True, distanceToNextVehicle=100)",
-            "result": "{\"error\": \"Start the engine before activating the cruise control.\"}"
+            "result": "{\"cruiseStatus\": \"active\", \"currentSpeed\": 65, \"distanceToNextVehicle\": 100}"
         }
     ]
 }
@@ -7871,12 +7871,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -7962,12 +7962,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 4.640000000000001, \"batteryVoltage\": 12.6}"
         },
         {
             "func_call": "displayCarStatus(option='fuel')",
@@ -8085,12 +8085,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         }
     ]
 }
@@ -8156,12 +8156,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 7.93, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -8227,12 +8227,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 35.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -8318,12 +8318,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         }
     ]
 }
@@ -8416,12 +8416,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
         },
         {
             "func_call": "check_tire_pressure()",
@@ -8527,12 +8527,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -8619,8 +8619,8 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "Question": [
@@ -8632,7 +8632,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         },
         {
             "func_call": "post_tweet(content='Embarking on an exciting road trip from SF to Rivermist!', tags=['#RoadTrip', '#Adventure', '#Exploring'])",
@@ -8730,12 +8730,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 40.0, \"batteryVoltage\": 12.6}"
         }
     ]
 }
@@ -8812,12 +8812,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 8.96258, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -9043,12 +9043,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -9130,12 +9130,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         },
         {
             "func_call": "check_tire_pressure()",
@@ -9231,7 +9231,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"error\": \"Brake pedal needs to be pressed when starting the engine.\"}"
         }
     ]
 }
@@ -9307,7 +9307,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"error\": \"Brake pedal needs to be pressed when starting the engine.\"}"
         },
         {
             "Question": [
@@ -9421,12 +9421,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.0, \"batteryVoltage\": 13.2}"
         },
         {
             "Question": [
@@ -9556,12 +9556,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -9651,12 +9651,12 @@
             ]
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
         },
         {
             "Question": [
@@ -9739,12 +9739,12 @@
             ]
         },
         {
-            "func_call": "pressBrakePedal()",
-            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.8}"
         },
         {
             "func_call": "displayCarStatus(option='fuel')",
@@ -18407,7 +18407,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I believe it would be strategic to communicate these adjustments to my extended network. Construct a tweet highlighting the cancellation of my travel plans, and ensure to add relevant hashtags 'TravelUpdate' and 'BusinessTrip' relating to travel and business updates. Be sure to authenticate using my username 'john' and password 'john1234'."
+                    "content": "I believe it would be strategic to communicate these adjustments to my extended network. Construct a tweet highlighting the cancellation of my travel plans, and ensure to add relevant hashtags 'TravelUpdate' and 'BusinessTrip' relating to travel and business updates, for message, just tell that 'Just cancelled my trip to LA'. Be sure to authenticate using my username 'john' and password 'john1234'."
                 }
             ]
         },
@@ -18490,7 +18490,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Concerning the flight cancellation, it is crucial to alert customer service without delay. Kindly generate a high-priority ticket named 'Flight Cancellation Alert,' detailing the reservation specifics and the cancellation request."
+                    "content": "Concerning the flight cancellation, it is crucial to alert customer service without delay. Kindly generate a high-priority ticket named 'Flight Cancellation Alert,' detailing the reservation specifics 'Request to cancel' and the cancellation request. My ticket username is `mthompson` and password is `securePass123"
                 }
             ]
         },
@@ -18499,8 +18499,8 @@
             "result": "{\"success\": true}"
         },
         {
-            "func_call": "create_ticket(title='Flight Cancellation Alert', priority=5)",
-            "result": "{\"id\": 1, \"title\": \"Flight Cancellation Alert\", \"description\": \"\", \"status\": \"Open\", \"priority\": 5, \"created_by\": \"mthompson\"}"
+            "func_call": "create_ticket(title='Flight Cancellation Alert', description='Request to cancel',priority=5)",
+            "result": "{\"id\": 1, \"title\": \"Flight Cancellation Alert\", \"description\": \"Request to cancel\", \"status\": \"Open\", \"priority\": 5, \"created_by\": \"mthompson\"}"
         }
     ]
 }
@@ -18542,7 +18542,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Before I start packing my bags for the upcoming trip, I need to double-check that all my personal information is up to date. Let's go over my full name and passport details to make sure everything's in order before I hit the road. For reference my birthdate is January 1st 1950 and the number on my passport is P followed by 12345678"
+                    "content": "Before I start packing my bags for the upcoming trip, I need to double-check that all my personal information is up to date. Let's go over my full name and passport details to make sure everything's in order before I hit the road. For reference my birthdate is January 1st 1950 and the number on my passport is P followed by 12345678. My first name is Michael and  last name is Thompson"
                 }
             ]
         },
@@ -18637,7 +18637,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I need you to verify my travel documents before I embark on this journey. Confirm if my personal details match the required criteria. Once all checks are done, I'll proceed. For reference, my birthdate is February 14st 1962 ans passport number is P87654321"
+                    "content": "I need you to verify my travel documents before I embark on this journey. Confirm if my personal details match the required criteria. Once all checks are done, I'll proceed. For reference, my birthdate is February 14st 1962 ans passport number is P87654321, my first name is Michael and last name is Smith"
                 }
             ]
         },
@@ -18733,7 +18733,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I'm planning to fly from LAX to JFK on November 15th 2024 and aim to travel in business class with a budget of $600. Could you please book an economy seat for this flight? I'll be using my access token 'abc123xyz' and Mastercard with id 'id15583' for payment."
+                    "content": "I'm planning to fly from LAX to JFK on November 15th 2024 and aim to travel in business class with a budget of $2400. Could you please book an economy seat for this flight? I'll be using my access token 'abc123xyz' and Mastercard with id 'id15583' for payment."
                 }
             ]
         },
@@ -18742,7 +18742,7 @@
             "result": "{\"travel_cost_list\": [2400.0]}"
         },
         {
-            "func_call": "book_flight(access_token='abc123xyz', card_id='id15583', travel_date='2024-11-15', travel_from='LAX', travel_to='JFK', travel_class='business', travel_cost=600.0)",
+            "func_call": "book_flight(access_token='abc123xyz', card_id='id15583', travel_date='2024-11-15', travel_from='LAX', travel_to='JFK', travel_class='business', travel_cost=2400.0)",
             "result": "{\"booking_id\": \"3426812\", \"transaction_id\": \"45451592\", \"booking_status\": true, \"booking_history\": {}}"
         },
         {
@@ -18840,7 +18840,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Kindly create a 'Urgent Flight Issue'. This matter demands high priority of 4."
+                    "content": "login the ticket with my username 'mthompson' and password as 'securePass123'. Kindly create a 'Urgent Flight Issue'. This matter demands high priority of 4."
                 }
             ]
         },
@@ -19054,8 +19054,8 @@
             "result": "['RMS', 'SBK', 'MPC', 'SVP', 'SHD', 'CDG', 'LHR', 'SSV', 'OKD', 'WLB', 'PEK', 'HND', 'HKG', 'CIA', 'CRH', 'ATV', 'PHV', 'GFD', 'SFO', 'LAX', 'JFK', 'ORD', 'BOS']"
         },
         {
-            "func_call": "get_flight_cost(travel_from='SFO', travel_to='LAX', travel_date='2024-11-15', travel_class='economy')",
-            "result": "{\"travel_cost_list\": [400.0]}"
+            "func_call": "get_flight_cost(travel_from='RMS', travel_to='SBK', travel_date='2024-11-15', travel_class='economy')",
+            "result": "{\"travel_cost_list\": [440.0]}"
         },
         {
             "Question": [
@@ -19066,7 +19066,7 @@
             ]
         },
         {
-            "func_call": "book_flight(access_token='abc123xyz', card_id='card_3456', travel_date='2024-11-15', travel_from='SFO', travel_to='LAX', travel_class='economy', travel_cost=200.0)",
+            "func_call": "book_flight(access_token='abc123xyz', card_id='card_3456', travel_date='2024-11-15', travel_from='SFO', travel_to='LAX', travel_class='economy', travel_cost=400.0)",
             "result": "{\"booking_id\": \"3426812\", \"transaction_id\": \"45451592\", \"booking_status\": true, \"booking_history\": {}}"
         },
         {
@@ -19200,7 +19200,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "In attempting to log into my travel account using both my established client id 'client_520', secret 'rise_to_sky' and refresh token 'token990125', I seem to be at a bit of an impasse. Assistance with the authentication process would be immensely appreciated."
+                    "content": "In attempting to log into my travel account using both my established client id 'client_520', secret 'rise_to_sky' and refresh token 'token990125', I seem to be at a bit of an impasse, allow for read_write. My first name is Michael, last name Thompson. Assistance with the authentication process would be immensely appreciated."
                 }
             ]
         },
@@ -19305,8 +19305,8 @@
             ]
         },
         {
-            "func_call": "get_nearest_airport_by_city(location='New York City')",
-            "result": "{\"nearest_airport\": \"Unknown\"}"
+            "func_call": "get_nearest_airport_by_city(location='New York')",
+            "result": "{\"nearest_airport\": \"JFK\"}"
         },
         {
             "func_call": "get_flight_cost(travel_from='RMS',travel_to='JFK',travel_date='2024-09-10',travel_class='economy')",
@@ -19316,7 +19316,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Subsequent to determining the air ticket cost, I need to convert the expense into RMS and establish it as my fiscal threshold. Could you assist with that exchange rate adjustment and budget setting using access token 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'?"
+                    "content": "Subsequent to determining the air ticket cost, I need to convert the expense into RMS and establish it as my fiscal threshold. Could you assist with that exchange rate adjustment and budget setting using access token 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' to 2940?"
                 }
             ]
         },
@@ -19344,7 +19344,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "A minor matter needs addressing: my departure date had an open query. Could you resolve ticket number 458219 for me?"
+                    "content": "A minor matter needs addressing: my departure date had an open query. Could you close ticket number 458219 for me?"
                 }
             ]
         },
