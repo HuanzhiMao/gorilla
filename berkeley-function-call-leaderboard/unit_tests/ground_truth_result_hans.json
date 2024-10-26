@@ -1470,7 +1470,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR005',message='Latest Quarter Performance has been well.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR005' successfully.\"}"
         }
     ]
 }
@@ -1742,11 +1742,11 @@
         },
         {
             "func_call": "send_message(receiver_id='USR005',message='Kelly Total Score: 96')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR005' successfully.\"}"
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR002\": [[\"Meeting at 3 PM\"]], \"USR003\": [[\"Please review the document.\"]]}}"
+            "result": "{\"messages\": {\"USR002\": [[\"Meeting at 3 PM\"]], \"USR003\": [[\"Please review the document.\"]], \"USR005\": [\"Kelly Total Score: 96\"]}}"
         }
     ]
 }
@@ -3145,7 +3145,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003', message='update the system')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
         },
         {
             "Question": [
@@ -3157,7 +3157,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR003\": [[\"Thanks for the update!\"]]}}"
+            "result": "{\"messages\": {\"USR003\": [[\"Thanks for the update!\"], \"update the system\"]}}"
         }
     ]
 }
@@ -3735,7 +3735,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002', message='The report has been finalized.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
         }
     ]
 }
@@ -3799,7 +3799,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002',message='Meeting notes and project details.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
         },
         {
             "Question": [
@@ -3965,7 +3965,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002', message='This is the annual report. It includes Q4 results and other financial data.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
         }
     ]
 }
@@ -4559,7 +4559,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002', message='I\u2019m on my way to your place.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
         }
     ]
 }
@@ -4698,7 +4698,7 @@
         {
             "initial_config": {
                 "VehicleControlAPI": {
-                    "fuelLevel": 0.0,
+                    "fuelLevel": 30.0,
                     "batteryVoltage": 12.6,
                     "engineState": "stopped",
                     "doorStatus": {
@@ -4796,7 +4796,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 0.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 30.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -5758,7 +5758,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR004', message='The distance from Rivermist to Stonebrook is 750.0 km.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR004' successfully.\"}"
         },
         {
             "Question": [
@@ -5798,7 +5798,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR002\": [\"My name is Alice. I want to connect.\"], \"USR003\": [\"Could you upload the file?\"], \"USR004\": [\"Could you upload the file?\"]}}"
+            "result": "{\"messages\": {\"USR002\": [\"My name is Alice. I want to connect.\"], \"USR003\": [\"Could you upload the file?\"], \"USR004\": [\"Could you upload the file?\", \"The distance from Rivermist to Stonebrook is 750.0 km.\"]}}"
         }
     ]
 }
@@ -6907,7 +6907,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR007', message='Road trip itinerary update.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR007' successfully.\"}"
         },
         {
             "Question": [
@@ -6919,7 +6919,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR005\": [[\"Hey Sarah, are you ready for the trip?\"]], \"USR007\": [[\"I'll be there soon.\"]], \"USR008\": [[\"Got the snacks!\"]]}}"
+            "result": "{\"messages\": {\"USR005\": [[\"Hey Sarah, are you ready for the trip?\"]], \"USR007\": [[\"I'll be there soon.\"], \"Road trip itinerary update.\"], \"USR008\": [[\"Got the snacks!\"]]}}"
         }
     ]
 }
@@ -8945,7 +8945,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR006', message='It is hot outside.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR006' successfully.\"}"
         },
         {
             "Question": [
@@ -8957,7 +8957,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR008\": [[\"Can you send the report?\"]], \"USR005\": [[\"The meeting is at 3 PM.\"]], \"USR006\": [[\"Please review the document.\"]], \"USR007\": [[\"Let's catch up later.\"]]}}"
+            "result": "{\"messages\": {\"USR008\": [[\"Can you send the report?\"]], \"USR005\": [[\"The meeting is at 3 PM.\"]], \"USR006\": [[\"Please review the document.\"], \"It is hot outside.\"], \"USR007\": [[\"Let's catch up later.\"]]}}"
         }
     ]
 }
@@ -9347,7 +9347,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR008', message='The estimated distance from Rivermist to San Francisco is 980.0 miles.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR008' successfully.\"}"
         },
         {
             "Question": [
@@ -9359,7 +9359,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR006\": [[\"Got it, thanks!\"]], \"USR007\": [[\"Sure, see you then.\"]], \"USR005\": [[\"Please review the attached document.\"]]}}"
+            "result": "{\"messages\": {\"USR006\": [[\"Got it, thanks!\"]], \"USR007\": [[\"Sure, see you then.\"]], \"USR005\": [[\"Please review the attached document.\"]], \"USR008\": [\"The estimated distance from Rivermist to San Francisco is 980.0 miles.\"]}}"
         }
     ]
 }
@@ -9573,7 +9573,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002', message='I am on my way.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
         },
         {
             "Question": [
@@ -9585,7 +9585,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR002\": [\"Safe travels!\"]}}"
+            "result": "{\"messages\": {\"USR002\": [\"Safe travels!\", \"I am on my way.\"]}}"
         }
     ]
 }
@@ -10075,7 +10075,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003',message='The latest stock price of XTC is $150.75.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
         },
         {
             "Question": [
@@ -10087,7 +10087,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {}}"
+            "result": "{\"messages\": {\"USR003\": [\"The latest stock price of XTC is $150.75.\"]}}"
         }
     ]
 }
@@ -10471,7 +10471,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002', message='Dear Customer Service, please confirm the successful execution of my order for 150 shares of Omega Industries at the current market price, and verify the order details under reference ID USR002. Thank you.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
         }
     ]
 }
@@ -11847,7 +11847,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002',message='What are the new stock inclusion and the status of my current order?')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
         },
         {
             "Question": [
@@ -11859,7 +11859,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR001\": [{}], \"USR002\": [{\"USR001\": [\"My name is John. I want to connect.\"], \"USR003\": [\"I am busy\"], \"USR004\": [\"I am on leave\"]}], \"USR003\": [{\"USR002\": [\"Could you upload the file?\"]}], \"USR004\": [{\"USR002\": [\"Could you upload the file?\"]}], \"USR005\": [{\"USR001\": [\"Regarding the new stock inclusion and the status of my current order.\"]}]}}"
+            "result": "{\"messages\": {\"USR001\": [{}], \"USR002\": [{\"USR001\": [\"My name is John. I want to connect.\"], \"USR003\": [\"I am busy\"], \"USR004\": [\"I am on leave\"]}, \"What are the new stock inclusion and the status of my current order?\"], \"USR003\": [{\"USR002\": [\"Could you upload the file?\"]}], \"USR004\": [{\"USR002\": [\"Could you upload the file?\"]}], \"USR005\": [{\"USR001\": [\"Regarding the new stock inclusion and the status of my current order.\"]}]}}"
         }
     ]
 }
@@ -12345,7 +12345,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR007',message='NVDA and QUAS')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR007' successfully.\"}"
         },
         {
             "Question": [
@@ -12357,7 +12357,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR006\": [{\"USR005\": [\"Interested in Quasar Ltd stocks.\"]}]}}"
+            "result": "{\"messages\": {\"USR006\": [{\"USR005\": [\"Interested in Quasar Ltd stocks.\"]}], \"USR007\": [\"NVDA and QUAS\"]}}"
         }
     ]
 }
@@ -15232,7 +15232,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003',message='I just execute another order. What do you think of it?')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
         },
         {
             "Question": [
@@ -16191,7 +16191,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR001',message='this is my plan')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR001' successfully.\"}"
         }
     ]
 }
@@ -16364,7 +16364,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR006',message='order of purchasing SYNX is completed.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR006' successfully.\"}"
         },
         {
             "Question": [
@@ -16376,7 +16376,7 @@
         },
         {
             "func_call": "delete_message(receiver_id='USR006')",
-            "result": "{\"error\": \"Receiver ID USR006 not found.\"}"
+            "result": "{\"deleted_status\": true, \"message_id\": \"USR006\", \"message\": \"Receiver USR006's first message deleted successfully.\"}"
         }
     ]
 }
@@ -16861,7 +16861,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR005',message='100 shares of GOOG purchased, thoughts?')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR005' successfully.\"}"
         }
     ]
 }
@@ -17207,7 +17207,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003',message='My strategy is shifting due to recent market movements and the cancellation of a specific order.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
         }
     ]
 }
@@ -17547,7 +17547,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003',message='Zeta Corp seems to have potential. What do you think of their recent financial report?')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
         },
         {
             "Question": [
@@ -17559,7 +17559,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR001\": [[\"My name is John. I want to connect.\"]], \"USR003\": [[\"I am busy\"]], \"USR004\": [[\"I am on leave\"]]}}"
+            "result": "{\"messages\": {\"USR001\": [[\"My name is John. I want to connect.\"]], \"USR003\": [[\"I am busy\"], \"Zeta Corp seems to have potential. What do you think of their recent financial report?\"], \"USR004\": [[\"I am on leave\"]]}}"
         }
     ]
 }
@@ -19928,7 +19928,7 @@
         },
         {
             "func_call": "send_message(receiver_id='travel_advisor', message='Details regarding problems faced with the flight booking transaction.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'travel_advisor' successfully.\"}"
         }
     ]
 }
@@ -20251,11 +20251,11 @@
         },
         {
             "func_call": "send_message(receiver_id='travel_agent', message='Thank you for your efficient handling of my booking to Beijing. My trip is confirmed for June 15th from JFK to PEK in first class.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'travel_agent' successfully.\"}"
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR005\": [[\"Hey Sarah, are you ready for the trip?\"]], \"USR007\": [[\"I'll  be there soon.\"]], \"USR008\": [[\"Got the snacks!\"]], \"USR006\": [[\"Can you bring the maps?\"]]}}"
+            "result": "{\"messages\": {\"USR005\": [[\"Hey Sarah, are you ready for the trip?\"]], \"USR007\": [[\"I'll  be there soon.\"]], \"USR008\": [[\"Got the snacks!\"]], \"USR006\": [[\"Can you bring the maps?\"]], \"travel_agent\": [\"Thank you for your efficient handling of my booking to Beijing. My trip is confirmed for June 15th from JFK to PEK in first class.\"]}}"
         }
     ]
 }
@@ -20330,7 +20330,7 @@
         },
         {
             "func_call": "send_message(receiver_id='m0llyTr@vel2k24', message='Everything for our trip is sorted and ready!')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'm0llyTr@vel2k24' successfully.\"}"
         },
         {
             "Question": [
@@ -20342,7 +20342,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"m0llyTr@vel2k24\": [[\"Looking forward to our trip!\"]]}}"
+            "result": "{\"messages\": {\"m0llyTr@vel2k24\": [[\"Looking forward to our trip!\"], \"Everything for our trip is sorted and ready!\"]}}"
         }
     ]
 }
@@ -21574,7 +21574,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR006', message='Hi Sam, my travel plans have changed. I\\'ll update you soon.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR006' successfully.\"}"
         },
         {
             "Question": [
@@ -21586,7 +21586,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR006\": [[\"Hey Lara, let me know if you need any help with your travel plans.\"]]}}"
+            "result": "{\"messages\": {\"USR006\": [[\"Hey Lara, let me know if you need any help with your travel plans.\"], \"Hi Sam, my travel plans have changed. I'll update you soon.\"]}}"
         },
         {
             "Question": [
@@ -23192,7 +23192,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003', message='Update on flight issue and customer support contact.')",
-            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
+            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
         },
         {
             "Question": [
@@ -23204,7 +23204,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR002\": [\"My name is Alice. I want to connect.\"], \"USR003\": [\"Could you upload the file?\"], \"USR004\": [\"Could you upload the file?\"]}}"
+            "result": "{\"messages\": {\"USR002\": [\"My name is Alice. I want to connect.\"], \"USR003\": [\"Could you upload the file?\", \"Update on flight issue and customer support contact.\"], \"USR004\": [\"Could you upload the file?\"]}}"
         }
     ]
 }
