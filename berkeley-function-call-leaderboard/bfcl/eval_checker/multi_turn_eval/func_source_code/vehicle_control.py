@@ -266,9 +266,9 @@ class VehicleControlAPI:
         Adjusts the climate control of the vehicle.
         Args:
             temperature (float): The temperature to set in degree. Default to be celsius.
-            unit (str): [Optional] The unit of temperature. Possible values are "celsius" or "fahrenheit". Default is "celsius".
+            unit (str): [Optional] The unit of temperature. [Enum]: ["celsius", "fahrenheit"]
             fanSpeed (int): [Optional] The fan speed to set from 0 to 100. Default is 50.
-            mode (str): [Optional] The climate mode to set. Possible values are "auto", "cool", "heat", "defrost". Default is "auto".
+            mode (str): [Optional] The climate mode to set. [Enum]: ["auto", "cool", "heat", "defrost"]
         Returns:
             currentTemperature (float): The current temperature set in degree Celsius.
             climateMode (str): The current climate mode set.
@@ -330,17 +330,25 @@ class VehicleControlAPI:
             option (str): The option to display. [Enum]: ["fuel", "battery", "doors", "climate", "headlights", "parkingBrake", "brakePadle", "engine"]
         Returns:
             status (Dict): The status of the vehicle based on the option.
-                - fuelLevel (float): The fuel level of the vehicle in gallons.
-                - batteryVoltage (float): The battery voltage of the vehicle in volts.
-                - doorStatus (Dict): The status of the doors.
+                - fuelLevel (float): [Optional] The fuel level of the vehicle in gallons.
+                - batteryVoltage (float): [Optional] The battery voltage of the vehicle in volts.
+                - doorStatus (Dict): [Optional] The status of the doors.
                     - driver (str): The status of the driver door. [Enum]: ["locked", "unlocked"]
                     - passenger (str): The status of the passenger door. [Enum]: ["locked", "unlocked"]
                     - rear_left (str): The status of the rear left door. [Enum]: ["locked", "unlocked"]
                     - rear_right (str): The status of the rear right door. [Enum]: ["locked", "unlocked"]
-                - currentACTemperature (float): The current temperature set in degree Celsius.
-                - headlightStatus (str): The status of the headlights. [Enum]: ["on", "off"]
-                - parkingBrakeStatus (str): The status of the brake. [Enum]: ["engaged", "released"]
-                - engineState (str): The state of the engine. [Enum]: ["running", "stopped"]
+                - currentACTemperature (float): [Optional] The current temperature set in degree Celsius.
+                - fanSpeed (int): [Optional] The fan speed set from 0 to 100.
+                - climateMode (str): [Optional] The climate mode set. [Enum]: ["auto", "cool", "heat", "defrost"]
+                - humidityLevel (float): [Optional] The humidity level in percentage.
+                - headlightStatus (str): [Optional] The status of the headlights. [Enum]: ["on", "off"]
+                - parkingBrakeStatus (str): [Optional] The status of the brake. [Enum]: ["engaged", "released"]
+                - parkingBrakeForce (float): [Optional] The force applied to the brake in Newtons.
+                - slopeAngle (float): [Optional] The slope angle in degrees.
+                - brakePedalStatus (str): [Optional] The status of the brake pedal. [Enum]: ["pressed", "released"]
+                - brakePedalForce (float): [Optional] The force applied to the brake pedal in Newtons.
+                - engineState (str): [Optional] The state of the engine. [Enum]: ["running", "stopped"]
+                - metadata (str): [Optional] The metadata of the car.
         """
         status = {}
         if self.long_context:
