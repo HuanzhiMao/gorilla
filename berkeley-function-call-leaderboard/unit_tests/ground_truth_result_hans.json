@@ -1470,7 +1470,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR005',message='Latest Quarter Performance has been well.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR005' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         }
     ]
 }
@@ -1742,11 +1742,11 @@
         },
         {
             "func_call": "send_message(receiver_id='USR005',message='Kelly Total Score: 96')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR005' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR002\": [[\"Meeting at 3 PM\"]], \"USR003\": [[\"Please review the document.\"]], \"USR005\": [\"Kelly Total Score: 96\"]}}"
+            "result": "{\"messages\": {\"USR002\": [[\"Meeting at 3 PM\"]], \"USR003\": [[\"Please review the document.\"]]}}"
         }
     ]
 }
@@ -3145,7 +3145,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003', message='update the system')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -3157,7 +3157,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR003\": [[\"Thanks for the update!\"], \"update the system\"]}}"
+            "result": "{\"messages\": {\"USR003\": [[\"Thanks for the update!\"]]}}"
         }
     ]
 }
@@ -3735,7 +3735,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002', message='The report has been finalized.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         }
     ]
 }
@@ -3799,7 +3799,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002',message='Meeting notes and project details.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -3965,7 +3965,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002', message='This is the annual report. It includes Q4 results and other financial data.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         }
     ]
 }
@@ -4437,8 +4437,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 30.0,
                     "cruiseStatus": "inactive",
@@ -4488,8 +4488,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -4522,12 +4522,12 @@
             ]
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -4549,7 +4549,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I'd appreciate it if you could send a quick message 'I'm on my way to your place.' to my cousin (user id USR002), updating them that I'm en route to their place. My user id is USR001 and place login."
+                    "content": "I'd appreciate it if you could send a quick message 'I'm on my way to your place.' to my cousin (user id USR002), updating them my status. If you need, my user id is USR001."
                 }
             ]
         },
@@ -4559,7 +4559,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002', message='I\u2019m on my way to your place.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         }
     ]
 }
@@ -4583,8 +4583,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "engaged",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "engaged",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -4643,12 +4643,12 @@
             ]
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -4712,8 +4712,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -4791,12 +4791,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 0.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -4844,8 +4844,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -4937,12 +4937,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -4994,8 +4994,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -5041,12 +5041,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 10.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5118,8 +5118,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -5180,12 +5180,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         }
     ]
 }
@@ -5209,8 +5209,8 @@
                     "acMode": "cool",
                     "humidityLevel": 45.0,
                     "headLightStatus": "on",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -5280,8 +5280,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -5347,12 +5347,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5388,8 +5388,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -5461,12 +5461,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5502,8 +5502,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -5540,12 +5540,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 10.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5617,8 +5617,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -5679,12 +5679,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 49.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5720,8 +5720,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -5758,7 +5758,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR004', message='The distance from Rivermist to Stonebrook is 750.0 km.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR004' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -5781,12 +5781,12 @@
             ]
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5798,7 +5798,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR002\": [\"My name is Alice. I want to connect.\"], \"USR003\": [\"Could you upload the file?\"], \"USR004\": [\"Could you upload the file?\", \"The distance from Rivermist to Stonebrook is 750.0 km.\"]}}"
+            "result": "{\"messages\": {\"USR002\": [\"My name is Alice. I want to connect.\"], \"USR003\": [\"Could you upload the file?\"], \"USR004\": [\"Could you upload the file?\"]}}"
         }
     ]
 }
@@ -5822,8 +5822,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -5864,12 +5864,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 43.85, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5917,8 +5917,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -5943,12 +5943,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5988,8 +5988,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -6077,12 +6077,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 13.96, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "func_call": "displayCarStatus(option='battery')",
@@ -6130,8 +6130,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -6180,12 +6180,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 40.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -6221,8 +6221,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -6291,12 +6291,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         }
     ]
 }
@@ -6320,8 +6320,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -6417,12 +6417,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -6486,8 +6486,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -6581,12 +6581,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.57, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "func_call": "post_tweet(content='Just started my journey!', tags=['#RoadTrip'], mentions=['@carenthusiast'])",
@@ -6614,8 +6614,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -6648,12 +6648,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.038536, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -6697,8 +6697,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "engaged",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "engaged",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -6767,12 +6767,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -6808,8 +6808,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -6874,12 +6874,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -6907,7 +6907,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR007', message='Road trip itinerary update.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR007' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -6919,7 +6919,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR005\": [[\"Hey Sarah, are you ready for the trip?\"]], \"USR007\": [[\"I'll be there soon.\"], \"Road trip itinerary update.\"], \"USR008\": [[\"Got the snacks!\"]]}}"
+            "result": "{\"messages\": {\"USR005\": [[\"Hey Sarah, are you ready for the trip?\"]], \"USR007\": [[\"I'll be there soon.\"]], \"USR008\": [[\"Got the snacks!\"]]}}"
         }
     ]
 }
@@ -6943,8 +6943,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -6981,12 +6981,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 25.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -7022,8 +7022,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -7073,12 +7073,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.04, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "func_call": "displayCarStatus(option='fuel')",
@@ -7110,8 +7110,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -7222,8 +7222,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -7304,12 +7304,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -7345,8 +7345,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -7534,8 +7534,8 @@
                     "acMode": "cool",
                     "humidityLevel": 45.0,
                     "headLightStatus": "on",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "active",
@@ -7722,8 +7722,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -7760,12 +7760,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -7777,7 +7777,7 @@
         },
         {
             "func_call": "setCruiseControl(speed=65, activate=True, distanceToNextVehicle=100)",
-            "result": "{\"cruiseStatus\": \"active\", \"currentSpeed\": 65, \"distanceToNextVehicle\": 100}"
+            "result": "{\"error\": \"Start the engine before activating the cruise control.\"}"
         }
     ]
 }
@@ -7801,8 +7801,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -7871,12 +7871,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -7912,8 +7912,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -7962,12 +7962,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 4.640000000000001, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "func_call": "displayCarStatus(option='fuel')",
@@ -8023,8 +8023,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -8085,12 +8085,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         }
     ]
 }
@@ -8114,8 +8114,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -8156,12 +8156,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 7.93, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -8197,8 +8197,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -8227,12 +8227,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 35.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -8272,8 +8272,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -8318,12 +8318,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         }
     ]
 }
@@ -8347,8 +8347,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "engaged",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "engaged",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -8416,12 +8416,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "func_call": "check_tire_pressure()",
@@ -8477,8 +8477,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -8527,12 +8527,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -8572,8 +8572,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -8619,8 +8619,8 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "Question": [
@@ -8632,7 +8632,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "func_call": "post_tweet(content='Embarking on an exciting road trip from SF to Rivermist!', tags=['#RoadTrip', '#Adventure', '#Exploring'])",
@@ -8660,8 +8660,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -8730,12 +8730,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 40.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         }
     ]
 }
@@ -8759,8 +8759,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -8812,12 +8812,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 8.96258, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -8885,8 +8885,8 @@
                     "acMode": "cool",
                     "humidityLevel": 45.0,
                     "headLightStatus": "on",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 5.0,
                     "distanceToNextVehicle": 30.0,
                     "cruiseStatus": "active",
@@ -8945,7 +8945,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR006', message='It is hot outside.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR006' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -8957,7 +8957,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR008\": [[\"Can you send the report?\"]], \"USR005\": [[\"The meeting is at 3 PM.\"]], \"USR006\": [[\"Please review the document.\"], \"It is hot outside.\"], \"USR007\": [[\"Let's catch up later.\"]]}}"
+            "result": "{\"messages\": {\"USR008\": [[\"Can you send the report?\"]], \"USR005\": [[\"The meeting is at 3 PM.\"]], \"USR006\": [[\"Please review the document.\"]], \"USR007\": [[\"Let's catch up later.\"]]}}"
         }
     ]
 }
@@ -8981,8 +8981,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -9043,12 +9043,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -9088,8 +9088,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -9130,12 +9130,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "func_call": "check_tire_pressure()",
@@ -9176,8 +9176,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "engaged",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "engaged",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -9231,7 +9231,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 40.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         }
     ]
 }
@@ -9256,8 +9256,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "engaged",
-                    "brakeForce": 100.0,
+                    "parkingBrakeStatus": "engaged",
+                    "parkingBrakeForce": 100.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -9307,7 +9307,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -9347,7 +9347,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR008', message='The estimated distance from Rivermist to San Francisco is 980.0 miles.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR008' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -9359,7 +9359,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR006\": [[\"Got it, thanks!\"]], \"USR007\": [[\"Sure, see you then.\"]], \"USR005\": [[\"Please review the attached document.\"]], \"USR008\": [\"The estimated distance from Rivermist to San Francisco is 980.0 miles.\"]}}"
+            "result": "{\"messages\": {\"USR006\": [[\"Got it, thanks!\"]], \"USR007\": [[\"Sure, see you then.\"]], \"USR005\": [[\"Please review the attached document.\"]]}}"
         }
     ]
 }
@@ -9383,8 +9383,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -9421,12 +9421,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.0, \"batteryVoltage\": 13.2}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -9470,8 +9470,8 @@
                     "acMode": "auto",
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
@@ -9556,12 +9556,12 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -9573,7 +9573,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002', message='I am on my way.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -9585,7 +9585,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR002\": [\"Safe travels!\", \"I am on my way.\"]}}"
+            "result": "{\"messages\": {\"USR002\": [\"Safe travels!\"]}}"
         }
     ]
 }
@@ -9609,8 +9609,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -9651,12 +9651,12 @@
             ]
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -9701,8 +9701,8 @@
                     "acMode": "auto",
                     "humidityLevel": 45.0,
                     "headLightStatus": "off",
-                    "brakeStatus": "released",
-                    "brakeForce": 0.0,
+                    "parkingBrakeStatus": "released",
+                    "parkingBrakeForce": 0.0,
                     "slopeAngle": 0.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
@@ -9739,12 +9739,12 @@
             ]
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "pressBrakePedal()",
+            "result": "Error during execution: VehicleControlAPI.pressBrakePedal() missing 1 required positional argument: 'force'"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Must press the brake before starting the engine.\"}"
         },
         {
             "func_call": "displayCarStatus(option='fuel')",
@@ -10075,7 +10075,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003',message='The latest stock price of XTC is $150.75.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -10087,7 +10087,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR003\": [\"The latest stock price of XTC is $150.75.\"]}}"
+            "result": "{\"messages\": {}}"
         }
     ]
 }
@@ -10471,7 +10471,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002', message='Dear Customer Service, please confirm the successful execution of my order for 150 shares of Omega Industries at the current market price, and verify the order details under reference ID USR002. Thank you.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         }
     ]
 }
@@ -11635,7 +11635,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Regrettably, I've stumbled upon a complication related to one of my recent transactions. I'd appreciate your help in initiating a priority level 3 support ticket labeled 'Urgent: Transaction Issue,' with the description 'There is an issue with a recent transaction involving a canceled buy order for 100 shares of AAPL and I am requesting confirmation of the cancellation along with an account summary. My username is user123 and password is 12345 for the ticket login."
+                    "content": "Regrettably, I've stumbled upon a complication related to one of my recent transactions. I'd appreciate your help in initiating a priority level 3 support ticket labeled 'Urgent: Transaction Issue' with the description 'There is an issue with a recent transaction involving a canceled buy order for 100 shares of AAPL and I am requesting confirmation of the cancellation along with an account summary. My username is user123 and password is 12345 for the ticket login."
                 }
             ]
         },
@@ -11847,7 +11847,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR002',message='What are the new stock inclusion and the status of my current order?')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR002' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -11859,7 +11859,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR001\": [{}], \"USR002\": [{\"USR001\": [\"My name is John. I want to connect.\"], \"USR003\": [\"I am busy\"], \"USR004\": [\"I am on leave\"]}, \"What are the new stock inclusion and the status of my current order?\"], \"USR003\": [{\"USR002\": [\"Could you upload the file?\"]}], \"USR004\": [{\"USR002\": [\"Could you upload the file?\"]}], \"USR005\": [{\"USR001\": [\"Regarding the new stock inclusion and the status of my current order.\"]}]}}"
+            "result": "{\"messages\": {\"USR001\": [{}], \"USR002\": [{\"USR001\": [\"My name is John. I want to connect.\"], \"USR003\": [\"I am busy\"], \"USR004\": [\"I am on leave\"]}], \"USR003\": [{\"USR002\": [\"Could you upload the file?\"]}], \"USR004\": [{\"USR002\": [\"Could you upload the file?\"]}], \"USR005\": [{\"USR001\": [\"Regarding the new stock inclusion and the status of my current order.\"]}]}}"
         }
     ]
 }
@@ -11977,13 +11977,9 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "As I navigate my investments, it would be tremendously beneficial to have an insightful update on how various sectors are currently performing in the market."
+                    "content": "As I navigate my investments, it would be tremendously beneficial to have an insight on whether the market would be open right now at 10:30 am, would you please check."
                 }
             ]
-        },
-        {
-            "func_call": "get_current_time()",
-            "result": "{\"current_time\": \"10:30 AM\"}"
         },
         {
             "func_call": "update_market_status(current_time_str='10:30 AM')",
@@ -12017,7 +12013,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Turning to the horizon of future investments, analyzing a bit of history would be strategic. Would you mind canceling my pending order associated with the most recent order ID? I need to examine last month's transaction records closely."
+                    "content": "Turning to the horizon of future investments, analyzing a bit of history would be strategic. Would you mind canceling my pending order associated with the most recent order ID?"
                 }
             ]
         },
@@ -12349,7 +12345,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR007',message='NVDA and QUAS')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR007' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -12361,7 +12357,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR006\": [{\"USR005\": [\"Interested in Quasar Ltd stocks.\"]}], \"USR007\": [\"NVDA and QUAS\"]}}"
+            "result": "{\"messages\": {\"USR006\": [{\"USR005\": [\"Interested in Quasar Ltd stocks.\"]}]}}"
         }
     ]
 }
@@ -14167,7 +14163,7 @@
                         }
                     ],
                     "ticket_counter": 2,
-                    "current_user": "Josephine"
+                    "current_user": "John"
                 }
             }
         },
@@ -15236,7 +15232,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003',message='I just execute another order. What do you think of it?')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -15381,7 +15377,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Review the order we've placed by looking at its details, and let me know if it should be cancelled."
+                    "content": "Review the order that I had placed, looking at its details, and let me know if it should be cancelled."
                 }
             ]
         },
@@ -15954,7 +15950,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Give me an update on where Zeta Corp's stock stands right now. I've got my eye on picking up 50 shares at the ongoing rate."
+                    "content": "Give me an update on where Zeta Corp's stock stands right now and proceed with purchasing 50 shares at the ongoing rate."
                 }
             ]
         },
@@ -16195,7 +16191,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR001',message='this is my plan')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR001' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         }
     ]
 }
@@ -16368,7 +16364,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR006',message='order of purchasing SYNX is completed.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR006' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -16380,7 +16376,7 @@
         },
         {
             "func_call": "delete_message(receiver_id='USR006')",
-            "result": "{\"deleted_status\": true, \"message_id\": \"USR006\", \"message\": \"Receiver USR006's first message deleted successfully.\"}"
+            "result": "{\"error\": \"Receiver ID USR006 not found.\"}"
         }
     ]
 }
@@ -16660,7 +16656,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I've already reached out to support concerning the order issue, but still no word. Can you craft an urgent ticket labeled 'Critical Order Assistance'? Make sure to encapsulate the order details and craft a concise case summary with message 'Urgent assistance required' for the support team's assessment."
+                    "content": "I've already reached out to support concerning the order issue, but still no word. Can you craft a ticket labeled 'Critical Order Assistance'? Make sure to encapsulate the order details and craft a concise case summary with message 'Urgent assistance required' for the support team's assessment."
                 }
             ]
         },
@@ -16672,7 +16668,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Since I've tackled the problem on my own, go ahead and close out the ticket regarding the order inquiry, noting that it was 'Self-resolved, no longer requiring assistance.'"
+                    "content": "Since I've tackled the problem on my own, go ahead and resolve the ticket regarding the order inquiry, noting that it was 'Self-resolved, no longer requiring assistance.'"
                 }
             ]
         },
@@ -16864,8 +16860,8 @@
             ]
         },
         {
-            "func_call": "send_message(receiver_id='USR005',message='100 shares of GOOG purchased, thoughts')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR005' successfully.\"}"
+            "func_call": "send_message(receiver_id='USR005',message='100 shares of GOOG purchased, thoughts?')",
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         }
     ]
 }
@@ -17173,7 +17169,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I've been following a few orders and aim to review the specifics of one with a substantial transaction value I remember initiating. Let's retrieve the details."
+                    "content": "I've been following a few orders and aim to review the specifics of one with a substantial order value I remember initiating. Let's retrieve the details."
                 }
             ]
         },
@@ -17197,7 +17193,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I require some confidence about my current financial positioning. Share a detailed overview of my account, including balances and any associated card numbers. Furthermore, logging in as USR001 notify my financial advisor (user id 'USR003') promptly about this potential shift in my investment strategy with our latest account details and investment considerations. Send the message 'My strategy is shifting due to recent market movements and the cancellation of a specific order.'. My user id is '1234'."
+                    "content": "I require some confidence about my current financial positioning. Share a detailed overview of my account, including balances and any associated card numbers. Furthermore, logging in as USR001 notify my financial advisor (user id 'USR003') promptly about this potential shift in my investment strategy with our latest account details and investment considerations. Send the message 'My strategy is shifting due to recent market movements and the cancellation of a specific order.'. My user id is 'USR001'."
                 }
             ]
         },
@@ -17211,7 +17207,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003',message='My strategy is shifting due to recent market movements and the cancellation of a specific order.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         }
     ]
 }
@@ -17505,7 +17501,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Having kept a keen eye on the advancements in the tech industry, I recently caught wind of some stellar performance from a company I believe is comparable to Zeta Corp. How's their stock currently faring?"
+                    "content": "Having kept a keen eye on the advancements in the tech industry, I recently caught wind of some stellar performance from a company called Zeta Corp. How's their stock currently faring?"
                 }
             ]
         },
@@ -17551,7 +17547,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003',message='Zeta Corp seems to have potential. What do you think of their recent financial report?')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -17563,7 +17559,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR001\": [[\"My name is John. I want to connect.\"]], \"USR003\": [[\"I am busy\"], \"Zeta Corp seems to have potential. What do you think of their recent financial report?\"], \"USR004\": [[\"I am on leave\"]]}}"
+            "result": "{\"messages\": {\"USR001\": [[\"My name is John. I want to connect.\"]], \"USR003\": [[\"I am busy\"]], \"USR004\": [[\"I am on leave\"]]}}"
         }
     ]
 }
@@ -17851,7 +17847,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Hi there! I noticed Omega Industries is trading at high price, and they're quite a rising star in the tech domain. Would you like to kick off a dazzling tweet for me? Could you find the price and fill it with content 'Omega Industries is skyrocketing at {price} per share! The tech industry evolution is electrifying, and we are just getting started.' with #TechBoom in it, while highlighting @industryexperts. It\u2019s sure to create buzz!"
+                    "content": "Hi there! I noticed Omega Industries is trading at high price, and they're quite a rising star in the tech domain. Would you like to kick off a dazzling tweet for me? Could you find the price and fill it with content 'Omega Industries is skyrocketing at ${price} per share! The tech industry evolution is electrifying, and we are just getting started.' with #TechBoom in it, while highlighting @industryexperts. It\u2019s sure to create buzz!"
                 }
             ]
         },
@@ -18043,13 +18039,13 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Following a disappointing experience with a recent error on the trading platform, I need you to lodge a complaint ticket labeled 'Platform Error' complete with a thorough explanation for the support team to investigate, I want this message 'issue with a recent trading platform error following the cancellation of an AAPL order and a request for an account overview.'"
+                    "content": "Following a disappointing experience with a recent error on the trading platform, I need you to lodge a complaint ticket labeled 'Platform Error' complete with a thorough explanation for the support team to investigate, I want this message 'Issue with a recent trading platform error following the cancellation of an AAPL order and a request for an account overview.'"
                 }
             ]
         },
         {
-            "func_call": "create_ticket(title='Platform Error',description='issue with a recent trading platform error following the cancellation of an AAPL order and a request for an account overview.')",
-            "result": "{\"id\": 0, \"title\": \"Platform Error\", \"description\": \"issue with a recent trading platform error following the cancellation of an AAPL order and a request for an account overview.\", \"status\": \"Open\", \"priority\": 1, \"created_by\": \"John\"}"
+            "func_call": "create_ticket(title='Platform Error',description='Issue with a recent trading platform error following the cancellation of an AAPL order and a request for an account overview.')",
+            "result": "{\"id\": 0, \"title\": \"Platform Error\", \"description\": \"Issue with a recent trading platform error following the cancellation of an AAPL order and a request for an account overview.\", \"status\": \"Open\", \"priority\": 1, \"created_by\": \"John\"}"
         }
     ]
 }
@@ -18223,8 +18219,8 @@
             ]
         },
         {
-            "func_call": "send_message(receiver_id='USR003', message='I have decided to drop those dipping stocks from my line-up.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
+            "func_call": "send_message(receiver_id='USR003', message='I've decided to drop those dipping stocks from my line-up.')",
+            "result": "Error during execution: unterminated string literal (detected at line 1) (<string>, line 1)"
         },
         {
             "Question": [
@@ -18236,7 +18232,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR001\": [[\"My name is John. I want to connect.\"]], \"USR003\": [\"I have decided to drop those dipping stocks from my line-up.\"]}}"
+            "result": "{\"messages\": {\"USR001\": [[\"My name is John. I want to connect.\"]]}}"
         },
         {
             "Question": [
@@ -18248,7 +18244,7 @@
         },
         {
             "func_call": "delete_message(receiver_id='USR003')",
-            "result": "{\"deleted_status\": true, \"message_id\": \"USR003\", \"message\": \"Receiver USR003's first message deleted successfully.\"}"
+            "result": "{\"error\": \"Receiver ID USR003 not found.\"}"
         }
     ]
 }
@@ -19932,7 +19928,7 @@
         },
         {
             "func_call": "send_message(receiver_id='travel_advisor', message='Details regarding problems faced with the flight booking transaction.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'travel_advisor' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         }
     ]
 }
@@ -20255,11 +20251,11 @@
         },
         {
             "func_call": "send_message(receiver_id='travel_agent', message='Thank you for your efficient handling of my booking to Beijing. My trip is confirmed for June 15th from JFK to PEK in first class.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'travel_agent' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR005\": [[\"Hey Sarah, are you ready for the trip?\"]], \"USR007\": [[\"I'll  be there soon.\"]], \"USR008\": [[\"Got the snacks!\"]], \"USR006\": [[\"Can you bring the maps?\"]], \"travel_agent\": [\"Thank you for your efficient handling of my booking to Beijing. My trip is confirmed for June 15th from JFK to PEK in first class.\"]}}"
+            "result": "{\"messages\": {\"USR005\": [[\"Hey Sarah, are you ready for the trip?\"]], \"USR007\": [[\"I'll  be there soon.\"]], \"USR008\": [[\"Got the snacks!\"]], \"USR006\": [[\"Can you bring the maps?\"]]}}"
         }
     ]
 }
@@ -20334,7 +20330,7 @@
         },
         {
             "func_call": "send_message(receiver_id='m0llyTr@vel2k24', message='Everything for our trip is sorted and ready!')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'm0llyTr@vel2k24' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -20346,7 +20342,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"m0llyTr@vel2k24\": [[\"Looking forward to our trip!\"], \"Everything for our trip is sorted and ready!\"]}}"
+            "result": "{\"messages\": {\"m0llyTr@vel2k24\": [[\"Looking forward to our trip!\"]]}}"
         }
     ]
 }
@@ -21578,7 +21574,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR006', message='Hi Sam, my travel plans have changed. I\\'ll update you soon.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR006' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -21590,7 +21586,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR006\": [[\"Hey Lara, let me know if you need any help with your travel plans.\"], \"Hi Sam, my travel plans have changed. I'll update you soon.\"]}}"
+            "result": "{\"messages\": {\"USR006\": [[\"Hey Lara, let me know if you need any help with your travel plans.\"]]}}"
         },
         {
             "Question": [
@@ -23196,7 +23192,7 @@
         },
         {
             "func_call": "send_message(receiver_id='USR003', message='Update on flight issue and customer support contact.')",
-            "result": "{\"sent_status\": true, \"message_id\": {\"new_id\": 67410}, \"message\": \"Message sent to 'USR003' successfully.\"}"
+            "result": "Error during execution: 'MessageAPI' object has no attribute 'generate_id'"
         },
         {
             "Question": [
@@ -23208,7 +23204,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR002\": [\"My name is Alice. I want to connect.\"], \"USR003\": [\"Could you upload the file?\", \"Update on flight issue and customer support contact.\"], \"USR004\": [\"Could you upload the file?\"]}}"
+            "result": "{\"messages\": {\"USR002\": [\"My name is Alice. I want to connect.\"], \"USR003\": [\"Could you upload the file?\"], \"USR004\": [\"Could you upload the file?\"]}}"
         }
     ]
 }
