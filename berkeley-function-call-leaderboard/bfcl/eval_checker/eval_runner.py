@@ -135,7 +135,7 @@ def multi_turn_runner(
             # We display the irrelevance checker result first, then the accuracy checker result if irrelevance is passed
             temp.update(irrelevance_checker_result if not irrelevance_checker_result["valid"] else accuracy_checker_result)
             temp["prompt"] = test_entry
-            temp["model_result"] = multi_turn_model_result_list
+            temp["model_result"] = multi_turn_model_result_list_decoded
             temp["possible_answer"] = multi_turn_ground_truth_list
             temp.update(irrelevance_checker_result)
             temp.update(accuracy_checker_result)
