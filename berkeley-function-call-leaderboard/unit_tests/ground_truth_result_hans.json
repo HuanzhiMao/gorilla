@@ -4522,8 +4522,8 @@
             ]
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "activateParkingBrake('release')",
+            "result": "{\"brakeStatus\": \"released\", \"brakeForce\": 0.0, \"slopeAngle\": 10.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
@@ -4549,7 +4549,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I'd appreciate it if you could send a quick message 'I'm on my way to your place.' to my cousin (user id USR002), updating them that I'm en route to their place. My user id is USR001 and place login."
+                    "content": "I'd appreciate it if you could send a quick message 'I'm on my way to your place.' to my cousin (user id USR002), updating them my status. If you need, my user id is USR001."
                 }
             ]
         },
@@ -4643,8 +4643,8 @@
             ]
         },
         {
-            "func_call": "activateParkingBrake('engage')",
-            "result": "{\"brakeStatus\": \"engaged\", \"brakeForce\": 500.0, \"slopeAngle\": 10.0}"
+            "func_call": "activateParkingBrake('release')",
+            "result": "{\"brakeStatus\": \"released\", \"brakeForce\": 0.0, \"slopeAngle\": 10.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
@@ -4796,7 +4796,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 0.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -4942,7 +4942,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5046,7 +5046,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 10.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5185,7 +5185,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         }
     ]
 }
@@ -5352,7 +5352,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5466,7 +5466,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5545,7 +5545,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 10.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5684,7 +5684,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 49.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5786,7 +5786,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5869,7 +5869,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 43.85, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -5948,7 +5948,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -6082,7 +6082,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 13.96, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "func_call": "displayCarStatus(option='battery')",
@@ -6185,7 +6185,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 40.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -6296,7 +6296,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         }
     ]
 }
@@ -6422,7 +6422,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -6586,7 +6586,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.57, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "func_call": "post_tweet(content='Just started my journey!', tags=['#RoadTrip'], mentions=['@carenthusiast'])",
@@ -6653,7 +6653,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.038536, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -6772,7 +6772,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -6879,7 +6879,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -6986,7 +6986,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 25.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -7078,7 +7078,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.04, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "func_call": "displayCarStatus(option='fuel')",
@@ -7309,7 +7309,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -7765,7 +7765,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -7777,7 +7777,7 @@
         },
         {
             "func_call": "setCruiseControl(speed=65, activate=True, distanceToNextVehicle=100)",
-            "result": "{\"cruiseStatus\": \"active\", \"currentSpeed\": 65, \"distanceToNextVehicle\": 100}"
+            "result": "{\"error\": \"Start the engine before activating the cruise control.\"}"
         }
     ]
 }
@@ -7876,7 +7876,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -7967,7 +7967,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 4.640000000000001, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "func_call": "displayCarStatus(option='fuel')",
@@ -8090,7 +8090,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         }
     ]
 }
@@ -8161,7 +8161,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 7.93, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -8232,7 +8232,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 35.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -8323,7 +8323,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         }
     ]
 }
@@ -8421,7 +8421,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "func_call": "check_tire_pressure()",
@@ -8532,7 +8532,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -8632,7 +8632,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "func_call": "post_tweet(content='Embarking on an exciting road trip from SF to Rivermist!', tags=['#RoadTrip', '#Adventure', '#Exploring'])",
@@ -8735,7 +8735,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 40.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         }
     ]
 }
@@ -8817,7 +8817,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 8.96258, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -9048,7 +9048,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -9135,7 +9135,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "func_call": "check_tire_pressure()",
@@ -9231,7 +9231,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 40.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         }
     ]
 }
@@ -9307,7 +9307,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -9426,7 +9426,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.0, \"batteryVoltage\": 13.2}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -9561,7 +9561,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -9656,7 +9656,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "Question": [
@@ -9744,7 +9744,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.8}"
+            "result": "{\"error\": \"Press the parking brake before starting the engine.\"}"
         },
         {
             "func_call": "displayCarStatus(option='fuel')",
