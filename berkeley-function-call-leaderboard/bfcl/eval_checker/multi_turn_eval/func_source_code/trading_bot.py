@@ -196,7 +196,7 @@ class TradingBot:
             current_time_str (str): Current time in HH:MM AM/PM format.
 
         Returns:
-            status (str): Status of the market ('Open' or 'Closed').
+            status (str): Status of the market. [Enum]: ["Open", "Closed"]
         """
         market_open_time = time(9, 30)  # Market opens at 9:30 AM
         market_close_time = time(16, 0)  # Market closes at 4:00 PM
@@ -248,8 +248,8 @@ class TradingBot:
             price (float): Current price of the stock.
             percent_change (float): Percentage change in stock price.
             volume (float): Trading volume of the stock.
-            MA5 (float): 5-day Moving Average of the stock.
-            MA20 (float): 20-day Moving Average of the stock.
+            MA(5) (float): 5-day Moving Average of the stock.
+            MA(20) (float): 20-day Moving Average of the stock.
         """
         if symbol not in self.stocks:
             return {"error": f"Stock with symbol '{symbol}' not found."}
@@ -558,7 +558,7 @@ class TradingBot:
         filtered_history = [
             transaction
             for transaction in self.transaction_history
-            if start <= datetime.strptime(transaction["timestamp"], "%I:%M %p") <= end
+            if start <= datetime.strptime(transaction["timestamp"], "%Y-%m-%d") <= end
         ]
 
         if self.long_context:
