@@ -240,6 +240,8 @@ class VehicleControlAPI:
         """
         if unlock:
             for d in door:
+                if self.doorStatus[d] == "unlocked":
+                    continue
                 self.doorStatus[d] = "unlocked"
                 self.remainingUnlockedDoors += 1
             return {
@@ -248,6 +250,8 @@ class VehicleControlAPI:
             }
         else:
             for d in door:
+                if self.doorStatus[d] == "locked":
+                    continue
                 self.doorStatus[d] = "locked"
                 self.remainingUnlockedDoors -= 1
             return {
