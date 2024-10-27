@@ -27,15 +27,14 @@ def multi_turn_checker(
     # First execute all the function calls
     for turn_index, single_turn_ground_truth_list in enumerate(
         multi_turn_ground_truth_list
-    ):  
-        temp =[]
+    ):
         single_turn_model_response_list = multi_turn_model_result_list_decoded[turn_index]
-        # if single_turn_ground_truth_list and not single_turn_model_response_list:
-        #     return {
-        #         "valid": False,
-        #         "error": f"Model response list is empty for turn {turn_index}",
-        #         "error_type": "multi_turn:empty_turn_model_response",
-        #     }
+        if single_turn_ground_truth_list and not single_turn_model_response_list:
+            return {
+                "valid": False,
+                "error": f"Model response list is empty for turn {turn_index}",
+                "error_type": "multi_turn:empty_turn_model_response",
+            }
 
         # If the ground truth list is empty, this is the turn where the model should not output anything, so we skip the turn
         # The actual check for irrelevance is done in the multi_turn_irrelevance_checker function
@@ -75,20 +74,18 @@ def multi_turn_checker(
                     is_evaL_run=True,
                 )
             )
-            temp.append({"func_call": model_response, "result": sub_round_model_execution_results})
             single_turn_model_execution_results.extend(sub_round_model_execution_results)
 
-        log.append(temp)
         ## Check after each turn ##
-        # assert len(model_instances) == len(
-        #     ground_truth_instances
-        # ), f"Model instances and ground truth instances do not match in length for turn {turn_index}. Model instances: {len(model_instances)}, Ground truth instances: {len(ground_truth_instances)}"
-        # assert set(model_instances.keys()) == set(ground_truth_instances.keys())
+        assert len(model_instances) == len(
+            ground_truth_instances
+        ), f"Model instances and ground truth instances do not match in length for turn {turn_index}. Model instances: {len(model_instances)}, Ground truth instances: {len(ground_truth_instances)}"
+        assert set(model_instances.keys()) == set(ground_truth_instances.keys())
 
-        # # Check the state of the instances
-        # state_check_result = state_checker(model_instances, ground_truth_instances)
-        # if not state_check_result["valid"]:
-        #     return state_check_result
+        # Check the state of the instances
+        state_check_result = state_checker(model_instances, ground_truth_instances)
+        if not state_check_result["valid"]:
+            return state_check_result
 
         # # Check the response of the function calls
         # response_check_result = response_checker(
@@ -106,7 +103,7 @@ def multi_turn_checker(
         # if not method_invoke_order_check_result["valid"]:
         #     return method_invoke_order_check_result
 
-    return log
+    return {"valid": True}
 
 
 def multi_turn_irrelevance_checker(
