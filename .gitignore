@@ -19,11 +19,6 @@ goex/docker/misc/images.json
 
 ################## Berkley Function Call Leaderboard ##########################
 
-# Ignore inference results
-berkeley-function-call-leaderboard/result/
-
-# Ignore leaderboard score
-berkeley-function-call-leaderboard/score/
 
 # Ignore environment variables
 berkeley-function-call-leaderboard/.env
