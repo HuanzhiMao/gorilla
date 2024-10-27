@@ -68,7 +68,7 @@ class VehicleControlAPI:
         self._parkingBrakeForce: float
         self._slopeAngle: float
         self.brakePedalStatus: str
-        self.brakePedalForce: float
+        self._brakePedalForce: float
         self.distanceToNextVehicle: float
         self.cruiseStatus: str
         self.destination: str
@@ -131,7 +131,7 @@ class VehicleControlAPI:
         self.brakePedalStatus = scenario.get(
             "brakePedalStatus", DEFAULT_STATE_COPY["brakePedalStatus"]
         )  # pressed, released
-        self.brakePedalForce = scenario.get(
+        self._brakePedalForce = scenario.get(
             "brakePedalForce", DEFAULT_STATE_COPY["brakePedalForce"]
         )  # in Newtons
         self.distanceToNextVehicle = scenario.get(
@@ -194,7 +194,7 @@ class VehicleControlAPI:
             }
         if self.brakePedalStatus != "pressed":
             return {"error": "Brake pedal needs to be pressed when starting the engine."}
-        if self.brakePedalForce != 1000.0:
+        if self._brakePedalForce != 1000.0:
             return {"error": "Must press the brake fully before starting the engine."}
         if self.fuelLevel < MIN_FUEL_LEVEL:
             return {"error": "Fuel tank is empty."}
@@ -372,7 +372,7 @@ class VehicleControlAPI:
             status["slopeAngle"] = self._slopeAngle
         elif option == "brakePedal":
             status["brakePedalStatus"] = self.brakePedalStatus
-            status["brakePedalForce"] = self.brakePedalForce
+            status["brakePedalForce"] = self._brakePedalForce
         elif option == "engine":
             status["engineState"] = self.engine_state
         else:
@@ -433,7 +433,7 @@ class VehicleControlAPI:
         # Release the brake if pedal position is zero
         if pedalPosition == 0:
             self.brakePedalStatus = "released"
-            self.brakePedalForce = 0.0
+            self._brakePedalForce = 0.0
             return {"brakePedalStatus": "released", "brakePedalForce": 0.0}
         
         # Calculate force based on pedal position
@@ -442,7 +442,7 @@ class VehicleControlAPI:
         
         # Update the brake pedal status and force
         self.brakePedalStatus = "pressed"
-        self.brakePedalForce = force
+        self._brakePedalForce = force
         return {"brakePedalStatus": "pressed", "brakePedalForce": force}
 
     def releaseBrakePedal(self) -> Dict[str, Union[str, float]]:
@@ -453,7 +453,7 @@ class VehicleControlAPI:
             brakePedalForce (float): The force applied to the brake pedal in Newtons.
         """
         self.brakePedalStatus = "released"
-        self.brakePedalForce = 0.0
+        self._brakePedalForce = 0.0
         return {"brakePedalStatus": "released", "brakePedalForce": 0.0}
 
     def setCruiseControl(
@@ -588,6 +588,10 @@ class VehicleControlAPI:
             cityA == "08540" and cityB == "94016"
         ):
             distance = {"distance": 1950.0}
+        elif (cityA == "62947" and cityB == "47329") or (
+            cityA == "47329" and cityB == "62947"
+        ):
+            distance = {"distance": 1053.0}
         else:
             distance = {"distance": 0.0}
 

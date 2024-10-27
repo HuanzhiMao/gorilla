@@ -6089,14 +6089,6 @@
             "result": "{\"engineState\": \"running\", \"fuelLevel\": 13.96, \"batteryVoltage\": 12.6}"
         },
         {
-            "func_call": "displayCarStatus(option='battery')",
-            "result": "{\"batteryVoltage\": 12.6}"
-        },
-        {
-            "func_call": "displayCarStatus(option='fuel')",
-            "result": "{\"fuelLevel\": 13.96}"
-        },
-        {
             "Question": [
                 {
                     "role": "user",
@@ -6151,7 +6143,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Alright, I've been thinking about a road trip and I want to use my own car for the journey. That's quite a stretch\u2014450 miles in one go today. Is this something I could realistically pull off? Don't fill oil now.."
+                    "content": "Alright, I've been thinking about a road trip and I want to use my own car for the journey. That's quite a stretch\u2014450 miles in one go today. Is this something I could realistically pull off? I just want to know a answer; you don't need to refill if it's not reachable."
                 }
             ]
         },
@@ -6548,7 +6540,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Estimate the distance between San Francisco and Rivermist. Afterwards, fill the tank with 40 liters of gasoline for my quick trip. Round the gallon liter to two decimal places"
+                    "content": "Estimate the distance between San Francisco and Rivermist. Afterwards, fill the tank with 40 additional liters of gasoline for my quick trip. Round the fill amount to two decimal places"
                 }
             ]
         },
@@ -6576,7 +6568,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Preparations are complete. Start the engine so I can tweet about this journey containing message 'Just started my journey!' with #RoadTrip and @carenthusiast."
+                    "content": "Preparations are complete. Start the engine and help me tweet about this journey containing message 'Just started my journey!' with #RoadTrip and @carenthusiast."
                 }
             ]
         },
@@ -6635,7 +6627,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Ensure the fuel tank is replenished adequately by adding precisely 38 liters of gasoline so that we're well-prepared for the lengthy voyage ahead. Once fueled, proceed to start the engine confidently with the ignition mode, and make certain that all doors are secure, and the parking brake is engaged as a safety measure."
+                    "content": "Ensure the fuel tank is replenished adequately by adding 38 liters of gasoline so that we're well-prepared for the lengthy voyage ahead. Only fill with interger amount for volumn; round when not integer. Once fueled, proceed to start the engine confidently with the ignition mode, and make certain that all doors are secure, and the parking brake is engaged as a safety measure."
                 }
             ]
         },
@@ -6644,8 +6636,8 @@
             "result": "{\"gallon\": 10.038536}"
         },
         {
-            "func_call": "fillFuelTank(fuelAmount=10.038536)",
-            "result": "{\"fuelLevel\": 20.038536}"
+            "func_call": "fillFuelTank(fuelAmount=10)",
+            "result": "{\"fuelLevel\": 20.0}"
         },
         {
             "func_call": "lockDoors(unlock=False, door=['driver', 'passenger', 'rear_left', 'rear_right'])",
@@ -6657,13 +6649,13 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.038536, \"batteryVoltage\": 12.6}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
                 {
                     "role": "user",
-                    "content": "As we gear up for our adventure, it\u2019s wise to confirm that each tire is inflated to a stable 40 PSI. Should any of the tires fall short, chart a course to the nearest tire service center to have this rectified."
+                    "content": "As we gear up for our adventure, it\u2019s wise to confirm that each tire is inflated to a stable 32 PSI. Should any of the tires fall short, chart a course to the nearest tire service center to have this rectified."
                 }
             ]
         },
@@ -6738,7 +6730,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Assess if my vehicle's current mileage will suffice for the distance calculated. Don't fill any fuel, just assess."
+                    "content": "Assess if my vehicle's current mileage will suffice for the distance calculated. You don't need to re-fill, I just want to know."
                 }
             ]
         },
@@ -6969,8 +6961,8 @@
             ]
         },
         {
-            "func_call": "fillFuelTank(fuelAmount=20.0)",
-            "result": "{\"fuelLevel\": 25.0}"
+            "func_call": "fillFuelTank(fuelAmount=45.0)",
+            "result": "{\"fuelLevel\": 50.0}"
         },
         {
             "Question": [
@@ -6990,7 +6982,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 25.0, \"batteryVoltage\": 12.6}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -7036,15 +7028,6 @@
                     "frontRightTirePressure": 32.0,
                     "rearLeftTirePressure": 30.0,
                     "rearRightTirePressure": 30.0
-                },
-                "MathAPI": {
-                    "numbers": [
-                        12.3,
-                        12.5,
-                        12.4,
-                        12.6,
-                        12.2
-                    ]
                 }
             }
         },
@@ -7068,7 +7051,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Wonderful, with the fuel tank now adequately replenished, proceed to activate the engine in \"START\" mode. Convey to me the operational status of the engine, the remaining fuel quantity, and the voltage of the battery."
+                    "content": "Wonderful, with the fuel tank now adequately replenished, proceed to activate the engine in \"START\" mode. Convey to me the operational status of the engine, the voltage of the battery, the AC speed and the fan speed."
                 }
             ]
         },
@@ -7085,12 +7068,8 @@
             "result": "{\"engineState\": \"running\", \"fuelLevel\": 20.04, \"batteryVoltage\": 12.6}"
         },
         {
-            "func_call": "displayCarStatus(option='fuel')",
-            "result": "{\"fuelLevel\": 20.04}"
-        },
-        {
-            "func_call": "displayCarStatus(option='battery')",
-            "result": "{\"batteryVoltage\": 12.6}"
+            "func_call": "displayCarStatus(option='climate')",
+            "result": "{\"currentACTemperature\": 25.0, \"fanSpeed\": 50, \"climateMode\": \"auto\", \"humidityLevel\": 50.0}"
         }
     ]
 }
@@ -7156,19 +7135,19 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I'm planning ahead for our big trip and realized our car's fuel tank is running low. It would be great if you could top it up with 40 gallons before I turn on the ignition using the 'START' mode."
+                    "content": "I'm planning ahead for our big trip and realized our car's fuel tank is running low. It would be great if you could top it up with an additional 30 gallons before I turn on the ignition using the 'START' mode."
                 }
             ]
         },
         {
-            "func_call": "fillFuelTank(fuelAmount=40.0)",
-            "result": "{\"fuelLevel\": 50.0}"
+            "func_call": "fillFuelTank(fuelAmount=30.0)",
+            "result": "{\"fuelLevel\": 40.0}"
         },
         {
             "Question": [
                 {
                     "role": "user",
-                    "content": "As part of our travel prep, I'm keeping tabs on the tires as well. I'd appreciate it if you could share a quick update about the tire pressures on Twitter, using the format 'Front Left Tire: XXX PSI, Front Right Tire: XXX PSI, Rear Left Tire: XXX PSI, Rear Right Tire: XXX PSI', where 'XXX' is replaced by the actual values for the tire pressure."
+                    "content": "As part of our travel prep, I'm keeping tabs on the tires as well. I'd appreciate it if you could share a quick update about the tire pressures on Twitter, using the format 'Front Left Tire: XXX PSI, Front Right Tire: XXX PSI, Rear Left Tire: XXX PSI, Rear Right Tire: XXX PSI', where 'XXX' is the actual values for the tire pressure."
                 }
             ]
         },
@@ -7184,7 +7163,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Speaking of which, I noticed a tweet about tire pressures with an impressive infographic. Would you mind retweeting it for me?"
+                    "content": "Speaking of which, I noticed that tweets about tire pressures usually gets lots of view. Would you mind retweeting it for me?"
                 }
             ]
         },
@@ -7196,12 +7175,12 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "While you're at it, it'd be awesome if you could comment on that infographic tweet, something like 'Great info, thanks for sharing!' would be perfect."
+                    "content": "While you're at it, it'd be awesome if you could comment on that tweet, something like 'Is this pressue too low? Should I take any action?' would be perfect."
                 }
             ]
         },
         {
-            "func_call": "comment(tweet_id=2, comment_content='Great info, thanks for sharing!')",
+            "func_call": "comment(tweet_id=2, comment_content='Is this pressue too low? Should I take any action?')",
             "result": "{\"comment_status\": \"Comment added successfully\"}"
         }
     ]
@@ -7319,13 +7298,13 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Also, let's not forget to boast a little online. Could you post an update regarding my impeccable tire condition on Twitter like 'Tire pressure is perfect!'? Don't forget to use the hashtags #CarCare and #TireHealth and be sure to give Mike a mention as well."
+                    "content": "Also, let's not forget to boast a little online. Could you post an update regarding my impeccable tire condition on Twitter like 'Tire pressure is perfect!'? Don't forget to use the hashtags #CarCare and #TireHealth and be sure to give my friend Mike a mention as well. I think his user handle is 'mike53'."
                 }
             ]
         },
         {
-            "func_call": "post_tweet(content='Tire pressure is perfect!', tags=['#CarCare', '#TireHealth'], mentions=['@Mike'])",
-            "result": "{\"id\": 10, \"username\": \"fitness_reader\", \"content\": \"Tire pressure is perfect!\", \"tags\": [\"#CarCare\", \"#TireHealth\"], \"mentions\": [\"@Mike\"]}"
+            "func_call": "post_tweet(content='Tire pressure is perfect!', tags=['#CarCare', '#TireHealth'], mentions=['@mike76'])",
+            "result": "{\"id\": 10, \"username\": \"fitness_reader\", \"content\": \"Tire pressure is perfect!\", \"tags\": [\"#CarCare\", \"#TireHealth\"], \"mentions\": [\"@mike76\"]}"
         }
     ]
 }
@@ -7489,20 +7468,28 @@
             ]
         },
         {
-            "func_call": "estimate_distance(cityA='94016', cityB='83214')",
-            "result": "{\"distance\": 980.0}"
+            "func_call": "get_zipcode_based_on_city('San Francisco')",
+            "result": "{\"zipcode\": \"94016\"}"
+        },
+        {
+            "func_call": "get_zipcode_based_on_city('Stonebrook')",
+            "result": "{\"zipcode\": \"74532\"}"
+        },
+        {
+            "func_call": "estimate_distance(cityA='94016', cityB='74532')",
+            "result": "{\"distance\": 0.0}"
         },
         {
             "Question": [
                 {
                     "role": "user",
-                    "content": "Buzzing with anticipation for this family roots journey, I want to tweet: 'Setting forth on an exciting quest from San Francisco to Stonebrook to uncover ancestral stories! #GenealogyAdventure #FamilyHistory.' It'd be great to tag some genealogy buddies to amplify the excursion spirit!"
+                    "content": "Buzzing with anticipation for this family roots journey, I want to tweet: 'Setting forth on an exciting quest from San Francisco to Stonebrook to uncover ancestral stories!' #GenealogyAdventure #FamilyHistory."
                 }
             ]
         },
         {
-            "func_call": "post_tweet(content='Setting forth on an exciting quest from San Francisco to Stonebrook to uncover ancestral stories!', tags=['#GenealogyAdventure', '#FamilyHistory'], mentions=['@genealogyBuddy1', '@genealogyBuddy2'])",
-            "result": "{\"id\": 10, \"username\": \"genealogy_enthusiast\", \"content\": \"Setting forth on an exciting quest from San Francisco to Stonebrook to uncover ancestral stories!\", \"tags\": [\"#GenealogyAdventure\", \"#FamilyHistory\"], \"mentions\": [\"@genealogyBuddy1\", \"@genealogyBuddy2\"]}"
+            "func_call": "post_tweet(content='Setting forth on an exciting quest from San Francisco to Stonebrook to uncover ancestral stories!', tags=['#GenealogyAdventure', '#FamilyHistory'])",
+            "result": "{\"id\": 10, \"username\": \"genealogy_enthusiast\", \"content\": \"Setting forth on an exciting quest from San Francisco to Stonebrook to uncover ancestral stories!\", \"tags\": [\"#GenealogyAdventure\", \"#FamilyHistory\"], \"mentions\": []}"
         },
         {
             "Question": [
@@ -7680,7 +7667,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I'm gearing up for a quick business getaway and need my ride all set. Would you be able to verify if my tire pressure is in check? If it falls under 40 PSI, perhaps we could swing by the nearest tire shop?"
+                    "content": "I'm gearing up for a quick business getaway and need my ride all set. Would you be able to verify if my tire pressure is in check? If it falls under 37.5 PSI, perhaps we could swing by the nearest tire shop?"
                 }
             ]
         },
@@ -7835,6 +7822,14 @@
             ]
         },
         {
+            "func_call": "get_zipcode_based_on_city('San Francisco')",
+            "result": "{\"zipcode\": \"94016\"}"
+        },
+        {
+            "func_call": "get_zipcode_based_on_city('Rivermist')",
+            "result": "{\"zipcode\": \"83214\"}"
+        },
+        {
             "func_call": "estimate_distance(cityA='83214', cityB='94016')",
             "result": "{\"distance\": 980.0}"
         },
@@ -7957,7 +7952,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Now that the tank is replenished, let's fire up the engine with a swift ignition and take a peek at the dashboard stats, particularly the fuel level and battery voltage before we continue our picturesque journey."
+                    "content": "Now that the tank is replenished, let's fire up the engine with a swift ignition and take a peek at the dashboard stats, particularly the battery voltage and the AC temperature before we continue our picturesque journey."
                 }
             ]
         },
@@ -7974,12 +7969,8 @@
             "result": "{\"engineState\": \"running\", \"fuelLevel\": 4.640000000000001, \"batteryVoltage\": 12.6}"
         },
         {
-            "func_call": "displayCarStatus(option='fuel')",
-            "result": "{\"fuelLevel\": 4.640000000000001}"
-        },
-        {
-            "func_call": "displayCarStatus(option='battery')",
-            "result": "{\"batteryVoltage\": 12.6}"
+            "func_call": "displayCarStatus(option='climate')",
+            "result": "{\"currentACTemperature\": 25.0, \"fanSpeed\": 50, \"climateMode\": \"auto\", \"humidityLevel\": 50.0}"
         },
         {
             "Question": [
@@ -7997,7 +7988,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "To wrap it up, let's calculate the average tire pressure to make sure everything's in tip-top shape."
+                    "content": "To wrap it up, what's the average tire pressure? I want to make sure everything's in tip-top shape."
                 }
             ]
         },
@@ -8227,6 +8218,10 @@
             "result": "{\"fuelLevel\": 35.0}"
         },
         {
+            "func_call": "activateParkingBrake(mode='engage')",
+            "result": "{\"parkingBrakeStatus\": \"engaged\", \"_parkingBrakeForce\": 500.0, \"_slopeAngle\": 10.0}"
+        },
+        {
             "func_call": "lockDoors(unlock=False, door=['driver', 'passenger', 'rear_left', 'rear_right'])",
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
@@ -8298,6 +8293,14 @@
             ]
         },
         {
+            "func_call": "get_zipcode_based_on_city('San Francisco')",
+            "result": "{\"zipcode\": \"94016\"}"
+        },
+        {
+            "func_call": "get_zipcode_based_on_city('Rivermist')",
+            "result": "{\"zipcode\": \"83214\"}"
+        },
+        {
             "func_call": "estimate_distance(cityA='83214', cityB='94016')",
             "result": "{\"distance\": 980.0}"
         },
@@ -8309,7 +8312,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Make sure the tank's filled up for the ride. Oh, and since I'm kicking things off in 'START' mode."
+                    "content": "Make sure the tank's filled up for the ride. Oh, and kick things off in 'START' mode."
                 }
             ]
         },
@@ -8358,7 +8361,7 @@
                     "cruiseStatus": "inactive",
                     "destination": "None",
                     "frontLeftTirePressure": 32.0,
-                    "frontRightTirePressure": 32.0,
+                    "frontRightTirePressure": 22.0,
                     "rearLeftTirePressure": 30.0,
                     "rearRightTirePressure": 30.0
                 },
@@ -8420,6 +8423,10 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
+            "func_call": "activateParkingBrake(mode='engage')",
+            "result": "{\"parkingBrakeStatus\": \"engaged\", \"_parkingBrakeForce\": 500.0, \"_slopeAngle\": 10.0}"
+        },
+        {
             "func_call": "pressBrakePedal(pedalPosition=1.0)",
             "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
@@ -8429,7 +8436,7 @@
         },
         {
             "func_call": "check_tire_pressure()",
-            "result": "{\"frontLeftTirePressure\": 32.0, \"frontRightTirePressure\": 32.0, \"rearLeftTirePressure\": 30.0, \"rearRightTirePressure\": 30.0, \"healthy_tire_pressure\": true, \"car_info\": {}}"
+            "result": "{\"frontLeftTirePressure\": 32.0, \"frontRightTirePressure\": 22.0, \"rearLeftTirePressure\": 30.0, \"rearRightTirePressure\": 30.0, \"healthy_tire_pressure\": false, \"car_info\": {}}"
         },
         {
             "Question": [
@@ -8451,7 +8458,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Thinking aloud, since it's been a successful start to this journey, I'd like to send a thank you tweet 'Thank you to our vehicle for a smooth start!' about our vehicle with a few hashtags '#Journey, #SmoothRide, #Grateful' added."
+                    "content": "I have the tire issue fixed. Thinking aloud, since it's been a successful start to this journey, I'd like to send a thank you tweet 'Thank you to our vehicle for a smooth start!' about our vehicle with a few hashtags '#Journey, #SmoothRide, #Grateful' added."
                 }
             ]
         },
@@ -8527,6 +8534,10 @@
             ]
         },
         {
+            "func_call": "activateParkingBrake(mode='engage')",
+            "result": "{\"parkingBrakeStatus\": \"engaged\", \"_parkingBrakeForce\": 500.0, \"_slopeAngle\": 10.0}"
+        },
+        {
             "func_call": "lockDoors(unlock=False, door=['driver', 'passenger', 'rear_left', 'rear_right'])",
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
@@ -8542,7 +8553,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Before setting off on this little expedition, can you do a quick tire pressure check for me? If any of the pressures fall below 40, kindly point me towards the nearest tire shop to get everything in tip-top shape before we roll."
+                    "content": "Before setting off on this little expedition, can you do a quick tire pressure check for me? If any of the pressures fall below 33, kindly point me towards the nearest tire shop to get everything in tip-top shape before we roll."
                 }
             ]
         },
@@ -8598,7 +8609,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Hey, I've just filled my car up with 13.2 gallons of fuel, but I'm trying to figure out what that is in liters, could you help me out?"
+                    "content": "Hey, I've just filled my car up with 13.2 gallons of fuel. How much is that in liters?"
                 }
             ]
         },
@@ -8610,7 +8621,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Once you've converted it to liters, please guide me in filling the tank to the desired level without going over the max limit. After that's sorted, I need to ensure that all the doors are securely locked and the parking brake is firmly set."
+                    "content": "Once you've converted it to liters, please guide me in filling the tank to the max limit. After that's sorted, I need to ensure that all the doors are securely locked and the parking brake is firmly set."
                 }
             ]
         },
@@ -8623,16 +8634,20 @@
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
         {
-            "func_call": "pressBrakePedal(pedalPosition=1.0)",
-            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
+            "func_call": "activateParkingBrake(mode='engage')",
+            "result": "{\"parkingBrakeStatus\": \"engaged\", \"_parkingBrakeForce\": 500.0, \"_slopeAngle\": 10.0}"
         },
         {
             "Question": [
                 {
                     "role": "user",
-                    "content": "With the car prepped, I need to gear up for a drive from San Francisco to Rivermist. I'll be checking the fuel level once the engine is on in 'START' mode. Then, I need to tweet, 'Embarking on an exciting road trip from SF to Rivermist!' and please throw in hashtags #RoadTrip #Adventure #Exploring."
+                    "content": "With the car prepped, I need to gear up for a drive from San Francisco to Rivermist. I'll be checking the fuel level once the engine is on in 'START' mode. Then, help me post a tweet, 'Embarking on an exciting road trip from SF to Rivermist!' and please throw in hashtags #RoadTrip #Adventure #Exploring."
                 }
             ]
+        },
+        {
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
@@ -8713,7 +8728,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Ah, it looks like I might need some fuel. Could you go ahead and fill up the tank with 30 gallons of fuel?"
+                    "content": "Ah, it looks like I might need some fuel. Could you go ahead and fill up the tank with 30 gallons of fuel so that I end with 40 gallons?"
                 }
             ]
         },
@@ -8799,17 +8814,17 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I need to fill 15 liters of gasoline into my vehicle for today's trip and then start the engine using the standard start mode to ensure everything is operational before departure."
+                    "content": "I need to fill 150 liters of gasoline into my vehicle for today's trip and then start the engine using the standard start mode to ensure everything is operational before departure. How much is that in gallon? Round it to the nearest integer and fill that amount."
                 }
             ]
         },
         {
-            "func_call": "liter_to_gallon(liter=15.0)",
-            "result": "{\"gallon\": 3.9625800000000004}"
+            "func_call": "liter_to_gallon(liter=150.0)",
+            "result": "{\"gallon\": 39.625800000000005}"
         },
         {
-            "func_call": "fillFuelTank(fuelAmount=3.9625800000000004)",
-            "result": "{\"fuelLevel\": 8.96258}"
+            "func_call": "fillFuelTank(fuelAmount=40.0)",
+            "result": "{\"fuelLevel\": 45.0}"
         },
         {
             "func_call": "lockDoors(unlock=False, door=['driver', 'passenger', 'rear_left', 'rear_right'])",
@@ -8821,7 +8836,7 @@
         },
         {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"engineState\": \"running\", \"fuelLevel\": 8.96258, \"batteryVoltage\": 12.6}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 45.0, \"batteryVoltage\": 12.6}"
         },
         {
             "Question": [
@@ -8939,7 +8954,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I am Alice. Would you be able to update Michael on today's outdoor temperature with message 'It is hot outside.'? He should know whether to bundle up or dress down for the weather."
+                    "content": "Hi, I am Kelly. I'm sweating. What's the temp outside right now? Would you be able to update Michael on today's outdoor temperature with message 'It is hot outside.'? He should know whether to bundle up or dress down for the weather."
                 }
             ]
         },
@@ -9002,7 +9017,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Could you provide me with a rough distance between Rivermist (zip 83214) and Greenway (zip 74532)? I'm eager to plan a visit and need to know the travel distance."
+                    "content": "Could you provide me with a rough distance from Rivermist (zip 83214) to Greenway (zip 74532)? I'm eager to plan a visit and need to know the travel distance."
                 }
             ]
         },
@@ -9019,7 +9034,7 @@
             ]
         },
         {
-            "func_call": "estimate_drive_feasibility_by_mileage(distance=468.75)",
+            "func_call": "estimate_drive_feasibility_by_mileage(distance=750.0)",
             "result": "{\"canDrive\": false}"
         },
         {
@@ -9058,7 +9073,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Lastly, I must verify that my vehicle is in excellent shape. If any tire pressure is under 40 PSI, could you direct me to the closest tire shop to rectify this promptly?"
+                    "content": "Lastly, I must verify that my vehicle is in excellent shape. If any tire pressure is under 35 PSI, could you direct me to the closest tire shop to rectify this promptly?"
                 }
             ]
         },
@@ -9069,6 +9084,10 @@
         {
             "func_call": "find_nearest_tire_shop()",
             "result": "{\"shopLocation\": \"456 Oakwood Avenue, Rivermist, 83214\"}"
+        },
+        {
+            "func_call": "set_navigation(destination='456 Oakwood Avenue, Rivermist, 83214')",
+            "result": "{\"status\": \"Navigating to 456 Oakwood Avenue, Rivermist, 83214\"}"
         }
     ]
 }
@@ -9156,6 +9175,10 @@
         {
             "func_call": "find_nearest_tire_shop()",
             "result": "{\"shopLocation\": \"456 Oakwood Avenue, Rivermist, 83214\"}"
+        },
+        {
+            "func_call": "set_navigation(destination='456 Oakwood Avenue, Rivermist, 83214')",
+            "result": "{\"status\": \"Navigating to 456 Oakwood Avenue, Rivermist, 83214\"}"
         }
     ]
 }
@@ -9181,8 +9204,8 @@
                     "humidityLevel": 50.0,
                     "headLightStatus": "off",
                     "parkingBrakeStatus": "engaged",
-                    "parkingBrakeForce": 0.0,
-                    "slopeAngle": 0.0,
+                    "parkingBrakeForce": 15.3,
+                    "slopeAngle": 10.0,
                     "distanceToNextVehicle": 50.0,
                     "cruiseStatus": "inactive",
                     "destination": "None",
@@ -9213,7 +9236,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Additionally, before hitting the road, do me a favor and verify the tire pressures. Should any tire fall below the 40 PSI mark, kindly pinpoint the nearest tire shop for me and pass on the info."
+                    "content": "Additionally, before hitting the road, do me a favor and verify the tire pressures. Should any tire fall below the 40 PSI mark, kindly pinpoint the nearest tire shop for me and set navigation."
                 }
             ]
         },
@@ -9226,6 +9249,10 @@
             "result": "{\"shopLocation\": \"456 Oakwood Avenue, Rivermist, 83214\"}"
         },
         {
+            "func_call": "set_navigation(destination='456 Oakwood Avenue, Rivermist, 83214')",
+            "result": "{\"status\": \"Navigating to 456 Oakwood Avenue, Rivermist, 83214\"}"
+        },
+        {
             "Question": [
                 {
                     "role": "user",
@@ -9234,8 +9261,12 @@
             ]
         },
         {
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
+        },
+        {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Brake pedal needs to be pressed when starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 40.0, \"batteryVoltage\": 12.6}"
         }
     ]
 }
@@ -9262,7 +9293,7 @@
                     "headLightStatus": "off",
                     "parkingBrakeStatus": "engaged",
                     "parkingBrakeForce": 100.0,
-                    "slopeAngle": 0.0,
+                    "slopeAngle": 20.0,
                     "distanceToNextVehicle": 100.0,
                     "cruiseStatus": "inactive",
                     "destination": "None",
@@ -9310,8 +9341,12 @@
             ]
         },
         {
+            "func_call": "pressBrakePedal(pedalPosition=1.0)",
+            "result": "{\"brakePedalStatus\": \"pressed\", \"brakePedalForce\": 1000.0}"
+        },
+        {
             "func_call": "startEngine(ignitionMode='START')",
-            "result": "{\"error\": \"Brake pedal needs to be pressed when starting the engine.\"}"
+            "result": "{\"engineState\": \"running\", \"fuelLevel\": 15.5, \"batteryVoltage\": 12.8}"
         },
         {
             "Question": [
@@ -9329,7 +9364,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "I would like to determine the distance between Rivermist and San Francisco."
+                    "content": "I would like to determine the distance from Rivermist to San Francisco."
                 }
             ]
         },
@@ -9345,7 +9380,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Please relay the estimated distance from Rivermist to San Francisco to my colleague Emma. If it helps, my id is 'USR005'. The message should be in the format 'The estimated distance from Rivermist to San Francisco is X miles.', where X is replaced by the actual value computed earlier."
+                    "content": "Please relay the estimated distance from Rivermist to San Francisco to my colleague Emma. If it helps, my id is 'USR005'. The message should be in the format 'The estimated distance from Rivermist to San Francisco is X miles.', where X is replaced by the actual value you computed earlier."
                 }
             ]
         },
@@ -9417,10 +9452,6 @@
             ]
         },
         {
-            "func_call": "displayCarStatus(option='doors')",
-            "result": "{\"doorStatus\": {\"driver\": \"locked\", \"passenger\": \"locked\", \"rear_left\": \"locked\", \"rear_right\": \"locked\"}}"
-        },
-        {
             "func_call": "lockDoors(unlock=False, door=['driver', 'passenger', 'rear_left', 'rear_right'])",
             "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
         },
@@ -9449,7 +9480,7 @@
             "result": "{\"zipcode\": \"83214\"}"
         },
         {
-            "func_call": "estimate_distance(cityA='83214', cityB='94016')",
+            "func_call": "estimate_distance(cityA='94016', cityB='83214')",
             "result": "{\"distance\": 980.0}"
         }
     ]
@@ -9499,7 +9530,7 @@
                         }
                     ],
                     "message_count": 1,
-                    "current_user": "BD732D1888B94DAA"
+                    "current_user": "USR003"
                 }
             }
         },
@@ -9571,13 +9602,13 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "By the way, as I travel, there are critical updates I need to communicate to my friend, who goes by the unique identifier BD732D1888B94DAA. Would you be able to send message 'I am on my way'?"
+                    "content": "By the way, as I travel, there are some updates I need to communicate to my friend Michael. Would you be able to send message 'I am on my way'?"
                 }
             ]
         },
         {
-            "func_call": "send_message(receiver_id='USR002', message='I am on my way.')",
-            "result": "{\"sent_status\": true, \"message_id\": 67410, \"message\": \"Message sent to 'USR002' successfully.\"}"
+            "func_call": "send_message(receiver_id='BD732D1888B94DAA', message='I am on my way.')",
+            "result": "{\"sent_status\": true, \"message_id\": 67410, \"message\": \"Message sent to 'BD732D1888B94DAA' successfully.\"}"
         },
         {
             "Question": [
@@ -9589,7 +9620,7 @@
         },
         {
             "func_call": "view_messages_sent()",
-            "result": "{\"messages\": {\"USR002\": [\"Safe travels!\", \"I am on my way.\"]}}"
+            "result": "{\"messages\": {\"USR002\": [\"Safe travels!\"], \"BD732D1888B94DAA\": [\"I am on my way.\"]}}"
         }
     ]
 }
@@ -9603,10 +9634,10 @@
                     "batteryVoltage": 12.8,
                     "engineState": "stopped",
                     "doorStatus": {
-                        "driver": "unlocked",
-                        "passenger": "unlocked",
+                        "driver": "locked",
+                        "passenger": "locked",
                         "rear_left": "unlocked",
-                        "rear_right": "unlocked"
+                        "rear_right": "locked"
                     },
                     "acTemperature": 22.0,
                     "fanSpeed": 60,
@@ -9644,13 +9675,13 @@
         },
         {
             "func_call": "lockDoors(unlock=False, door=['driver', 'passenger', 'rear_left', 'rear_right'])",
-            "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": 0}"
+            "result": "{\"lockStatus\": \"locked\", \"remainingUnlockedDoors\": -3}"
         },
         {
             "Question": [
                 {
                     "role": "user",
-                    "content": "I'm feeling a bit adventurous today, so I've decided to start the engine and hit the road. Can you confirm everything's all set before I start the car?"
+                    "content": "I'm feeling a bit adventurous today, so I've decided to start the engine and hit the road. Can you confirm everything's all set and start the car?"
                 }
             ]
         },
@@ -9680,7 +9711,7 @@
         },
         {
             "func_call": "estimate_distance(cityA='62947', cityB='47329')",
-            "result": "{\"distance\": 0.0}"
+            "result": "{\"distance\": 1053.0}"
         }
     ]
 }
@@ -9738,7 +9769,7 @@
             "Question": [
                 {
                     "role": "user",
-                    "content": "Now that I trust the fuel level is sufficient, let's engage the vehicle's 'START' ignition mode so that the engine kicks into action. Hoping the battery retains full charge and every door is securely locked. Could we verify the current engine status, fuel level, and battery voltage?"
+                    "content": "Now that I trust the fuel level is sufficient, let's engage the vehicle's 'START' ignition mode so that the engine kicks into action. Hoping the battery retains full charge and every door is securely locked. Could we verify the current engine status, AC temperature, and fan speed?"
                 }
             ]
         },
@@ -9751,18 +9782,14 @@
             "result": "{\"engineState\": \"running\", \"fuelLevel\": 50.0, \"batteryVoltage\": 12.8}"
         },
         {
-            "func_call": "displayCarStatus(option='fuel')",
-            "result": "{\"fuelLevel\": 50.0}"
-        },
-        {
-            "func_call": "displayCarStatus(option='battery')",
-            "result": "{\"batteryVoltage\": 12.8}"
+            "func_call": "displayCarStatus(option='climate')",
+            "result": "{\"currentACTemperature\": 22.0, \"fanSpeed\": 60, \"climateMode\": \"auto\", \"humidityLevel\": 45.0}"
         },
         {
             "Question": [
                 {
                     "role": "user",
-                    "content": "Before embarking on this adventure, double-check that all the tires have been properly inflated. If you notice any of them with a pressure below 40, we may need to consider a quick detour to the nearest tire facility."
+                    "content": "Before embarking on this adventure, double-check that all the tires have been properly inflated."
                 }
             ]
         },
@@ -9771,16 +9798,16 @@
             "result": "{\"frontLeftTirePressure\": 35.0, \"frontRightTirePressure\": 35.0, \"rearLeftTirePressure\": 35.0, \"rearRightTirePressure\": 35.0, \"healthy_tire_pressure\": true, \"car_info\": {}}"
         },
         {
-            "func_call": "find_nearest_tire_shop()",
-            "result": "{\"shopLocation\": \"456 Oakwood Avenue, Rivermist, 83214\"}"
-        },
-        {
             "Question": [
                 {
                     "role": "user",
-                    "content": "Given any potential tire pressure concerns, could you guide us to the closest tire shop to be prepared for any underinflation issues? Your help is much appreciated!"
+                    "content": "If you notice any of them with a pressure below 37, then the tire might have potential issue, and we should take a quick detour to the nearest tire facility. Your help is much appreciated!"
                 }
             ]
+        },
+        {
+            "func_call": "find_nearest_tire_shop()",
+            "result": "{\"shopLocation\": \"456 Oakwood Avenue, Rivermist, 83214\"}"
         },
         {
             "func_call": "set_navigation(destination='456 Oakwood Avenue, Rivermist, 83214')",
