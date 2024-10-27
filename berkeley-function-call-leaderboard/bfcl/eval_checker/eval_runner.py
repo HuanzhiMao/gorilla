@@ -127,20 +127,21 @@ def multi_turn_runner(
         else:
             irrelevance_checker_result = {"valid": True}
         
-        # if not irrelevance_checker_result["valid"] or not accuracy_checker_result["valid"]:
-        temp = {}
-        temp["id"] = index
-        temp["log"] = accuracy_checker_result
-            # temp["id"] = index
-            # temp["model_name"] = model_name
-            # temp["test_category"] = test_category
-            # # We display the irrelevance checker result first, then the accuracy checker result if irrelevance is passed
-            # temp.update(irrelevance_checker_result if not irrelevance_checker_result["valid"] else accuracy_checker_result)
-            # temp["prompt"] = test_entry
-        
-        result.append(temp)
-        # else:
-        #     correct_count += 1
+        if not irrelevance_checker_result["valid"] or not accuracy_checker_result["valid"]:
+            temp = {}
+            temp["id"] = index
+            temp["model_name"] = model_name
+            temp["test_category"] = test_category
+            # We display the irrelevance checker result first, then the accuracy checker result if irrelevance is passed
+            temp.update(irrelevance_checker_result if not irrelevance_checker_result["valid"] else accuracy_checker_result)
+            temp["prompt"] = test_entry
+            temp["model_result"] = multi_turn_model_result_list
+            temp["possible_answer"] = multi_turn_ground_truth_list
+            temp.update(irrelevance_checker_result)
+            temp.update(accuracy_checker_result)
+            result.append(temp)
+        else:
+            correct_count += 1
 
     accuracy = correct_count / len(model_result)
     result.insert(
