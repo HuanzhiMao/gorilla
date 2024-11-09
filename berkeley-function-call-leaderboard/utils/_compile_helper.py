@@ -241,9 +241,48 @@ class TestAPI:
                 - priority (int): [Optional] New priority for the ticket.
 
         Returns:
-            status (str): Status of the update operation.
+            status (Dict): The status of the vehicle based on the option.
+                - fuelLevel (float): The fuel level of the vehicle in gallons.
+                - batteryVoltage (float): The battery voltage of the vehicle in volts.
+                - doorStatus (Dict): The status of the doors. [Enum]: ["driver", "passenger", "rear_left", "rear_right"]
+                    - driver (str): The status of the driver door. [Enum]: ["locked", "unlocked"]
+                    - passenger (str): The status of the passenger door. [Enum]: ["locked", "unlocked"]
+                    - rear_left (str): The status of the rear left door. [Enum]: ["locked", "unlocked"]
+                    - rear_right (str): The status of the rear right door. [Enum]: ["locked", "unlocked"]
+                - currentACTemperature (float): The current temperature set in degree Celsius.
+                - headlightStatus (str): The status of the headlights. [Enum]: ["on", "off"]
+                - brakeStatus (str): The status of the brake. [Enum]: ["engaged", "released"]
+                - engineState (str): The state of the engine. [Enum]: ["running", "stopped"]
         """
         pass
 
 # test_api = TestAPI()
 # print(function_to_json(test_api.edit_ticket))
+
+"""
+If you determine that one or more of the requested tasks cannot be accomplished within the current context, you must explicitly indicate this by calling the `flag_query_incomplete` function for each incomplete task, with a task description and an explanation of why you believe it cannot be completed. This could be due to various reasons, such as missing information from the query, unclear user intent, or the limitations of the functions available to you, etc. You should only call this function when you are absolutely certain that the task or query cannot be completed after thorough exploration. After this function is called, the system will also proceed to the next turn or task.
+"""
+def flag_query_incomplete(task: str, reason: str) -> dict:
+    """
+    Marks a query as 'incomplete' when any of the action cannot be properly accomplished with the available tools.
+    After this function is called, the system will proceed to the next turn or task.
+
+    This function should be called when:
+    1. The exact requested functionality is not available through any provided functions or a sequence of provided functions after thorough exploration.
+    2. The available functions error out after thorough explorations.
+    3. Critical parameters or context needed for the task are missing after thorough exploration.
+
+    This function should not be called when:
+    1. The right functions are identified but failed. 
+        Things like X seems to be inaccessible or does not exist should not be flagged since it's not a query issue.
+    2. The function executions are hindered by errors.
+
+    Args:
+        task (str): A description of the task that is not possible to be done.
+        reason (str): A description of the reason why you think the task is not possible to be done.
+    """
+    # We do not need to do anything here
+    # In the future, we may want to log the model reasoning and do some analysis on it
+    return {"message": "Task successfully marked as incomplete."}
+
+print(function_to_json(flag_query_incomplete))
