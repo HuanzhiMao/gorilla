@@ -139,6 +139,7 @@ def multi_turn_runner(
             temp["possible_answer"] = multi_turn_ground_truth_list
             temp.update(irrelevance_checker_result)
             temp.update(accuracy_checker_result)
+            temp["inference_log"] = model_result[i].get("inference_log", "")
             result.append(temp)
         else:
             correct_count += 1
