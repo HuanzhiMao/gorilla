@@ -144,7 +144,7 @@ class OpenAIHandler(BaseHandler):
     #### Prompting methods ####
 
     def _query_prompting(self, inference_data: dict):
-        inference_data["inference_input_log"] = {"message": repr(inference_data["message"])}
+        inference_data["inference_input_log"] = {"message": inference_data["message"]}
 
         # These two models have temperature fixed to 1
         # Beta limitation: https://platform.openai.com/docs/guides/reasoning/beta-limitations

@@ -382,7 +382,8 @@ class BaseHandler:
                 )
 
             current_turn_response = []
-            current_turn_inference_log: list[dict] = {"begin_of_turn_query": current_turn_message}
+            all_inference_log.append(current_turn_message)
+            # current_turn_inference_log: list[dict] = {"begin_of_turn_query": current_turn_message}
             current_turn_input_token_count: list[float] = []
             current_turn_output_token_count: list[float] = []
             current_turn_latency: list[float] = []
@@ -393,9 +394,9 @@ class BaseHandler:
                 print(
                     f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {count}"
                 )
-                current_step_inference_log: list[dict] = []
+                # current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
-                current_turn_inference_log[f"step_{count}"] = current_step_inference_log
+                # current_turn_inference_log[f"step_{count}"] = current_step_inference_log
 
                 start_time = time.time()
                 api_response = self._query_prompting(inference_data)
@@ -404,10 +405,10 @@ class BaseHandler:
                 # This part of logging is disabled by default because it is too verbose and will make the result file extremely large
                 # It is only useful to see if the inference pipeline is working as expected (eg, does it convert all the inputs correctly)
                 if include_input_log:
-                    current_step_inference_log.append(
+                    all_inference_log.append(
                         {
-                            "role": "handler_log",
-                            "content": inference_data.get("inference_input_log", ""),
+                            "role": "inference_input",
+                            "content": deepcopy(inference_data.get("inference_input_log", "")),
                         }
                     )
 
@@ -426,14 +427,14 @@ class BaseHandler:
                 current_turn_latency.append(query_latency)
 
                 current_turn_response.append(model_responses)
-                current_step_inference_log.append(
+                all_inference_log.append(
                     {"role": "assistant", "content": model_responses}
                 )
 
                 # Try decoding the model response
                 try:
                     decoded_model_responses = self.decode_execute(model_responses)
-                    current_step_inference_log.append(
+                    all_inference_log.append(
                         {
                             "role": "handler_log",
                             "content": "Successfully decoded model response.",
@@ -444,7 +445,7 @@ class BaseHandler:
                     model_response_data["model_responses_decoded"] = decoded_model_responses
                     if is_empty_execute_response(decoded_model_responses):
                         print("Empty response from the model. Proceed to next turn.")
-                        current_step_inference_log.append(
+                        all_inference_log.append(
                             {
                                 "role": "handler_log",
                                 "content": f"Empty response from the model. Proceed to next turn.",
@@ -455,7 +456,7 @@ class BaseHandler:
 
                 except Exception as e:
                     print("Failed to decode the model response. Proceed to next turn.")
-                    current_step_inference_log.append(
+                    all_inference_log.append(
                         {
                             "role": "handler_log",
                             "content": f"Error decoding the model response. Proceed to next turn.",
@@ -483,7 +484,7 @@ class BaseHandler:
                 )
 
                 for execution_result in execution_results:
-                    current_step_inference_log.append(
+                    all_inference_log.append(
                         {
                             "role": "tool",
                             "content": execution_result,
@@ -494,7 +495,7 @@ class BaseHandler:
                 # Force quit after too many steps
                 if count > MAXIMUM_STEP_LIMIT:
                     force_quit = True
-                    current_step_inference_log.append(
+                    all_inference_log.append(
                         {
                             "role": "handler_log",
                             "content": f"Model has been forced to quit after {MAXIMUM_STEP_LIMIT} steps.",
@@ -504,7 +505,7 @@ class BaseHandler:
 
             # Add to the total list
             all_model_response.append(current_turn_response)
-            all_inference_log.append(current_turn_inference_log)
+            # all_inference_log.append(current_turn_inference_log)
             total_input_token_count.append(current_turn_input_token_count)
             total_output_token_count.append(current_turn_output_token_count)
             total_latency.append(current_turn_latency)
