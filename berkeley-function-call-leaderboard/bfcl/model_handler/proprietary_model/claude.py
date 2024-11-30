@@ -18,8 +18,8 @@ from bfcl.model_handler.utils import (
     retry_with_backoff,
     system_prompt_pre_processing_chat_model,
 )
-from bfcl.utils import is_multi_turn
-
+def is_multi_turn(test_category):
+    return "multi_turn" in test_category
 
 class ClaudeHandler(BaseHandler):
     def __init__(self, model_name, temperature) -> None:
