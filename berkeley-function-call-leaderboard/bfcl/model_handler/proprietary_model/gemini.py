@@ -12,11 +12,13 @@ from bfcl.model_handler.utils import (
     extract_system_prompt,
     format_execution_results_prompting,
     func_doc_language_specific_pre_processing,
+    retry_with_backoff,
     system_prompt_pre_processing_chat_model,
 )
 
 # This import from struct_pb2 should eventually be removed. See comment in the `_handle_struct_values` and `_handle_list_values` method below
 from google.protobuf.struct_pb2 import ListValue, Struct
+from google.api_core.exceptions import ResourceExhausted
 from vertexai.generative_models import (
     Content,
     FunctionDeclaration,
@@ -195,6 +197,10 @@ class GeminiHandler(BaseHandler):
                     )
             return func_call_list
 
+    @retry_with_backoff(ResourceExhausted)
+    def generate_with_backoff(self, client, **kwargs):
+        return client.generate_content(**kwargs)
+    
     #### FC methods ####
 
     def _query_FC(self, inference_data: dict):
@@ -226,7 +232,8 @@ class GeminiHandler(BaseHandler):
                 self.model_name.replace("-FC", ""),
                 system_instruction=inference_data["system_prompt"],
             )
-            api_response = client.generate_content(
+            api_response = self.generate_with_backoff(
+                client=client,
                 contents=inference_data["message"],
                 generation_config=GenerationConfig(
                     temperature=self.temperature,
@@ -234,7 +241,8 @@ class GeminiHandler(BaseHandler):
                 tools=tools if len(tools) > 0 else None,
             )
         else:
-            api_response = self.client.generate_content(
+            api_response = self.generate_with_backoff(
+                client=self.client,
                 contents=inference_data["message"],
                 generation_config=GenerationConfig(
                     temperature=self.temperature,
@@ -381,19 +389,15 @@ class GeminiHandler(BaseHandler):
                 self.model_name.replace("-FC", ""),
                 system_instruction=inference_data["system_prompt"],
             )
-            api_response = client.generate_content(
-                contents=inference_data["message"],
-                generation_config=GenerationConfig(
-                    temperature=self.temperature,
-                ),
-            )
         else:
-            api_response = self.client.generate_content(
-                contents=inference_data["message"],
-                generation_config=GenerationConfig(
-                    temperature=self.temperature,
-                ),
-            )
+            client = self.client
+        api_response = self.generate_with_backoff(
+            client=client,
+            contents=inference_data["message"],
+            generation_config=GenerationConfig(
+                temperature=self.temperature,
+            ),
+        )
         return api_response
 
     def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
