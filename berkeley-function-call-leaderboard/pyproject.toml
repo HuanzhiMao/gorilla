@@ -44,4 +44,4 @@ Repository = "https://github.com/ShishirPatil/gorilla/tree/main/berkeley-functio
 
 [project.optional-dependencies]
 oss_eval_vllm = ["vllm==0.6.3"]
-oss_eval_sglang = ["sglang[all]==0.3.3.post1"]
+oss_eval_sglang = ["sglang[all]==0.3.5.post2"]
