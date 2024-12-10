@@ -19,3 +19,20 @@ class LlamaHandler(OSSHandler):
         formatted_prompt += f"<|start_header_id|>assistant<|end_header_id|>\n\n"
 
         return formatted_prompt
+
+    @override
+    def _add_execution_results_prompting(
+        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+    ) -> dict:
+        for execution_result, decoded_model_response in zip(
+            execution_results, model_response_data["model_responses_decoded"]
+        ):
+            inference_data["message"].append(
+                {
+                    "role": "ipython",
+                    "name": decoded_model_response,
+                    "content": execution_result,
+                }
+            )
+
+        return inference_data
