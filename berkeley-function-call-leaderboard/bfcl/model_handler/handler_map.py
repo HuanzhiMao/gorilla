@@ -12,6 +12,7 @@ from bfcl.model_handler.oss_model.minicpm import MiniCPMHandler
 from bfcl.model_handler.oss_model.minicpm_fc import MiniCPMFCHandler
 from bfcl.model_handler.oss_model.phi import PhiHandler
 from bfcl.model_handler.oss_model.qwen import QwenHandler
+from bfcl.model_handler.oss_model.qwen_fc import QwenFCHandler
 from bfcl.model_handler.oss_model.salesforce import SalesforceHandler
 from bfcl.model_handler.proprietary_model.claude import ClaudeHandler
 from bfcl.model_handler.proprietary_model.cohere import CohereHandler
@@ -143,7 +144,7 @@ local_inference_handler_map = {
     "Qwen/Qwen2.5-14B-Instruct": QwenHandler,
     "Qwen/Qwen2.5-32B-Instruct": QwenHandler,
     "Qwen/Qwen2.5-72B-Instruct": QwenHandler,
-    "Qwen/QwQ-32B-Preview": QwenHandler,
+    "Qwen/QwQ-32B-Preview": QwenFCHandler,
     "Team-ACE/ToolACE-8B": LlamaHandler,
     "openbmb/MiniCPM3-4B": MiniCPMHandler,
     "openbmb/MiniCPM3-4B-FC": MiniCPMFCHandler,
