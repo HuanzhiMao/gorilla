@@ -1,6 +1,7 @@
 import json
 
 from bfcl.model_handler.oss_model.base_oss_handler import OSSHandler
+from bfcl.model_handler.utils import func_doc_language_specific_pre_processing
 from overrides import override
 
 
@@ -11,7 +12,7 @@ class QwenFCHandler(OSSHandler):
     @override
     def _format_prompt(self, messages, function):
         """
-        "chat_template":        
+        "chat_template":
         {%- if tools %}
             {{- '<|im_start|>system\n' }}
             {%- if messages[0]['role'] == 'system' %}
@@ -69,21 +70,32 @@ class QwenFCHandler(OSSHandler):
 
         """
         formatted_prompt = ""
-        
+
         if len(function) > 0:
-            formatted_prompt += f"<|im_start|>system\nYou are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step.\n\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\nYou are provided with function signatures within <tools></tools> XML tags:\n<tools>"
+            formatted_prompt += "<|im_start|>system\n"
+            if messages[0]["role"] == "system":
+                formatted_prompt += f"{messages[0]['content']}"
+            else:
+                formatted_prompt += "You are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step."
+            formatted_prompt += "\n\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\nYou are provided with function signatures within <tools></tools> XML tags:\n<tools>"
             for tool in function:
                 formatted_prompt += f"\n{json.dumps(tool, indent=4)}\n"
-            formatted_prompt += "\n</tools>\n\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\n<tool_call>\n{\"name\": <function-name>, \"arguments\": <args-json-object>}\n</tool_call><|im_end|>\n"
+            formatted_prompt += '\n</tools>\n\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\n<tool_call>\n{"name": <function-name>, "arguments": <args-json-object>}\n</tool_call><|im_end|>\n'
         else:
             formatted_prompt += f"<|im_start|>system\nYou are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step.<|im_end|>\n"
 
         for idx, message in enumerate(messages):
             role = message["role"]
             content = message["content"]
-            tool_calls = message.get("tool_calls", [])  # tool calls is only present for assistant messages
+            tool_calls = message.get(
+                "tool_calls", []
+            )  # tool calls is only present for assistant messages
 
-            if role == "user" or (role == "system" and idx != 0) or (role == "assistant" and not tool_calls):
+            if (
+                role == "user"
+                or (role == "system" and idx != 0)
+                or (role == "assistant" and not tool_calls)
+            ):
                 formatted_prompt += f"<|im_start|>{role}\n{content}<|im_end|>\n"
             elif role == "assistant":
                 formatted_prompt += f"<|im_start|>{role}"
@@ -94,9 +106,7 @@ class QwenFCHandler(OSSHandler):
                         tool_call = tool_call["function"]
                     tool_name = tool_call.get("name", "")
                     arguments = tool_call.get("arguments", {})
-                    formatted_prompt += (
-                        f"\n<tool_call>\n{{\"name\": \"{tool_name}\", \"arguments\": {json.dumps(arguments)}}}\n</tool_call>"
-                    )
+                    formatted_prompt += f'\n<tool_call>\n{{"name": "{tool_name}", "arguments": {json.dumps(arguments)}}}\n</tool_call>'
                 formatted_prompt += "<|im_end|>\n"
             elif role == "tool":
                 if idx == 0 or messages[idx - 1]["role"] != "tool":
@@ -108,3 +118,41 @@ class QwenFCHandler(OSSHandler):
         formatted_prompt += "<|im_start|>assistant\n"
 
         return formatted_prompt
+
+    @override
+    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+        functions: list = test_entry["function"]
+        test_category: str = test_entry["id"].rsplit("_", 1)[0]
+
+        functions = func_doc_language_specific_pre_processing(functions, test_category)
+        # FC models use its own system prompt, so no need to add any message
+
+        return {"message": [], "function": functions}
+
+    @override
+    def _parse_query_response_prompting(self, api_response: any) -> dict:
+        model_responses = api_response.choices[0].text
+        extracted_tool_calls = self.extract_tool_calls(model_responses)
+
+        if len(extracted_tool_calls) > 0:
+            model_responses_message_for_chat_history = {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": extracted_tool_calls,
+            }
+            model_responses = [
+                {item["function"]["name"]: item["function"]["arguments"]}
+                for item in extracted_tool_calls
+            ]
+        else:
+            model_responses_message_for_chat_history = {
+                "role": "assistant",
+                "content": api_response.choices[0].text,
+            }
+
+        return {
+            "model_responses": model_responses,
+            "model_responses_message_for_chat_history": model_responses_message_for_chat_history,
+            "input_token": api_response.usage.prompt_tokens,
+            "output_token": api_response.usage.completion_tokens,
+        }

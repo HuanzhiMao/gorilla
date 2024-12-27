@@ -78,98 +78,98 @@ class OSSHandler(BaseHandler, EnforceOverrides):
                 )
         print(f"Max context length: {self.max_context_length}")
 
-        if backend == "vllm":
-            process = subprocess.Popen(
-                [
-                    "vllm",
-                    "serve",
-                    str(self.model_name_huggingface),
-                    "--port",
-                    str(VLLM_PORT),
-                    "--dtype",
-                    str(self.dtype),
-                    "--tensor-parallel-size",
-                    str(num_gpus),
-                    "--gpu-memory-utilization",
-                    str(gpu_memory_utilization),
-                    "--trust-remote-code",
-                ],
-                stdout=subprocess.PIPE,  # Capture stdout
-                stderr=subprocess.PIPE,  # Capture stderr
-                text=True,  # To get the output as text instead of bytes
-            )
-        elif backend == "sglang":
-            # Check if the flashinfer package is installed to determine the backend
-            try:
-                import flashinfer
-                backend_choice = "flashinfer"
-            except ImportError as e:
-                backend_choice = "triton"
-                pass
+        # if backend == "vllm":
+        #     process = subprocess.Popen(
+        #         [
+        #             "vllm",
+        #             "serve",
+        #             str(self.model_name_huggingface),
+        #             "--port",
+        #             str(VLLM_PORT),
+        #             "--dtype",
+        #             str(self.dtype),
+        #             "--tensor-parallel-size",
+        #             str(num_gpus),
+        #             "--gpu-memory-utilization",
+        #             str(gpu_memory_utilization),
+        #             "--trust-remote-code",
+        #         ],
+        #         stdout=subprocess.PIPE,  # Capture stdout
+        #         stderr=subprocess.PIPE,  # Capture stderr
+        #         text=True,  # To get the output as text instead of bytes
+        #     )
+        # elif backend == "sglang":
+        #     # Check if the flashinfer package is installed to determine the backend
+        #     try:
+        #         import flashinfer
+        #         backend_choice = "flashinfer"
+        #     except ImportError as e:
+        #         backend_choice = "triton"
+        #         pass
 
-            process = subprocess.Popen(
-                [
-                    "python",
-                    "-m",
-                    "sglang.launch_server",
-                    "--model-path",
-                    str(self.model_name_huggingface),
-                    "--port",
-                    str(VLLM_PORT),
-                    "--dtype",
-                    str(self.dtype),
-                    "--tp",
-                    str(num_gpus),
-                    "--mem-fraction-static",
-                    str(gpu_memory_utilization),
-                    "--attention-backend",
-                    str(backend_choice),
-                    "--trust-remote-code",
-                ],
-                stdout=subprocess.PIPE,  # Capture stdout
-                stderr=subprocess.PIPE,  # Capture stderr
-                text=True,  # To get the output as text instead of bytes
-            )
-        else:
-            raise ValueError(f"Backend {backend} is not supported.")
+        #     process = subprocess.Popen(
+        #         [
+        #             "python",
+        #             "-m",
+        #             "sglang.launch_server",
+        #             "--model-path",
+        #             str(self.model_name_huggingface),
+        #             "--port",
+        #             str(VLLM_PORT),
+        #             "--dtype",
+        #             str(self.dtype),
+        #             "--tp",
+        #             str(num_gpus),
+        #             "--mem-fraction-static",
+        #             str(gpu_memory_utilization),
+        #             "--attention-backend",
+        #             str(backend_choice),
+        #             "--trust-remote-code",
+        #         ],
+        #         stdout=subprocess.PIPE,  # Capture stdout
+        #         stderr=subprocess.PIPE,  # Capture stderr
+        #         text=True,  # To get the output as text instead of bytes
+        #     )
+        # else:
+        #     raise ValueError(f"Backend {backend} is not supported.")
 
-        stop_event = (
-            threading.Event()
-        )  # Event to signal threads to stop; no need to see logs after server is ready
+        # stop_event = (
+        #     threading.Event()
+        # )  # Event to signal threads to stop; no need to see logs after server is ready
 
-        def log_subprocess_output(pipe, stop_event):
-            # Read lines until stop event is set
-            for line in iter(pipe.readline, ""):
-                if stop_event.is_set():
-                    break
-                else:
-                    print(line, end="")
-            pipe.close()
-            print("server log tracking thread stopped successfully.")
+        # def log_subprocess_output(pipe, stop_event):
+        #     # Read lines until stop event is set
+        #     for line in iter(pipe.readline, ""):
+        #         if stop_event.is_set():
+        #             break
+        #         else:
+        #             print(line, end="")
+        #     pipe.close()
+        #     print("server log tracking thread stopped successfully.")
 
-        # Start threads to read and print stdout and stderr
-        stdout_thread = threading.Thread(
-            target=log_subprocess_output, args=(process.stdout, stop_event)
-        )
-        stderr_thread = threading.Thread(
-            target=log_subprocess_output, args=(process.stderr, stop_event)
-        )
-        stdout_thread.start()
-        stderr_thread.start()
+        # # Start threads to read and print stdout and stderr
+        # stdout_thread = threading.Thread(
+        #     target=log_subprocess_output, args=(process.stdout, stop_event)
+        # )
+        # stderr_thread = threading.Thread(
+        #     target=log_subprocess_output, args=(process.stderr, stop_event)
+        # )
+        # stdout_thread.start()
+        # stderr_thread.start()
 
         try:
             # Wait for the server to be ready
             server_ready = False
             while not server_ready:
                 # Check if the process has terminated unexpectedly
-                if process.poll() is not None:
-                    # Output the captured logs
-                    stdout, stderr = process.communicate()
-                    print(stdout)
-                    print(stderr)
-                    raise Exception(
-                        f"Subprocess terminated unexpectedly with code {process.returncode}"
-                    )
+                # if process.poll() is not None:
+                #     # Output the captured logs
+                #     stdout, stderr = process.communicate()
+                #     print(stdout)
+                #     print(stderr)
+                #     raise Exception(
+                #         f"Subprocess terminated unexpectedly with code {process.returncode}"
+                #     )
                 try:
                     # Make a simple request to check if the server is up
                     response = requests.get(f"http://localhost:{VLLM_PORT}/v1/models")
@@ -181,7 +181,7 @@ class OSSHandler(BaseHandler, EnforceOverrides):
                     time.sleep(1)
 
             # Signal threads to stop reading output
-            stop_event.set()
+            # stop_event.set()
 
             # Once the server is ready, make the completion requests
             futures = []
@@ -205,22 +205,22 @@ class OSSHandler(BaseHandler, EnforceOverrides):
         except Exception as e:
             raise e
 
-        finally:
-            # Ensure the server process is terminated properly
-            process.terminate()
-            try:
-                # Wait for the process to terminate fully
-                process.wait(timeout=15)
-                print("Process terminated successfully.")
-            except subprocess.TimeoutExpired:
-                process.kill()
-                process.wait()  # Wait again to ensure it's fully terminated
-                print("Process killed.")
+        # finally:
+        #     # Ensure the server process is terminated properly
+        #     process.terminate()
+        #     try:
+        #         # Wait for the process to terminate fully
+        #         process.wait(timeout=15)
+        #         print("Process terminated successfully.")
+        #     except subprocess.TimeoutExpired:
+        #         process.kill()
+        #         process.wait()  # Wait again to ensure it's fully terminated
+        #         print("Process killed.")
 
-            # Wait for the output threads to finish
-            stop_event.set()
-            stdout_thread.join()
-            stderr_thread.join()
+        #     # Wait for the output threads to finish
+        #     stop_event.set()
+        #     stdout_thread.join()
+        #     stderr_thread.join()
             
     @final
     def _multi_threaded_inference(self, test_case, include_input_log: bool, exclude_state_log: bool):
