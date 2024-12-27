@@ -129,30 +129,30 @@ class QwenFCHandler(OSSHandler):
 
         return {"message": [], "function": functions}
 
-    @override
-    def _parse_query_response_prompting(self, api_response: any) -> dict:
-        model_responses = api_response.choices[0].text
-        extracted_tool_calls = self.extract_tool_calls(model_responses)
+    # @override
+    # def _parse_query_response_prompting(self, api_response: any) -> dict:
+    #     model_responses = api_response.choices[0].text
+    #     extracted_tool_calls = self.extract_tool_calls(model_responses)
 
-        if len(extracted_tool_calls) > 0:
-            model_responses_message_for_chat_history = {
-                "role": "assistant",
-                "content": None,
-                "tool_calls": extracted_tool_calls,
-            }
-            model_responses = [
-                {item["function"]["name"]: item["function"]["arguments"]}
-                for item in extracted_tool_calls
-            ]
-        else:
-            model_responses_message_for_chat_history = {
-                "role": "assistant",
-                "content": api_response.choices[0].text,
-            }
+    #     if len(extracted_tool_calls) > 0:
+    #         model_responses_message_for_chat_history = {
+    #             "role": "assistant",
+    #             "content": None,
+    #             "tool_calls": extracted_tool_calls,
+    #         }
+    #         model_responses = [
+    #             {item["function"]["name"]: item["function"]["arguments"]}
+    #             for item in extracted_tool_calls
+    #         ]
+    #     else:
+    #         model_responses_message_for_chat_history = {
+    #             "role": "assistant",
+    #             "content": api_response.choices[0].text,
+    #         }
 
-        return {
-            "model_responses": model_responses,
-            "model_responses_message_for_chat_history": model_responses_message_for_chat_history,
-            "input_token": api_response.usage.prompt_tokens,
-            "output_token": api_response.usage.completion_tokens,
-        }
+    #     return {
+    #         "model_responses": model_responses,
+    #         "model_responses_message_for_chat_history": model_responses_message_for_chat_history,
+    #         "input_token": api_response.usage.prompt_tokens,
+    #         "output_token": api_response.usage.completion_tokens,
+    #     }
