@@ -18,6 +18,63 @@ class QwenFCHandler(OSSHandler):
             {%- if messages[0]['role'] == 'system' %}
                 {{- messages[0]['content'] }}
             {%- else %}
+                {{- 'You are Qwen, created by Alibaba Cloud. You are a helpful assistant.' }}
+            {%- endif %}
+            {{- "\n\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\nYou are provided with function signatures within <tools></tools> XML tags:\n<tools>" }}
+            {%- for tool in tools %}
+                {{- "\n" }}
+                {{- tool | tojson }}
+            {%- endfor %}
+            {{- "\n</tools>\n\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\n<tool_call>\n{\"name\": <function-name>, \"arguments\": <args-json-object>}\n</tool_call><|im_end|>\n" }}
+        {%- else %}
+            {%- if messages[0]['role'] == 'system' %}
+                {{- '<|im_start|>system\n' + messages[0]['content'] + '<|im_end|>\n' }}
+            {%- else %}
+                {{- '<|im_start|>system\nYou are Qwen, created by Alibaba Cloud. You are a helpful assistant.<|im_end|>\n' }}
+            {%- endif %}
+        {%- endif %}
+        {%- for message in messages %}
+            {%- if (message.role == "user") or (message.role == "system" and not loop.first) or (message.role == "assistant" and not message.tool_calls) %}
+                {{- '<|im_start|>' + message.role + '\n' + message.content + '<|im_end|>' + '\n' }}
+            {%- elif message.role == "assistant" %}
+                {{- '<|im_start|>' + message.role }}
+                {%- if message.content %}
+                    {{- '\n' + message.content }}
+                {%- endif %}
+                {%- for tool_call in message.tool_calls %}
+                    {%- if tool_call.function is defined %}
+                        {%- set tool_call = tool_call.function %}
+                    {%- endif %}
+                    {{- '\n<tool_call>\n{"name": "' }}
+                    {{- tool_call.name }}
+                    {{- '", "arguments": ' }}
+                    {{- tool_call.arguments | tojson }}
+                    {{- '}\n</tool_call>' }}
+                {%- endfor %}
+                {{- '<|im_end|>\n' }}
+            {%- elif message.role == "tool" %}
+                {%- if (loop.index0 == 0) or (messages[loop.index0 - 1].role != "tool") %}
+                    {{- '<|im_start|>user' }}
+                {%- endif %}
+                {{- '\n<tool_response>\n' }}
+                {{- message.content }}
+                {{- '\n</tool_response>' }}
+                {%- if loop.last or (messages[loop.index0 + 1].role != "tool") %}
+                    {{- '<|im_end|>\n' }}
+                {%- endif %}
+            {%- endif %}
+        {%- endfor %}
+        {%- if add_generation_prompt %}
+            {{- '<|im_start|>assistant\n' }}
+        {%- endif %}
+
+
+
+        {%- if tools %}
+            {{- '<|im_start|>system\n' }}
+            {%- if messages[0]['role'] == 'system' %}
+                {{- messages[0]['content'] }}
+            {%- else %}
                 {{- 'You are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step.' }}
             {%- endif %}
             {{- "\n\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\nYou are provided with function signatures within <tools></tools> XML tags:\n<tools>" }}
@@ -67,7 +124,7 @@ class QwenFCHandler(OSSHandler):
         {%- if add_generation_prompt %}
             {{- '<|im_start|>assistant\n' }}
         {%- endif %}
-
+  
         """
         formatted_prompt = ""
 
@@ -129,30 +186,51 @@ class QwenFCHandler(OSSHandler):
 
         return {"message": [], "function": functions}
 
-    # @override
-    # def _parse_query_response_prompting(self, api_response: any) -> dict:
-    #     model_responses = api_response.choices[0].text
-    #     extracted_tool_calls = self.extract_tool_calls(model_responses)
+    @override
+    def _parse_query_response_prompting(self, api_response: any) -> dict:
+        model_responses = api_response.choices[0].text
+        
+        prefix = "tool_call>\n"
+        if model_responses.startswith(prefix):
+            model_responses = model_responses[len(prefix):]
+        suffix = "\n</tool_call>"
+        if model_responses.endswith(suffix):
+            model_responses = model_responses[:-len(suffix)]
+        
+        try:
+            extracted_tool_calls = json.loads(model_responses)
+        except:
+            extracted_tool_calls = []
 
-    #     if len(extracted_tool_calls) > 0:
-    #         model_responses_message_for_chat_history = {
-    #             "role": "assistant",
-    #             "content": None,
-    #             "tool_calls": extracted_tool_calls,
-    #         }
-    #         model_responses = [
-    #             {item["function"]["name"]: item["function"]["arguments"]}
-    #             for item in extracted_tool_calls
-    #         ]
-    #     else:
-    #         model_responses_message_for_chat_history = {
-    #             "role": "assistant",
-    #             "content": api_response.choices[0].text,
-    #         }
+        if len(extracted_tool_calls) > 0:
+            model_responses_message_for_chat_history = {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": extracted_tool_calls,
+            }
+            model_responses = [
+                {item["function"]["name"]: item["function"]["arguments"]}
+                for item in extracted_tool_calls
+            ]
+        else:
+            model_responses_message_for_chat_history = {
+                "role": "assistant",
+                "content": api_response.choices[0].text,
+            }
 
-    #     return {
-    #         "model_responses": model_responses,
-    #         "model_responses_message_for_chat_history": model_responses_message_for_chat_history,
-    #         "input_token": api_response.usage.prompt_tokens,
-    #         "output_token": api_response.usage.completion_tokens,
-    #     }
+        return {
+            "model_responses": model_responses,
+            "model_responses_message_for_chat_history": model_responses_message_for_chat_history,
+            "input_token": api_response.usage.prompt_tokens,
+            "output_token": api_response.usage.completion_tokens,
+        }
+
+    @override
+    def _add_assistant_message_prompting(
+        self, inference_data: dict, model_response_data: dict
+    ) -> dict:
+        inference_data["message"].append(
+            model_response_data["model_responses_message_for_chat_history"],
+        )
+        return inference_data
+    
