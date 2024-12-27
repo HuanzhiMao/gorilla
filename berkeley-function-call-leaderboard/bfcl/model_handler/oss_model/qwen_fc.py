@@ -202,10 +202,7 @@ class QwenFCHandler(OSSHandler):
                 "content": None,
                 "tool_calls": extracted_tool_calls,
             }
-            model_responses = [
-                {item["function"]["name"]: item["function"]["arguments"]}
-                for item in extracted_tool_calls
-            ]
+            model_responses = extracted_tool_calls
         else:
             model_responses_message_for_chat_history = {
                 "role": "assistant",
