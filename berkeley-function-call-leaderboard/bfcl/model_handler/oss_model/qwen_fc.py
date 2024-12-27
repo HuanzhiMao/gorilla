@@ -1,4 +1,5 @@
 import json
+import re
 
 from bfcl.model_handler.oss_model.base_oss_handler import OSSHandler
 from bfcl.model_handler.utils import func_doc_language_specific_pre_processing
@@ -124,22 +125,26 @@ class QwenFCHandler(OSSHandler):
         {%- if add_generation_prompt %}
             {{- '<|im_start|>assistant\n' }}
         {%- endif %}
-  
+
         """
         formatted_prompt = ""
 
+        if messages[0]["role"] == "system":
+            system_prompt = messages[0]["content"]
+        else:
+            system_prompt = (
+                "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."
+            )
+
         if len(function) > 0:
             formatted_prompt += "<|im_start|>system\n"
-            if messages[0]["role"] == "system":
-                formatted_prompt += f"{messages[0]['content']}"
-            else:
-                formatted_prompt += "You are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step."
+            formatted_prompt += system_prompt
             formatted_prompt += "\n\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\nYou are provided with function signatures within <tools></tools> XML tags:\n<tools>"
             for tool in function:
                 formatted_prompt += f"\n{json.dumps(tool, indent=4)}\n"
             formatted_prompt += '\n</tools>\n\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\n<tool_call>\n{"name": <function-name>, "arguments": <args-json-object>}\n</tool_call><|im_end|>\n'
         else:
-            formatted_prompt += f"<|im_start|>system\nYou are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step.<|im_end|>\n"
+            formatted_prompt += f"<|im_start|>system\n{system_prompt}<|im_end|>\n"
 
         for idx, message in enumerate(messages):
             role = message["role"]
@@ -189,18 +194,7 @@ class QwenFCHandler(OSSHandler):
     @override
     def _parse_query_response_prompting(self, api_response: any) -> dict:
         model_responses = api_response.choices[0].text
-        
-        prefix = "tool_call>\n"
-        if model_responses.startswith(prefix):
-            model_responses = model_responses[len(prefix):]
-        suffix = "\n</tool_call>"
-        if model_responses.endswith(suffix):
-            model_responses = model_responses[:-len(suffix)]
-        
-        try:
-            extracted_tool_calls = json.loads(model_responses)
-        except:
-            extracted_tool_calls = []
+        extracted_tool_calls = self.extract_tool_calls(model_responses)
 
         if len(extracted_tool_calls) > 0:
             model_responses_message_for_chat_history = {
@@ -233,4 +227,18 @@ class QwenFCHandler(OSSHandler):
             model_response_data["model_responses_message_for_chat_history"],
         )
         return inference_data
-    
+
+    @staticmethod
+    def extract_tool_calls(input_string):
+        pattern = r"<tool_call>\n(.*?)\n</tool_call>"
+        matches = re.findall(pattern, input_string, re.DOTALL)
+
+        # Process matches into a list of dictionaries
+        result = []
+        for match in matches:
+            try:
+                match = json.loads(match)
+            except Exception as e:
+                pass
+            result.append(match)
+        return result
