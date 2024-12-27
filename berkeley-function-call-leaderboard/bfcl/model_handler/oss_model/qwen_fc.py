@@ -2,7 +2,10 @@ import json
 import re
 
 from bfcl.model_handler.oss_model.base_oss_handler import OSSHandler
-from bfcl.model_handler.utils import func_doc_language_specific_pre_processing
+from bfcl.model_handler.utils import (
+    convert_to_function_call,
+    func_doc_language_specific_pre_processing,
+)
 from overrides import override
 
 
@@ -10,6 +13,20 @@ class QwenFCHandler(OSSHandler):
     def __init__(self, model_name, temperature) -> None:
         super().__init__(model_name, temperature)
 
+    @override
+    def decode_ast(self, result, language="Python"):
+        # The input is already a list of dictionaries, so no need to decode
+        # `[{func1:{param1:val1,...}},{func2:{param2:val2,...}}]`
+        if type(result) != list:
+            return []
+        return result
+
+    @override
+    def decode_execute(self, result):
+        if type(result) != list:
+            return []
+        return convert_to_function_call(result)
+    
     @override
     def _format_prompt(self, messages, function):
         """
@@ -202,7 +219,10 @@ class QwenFCHandler(OSSHandler):
                 "content": None,
                 "tool_calls": extracted_tool_calls,
             }
-            model_responses = extracted_tool_calls
+            model_responses = [
+                {item["name"]: item["arguments"]}
+                for item in extracted_tool_calls
+            ]
         else:
             model_responses_message_for_chat_history = {
                 "role": "assistant",
