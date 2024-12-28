@@ -190,6 +190,13 @@ class LlamaFCHandler(OSSHandler):
             function_calls = eval(result)
             if type(function_calls) == dict:
                 function_calls = [function_calls]
+            """
+            The following processing is needed for Llama 3.3
+            "[\"{\\\"type\\\": \\\"function\\\", \\\"name\\\": \\\"calculate_resistance\\\", \\\"parameters\\\": {\\\"length\\\": {\\\"type\\\": \\\"integer\\\", \\\"value\\\": {\\\"length\\\": 5}}, \\\"area\\\": {\\\"type\\\": \\\"float\\\", \\\"value\\\": {\\\"area\\\": 0.01}}, \\\"resistivity\\\": {\\\"type\\\": \\\"string\\\", \\\"value\\\": {\\\"resistivity\\\": \\\"copper\\\"}}}}\", \"{\\\"type\\\": \\\"function\\\", \\\"name\\\": \\\"calculate_resistance\\\", \\\"parameters\\\": {\\\"length\\\": {\\\"type\\\": \\\"integer\\\", \\\"value\\\": {\\\"length\\\": 5}}, \\\"area\\\": {\\\"type\\\": \\\"float\\\", \\\"value\\\": {\\\"area\\\": 0.01}}, \\\"resistivity\\\": {\\\"type\\\": \\\"string\\\", \\\"value\\\": {\\\"resistivity\\\": \\\"aluminum\\\"}}}}\"]"
+            """
+            for idx, func_call in enumerate(function_calls):
+                if type(func_call) == str:
+                    function_calls[idx] = json.loads(func_call)
 
         decoded_output = []
         for func_call in function_calls:
@@ -210,6 +217,9 @@ class LlamaFCHandler(OSSHandler):
             function_calls = eval(result)
             if type(function_calls) == dict:
                 function_calls = [function_calls]
+            for idx, func_call in enumerate(function_calls):
+                if type(func_call) == str:
+                    function_calls[idx] = json.loads(func_call)
 
         execution_list = []
         for func_call in function_calls:
