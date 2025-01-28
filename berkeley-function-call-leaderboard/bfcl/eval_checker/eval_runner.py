@@ -73,6 +73,7 @@ def agentic_runner(
                     "possible_answer": possible_answer_item,
                 }
             )
+            continue
 
         # Try decoding the model results into executable function calls
         # Note: We only care about the last non-function-call message, which should fail to get decoded.
@@ -96,7 +97,7 @@ def agentic_runner(
                 last_unsuccessful_decoding_message = model_result_item
                 continue
 
-        if not last_unsuccessful_decoding_message:
+        if last_unsuccessful_decoding_message is None:
             result.append(
                 {
                     "id": index,
@@ -204,6 +205,8 @@ def multi_turn_runner(
                     "possible_answer": multi_turn_ground_truth_list,
                 }
             )
+            continue
+        
         # Check if force-terminated during inference phase.
         # This happens when the model has retried too many times and still haven't figured out the answer.
         # When force-terminated, no further evaluation is needed. This whole entry will be failed.

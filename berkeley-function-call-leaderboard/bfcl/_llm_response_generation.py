@@ -244,7 +244,7 @@ def multi_threaded_inference(
     for dependency_id in test_case.get("depends_on", []):
         events[dependency_id].wait()  # Wait until the dependent task sets its event
 
-    print("running test case", test_case["id"])
+    print("running test case", test_case["id"])  #FIXME: Remove this print statement
     retry_count = 0
 
     while True:
@@ -254,6 +254,7 @@ def multi_threaded_inference(
             )
             break  # Success, exit the loop
         except Exception as e:
+            raise e 
             if retry_count < RETRY_LIMIT and (
                 "rate limit reached" in str(e).lower()
                 or (hasattr(e, "status_code") and (e.status_code in {429, 503, 500}))
