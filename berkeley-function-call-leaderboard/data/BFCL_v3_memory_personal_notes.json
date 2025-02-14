@@ -11,15 +11,15 @@
 {"id": "memory_base_10", "question": [[{"role": "user", "content": "Quick! What does Finance want by Thursday?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_11", "question": [[{"role": "user", "content": "I need to know something for the vendor planning tasks. How many vendors responded to the follow-up on Friday?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_12", "question": [[{"role": "user", "content": "I may be forgetting, what is the urgent task related to tax documents I need to focus on?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_13", "question": [[{"role": "user", "content": "What should I do about the weird noise in the car engine? It's bugging me."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_13", "question": [[{"role": "user", "content": "What should I do about the weird noise in my car engine? It's bugging me."}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_14", "question": [[{"role": "user", "content": "Are the vendor contracts reviewed?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_15", "question": [[{"role": "user", "content": "Is there some sort of a deadline for taking out the trash?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_15", "question": [[{"role": "user", "content": "Is there some sort of a deadline I set for myself for taking out the trash?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_16", "question": [[{"role": "user", "content": "What should I do with the car on Sunday? Was it washing or something else, I'm not sure anymore. "}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_17", "question": [[{"role": "user", "content": "I misremember the plan for restocking the pantry? What should I be restocking again?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_18", "question": [[{"role": "user", "content": "What is the exact time window for the system downtime on Tuesday?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_19", "question": [[{"role": "user", "content": "What specific task is required for onboarding the new hire on Wednesday?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_20", "question": [[{"role": "user", "content": "Are there any health supplements to be taken daily?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_21", "question": [[{"role": "user", "content": "Sunday meal prep plan... Did I have any?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_22", "question": [[{"role": "user", "content": "Did I plan some cheap DIY fixes for stuff at home or in the bathroom?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_22", "question": [[{"role": "user", "content": "Did I plan some cheap DIY fixes for stuff at home?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_23", "question": [[{"role": "user", "content": "What specific items are needed for the kid’s school supplies?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_24", "question": [[{"role": "user", "content": "What specific numbers did the teacher say my kid focus on during counting practice?"}]], "involved_classes": ["MemoryAPI"]}
