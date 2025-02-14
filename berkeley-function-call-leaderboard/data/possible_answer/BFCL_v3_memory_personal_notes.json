@@ -1,0 +1,25 @@
+{"id": "memory_base_0", "ground_truth": ["8 am", "Eight in the morning", "Morning at Eight", "Morning at 8"], "source": "Daycare: Drop-off at 8 AM, pick-up at 5 PM."}
+{"id": "memory_base_1", "ground_truth": ["Friday"], "source": "Daycare: Monthly payment due Friday."}
+{"id": "memory_base_2", "ground_truth": ["Before Friday"], "source": "Monday: Need to finalize Q1 budget report before Friday."}
+{"id": "memory_base_3", "ground_truth": ["Change passwords ASAP", "Change passwords", "Need to change passwords"], "source": "Monday: IT updated security protocols—change passwords ASAP."}
+{"id": "memory_base_4", "ground_truth": ["Wednesday"], "source": "Monday: Client call with Jacob—delayed till Wednesday."}
+{"id": "memory_base_5", "ground_truth": ["System downtime from 10 AM - 12 PM"], "source": "Tuesday: System downtime from 10 AM - 12 PM, slowed down workflow."}
+{"id": "memory_base_6", "ground_truth": ["Updated benefits package"], "source": "Tuesday: HR sent updated benefits package—review before next month’s deadline."}
+{"id": "memory_base_7", "ground_truth": ["Tweak a few slides", "Tweak slides"], "source": "Wednesday: Presentation to leadership went well, but need to tweak a few slides for next week’s review."}
+{"id": "memory_base_8", "ground_truth": ["Send it for legal approval"], "source": "Wednesday: Client proposal draft ready—send it for legal approval."}
+{"id": "memory_base_9", "ground_truth": ["Fix last month’s sales data"], "source": "Thursday: Caught a mistake in last month’s sales data."}
+{"id": "memory_base_10", "ground_truth": ["Cost-cutting recommendations"], "source": "Thursday: Finance wants cost-cutting recommendations — brainstorm ideas."}
+{"id": "memory_base_11", "ground_truth": ["Two", "2"], "source": "Friday: Followed up with vendors—two responded, one still pending."}
+{"id": "memory_base_12", "ground_truth": ["Submit tax documents before Friday"], "source": "Urgent: Submit tax documents before Friday."}
+{"id": "memory_base_13", "ground_truth": ["Call auto repair shop"], "source": "Urgent: Call auto repair shop about weird noise in the engine."}
+{"id": "memory_base_14", "ground_truth": ["Review vendor contract before signing"], "source": "Work-related: Review vendor contract before signing."}
+{"id": "memory_base_15", "ground_truth": ["Update phone software"], "source": "Tech: Update phone software."}
+{"id": "memory_base_16", "ground_truth": ["Wash and vacuum"], "source": "Car: Wash and vacuum on Sunday."}
+{"id": "memory_base_17", "ground_truth": ["Rice and cereal"], "source": "Organizing: Restock pantry—running low on rice and cereal."}
+{"id": "memory_base_18", "ground_truth": ["10 AM - 12 PM"], "source": "Tuesday: System downtime from 10 AM - 12 PM, slowed down workflow. HR sent updated benefits package—review before next month’s deadline. Sent follow-up emails to vendors, waiting on response."}
+{"id": "memory_base_19", "ground_truth": ["Schedule one-on-one"], "source": "Wednesday: Presentation to leadership went well, but need to tweak a few slides for next week’s review. Client proposal draft ready—send it for legal approval. Need to onboard new hire—schedule one-on-one."}
+{"id": "memory_base_20", "ground_truth": ["Vitamin D3—1000 IU daily", "Omega-3s", "Iron supplements", "Probiotics"], "source": "Supplements & Meds: Vitamin D3—1000 IU daily. Omega-3s—good for joints. Iron levels were low last check-up—remember to take supplements. Probiotics—help with digestion, take in the morning."}
+{"id": "memory_base_21", "ground_truth": ["Grilled chicken, quinoa, and veggies"], "source": "Diet: Meal prep on Sunday—grilled chicken, quinoa, and veggies."}
+{"id": "memory_base_22", "ground_truth": ["Tighten loose cabinet handle. Replace bathroom lightbulb. Patch up minor wall scuffs."], "source": "DIY Fixes: Tighten loose cabinet handle. Replace bathroom lightbulb. Patch up minor wall scuffs."}
+{"id": "memory_base_23", "ground_truth": ["Crayons", "Notebooks", "Glue sticks"], "source": "Shopping: Buy more diapers. Get school supplies—crayons, notebooks, glue sticks. Pack extra snacks in daycare bag."}
+{"id": "memory_base_24", "ground_truth": ["1-20", "Numbers 1-20"], "source": "Family time: Take kid to park this weekend. Pick out a new bedtime story book. Help with counting practice—teacher says focus on numbers 1-20."}
