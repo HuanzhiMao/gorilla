@@ -1,0 +1,25 @@
+{"id": "memory_base_0", "question": [[{"role": "user", "content": "What is the name of the investment firm I manage?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_1", "question": [[{"role": "user", "content": "What was the value of the landmark healthcare merger closed last quarter?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_2", "question": [[{"role": "user", "content": "Among the three current major transactions being led, which one requires early Monday morning meetings?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_3", "question": [[{"role": "user", "content": "What has become my virtual deal diary?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_4", "question": [[{"role": "user", "content": "What level do I want to grow my private portfolio to?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_5", "question": [[{"role": "user", "content": "Where did I start my career in 2001?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_6", "question": [[{"role": "user", "content": "Where did I get my MBA from?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_7", "question": [[{"role": "user", "content": "How do I approach their personal investments differently from managing the firm’s assets?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_8", "question": [[{"role": "user", "content": "I forget this all the time, but what is my handicap in golf?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_9", "question": [[{"role": "user", "content": "What times do I start my mornings?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_10", "question": [[{"role": "user", "content": "What language do I aim to become fluent in as part of my personal development goals?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_11", "question": [[{"role": "user", "content": "By what age do I aim to transition into a chairman role at my firm?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_12", "question": [[{"role": "user", "content": "How often do I have to travel for maintaining my global network?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_13", "question": [[{"role": "user", "content": "What is the name of the dinner series the user hosts every quarter?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_14", "question": [[{"role": "user", "content": "What is the biggest challenge I face in balancing home life with my career?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_15", "question": [[{"role": "user", "content": "How do I introduce my 14-year-old to financial literacy?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_16", "question": [[{"role": "user", "content": "How do I incorporate my family into my business travel?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_17", "question": [[{"role": "user", "content": "What platform do I use as my financial command center?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_18", "question": [[{"role": "user", "content": "What machine learning platform did I champion for implementation at my firm?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_19", "question": [[{"role": "user", "content": "Which tool do I use for data visualization and client communication?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_20", "question": [[{"role": "user", "content": "What programming languages did I teach myself during the pandemic?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_21", "question": [[{"role": "user", "content": "What are the three key factors I believe contribute to success?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_22", "question": [[{"role": "user", "content": "What lesson did I learn from losing a massive deal early in my career?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_23", "question": [[{"role": "user", "content": "How did I put myself in positions where opportunity could find me?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_24", "question": [[{"role": "user", "content": "What is my advice to young professionals about career growth?"}]], "involved_classes": ["MemoryAPI"]}
