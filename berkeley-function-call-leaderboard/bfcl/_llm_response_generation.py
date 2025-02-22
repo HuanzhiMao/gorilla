@@ -1,14 +1,16 @@
 import argparse
 import json
-import os
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 
 from bfcl._apply_function_credential_config import apply_function_credential_config
 from bfcl.constant import (
+    MEMORY_PREREQ_CONVERSATION_PATH,
     MULTI_TURN_FUNC_DOC_FILE_MAPPING,
     MULTI_TURN_FUNC_DOC_PATH,
+    SQL_FUNC_DOC_PATH,
     PROJECT_ROOT,
     PROMPT_PATH,
     RESULT_PATH,
@@ -20,9 +22,13 @@ from bfcl.model_handler.handler_map import HANDLER_MAP
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.utils import (
     check_api_key_supplied,
+    extract_test_category_from_id,
+    is_agentic,
     is_executable,
+    is_memory,
     is_multi_turn,
     parse_test_category_argument,
+    is_sql,
     sort_key,
 )
 from tqdm import tqdm
@@ -44,8 +50,8 @@ def get_args():
     parser.add_argument("--include-input-log", action="store_true", default=False)
     parser.add_argument("--exclude-state-log", action="store_true", default=False)
     parser.add_argument("--num-threads", default=1, type=int)
-    parser.add_argument("--num-gpus", default=1, type=int)
-    parser.add_argument("--backend", default="vllm", type=str, choices=["vllm", "sglang"])
+    parser.add_argument("--num-gpus", default=8, type=int)
+    parser.add_argument("--backend", default="sglang", type=str, choices=["vllm", "sglang"])
     parser.add_argument("--gpu-memory-utilization", default=0.9, type=float)
     parser.add_argument("--result-dir", default=None, type=str)
     parser.add_argument("--run-ids", action="store_true", default=False)
@@ -55,7 +61,7 @@ def get_args():
         "--skip-server-setup",
         action="store_true",
         default=False,
-        help="Skip vLLM/SGLang server setup and use existing endpoint specified by the VLLM_ENDPOINT and VLLM_PORT environment variables."
+        help="Skip vLLM/SGLang server setup and use existing endpoint specified by the VLLM_ENDPOINT and VLLM_PORT environment variables.",
     )
     args = parser.parse_args()
     return args
@@ -92,7 +98,9 @@ def get_involved_test_entries(test_category_args, run_ids):
                 all_test_file_paths.append(test_file_path)
 
     else:
-        all_test_file_paths, all_test_categories = parse_test_category_argument(test_category_args)
+        all_test_file_paths, all_test_categories = parse_test_category_argument(
+            test_category_args
+        )
         # Make a copy here since we are removing list elemenets inside the for loop
         for test_category, file_to_open in zip(
             all_test_categories[:], all_test_file_paths[:]
@@ -140,17 +148,77 @@ def collect_test_cases(
         for test_case in all_test_entries_involved
         if test_case["id"] not in existing_ids
     ]
-    test_cases_to_generate = process_multi_turn_test_case(test_cases_to_generate)
+
+    test_cases_to_generate = process_memory_test_case(test_cases_to_generate)
+    test_cases_to_generate = populate_test_cases_with_predefined_functions(
+        test_cases_to_generate
+    )
 
     return sorted(test_cases_to_generate, key=sort_key)
 
 
-def process_multi_turn_test_case(test_cases):
+def process_memory_test_case(test_cases):
     """
-    Multi-turn test cases don't have the function doc in the prompt. We need to add them here.
+    Memory test cases needs to have the memory write phase carried out before the inference phase. So we configure some test case dependencies here.
+    """
+    if not any([is_memory(entry["id"]) for entry in test_cases]):
+        return test_cases
+
+    memory_base = load_file(MEMORY_PREREQ_CONVERSATION_PATH / "memory_base.json")
+    memory_conflict = load_file(MEMORY_PREREQ_CONVERSATION_PATH / "memory_conflict.json")
+
+    memory_base_ids = []
+    memory_conflict_ids = []
+
+    add_basic, add_conflict = False, False
+
+    # Assign unique IDs and dependencies to each prerequisite entry
+    for i, entry in enumerate(memory_base):
+        entry["id"] = f"memory_base_prereq_{i}"
+        entry["depends_on"] = deepcopy(memory_base_ids)
+        memory_base_ids.append(entry["id"])
+
+    for i, entry in enumerate(memory_conflict):
+        entry["id"] = f"memory_conflict_prereq_{i}"
+        entry["depends_on"] = deepcopy(memory_conflict_ids)
+        memory_conflict_ids.append(entry["id"])
+
+    assert len(memory_base_ids) == len(memory_base) == 10
+
+    # Assign dependencies to the actual test cases
+    for entry in test_cases:
+        if is_memory(entry["id"]):
+            if "conflict" in entry["id"]:
+                entry["depends_on"] = deepcopy(memory_conflict_ids)
+                add_conflict = True
+            else:
+                entry["depends_on"] = deepcopy(memory_base_ids)
+                add_basic = True
+            entry["question"][0][0]["content"] += "   You must respond in this format: `{'answer': YOUR_ANSWER}`. If you do not know the answer, respond with `{'answer': 'I do not know', 'reason': WHY_YOU_CANNOT_ANSWER}`."
+
+    # Add the memory prerequisite entries to the test cases
+    if add_basic:
+        test_cases += memory_base
+    if add_conflict:
+        test_cases += memory_conflict
+
+    return test_cases
+
+def process_web_search_conflict_test_case(test_cases):
+    """
+    Web Search Conflict test cases need to have the web search phase carried out before the inference phase. So we configure some test case dependencies here.
     """
     for entry in test_cases:
-        if not is_multi_turn(entry["id"]):
+        if "web_search_conflict" in entry["id"]:
+            entry["question"][0][0]["content"] += " If the question contains incorrect assumptions or is inherently invalid, classify the false premise in the question into one of the following categories: 'Scientifically or Logically Impossible Events', 'Nonexistent Events, Entities, and Policies', or 'Others', and respond with the format: 'Invalid question: [Reasoning for Invalid Question]'"
+    return test_cases
+
+def populate_test_cases_with_predefined_functions(test_cases):
+    """
+    Multi-turn and Agentic test cases don't have the function doc in the prompt. We need to add them here.
+    """
+    for entry in test_cases:
+        if not is_multi_turn(entry["id"]) and not is_agentic(entry["id"]) and not is_sql(entry["id"]):
             continue
         involved_classes = entry["involved_classes"]
         entry["function"] = []
@@ -177,10 +245,17 @@ def process_multi_turn_test_case(test_cases):
     return test_cases
 
 
-def multi_threaded_inference(handler, test_case, include_input_log, exclude_state_log):
+def multi_threaded_inference(
+    handler, test_case, events, include_input_log, exclude_state_log
+):
 
     assert type(test_case["function"]) is list
 
+    # Wait for all dependencies to complete
+    for dependency_id in test_case.get("depends_on", []):
+        events[dependency_id].wait()  # Wait until the dependent task sets its event
+
+    print("running test case", test_case["id"])
     retry_count = 0
 
     while True:
@@ -190,8 +265,6 @@ def multi_threaded_inference(handler, test_case, include_input_log, exclude_stat
             )
             break  # Success, exit the loop
         except Exception as e:
-            # TODO: It might be better to handle the exception in the handler itself rather than a universal catch block here, as each handler use different ways to call the endpoint.
-            # OpenAI has openai.RateLimitError while Anthropic has anthropic.RateLimitError. It would be more robust in the long run.
             if retry_count < RETRY_LIMIT and (
                 "rate limit reached" in str(e).lower()
                 or (hasattr(e, "status_code") and (e.status_code in {429, 503, 500}))
@@ -217,6 +290,9 @@ def multi_threaded_inference(handler, test_case, include_input_log, exclude_stat
                     "id": test_case["id"],
                     "result": f"Error during inference: {str(e)}",
                 }
+
+    # Signal that the current task is complete
+    events[test_case["id"]].set()
 
     result_to_write = {
         "id": test_case["id"],
@@ -248,6 +324,7 @@ def generate_results(args, model_name, test_cases_total):
 
     else:
         futures = []
+        events = {test_case["id"]: threading.Event() for test_case in test_cases_total}
         with ThreadPoolExecutor(max_workers=args.num_threads) as executor:
             with tqdm(
                 total=len(test_cases_total), desc=f"Generating results for {model_name}"
@@ -258,6 +335,7 @@ def generate_results(args, model_name, test_cases_total):
                         multi_threaded_inference,
                         handler,
                         test_case,
+                        events,
                         args.include_input_log,
                         args.exclude_state_log,
                     )
@@ -317,6 +395,7 @@ def main(args):
             all_test_file_paths,
             all_test_entries_involved,
         )
+        test_cases_total = process_web_search_conflict_test_case(test_cases_total)
 
         if len(test_cases_total) == 0:
             print(

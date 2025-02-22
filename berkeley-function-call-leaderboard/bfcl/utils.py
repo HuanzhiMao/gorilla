@@ -32,8 +32,27 @@ def find_file_with_suffix(folder_path: Path, suffix: str) -> Path:
     raise FileNotFoundError(f"No JSON file found with suffix: {suffix}")
 
 
+def is_memory(test_category):
+    return "memory" in test_category
+
+
+def is_first_memory_prereq_entry(test_entry_id):
+    return "prereq_0" in test_entry_id
+
+
+def is_memory_prereq(test_category):
+    return "prereq" in test_category
+
+
+def is_agentic(test_category):
+    return "web_search" in test_category or "memory" in test_category
+
+
 def is_multi_turn(test_category):
     return "multi_turn" in test_category
+
+def is_sql(test_category):
+    return "sql" in test_category
 
 
 def contain_multi_turn_irrelevance(test_category):
@@ -134,7 +153,25 @@ def sort_key(entry):
     # This handles the case where the index is in the form TestCategory_Index-FuncDocSubIndex-PromptSubIndex
     if "-" in index:
         index = index.split("-")[0]
-    return (test_category, int(index))
+
+    # Make sure the memory prereq entries are inferenced first to avoid the memory entries being blocked due to dependencies.
+    # Prereq happen first
+    if is_memory_prereq(test_category):
+        priority = 0
+    # Single-turn happen second
+    elif not is_multi_turn(test_category) and not is_agentic(test_category):
+        priority = 1
+    # Multi-turn happen fourth
+    elif is_multi_turn(test_category):
+        priority = 3
+    # Memory happen last
+    elif is_memory(test_category):
+        priority = 4
+    # Agentic (web search) happen third
+    elif is_agentic(test_category):
+        priority = 2
+
+    return (priority, test_category, int(index))
 
 
 def is_function_calling_format_output(decoded_output):

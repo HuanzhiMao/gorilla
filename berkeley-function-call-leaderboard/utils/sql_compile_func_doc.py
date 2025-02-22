@@ -15,6 +15,7 @@ CLASS_FILE_PATH_MAPPING = {
     "TravelAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.travel_booking",
     "VehicleControlAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.vehicle_control",
     "MemoryAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.memory",
+    "SQLAPI": "bfcl.eval_checker.ast_eval.sql_function_source_code",
 }
 
 
@@ -36,12 +37,15 @@ for class_name in CLASS_FILE_PATH_MAPPING.keys():
             class_method_name_mapping[class_name] = {}
         # class_method_name_mapping[class_name][method_name] = method
         class_method_name_mapping[class_name][method_name] = json.loads(function_to_json(method))
-        class_method_name_mapping[class_name][method_name]["description"] = api_description + " Tool description: " + class_method_name_mapping[class_name][method_name]["description"]
+        if class_name != "SQLAPI":
+            class_method_name_mapping[class_name][method_name]["description"] = api_description + " Tool description: " + class_method_name_mapping[class_name][method_name]["description"]
         class_method_name_mapping[class_name][method_name] = json.dumps(class_method_name_mapping[class_name][method_name])
 # Store the methods one json file per class
 for class_name, file_name in CLASS_FILE_PATH_MAPPING.items():
-
-    with open(MULTI_TURN_FUNC_DOC_PATH / f"{file_name.rsplit('.')[-1]}.json", "w") as f:
+    function_doc_path = MULTI_TURN_FUNC_DOC_PATH
+    if not function_doc_path.exists():
+        function_doc_path.mkdir(parents=True)
+    with open(function_doc_path / f"{file_name.rsplit('.')[-1]}.json", "w+") as f:
         for method_name, method_json in class_method_name_mapping[class_name].items():
             f.write(method_json)
             f.write("\n")

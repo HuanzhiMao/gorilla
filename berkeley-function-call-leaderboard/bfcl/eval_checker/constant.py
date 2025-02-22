@@ -61,6 +61,16 @@ COLUMNS_MULTI_TURN = [
 ]
 
 
+COLUMNS_AGENTIC = [
+    "Rank",
+    "Model",
+    "Agentic Overall Acc",
+    "Web Search",
+    "Memory Base",
+    "SQL",
+]
+
+
 COLUMNS_OVERALL = [
     "Rank",
     "Overall Acc",
@@ -90,6 +100,10 @@ COLUMNS_OVERALL = [
     "Multi Turn Miss Func",
     "Multi Turn Miss Param",
     "Multi Turn Long Context",
+    "Agentic Acc",
+    "Agentic Web Search",
+    "Agentic Memory Base",
+    "Agentic SQL",
     "Relevance Detection",
     "Irrelevance Detection",
     "Organization",
@@ -107,5 +121,7 @@ RESET = "\033[0m"
 # Construct the full path for other modules to use
 script_dir = Path(__file__).parent
 REST_API_GROUND_TRUTH_FILE_PATH = (script_dir / REST_API_GROUND_TRUTH_FILE_PATH).resolve()
-EXECTUABLE_API_GROUND_TRUTH_FILE_PATH = (script_dir / EXECTUABLE_API_GROUND_TRUTH_FILE_PATH).resolve()
+EXECTUABLE_API_GROUND_TRUTH_FILE_PATH = (
+    script_dir / EXECTUABLE_API_GROUND_TRUTH_FILE_PATH
+).resolve()
 REST_EVAL_GROUND_TRUTH_PATH = (script_dir / REST_EVAL_GROUND_TRUTH_PATH).resolve()

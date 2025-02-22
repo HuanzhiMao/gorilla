@@ -4,12 +4,14 @@ from pathlib import Path
 RESULT_PATH = "../result/"
 PROMPT_PATH = "../data/"
 MULTI_TURN_FUNC_DOC_PATH = "../data/multi_turn_func_doc/"
+SQL_FUNC_DOC_PATH = "../data/sql_func_doc/"
 POSSIBLE_ANSWER_PATH = "../data/possible_answer/"
 SCORE_PATH = "../score/"
 DOTENV_PATH = "../.env"
 UTILS_PATH = "../utils/"
 PROJECT_ROOT = "../"
 TEST_IDS_TO_GENERATE_PATH = "../test_case_ids_to_generate.json"
+MEMORY_PREREQ_CONVERSATION_PATH = "../data/memory_prereq_conversation/"
 
 VERSION_PREFIX = "BFCL_v3"
 
@@ -42,6 +44,10 @@ TEST_FILE_MAPPING = {
     "multi_turn_miss_param": f"{VERSION_PREFIX}_multi_turn_miss_param.json",
     "multi_turn_long_context": f"{VERSION_PREFIX}_multi_turn_long_context.json",
     "multi_turn_composite": f"{VERSION_PREFIX}_multi_turn_composite.json",
+    # Agentic Datasets
+    "web_search": f"{VERSION_PREFIX}_web_search.json",
+    "memory_base": f"{VERSION_PREFIX}_memory_base.json",
+    "memory_conflict": f"{VERSION_PREFIX}_memory_conflict.json",
 }
 
 TEST_COLLECTION_MAPPING = {
@@ -68,6 +74,19 @@ TEST_COLLECTION_MAPPING = {
         "multi_turn_miss_func",
         "multi_turn_miss_param",
         "multi_turn_long_context",
+        "web_search",
+        "memory_base",
+        # "memory_conflict",
+        "sql",
+    ],
+    "agentic": [
+        "web_search",
+        "memory_base",
+        "memory_conflict",
+    ],
+    "memory": [
+        "memory_base",
+        "memory_conflict",
     ],
     "multi_turn": [
         "multi_turn_base",
@@ -186,6 +205,10 @@ MULTI_TURN_FUNC_DOC_FILE_MAPPING = {
     "TradingBot": "trading_bot.json",
     "TravelAPI": "travel_booking.json",
     "VehicleControlAPI": "vehicle_control.json",
+    # The following classes are not part of the multi-turn categories suite, but they share the same evaluation pipeline for simplicity
+    "WebSearchAPI": "web_search.json",
+    "MemoryAPI": "memory.json",
+    "SQLAPI": "sql.json",
 }
 
 
@@ -194,12 +217,14 @@ script_dir = Path(__file__).parent
 RESULT_PATH = (script_dir / RESULT_PATH).resolve()
 PROMPT_PATH = (script_dir / PROMPT_PATH).resolve()
 MULTI_TURN_FUNC_DOC_PATH = (script_dir / MULTI_TURN_FUNC_DOC_PATH).resolve()
+SQL_FUNC_DOC_PATH = (script_dir / SQL_FUNC_DOC_PATH).resolve()
 POSSIBLE_ANSWER_PATH = (script_dir / POSSIBLE_ANSWER_PATH).resolve()
 SCORE_PATH = (script_dir / SCORE_PATH).resolve()
 DOTENV_PATH = (script_dir / DOTENV_PATH).resolve()
 UTILS_PATH = (script_dir / UTILS_PATH).resolve()
 PROJECT_ROOT = (script_dir / PROJECT_ROOT).resolve()
 TEST_IDS_TO_GENERATE_PATH = (script_dir / TEST_IDS_TO_GENERATE_PATH).resolve()
+MEMORY_PREREQ_CONVERSATION_PATH = (script_dir / MEMORY_PREREQ_CONVERSATION_PATH).resolve()
 
 RESULT_PATH.mkdir(parents=True, exist_ok=True)
 SCORE_PATH.mkdir(parents=True, exist_ok=True)

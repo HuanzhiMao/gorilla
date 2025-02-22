@@ -35,7 +35,7 @@ def ast_checker(
             func_description, model_output, possible_answer, language, model_name
         )
         
-    elif "multiple" in test_category:
+    elif "multiple" in test_category or "sql" in test_category:
         return multiple_function_checker(
             func_description, model_output, possible_answer, language, model_name
         )
@@ -164,10 +164,12 @@ def type_checker(
 
 
 def standardize_string(input_string: str):
-    # This function standardizes the string by removing all the spaces, ",./-_*^" punctuation, and converting it to lowercase
-    # It will also convert all the single quotes to double quotes
-    # This is used to compare the model output with the possible answers
-    # We don't want to punish model for answer like April 1, 2024 vs April 1,2024, vs April 1 2024
+    """
+    This function standardizes the string by removing all the spaces, ",./-_*^" punctuation, and converting it to lowercase
+    It will also convert all the single quotes to double quotes
+    This is used to compare the model output with the possible answers
+    We don't want to punish model for answer like April 1, 2024 vs April 1,2024, vs April 1 2024
+    """
     regex_string = r"[ \,\.\/\-\_\*\^]"
     return re.sub(regex_string, "", input_string).lower().replace("'", '"')
 
