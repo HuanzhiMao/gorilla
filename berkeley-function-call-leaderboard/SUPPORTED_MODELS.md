@@ -27,17 +27,20 @@ Below is a comprehensive table of models supported for running leaderboard evalu
 |gpt-4o-mini-2024-07-18 | Prompt|
 |o1-2024-12-17-FC | Function Calling|
 |o1-2024-12-17 | Prompt|
-|o1-mini-2024-09-12 | Prompt|
+|o3-mini-2025-01-31-FC | Function Calling|
+|o3-mini-2025-01-31 | Prompt|
 |gemini-1.0-pro-002-FC | Function Calling|
 |gemini-1.0-pro-002 | Prompt|
 |gemini-1.5-pro-{001,002}-FC | Function Calling|
 |gemini-1.5-pro-{001,002} | Prompt|
 |gemini-1.5-flash-{001,002}-FC | Function Calling|
 |gemini-1.5-flash-{001,002} | Prompt|
-|gemini-2.0-flash-exp-FC | Function Calling|
-|gemini-2.0-flash-exp | Prompt|
-|gemini-exp-1206-FC | Function Calling|
-|gemini-exp-1206 | Prompt|
+|gemini-2.0-pro-exp-02-05-FC | Function Calling|
+|gemini-2.0-pro-exp-02-05 | Prompt|
+|gemini-2.0-flash-001-FC | Function Calling|
+|gemini-2.0-flash-001 | Prompt|
+|gemini-2.0-flash-lite-preview-02-05-FC | Function Calling|
+|gemini-2.0-flash-lite-preview-02-05 | Prompt|
 |open-mixtral-{8x7b,8x22b} | Prompt|
 |open-mixtral-8x22b-FC | Function Calling|
 |open-mistral-nemo-2407 | Prompt|
@@ -100,6 +103,8 @@ Below is a comprehensive table of models supported for running leaderboard evalu
 |speakleash/Bielik-11B-v2.3-Instruct 💻| Prompt|
 |Qwen/QwQ-32B-Preview 💻| Prompt|
 |NovaSky-AI/Sky-T1-32B-Preview 💻| Prompt|
+|tiiuae/Falcon3-{1B,3B,7B,10B}-Instruct 💻| Function Calling|
+|uiuc-convai/CALM-{8B,70B,405B} 💻| Function Calling|
 
 ---
 

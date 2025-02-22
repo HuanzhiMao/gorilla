@@ -138,7 +138,7 @@ def agentic_runner(
             temp["model_result_decoded"] = model_result_list_decoded
             temp["possible_answer"] = possible_answer_item
             temp["inference_log"] = model_result[i].get("inference_log", "")
-            # result.append(temp)
+            result.append(temp)
         else:
             temp = {}
             temp["id"] = index

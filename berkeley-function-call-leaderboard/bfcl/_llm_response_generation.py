@@ -204,6 +204,14 @@ def process_memory_test_case(test_cases):
 
     return test_cases
 
+def process_web_search_conflict_test_case(test_cases):
+    """
+    Web Search Conflict test cases need to have the web search phase carried out before the inference phase. So we configure some test case dependencies here.
+    """
+    for entry in test_cases:
+        if "web_search_conflict" in entry["id"]:
+            entry["question"][0][0]["content"] += " If the question contains incorrect assumptions or is inherently invalid, classify the false premise in the question into one of the following categories: 'Scientifically or Logically Impossible Events', 'Nonexistent Events, Entities, and Policies', or 'Others', and respond with the format: 'Invalid question: [Reasoning for Invalid Question]'"
+    return test_cases
 
 def populate_test_cases_with_predefined_functions(test_cases):
     """
@@ -387,6 +395,7 @@ def main(args):
             all_test_file_paths,
             all_test_entries_involved,
         )
+        test_cases_total = process_web_search_conflict_test_case(test_cases_total)
 
         if len(test_cases_total) == 0:
             print(
