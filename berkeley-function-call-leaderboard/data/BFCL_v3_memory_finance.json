@@ -1,8 +1,8 @@
 {"id": "memory_base_0", "question": [[{"role": "user", "content": "What is the name of the investment firm I manage?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_1", "question": [[{"role": "user", "content": "What was the value of the landmark healthcare merger closed last quarter?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_2", "question": [[{"role": "user", "content": "Among the three current major transactions being led, which one requires early Monday morning meetings?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_1", "question": [[{"role": "user", "content": "What was the name of the mid-cap tech firm that faced a hostile takeover, which led to a famous poison pill strategy?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_2", "question": [[{"role": "user", "content": "I remember there were two companies that were involved in the $14.2B healthcare merger and how it was described as 'the deal that reshaped modern cancer treatment'. What were the names of those two companies?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_3", "question": [[{"role": "user", "content": "What has become my virtual deal diary?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_4", "question": [[{"role": "user", "content": "What level do I want to grow my private portfolio to?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_4", "question": [[{"role": "user", "content": "What is the name of the AI-driven market analysis platform developed in-house by Legend Investments?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_5", "question": [[{"role": "user", "content": "Where did I start my career in 2001?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_6", "question": [[{"role": "user", "content": "Where did I get my MBA from?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_7", "question": [[{"role": "user", "content": "How do I approach their personal investments differently from managing the firm’s assets?"}]], "involved_classes": ["MemoryAPI"]}
