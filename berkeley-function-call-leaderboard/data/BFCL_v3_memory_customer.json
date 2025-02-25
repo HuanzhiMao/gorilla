@@ -1,0 +1,30 @@
+{"id":"memory_base_0","question":[[{"role":"user","content":"What is my first name?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_1","question":[[{"role":"user","content":"How old am I?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_2","question":[[{"role":"user","content":"Where do I live?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_3","question":[[{"role":"user","content":"What kind of latte do I occasionally like?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_4","question":[[{"role":"user","content":"How many square feet is my kitchen counter?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_5","question":[[{"role":"user","content":"How much is the discount for new customers? Give the percent off."}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_6","question":[[{"role":"user","content":"Name one of two accessories I added along with my espresso machine order to qualify for free shipping."}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_7","question":[[{"role":"user","content":"What was the original estimated delivery duration for my order provided on the checkout page? Give the number of business days."}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_8","question":[[{"role":"user","content":"Which event was I hoping to have the espresso machine ready for?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_9","question":[[{"role":"user","content":"Which part of my espresso machine arrived bent?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_10","question":[[{"role":"user","content":"How many crushed corners were on the outer box upon delivery?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_11","question":[[{"role":"user","content":"Which accessory arrived with a small scratch?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_12","question":[[{"role":"user","content":"Which appliance did I banish to the pantry to make space for my coffee setup?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_13","question":[[{"role":"user","content":"How much does the specialized storage canister that's supposed to keep beans fresher for longercost?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_14","question":[[{"role":"user","content":"What could make my lattes even better?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_15","question":[[{"role":"user","content":"What company did you collaborate with on the digital scale that I bought in my second order?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_16","question":[[{"role":"user","content":"Where am I traveling next weekend for a small freelance gig?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_17","question":[[{"role":"user","content":"Where is the warehouse that is supposed to ship my grinder bundle from?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_18","question":[[{"role":"user","content":"Which creative hobby am I combining with my latte art?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_19","question":[[{"role":"user","content":"I'm excited about a potential extended warranty plan for members. How long is it, in months?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_20","question":[[{"role":"user","content":"How many mL do I want the nuanced, small-batch roasts in my subscription to be?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_21","question":[[{"role":"user","content":"How many days ago did the unexpected charge appear on my statement?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_22","question":[[{"role":"user","content":"How much did I estimate the mystery charge to be? Give the answer in the format: $__.__ (ex: $19.99)"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_23","question":[[{"role":"user","content":"How many 'order confirmed' emails did I receive for the coffee canisters and scale purchase?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_24","question":[[{"role":"user","content":"What magazine does my kitchen now look like a page out of?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_25","question":[[{"role":"user","content":"What's the average rainfall (in inches) that's making shipping unpredictable? Give the number rounded to the nearest tenth (ex: 7.9)."}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_26","question":[[{"role":"user","content":"What's my coffee instagram page?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_27","question":[[{"role":"user","content":"What impromptu event did I host?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_28","question":[[{"role":"user","content":"What do I want to mitigate any chance of when shipping a large-scale espresso machine?"}]],"involved_classes":["MemoryAPI"]}
+{"id":"memory_base_29","question":[[{"role":"user","content":"Besides your brand, what's the other brand I trust?"}]],"involved_classes":["MemoryAPI"]}
