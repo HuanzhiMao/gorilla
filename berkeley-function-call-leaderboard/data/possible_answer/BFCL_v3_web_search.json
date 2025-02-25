@@ -1,9 +1,9 @@
-{"id": "web_search_0", "ground_truth": ["Da Hong Pao"], "source": ["https://financesonline.com/top-12-most-expensive-tea-types-in-the-world-da-hong-pao-vs-tieguanyin/"]}
+{"id": "web_search_0", "ground_truth": ["Da Hong Pao", "DaHong Pao"], "source": ["https://financesonline.com/top-12-most-expensive-tea-types-in-the-world-da-hong-pao-vs-tieguanyin/"]}
 {"id": "web_search_1", "ground_truth": ["Usher"], "source": ["https://www.cbsnews.com/news/super-bowl-halftime-show-2024-performers/"]}
 {"id": "web_search_2", "ground_truth": ["Victor Ambros and Gary Ruvkun"], "source": ["https://new.nsf.gov/news/nsf-congratulates-laureates-2024-nobel-prize-physiology-medicine#:~:text=NSF%20congratulates%20laureates%20of%20the%202024%20Nobel%20Prize%20in%20physiology%20or%20medicine,-Two%20scientists%20shared&text=The%20U.S.%20National%20Science%20Foundation,Prize%20in%20physiology%20or%20medicine."]}
 {"id": "web_search_3", "ground_truth": ["Oppenheimer"], "source": ["https://www.oscars.org/oscars/ceremonies/2024"]}
 {"id": "web_search_4", "ground_truth": ["The Wedding People"], "source": ["https://www.goodreads.com/blog/show/2879-meet-the-winners-of-the-2024-goodreads-choice-awards#:~:text=Readers'%20Favorite%20Fiction%3A%20The%20Wedding%20People&text=The%20year's%20surprise%20sensation%2C%20Alison,a%20posh%20Rhode%20Island%20inn."]}
-{"id": "web_search_5", "ground_truth": ["France"], "source": ["https://wptravel.io/most-visited-countries-in-the-world/"]}
+{"id": "web_search_5", "ground_truth": ["Bangkok"], "source": ["https://wptravel.io/most-visited-cities-in-the-world/"]}
 {"id": "web_search_6", "ground_truth": ["Taylor Swift"], "source": ["https://newsroom.spotify.com/2024-12-04/top-songs-artists-podcasts-audiobooks-albums-trends-2024/#:~:text=With%20more%20than%2026.6%20billion,on%20her%20Spotify%20artist%20profile."]}
 {"id": "web_search_7", "ground_truth": ["WAVE", "Eco Wave Power"], "source": ["https://www.forbes.com/sites/arielcohen/2025/01/06/the-year-that-was-2024-energy-stockswinners-and-losers/"]}
 {"id": "web_search_8", "ground_truth": ["Jayne Anne Phillips "], "source": ["https://www.pulitzer.org/prize-winners-by-year"]}
@@ -14,7 +14,7 @@
 {"id": "web_search_13", "ground_truth": ["225"], "source": ["https://stockanalysis.com/ipos/2024/"]}
 {"id": "web_search_14", "ground_truth": ["2", "two"], "source": ["https://www.espn.com/soccer/match/_/gameId/702410/real-madrid-borussia-dortmund"]}
 {"id": "web_search_15", "ground_truth": ["Guyana"], "source": ["https://gfmag.com/data/countries-highest-gdp-growth/"]}
-{"id": "web_search_16", "ground_truth": ["Black Myth: Wukong"], "source": ["https://store.steampowered.com/charts/bestofyear/bestof2024"]}
+{"id": "web_search_16", "ground_truth": ["Call of Duty: Black Ops 6", "Black Ops 6"], "source": ["https://www.statista.com/statistics/1285658/top-ranked-video-games-sales-annual/"]}
 {"id": "web_search_17", "ground_truth": ["Fool Me Once"], "source": ["https://www.whats-on-netflix.com/news/biggest-netflix-tv-and-movie-hits-and-disappointments-of-2024/#:~:text=Among%20the%20three%20series%20that,which%20completes%20this%20Top%2010."]}
 {"id": "web_search_18", "ground_truth": ["PLTR"], "source": ["https://finance.yahoo.com/news/5-best-performing-stocks-p-150300092.html"]}
 {"id": "web_search_19", "ground_truth": ["Switzerland"], "source": ["https://eurovision.tv/story/switzerland-wins-eurovision-2024#:~:text=Switzerland%20has%20won%20the%2068th,the%20Eurovision%20Song%20Contest%202024."]}
@@ -24,24 +24,24 @@
 {"id": "web_search_23", "ground_truth": ["126"], "source": ["https://www.espn.com/olympics/summer/2024/medals"]}
 {"id": "web_search_24", "ground_truth": ["58"], "source": ["https://www.mlb.com/news/2024-mlb-regular-season-stat-leaders#:~:text=AL/MLB:%20Aaron%20Judge%20(NYY)%2C%2058%20After%20a,the%2012th%20most%20in%20an%20MLB%20season."]}
 {"id": "web_search_25", "ground_truth": ["6", "six"], "source": ["https://www.grammy.com/artists/taylor-swift/15450"]}
-{"id": "web_search_26", "ground_truth": ["0", "zero"], "source": ["https://ibighit.com/bts/eng/discography/"]}
+{"id": "web_search_26", "ground_truth": ["3", "three"], "source": ["https://www.capitalfm.com/news/billie-eilish-albums-in-order/"]}
 {"id": "web_search_27", "ground_truth": ["7"], "source": ["https://www.apple.com/apple-events/"]}
 {"id": "web_search_28", "ground_truth": ["8", "eight"], "source": ["https://www.netflix.com/title/81588093"]}
-{"id": "web_search_29", "ground_truth": ["143"], "source": ["https://www.spacex.com/launches/"]}
-{"id": "web_search_30", "ground_truth": ["L'empire des lumi\u00e8res", "L'empire des lumieres"], "source": ["https://www.artnews.com/art-news/news/most-valuable-artworks-sold-at-auction-in-2024-1234728501/"]}
+{"id": "web_search_29", "ground_truth": ["134"], "source": ["https://www.nasaspaceflight.com/2025/01/spacex-roundup-2024/#:~:text=SpaceX%20is%20gearing%20up%20for,its%20Falcon%20family%20of%20rockets."]}
+{"id": "web_search_30", "ground_truth": ["L'empire des lumi\u00e8res", "L'empire des lumieres","L\u2019empire des lumi\u00e8res"], "source": ["https://www.artnews.com/art-news/news/most-valuable-artworks-sold-at-auction-in-2024-1234728501/"]}
 {"id": "web_search_31", "ground_truth": ["Livia Voigt"], "source": ["https://www.forbes.com/sites/monicahunter-hart/2024/03/31/worlds-youngest-billionaires-2024-john-collison-ben-francis-evan-spiegel/"]}
 {"id": "web_search_32", "ground_truth": ["Astro Bot"], "source": ["https://www.nacongaming.com/en-US/blog/game-awards-2024-results#:~:text=Astro%20Bot%20takes%20the%20crown,by%20the%20irreplaceable%20Geoff%20Keighley."]}
 {"id": "web_search_33", "ground_truth": ["Walmart"], "source": ["https://en.wikipedia.org/wiki/List_of_largest_employers"]}
 {"id": "web_search_34", "ground_truth": ["Adam Sandler"], "source": ["https://www.forbesindia.com/article/explainers/highestpaid-actors-world/93785/1"]}
 {"id": "web_search_35", "ground_truth": ["Scottie Scheffler"], "source": ["https://www.masters.com/en_US/news/articles/2024-04-14/2024-04-14_final_results_for_the_2024_masters.html#:~:text=The%202024%20Masters%20has%20concluded%20with%20Scottie%20Scheffler%20earning%20his,Max%20Homa%20and%20Collin%20Morikawa."]}
 {"id": "web_search_36", "ground_truth": ["Lenacapavir"], "source": ["https://www.science.org/content/article/breakthrough-2024"]}
-{"id": "web_search_37", "ground_truth": ["108"], "source": ["https://github.blog/news-insights/octoverse/octoverse-2024/"]}
+{"id": "web_search_37", "ground_truth": ["Python"], "source": ["https://github.blog/news-insights/octoverse/octoverse-2024/"]}
 {"id": "web_search_38", "ground_truth": ["El Capitan"], "source": ["https://www.amd.com/en/newsroom/press-releases/2024-11-18-amd-accelerates-exascale-computing-to-new-heights-.html#:~:text=The%20El%20Capitan%20supercomputer%2C%20housed,on%20the%20latest%20Top500%20list."]}
 {"id": "web_search_39", "ground_truth": ["Inside Out 2"], "source": ["https://www.boxofficemojo.com/year/world/2024/"]}
-{"id": "web_search_40", "ground_truth": ["\nL\u00e9on Marchand", "Leon Marchand"], "source": ["https://login.statista.com/authorize?__sso_redirect=%2Fstatistics%2F1484667%2Fmost-golds-athletes-paris-olympics%2F&connection=ip-login&audience=statista-api&ui_locales=en&response_type=code&client_id=xjVF0FFWFPOcG7XJO8C0XleeRPllUFfI&redirect_uri=https%3A%2F%2Fwww.statista.com%2Fsso%2Fcallback&state=ed09164a-a372-45c7-8c45-990cfe9aaf06&scope=openid+profile+offline_access"]}
+{"id": "web_search_40", "ground_truth": ["L\u00e9on Marchand", "Leon Marchand"], "source": ["https://login.statista.com/authorize?__sso_redirect=%2Fstatistics%2F1484667%2Fmost-golds-athletes-paris-olympics%2F&connection=ip-login&audience=statista-api&ui_locales=en&response_type=code&client_id=xjVF0FFWFPOcG7XJO8C0XleeRPllUFfI&redirect_uri=https%3A%2F%2Fwww.statista.com%2Fsso%2Fcallback&state=ed09164a-a372-45c7-8c45-990cfe9aaf06&scope=openid+profile+offline_access"]}
 {"id": "web_search_41", "ground_truth": ["55646"], "source": ["https://www.nyrr.org/media-center/press-release/2024_1104_tcsnycmbythenumbers"]}
 {"id": "web_search_42", "ground_truth": ["5471"], "source": ["https://www.youtube.com/watch?v=kcPGk1_QeT8"]}
-{"id": "web_search_43", "ground_truth": ["61"], "source": ["https://genius.com/Genius-romanizations-rose-and-bruno-mars-apt-romanized-lyrics"]}
+{"id": "web_search_43", "ground_truth": ["Kendrick Lamar"], "source": ["https://www.cbsnews.com/news/super-bowl-halftime-show-2025-performers/"]}
 {"id": "web_search_44", "ground_truth": ["2", "two"], "source": ["https://genius.com/Kendrick-lamar-not-like-us-lyrics"]}
 {"id": "web_search_45", "ground_truth": ["\u042d\u0442", "\u044d\u0442", "et"], "source": ["https://sakhatyla.ru/translate?q=\u043c\u044f\u0441\u043e"]}
 {"id": "web_search_46", "ground_truth": ["Ursula von der Leyen"], "source": ["https://www.forbes.com/lists/power-women/"]}
@@ -53,14 +53,14 @@
 {"id": "web_search_52", "ground_truth": ["Coco Gauff"], "source": ["https://www.wtatennis.com/videos/4166023/champions-reel-how-coco-gauff-won-the-2024-wta-finals-riyadh"]}
 {"id": "web_search_53", "ground_truth": ["Samsung"], "source": ["https://www.counterpointresearch.com/insights/global-smartphone-share/"]}
 {"id": "web_search_54", "ground_truth": ["3", "three"], "source": ["https://science.ebird.org/en/use-ebird-data/the-ebird-taxonomy/2024-ebird-taxonomy-update"]}
-{"id": "web_search_55", "ground_truth": ["18"], "source": ["https://www.guinnessworldrecords.com/world-records/most-nba-championship-titles"]}
+{"id": "web_search_55", "ground_truth": ["Boston Celtics"], "source": ["https://www.guinnessworldrecords.com/world-records/most-nba-championship-titles"]}
 {"id": "web_search_56", "ground_truth": ["Canada"], "source": ["https://www.guinnessworldrecords.com/world-records/64407-most-world-curling-championship-titles-women"]}
 {"id": "web_search_57", "ground_truth": ["Broken"], "source": ["https://www.guinnessworldrecords.com/world-records/764414-most-commonly-used-movie-title"]}
-{"id": "web_search_58", "ground_truth": ["16"], "source": ["https://www.guinnessworldrecords.com/world-records/503779-most-ufc-wins-title-bouts"]}
+{"id": "web_search_58", "ground_truth": ["Jon Jones"], "source": ["https://www.guinnessworldrecords.com/world-records/503779-most-ufc-wins-title-bouts"]}
 {"id": "web_search_59", "ground_truth": ["16,399", "16399"], "source": ["https://www.guinnessworldrecords.com/world-records/83849-largest-robot-competition"]}
 {"id": "web_search_60", "ground_truth": ["5", "five"], "source": ["https://www.guinnessworldrecords.com/world-records/76593-most-olympic-titles-won-women-football"]}
-{"id": "web_search_61", "ground_truth": ["41"], "source": ["https://www.guinnessworldrecords.com/world-records/108338-most-career-ranking-titles-won-in-snooker"]}
-{"id": "web_search_62", "ground_truth": ["481"], "source": ["https://www.guinnessworldrecords.com/world-records/773982-most-books-of-different-titles-by-the-same-author-on-display"]}
+{"id": "web_search_61", "ground_truth": ["Ronnie O'Sullivan"], "source": ["https://www.guinnessworldrecords.com/world-records/108338-most-career-ranking-titles-won-in-snooker"]}
+{"id": "web_search_62", "ground_truth": ["The Wedding People"], "source": ["https://www.goodreads.com/blog/show/2879-meet-the-winners-of-the-2024-goodreads-choice-awards#:~:text=Readers'%20Favorite%20Fiction%3A%20The%20Wedding%20People&text=The%20year's%20surprise%20sensation%2C%20Alison,a%20posh%20Rhode%20Island%20inn."]}
 {"id": "web_search_63", "ground_truth": ["19"], "source": ["https://www.guinnessworldrecords.com/world-records/412785-most-consecutive-years-winning-an-atp-title"]}
 {"id": "web_search_64", "ground_truth": ["10"], "source": ["https://www.guinnessworldrecords.com/world-records/667712-most-world-freestyle-football-association-titles-won"]}
 {"id": "web_search_65", "ground_truth": ["43"], "source": ["https://www.guinnessworldrecords.com/world-records/764093-oldest-winner-of-a-grand-slam-tennis-title-male"]}
@@ -75,13 +75,13 @@
 {"id": "web_search_74", "ground_truth": ["21"], "source": ["https://www.guinnessworldrecords.com/world-records/464124-most-abba-song-titles-identified-from-the-track-in-one-minute"]}
 {"id": "web_search_75", "ground_truth": ["15"], "source": ["https://www.guinnessworldrecords.com/world-records/755535-most-consecutive-wheelchair-singles-titles-female"]}
 {"id": "web_search_76", "ground_truth": ["Sifan Hassan"], "source": ["https://www.olympics.com/en/news/sifan-hassan-womens-marathon-gold-in-new-olympic-record"]}
-{"id": "web_search_77", "ground_truth": ["USA"], "source": ["https://www.guinnessworldrecords.com/world-records/76593-most-olympic-titles-won-women-football"]}
+{"id": "web_search_77", "ground_truth": ["USA", "United States", "U.S."], "source": ["https://www.guinnessworldrecords.com/world-records/76593-most-olympic-titles-won-women-football"]}
 {"id": "web_search_78", "ground_truth": ["6", "six"], "source": ["https://www.guinnessworldrecords.com/world-records/77833-most-womens-racquetball-world-championships"]}
 {"id": "web_search_79", "ground_truth": ["Broken"], "source": ["https://www.guinnessworldrecords.com/world-records/764414-most-commonly-used-movie-title"]}
 {"id": "web_search_80", "ground_truth": ["13"], "source": ["https://www.guinnessworldrecords.com/world-records/601640-most-world-superbike-championship-consecutive-race-wins"]}
 {"id": "web_search_81", "ground_truth": ["15"], "source": ["https://www.guinnessworldrecords.com/world-records/770680-most-goals-scored-by-a-team-in-a-uefa-european-championship"]}
 {"id": "web_search_82", "ground_truth": ["28"], "source": ["https://www.guinnessworldrecords.com/world-records/514912-most-ijsba-world-championship-wins-male"]}
-{"id": "web_search_83", "ground_truth": ["16"], "source": ["https://www.guinnessworldrecords.com/world-records/88667-youngest-player-in-a-football-soccer-uefa-european-championships"]}
+{"id": "web_search_83", "ground_truth": ["Lamine Yamal"], "source": ["https://www.guinnessworldrecords.com/world-records/88667-youngest-player-in-a-football-soccer-uefa-european-championships"]}
 {"id": "web_search_84", "ground_truth": ["16"], "source": ["https://www.guinnessworldrecords.com/world-records/64723-most-wins-of-the-world-team-badminton-championships-female"]}
 {"id": "web_search_85", "ground_truth": ["12"], "source": ["https://www.guinnessworldrecords.com/world-records/768434-most-wins-of-the-league-of-legends-european-championships"]}
 {"id": "web_search_86", "ground_truth": ["41"], "source": ["https://www.guinnessworldrecords.com/world-records/88665-oldest-player-in-a-football-soccer-uefa-european-championships"]}
@@ -96,5 +96,5 @@
 {"id": "web_search_95", "ground_truth": ["58"], "source": ["https://www.guinnessworldrecords.com/world-records/90527-most-matches-played-in-uefa-european-football-championships-by-a-team"]}
 {"id": "web_search_96", "ground_truth": ["30"], "source": ["https://www.guinnessworldrecords.com/world-records/90529-most-matches-won-in-uefa-european-football-championships-by-a-team"]}
 {"id": "web_search_97", "ground_truth": ["6", "six"], "source": ["https://www.guinnessworldrecords.com/world-records/730166-most-consecutive-world-championship-swimming-gold-medals-in-the-same-event"]}
-{"id": "web_search_98", "ground_truth": ["863"], "source": ["https://www.guinnessworldrecords.com/world-records/772385-fastest-140-6-triathlon-distance-male-la1-la2"]}
+{"id": "web_search_98", "ground_truth": ["863", "14 hours and 23 minutes", "14 hours, 23 minutes"], "source": ["https://www.guinnessworldrecords.com/world-records/772385-fastest-140-6-triathlon-distance-male-la1-la2"]}
 {"id": "web_search_99", "ground_truth": ["2024"], "source": ["https://www.guinnessworldrecords.com/world-records/most-words-on-a-postage-stamp"]}
