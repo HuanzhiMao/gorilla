@@ -1,11 +1,11 @@
-{"id": "memory_base_0", "ground_truth": ["8 am", "Eight in the morning", "Morning at Eight", "Morning at 8"], "source": "Daycare: Drop-off at 8 AM, pick-up at 5 PM."}
+{"id": "memory_base_0", "ground_truth": ["08:00 PM", "8:00 PM"], "source": "Daycare: Drop-off at 8 AM, pick-up at 5 PM."}
 {"id": "memory_base_1", "ground_truth": ["Friday"], "source": "Daycare: Monthly payment due Friday."}
 {"id": "memory_base_2", "ground_truth": ["Before Friday"], "source": "Monday: Need to finalize Q1 budget report before Friday."}
 {"id": "memory_base_3", "ground_truth": ["Change passwords ASAP", "Change passwords", "Need to change passwords"], "source": "Monday: IT updated security protocols—change passwords ASAP."}
 {"id": "memory_base_4", "ground_truth": ["Wednesday"], "source": "Monday: Client call with Jacob—delayed till Wednesday."}
-{"id": "memory_base_5", "ground_truth": ["System downtime from 10 AM - 12 PM"], "source": "Tuesday: System downtime from 10 AM - 12 PM, slowed down workflow."}
+{"id": "memory_base_5", "ground_truth": ["System downtime from 10 AM - 12 PM", "System downtime", "Downtime", "10 AM - 12 PM system downtime"], "source": "Tuesday: System downtime from 10 AM - 12 PM, slowed down workflow."}
 {"id": "memory_base_6", "ground_truth": ["Updated benefits package"], "source": "Tuesday: HR sent updated benefits package—review before next month’s deadline."}
-{"id": "memory_base_7", "ground_truth": ["Tweak a few slides", "Tweak slides"], "source": "Wednesday: Presentation to leadership went well, but need to tweak a few slides for next week’s review."}
+{"id": "memory_base_7", "ground_truth": ["05:00 PM", "5:00 PM"], "source": "Daycare: Drop-off at 8 AM, pick-up at 5 PM."}
 {"id": "memory_base_8", "ground_truth": ["Send it for legal approval"], "source": "Wednesday: Client proposal draft ready—send it for legal approval."}
 {"id": "memory_base_9", "ground_truth": ["Fix last month’s sales data"], "source": "Thursday: Caught a mistake in last month’s sales data."}
 {"id": "memory_base_10", "ground_truth": ["Cost-cutting recommendations"], "source": "Thursday: Finance wants cost-cutting recommendations — brainstorm ideas."}
