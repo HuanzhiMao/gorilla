@@ -12,14 +12,14 @@
 {"id": "memory_base_11", "question": [[{"role": "user", "content": "By what age do I aim to transition into a chairman role at my firm?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_12", "question": [[{"role": "user", "content": "How often do I have to travel for maintaining my global network?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_13", "question": [[{"role": "user", "content": "What is the name of the dinner series the user hosts every quarter?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_14", "question": [[{"role": "user", "content": "What is the biggest challenge I face in balancing home life with my career?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_15", "question": [[{"role": "user", "content": "How do I introduce my 14-year-old to financial literacy?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_14", "question": [[{"role": "user", "content": "In my family life, how much does success in finance mean if I sacrafice the relationships that matter the most?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_15", "question": [[{"role": "user", "content": "My kids are exploring their own paths that they are interested in. What is my 14 year old one obsessed with?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_16", "question": [[{"role": "user", "content": "How do I incorporate my family into my business travel?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_17", "question": [[{"role": "user", "content": "What platform do I use as my financial command center?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_18", "question": [[{"role": "user", "content": "What machine learning platform did I champion for implementation at my firm?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_19", "question": [[{"role": "user", "content": "Which tool do I use for data visualization and client communication?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_20", "question": [[{"role": "user", "content": "What programming languages did I teach myself during the pandemic?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_21", "question": [[{"role": "user", "content": "What are the three key factors I believe contribute to success?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_22", "question": [[{"role": "user", "content": "What lesson did I learn from losing a massive deal early in my career?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_23", "question": [[{"role": "user", "content": "How did I put myself in positions where opportunity could find me?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_22", "question": [[{"role": "user", "content": "What was the name of the deal that I lost a massive deal on early in my career?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_23", "question": [[{"role": "user", "content": "What favors those who put themselves in positions where opportunity can find them?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_24", "question": [[{"role": "user", "content": "What is my advice to young professionals about career growth?"}]], "involved_classes": ["MemoryAPI"]}
