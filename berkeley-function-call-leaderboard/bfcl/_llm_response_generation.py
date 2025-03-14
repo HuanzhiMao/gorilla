@@ -150,6 +150,7 @@ def collect_test_cases(
     ]
 
     test_cases_to_generate = process_memory_test_case(test_cases_to_generate)
+    test_cases_to_generate = process_web_search_test_case(test_cases_to_generate)
     test_cases_to_generate = populate_test_cases_with_predefined_functions(
         test_cases_to_generate
     )
@@ -201,7 +202,17 @@ def process_memory_test_case(test_cases):
         test_cases += memory_base
     if add_conflict:
         test_cases += memory_conflict
+    return test_cases
 
+def process_web_search_test_case(test_cases):
+    """
+    Web search multihop test cases need to have the web search phase carried out before the inference phase. So we configure some test case dependencies here.
+    """
+    for entry in test_cases:
+        if "web_search_multihop" in entry["id"]:
+            entry["question"][0][0]["content"] += " You must respond in this format: {'answer': your answer, make it short and concise, 'context': summarization of what you found}. If you do not know the answer, respond with {'answer': 'I do not know', 'context': 'I do not know'}"
+        elif "web_search_conflict" in entry["id"]:
+            entry["question"][0][0]["content"] += " If there is a false premise in the question, you must respond in this format: {'answer': 'Invalid question', 'reason': a one short sentence explanation of why the question is invalid}. If you do not know the answer, respond with {'answer': 'I do not know', 'reason': 'I do not know'}"
     return test_cases
 
 
