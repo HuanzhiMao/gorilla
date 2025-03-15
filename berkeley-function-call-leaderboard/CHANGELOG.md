@@ -2,6 +2,42 @@
 
 All notable changes to the Berkeley Function Calling Leaderboard will be documented in this file.
 
+- [Mar 2, 2025] [#923](https://github.com/ShishirPatil/gorilla/pull/923): Add the following new models to the leaderboard:
+  - `claude-3-7-sonnet-20250219`
+  - `claude-3-7-sonnet-20250219-FC`
+- [Feb 28, 2025] [#925](https://github.com/ShishirPatil/gorilla/pull/925): Add support for the `Qwen2.5` models in Function Calling mode:
+  - `Qwen/Qwen2.5-0.5B-Instruct-FC`
+  - `Qwen/Qwen2.5-1.5B-Instruct-FC`
+  - `Qwen/Qwen2.5-3B-Instruct-FC`
+  - `Qwen/Qwen2.5-7B-Instruct-FC`
+  - `Qwen/Qwen2.5-14B-Instruct-FC`
+  - `Qwen/Qwen2.5-32B-Instruct-FC`
+  - `Qwen/Qwen2.5-72B-Instruct-FC`
+- [Feb 28, 2025] [#926](https://github.com/ShishirPatil/gorilla/pull/926): Add support for local inference for `deepseek-ai/DeepSeek-R1`
+- [Feb 27, 2025] [#922](https://github.com/ShishirPatil/gorilla/pull/922): Add the following new models to the leaderboard:
+  - `gpt-4.5-preview-2025-02-27`
+  - `gpt-4.5-preview-2025-02-27-FC`
+- [Feb 26, 2025] [#901](https://github.com/ShishirPatil/gorilla/pull/901): Add new model `DeepSeek-R1` to the leaderboard.
+- [Feb 24, 2025] [#917](https://github.com/ShishirPatil/gorilla/pull/917): Add new model `BitAgent/BitAgent-8B` to the leaderboard.
+- [Feb 5, 2025] [#900](https://github.com/ShishirPatil/gorilla/pull/900), [#913](https://github.com/ShishirPatil/gorilla/pull/913): Add the following new models to the leaderboard:
+  - `uiuc-convai/CoALM-8B`
+  - `uiuc-convai/CoALM-70B`
+  - `uiuc-convai/CoALM-405B`
+- [Feb 5, 2025] [#902](https://github.com/ShishirPatil/gorilla/pull/902): Add the following new models to the leaderboard:
+  - `gemini-2.0-flash-lite-preview-02-05-FC`
+  - `gemini-2.0-flash-lite-preview-02-05`
+  - `gemini-2.0-flash-001-FC`
+  - `gemini-2.0-flash-001`
+  - `gemini-2.0-pro-exp-02-05-FC`
+  - `gemini-2.0-pro-exp-02-05`
+- [Feb 2, 2025] [#898](https://github.com/ShishirPatil/gorilla/pull/898): Add the following new models to the leaderboard:
+  - `o3-mini-2025-01-31-FC`
+  - `o3-mini-2025-01-31`
+- [Jan 28, 2025] [#894](https://github.com/ShishirPatil/gorilla/pull/894): Add the following new models to the leaderboard:
+  - `tiiuae/Falcon3-1B-Instruct-FC`
+  - `tiiuae/Falcon3-3B-Instruct-FC`
+  - `tiiuae/Falcon3-7B-Instruct-FC`
+  - `tiiuae/Falcon3-10B-Instruct-FC`
 - [Jan 27, 2025] [#895](https://github.com/ShishirPatil/gorilla/pull/895): Fix minor typo in default system prompt for prompting models.
 - [Jan 20, 2025] [#887](https://github.com/ShishirPatil/gorilla/pull/887): Add new model `speakleash/Bielik-11B-v2.3-Instruct` to the leaderboard.
 - [Jan 18, 2025] [#888](https://github.com/ShishirPatil/gorilla/pull/888): Add the following new models to the leaderboard:
@@ -12,7 +48,7 @@ All notable changes to the Berkeley Function Calling Leaderboard will be documen
 - [Jan 4, 2025] [#865](https://github.com/ShishirPatil/gorilla/pull/865): Fix a copy-paste issue in `live_parallel_multiple_9-8-0` that caused a misalignment between the question and the possible answer.
 - [Jan 3, 2025] [#864](https://github.com/ShishirPatil/gorilla/pull/864): Add support for pre-existing completion endpoints, allowing users to skip the local vLLM/SGLang server setup (using the `--skip-server-setup` flag) and point the generation pipeline to an existing OpenAI-compatible endpoint via `VLLM_ENDPOINT` and `VLLM_PORT`.
 - [Jan 3, 2025] [#859](https://github.com/ShishirPatil/gorilla/pull/859): Rename directories: `proprietary_model` -> `api_inference`, `oss_model` -> `local_inference` for better clarity.
-- [Dec 29, 2024] [#857](https://github.com/ShishirPatil/gorilla/pull/857): Add new model `DeepSeek-V3` to the leaderboard.
+- [Dec 29, 2024] [#857](https://github.com/ShishirPatil/gorilla/pull/857): Add new model `DeepSeek-V3-FC` to the leaderboard.
 - [Dec 29, 2024] [#855](https://github.com/ShishirPatil/gorilla/pull/855): Add new model `mistralai/Ministral-8B-Instruct-2410` to the leaderboard.
 - [Dec 22, 2024] [#838](https://github.com/ShishirPatil/gorilla/pull/838): Fix parameter type mismatch error in possible answers.
   - Simple: 2 affected

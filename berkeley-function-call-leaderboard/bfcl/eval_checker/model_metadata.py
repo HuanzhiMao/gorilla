@@ -1,5 +1,12 @@
 from bfcl.model_handler.handler_map import local_inference_handler_map
 
+# Items in the dictionary are in the format of:
+# {model_name: [
+#     model_display_name_in_leaderboard,
+#     url_to_model_page,
+#     model_creator,
+#     model_license,
+# ]}
 MODEL_METADATA_MAPPING = {
     "gorilla-openfunctions-v2": [
         "Gorilla-OpenFunctions-v2 (FC)",
@@ -7,11 +14,35 @@ MODEL_METADATA_MAPPING = {
         "Gorilla LLM",
         "Apache 2.0",
     ],
-    "DeepSeek-V3": [
+    "deepseek-ai/DeepSeek-R1": [
+        "DeepSeek-R1 (Prompt) (Local)",
+        "https://huggingface.co/deepseek-ai/DeepSeek-R1",
+        "DeepSeek",
+        "MIT",
+    ],
+    "DeepSeek-R1": [
+        "DeepSeek-R1 (Prompt)",
+        "https://api-docs.deepseek.com/news/news1226",
+        "DeepSeek",
+        "MIT",
+    ],
+    "DeepSeek-V3-FC": [
         "DeepSeek-V3 (FC)",
         "https://api-docs.deepseek.com/news/news1226",
         "DeepSeek",
         "DeepSeek License",
+    ],
+    "gpt-4.5-preview-2025-02-27-FC": [
+        "GPT-4.5-Preview-2025-02-27 (FC)",
+        "https://openai.com/index/introducing-gpt-4-5/",
+        "OpenAI",
+        "Proprietary",
+    ],
+    "gpt-4.5-preview-2025-02-27": [
+        "GPT-4.5-Preview-2025-02-27 (Prompt)",
+        "https://openai.com/index/introducing-gpt-4-5/",
+        "OpenAI",
+        "Proprietary",
     ],
     "o1-2024-12-17-FC": [
         "o1-2024-12-17 (FC)",
@@ -25,20 +56,26 @@ MODEL_METADATA_MAPPING = {
         "OpenAI",
         "Proprietary",
     ],
-    "o1-mini-2024-09-12": [
-        "o1-mini-2024-09-12 (Prompt)",
-        "https://openai.com/index/openai-o1-mini-advancing-cost-efficient-reasoning/",
+    "o3-mini-2025-01-31-FC": [
+        "o3-mini-2025-01-31 (FC)",
+        "https://openai.com/index/openai-o3-mini/",
+        "OpenAI",
+        "Proprietary",
+    ],
+    "o3-mini-2025-01-31": [
+        "o3-mini-2025-01-31 (Prompt)",
+        "https://openai.com/index/openai-o3-mini/",
         "OpenAI",
         "Proprietary",
     ],
     "gpt-4o-2024-11-20": [
-        "gpt-4o-2024-11-20 (Prompt)",
+        "GPT-4o-2024-11-20 (Prompt)",
         "https://openai.com/index/hello-gpt-4o/",
         "OpenAI",
         "Proprietary",
     ],
     "gpt-4o-2024-11-20-FC": [
-        "gpt-4o-2024-11-20 (FC)",
+        "GPT-4o-2024-11-20 (FC)",
         "https://openai.com/index/hello-gpt-4o/",
         "OpenAI",
         "Proprietary",
@@ -193,6 +230,18 @@ MODEL_METADATA_MAPPING = {
         "Anthropic",
         "Proprietary",
     ],
+    "claude-3-7-sonnet-20250219-FC": [
+        "Claude-3.7-Sonnet-20250219 (FC)",
+        "https://www.anthropic.com/news/claude-3-7-sonnet",
+        "Anthropic",
+        "Proprietary",
+    ],
+    "claude-3-7-sonnet-20250219": [
+        "Claude-3.7-Sonnet-20250219 (Prompt)",
+        "https://www.anthropic.com/news/claude-3-7-sonnet",
+        "Anthropic",
+        "Proprietary",
+    ],
     "claude-3-5-haiku-20241022-FC": [
         "claude-3.5-haiku-20241022 (FC)",
         "https://www.anthropic.com/news/3-5-models-and-computer-use",
@@ -319,27 +368,39 @@ MODEL_METADATA_MAPPING = {
         "Fireworks",
         "Apache 2.0",
     ],
-    "gemini-exp-1206-FC": [
-        "Gemini-Exp-1206 (FC)",
-        "https://blog.google/feed/gemini-exp-1206/",
+    "gemini-2.0-flash-lite-preview-02-05-FC": [
+        "Gemini-2.0-Flash-Lite-Preview-02-05 (FC)",
+        "https://deepmind.google/technologies/gemini/flash-lite/",
         "Google",
         "Proprietary",
     ],
-    "gemini-exp-1206": [
-        "Gemini-Exp-1206 (Prompt)",
-        "https://blog.google/feed/gemini-exp-1206/",
+    "gemini-2.0-flash-lite-preview-02-05": [
+        "Gemini-2.0-Flash-Lite-Preview-02-05 (Prompt)",
+        "https://deepmind.google/technologies/gemini/flash-lite/",
         "Google",
         "Proprietary",
     ],
-    "gemini-2.0-flash-exp-FC": [
-        "Gemini-2.0-Flash-Exp (FC)",
+    "gemini-2.0-flash-001-FC": [
+        "Gemini-2.0-Flash-001 (FC)",
         "https://deepmind.google/technologies/gemini/flash/",
         "Google",
         "Proprietary",
     ],
-    "gemini-2.0-flash-exp": [
-        "Gemini-2.0-Flash-Exp (Prompt)",
+    "gemini-2.0-flash-001": [
+        "Gemini-2.0-Flash-001 (Prompt)",
         "https://deepmind.google/technologies/gemini/flash/",
+        "Google",
+        "Proprietary",
+    ],
+    "gemini-2.0-pro-exp-02-05-FC": [
+        "Gemini-2.0-Pro-Exp-02-05 (FC)",
+        "https://deepmind.google/technologies/gemini/pro/",
+        "Google",
+        "Proprietary",
+    ],
+    "gemini-2.0-pro-exp-02-05": [
+        "Gemini-2.0-Pro-Exp-02-05 (Prompt)",
+        "https://deepmind.google/technologies/gemini/pro/",
         "Google",
         "Proprietary",
     ],
@@ -721,9 +782,21 @@ MODEL_METADATA_MAPPING = {
         "Qwen",
         "apache-2.0",
     ],
+    "Qwen/Qwen2.5-0.5B-Instruct-FC": [
+        "Qwen2.5-0.5B-Instruct (FC)",
+        "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct",
+        "Qwen",
+        "apache-2.0",
+    ],
     "Qwen/Qwen2.5-0.5B-Instruct": [
         "Qwen2.5-0.5B-Instruct (Prompt)",
         "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct",
+        "Qwen",
+        "apache-2.0",
+    ],
+    "Qwen/Qwen2.5-1.5B-Instruct-FC": [
+        "Qwen2.5-1.5B-Instruct (FC)",
+        "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct",
         "Qwen",
         "apache-2.0",
     ],
@@ -733,15 +806,33 @@ MODEL_METADATA_MAPPING = {
         "Qwen",
         "apache-2.0",
     ],
+    "Qwen/Qwen2.5-3B-Instruct-FC": [
+        "Qwen2.5-3B-Instruct (FC)",
+        "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct",
+        "Qwen",
+        "qwen",
+    ],
     "Qwen/Qwen2.5-3B-Instruct": [
         "Qwen2.5-3B-Instruct (Prompt)",
         "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct",
         "Qwen",
         "qwen",
     ],
+    "Qwen/Qwen2.5-7B-Instruct-FC": [
+        "Qwen2.5-7B-Instruct (FC)",
+        "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
+        "Qwen",
+        "apache-2.0",
+    ],
     "Qwen/Qwen2.5-7B-Instruct": [
         "Qwen2.5-7B-Instruct (Prompt)",
         "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
+        "Qwen",
+        "apache-2.0",
+    ],
+    "Qwen/Qwen2.5-14B-Instruct-FC": [
+        "Qwen2.5-14B-Instruct (FC)",
+        "https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         "Qwen",
         "apache-2.0",
     ],
@@ -751,11 +842,23 @@ MODEL_METADATA_MAPPING = {
         "Qwen",
         "apache-2.0",
     ],
+    "Qwen/Qwen2.5-32B-Instruct-FC": [
+        "Qwen2.5-32B-Instruct (FC)",
+        "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct",
+        "Qwen",
+        "apache-2.0",
+    ],
     "Qwen/Qwen2.5-32B-Instruct": [
         "Qwen2.5-32B-Instruct (Prompt)",
         "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct",
         "Qwen",
         "apache-2.0",
+    ],
+    "Qwen/Qwen2.5-72B-Instruct-FC": [
+        "Qwen2.5-72B-Instruct (FC)",
+        "https://huggingface.co/Qwen/Qwen2.5-72B-Instruct",
+        "Qwen",
+        "qwen",
     ],
     "Qwen/Qwen2.5-72B-Instruct": [
         "Qwen2.5-72B-Instruct (Prompt)",
@@ -835,6 +938,54 @@ MODEL_METADATA_MAPPING = {
         "Qwen",
         "apache-2.0",
     ],
+    "tiiuae/Falcon3-1B-Instruct-FC": [
+        "Falcon3-1B-Instruct (FC)",
+        "https://huggingface.co/tiiuae/Falcon3-1B-Instruct",
+        "TII UAE",
+        "falcon-llm-license",
+    ],
+    "tiiuae/Falcon3-3B-Instruct-FC": [
+        "Falcon3-3B-Instruct (FC)",
+        "https://huggingface.co/tiiuae/Falcon3-3B-Instruct",
+        "TII UAE",
+        "falcon-llm-license",
+    ],
+    "tiiuae/Falcon3-7B-Instruct-FC": [
+        "Falcon3-7B-Instruct (FC)",
+        "https://huggingface.co/tiiuae/Falcon3-7B-Instruct",
+        "TII UAE",
+        "falcon-llm-license",
+    ],
+    "tiiuae/Falcon3-10B-Instruct-FC": [
+        "Falcon3-10B-Instruct (FC)",
+        "https://huggingface.co/tiiuae/Falcon3-10B-Instruct",
+        "TII UAE",
+        "falcon-llm-license",
+    ],
+    "uiuc-convai/CoALM-8B": [
+        "CoALM-8B",
+        "https://huggingface.co/uiuc-convai/CoALM-8B",
+        "UIUC + Oumi",
+        "Meta Llama 3 Community",
+    ],
+    "uiuc-convai/CoALM-70B": [
+        "CoALM-70B",
+        "https://huggingface.co/uiuc-convai/CoALM-70B",
+        "UIUC + Oumi",
+        "Meta Llama 3 Community",
+    ],
+    "uiuc-convai/CoALM-405B": [
+        "CoALM-405B",
+        "https://huggingface.co/uiuc-convai/CoALM-405B",
+        "UIUC + Oumi",
+        "Meta Llama 3 Community",
+    ],
+    "BitAgent/BitAgent-8B": [
+        "BitAgent-8B",
+        "https://huggingface.co/BitAgent/BitAgent-8B/",
+        "Bittensor",
+        "Apache-2.0",
+    ]
 }
 
 INPUT_PRICE_PER_MILLION_TOKEN = {
@@ -846,6 +997,8 @@ INPUT_PRICE_PER_MILLION_TOKEN = {
     "claude-3-5-sonnet-20240620": 3,
     "claude-3-5-sonnet-20241022-FC": 3,
     "claude-3-5-sonnet-20241022": 3,
+    "claude-3-7-sonnet-20250219-FC": 3,
+    "claude-3-7-sonnet-20250219": 3,
     "claude-3-haiku-20240307-FC": 0.25,
     "claude-3-haiku-20240307": 0.25,
     "claude-3-5-haiku-20241022-FC": 1,
@@ -866,9 +1019,12 @@ INPUT_PRICE_PER_MILLION_TOKEN = {
     "mistral-small-2402-FC": 1,
     "mistral-small-2402": 1,
     "mistral-tiny-2312": 0.25,
+    "gpt-4.5-preview-2025-02-27-FC": 75,
+    "gpt-4.5-preview-2025-02-27": 75,
     "o1-2024-12-17-FC": 15,
     "o1-2024-12-17": 15,
-    "o1-mini-2024-09-12": 3,
+    "o3-mini-2025-01-31-FC": 1.1,
+    "o3-mini-2025-01-31": 1.1,
     "gpt-4o-2024-05-13-FC": 5,
     "gpt-4o-2024-05-13": 5,
     "gpt-4o-2024-11-20-FC": 2.5,
@@ -885,10 +1041,12 @@ INPUT_PRICE_PER_MILLION_TOKEN = {
     "gpt-4-0613-FC": 30,
     "gpt-3.5-turbo-0125": 0.5,
     "gpt-3.5-turbo-0125-FC": 0.5,
-    "gemini-exp-1206-FC": 0,  # Gemini Experimental models are free
-    "gemini-exp-1206": 0,
-    "gemini-2.0-flash-exp": 0,
-    "gemini-2.0-flash-exp-FC": 0,
+    "gemini-2.0-flash-lite-preview-02-05": 0.075,
+    "gemini-2.0-flash-lite-preview-02-05-FC": 0.075,
+    "gemini-2.0-flash-001-FC": 0.15,
+    "gemini-2.0-flash-001": 0.15,
+    "gemini-2.0-pro-exp-02-05": 0,
+    "gemini-2.0-pro-exp-02-05-FC": 0,
     "gemini-1.5-pro-002": 1.25,
     "gemini-1.5-pro-002-FC": 1.25,
     "gemini-1.5-pro-001": 1.25,
@@ -916,6 +1074,8 @@ OUTPUT_PRICE_PER_MILLION_TOKEN = {
     "claude-3-5-sonnet-20240620": 15,
     "claude-3-5-sonnet-20241022-FC": 15,
     "claude-3-5-sonnet-20241022": 15,
+    "claude-3-7-sonnet-20250219-FC": 15,
+    "claude-3-7-sonnet-20250219": 15,
     "claude-3-haiku-20240307-FC": 1.25,
     "claude-3-haiku-20240307": 1.25,
     "claude-3-5-haiku-20241022-FC": 5,
@@ -936,9 +1096,12 @@ OUTPUT_PRICE_PER_MILLION_TOKEN = {
     "mistral-medium-2312": 8.1,
     "mistral-small-2402-FC": 3,
     "mistral-tiny-2312": 0.25,
+    "gpt-4.5-preview-2025-02-27-FC": 150,
+    "gpt-4.5-preview-2025-02-27": 150,
     "o1-2024-12-17-FC": 60,
     "o1-2024-12-17": 60,
-    "o1-mini-2024-09-12": 12,
+    "o3-mini-2025-01-31-FC": 4,
+    "o3-mini-2025-01-31": 4,
     "gpt-4o-2024-05-13-FC": 15,
     "gpt-4o-2024-05-13": 15,
     "gpt-4o-2024-11-20-FC": 10,
@@ -955,10 +1118,12 @@ OUTPUT_PRICE_PER_MILLION_TOKEN = {
     "gpt-4-0613-FC": 60,
     "gpt-3.5-turbo-0125": 1.5,
     "gpt-3.5-turbo-0125-FC": 1.5,
-    "gemini-exp-1206-FC": 0,  # Gemini Experimental models are free
-    "gemini-exp-1206": 0,
-    "gemini-2.0-flash-exp": 0,
-    "gemini-2.0-flash-exp-FC": 0,
+    "gemini-2.0-flash-lite-preview-02-05": 0.3,
+    "gemini-2.0-flash-lite-preview-02-05-FC": 0.3,
+    "gemini-2.0-flash-001-FC": 0.6,
+    "gemini-2.0-flash-001": 0.6,
+    "gemini-2.0-pro-exp-02-05": 0,
+    "gemini-2.0-pro-exp-02-05-FC": 0,
     "gemini-1.5-pro-002": 5,
     "gemini-1.5-pro-002-FC": 5,
     "gemini-1.5-pro-001": 5,
@@ -986,7 +1151,8 @@ OSS_LATENCY = {}
 NO_COST_MODELS = list(local_inference_handler_map.keys())
 # The following models will also have no cost, even though they are queries through the API.
 NO_COST_MODELS += [
-    "DeepSeek-V3",
+    "DeepSeek-R1",
+    "DeepSeek-V3-FC",
     "Nexusflow-Raven-v2",
     "firefunction-v1-FC",
     "firefunction-v2-FC",
