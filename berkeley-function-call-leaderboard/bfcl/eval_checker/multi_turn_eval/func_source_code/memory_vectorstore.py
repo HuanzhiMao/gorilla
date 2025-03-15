@@ -1,9 +1,12 @@
+import os
+import signal
 import json
 import shutil
 import hashlib
 import subprocess
 import time
 import redis
+import random
 import faiss
 import numpy as np
 import pickle
@@ -17,33 +20,55 @@ from bfcl.utils import (
     is_first_memory_prereq_entry,
     is_memory_prereq,
 )
+
 from rank_bm25 import BM25Plus
 
 MAX_SHORT_TERM_MEMORY_SIZE = 7
 MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH = 300
 MAX_LONG_TERM_MEMORY_SIZE = 100  # FIXME: Change this to 50
 MAX_LONG_TERM_MEMORY_ENTRY_LENGTH = 2000
-EMBEDDING_DIMENSION = 768
-REDIS_PORT = 6500
+EMBEDDING_DIMENSION = 384
 
-
-class MemoryAPI:
+class VectorMemoryAPI:
     """
     A class that provides APIs to manage short-term and long-term memory data.
     """
 
-    def __init__(self):
+    def __init__(self, port=None):
         self.long_term_memory = {}
 
-        #start redis server
-        self.redis_process = subprocess.Popen(["redis-server", "--port", str(REDIS_PORT)])
-        time.sleep(2)
-        #connect to redis
-        self.redis_client = redis.Redis(host='localhost', port=REDIS_PORT, db=0)
-        #need to init faiss index for vector sim. search
-        self.faiss_index = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
+        self.port = port if isinstance(port, int) and port > 0 else random.randint(6500, 7000)
+        # Check if Redis is already running on this port
+        try:
+            test_client = redis.Redis(host='localhost', port=self.port, db=0)
+            test_client.ping()
+            print(f"Redis already running on port {self.port}, reusing connection")
+            self.redis_client = test_client
+            # ensure not starting new process if not needed
+            self.redis_process = None
+        except redis.ConnectionError:
+            # if server isn't already running, start a new one
+            try:
+                print(f"Starting Redis server on port {self.port}")
+                self.redis_process = subprocess.Popen(["redis-server", "--port", str(self.port)])
+                time.sleep(2)
+                # Connect to Redis
+                self.redis_client = redis.Redis(host='localhost', port=self.port, db=0)
+                self.redis_client.ping()
+            except Exception as e:
+                print(f"Redis server startup failed: {e}")
+                # Force terminate if process was started
+                if hasattr(self, 'redis_process'):
+                    try:
+                        os.kill(self.redis_process.pid, signal.SIGKILL)
+                    except:
+                        pass
+                raise
         #init sentence transformer for text embeddings now
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        
+        #need to init faiss index for vector sim. search
+        self.faiss_index = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
 
         #need to create mapping (IDs to Indices in faiss)
         self.id_to_index_map = {}
@@ -54,11 +79,18 @@ class MemoryAPI:
         self._api_description = """This tool belongs to the memory suite, which provides APIs to manage both short-term and long-term memory data. Short-term memory is limited in size and can be accessed quickly, while long-term memory is larger but takes longer to access. Both type of memory is persistent across multiple conversations with the user, and can be accessed in a later interactions. You should actively manage the memory data to ensure that it is up-to-date and easy to retrieve later."""
     
     def __del__(self):
-        try:
-            if hasattr(self, 'redis_process'):
+        self._cleanup()
+    
+    def _cleanup(self):
+        if hasattr(self, 'redis_process'):
+            try:
                 self.redis_process.terminate()
-        except:
-            pass
+                self.redis_process.wait(timeout=3)
+                
+                if self.redis_process.poll() is None:
+                    os.kill(self.redis_process.pid, signal.SIGKILL)
+            except:
+                pass
     
     def _get_text_embedding(self, text: str) -> np.ndarray:
         embedding = self.embedding_model.encode(text)
@@ -66,7 +98,7 @@ class MemoryAPI:
 
     def _generate_text_id(self, text: str) -> str:
         # use md5 to hash for consistent and a fixed lenth uuid
-        #used to map text in redis and the faiss index 
+        # used to map text in redis and the faiss index 
         return hashlib.md5(text.encode()).hexdigest()
 
     def _add_to_vector_store(self, text: str) -> str:
