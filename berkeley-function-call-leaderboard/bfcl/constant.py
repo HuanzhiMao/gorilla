@@ -30,7 +30,7 @@ TEST_FILE_MAPPING = {
     "java": f"{VERSION_PREFIX}_java.json",
     "javascript": f"{VERSION_PREFIX}_javascript.json",
     "rest": f"{VERSION_PREFIX}_rest.json",
-    # "sql": f"{VERSION_PREFIX}_sql.json",
+    "sql": f"{VERSION_PREFIX}_sql.json",
     # "chatable": f"{VERSION_PREFIX}_chatable.json",
 
     # Live Datasets
