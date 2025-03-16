@@ -84,7 +84,7 @@ TEST_COLLECTION_MAPPING = {
         "web_search_multihop",
         "memory_base",
         # "memory_conflict",
-        "sql",
+        # "sql",
     ],
     "agentic": [
         "web_search",
