@@ -670,9 +670,9 @@ def runner(model_names, test_categories, api_sanity_check, result_dir, score_dir
     # evaluation for a subset of models and test categories.
     update_leaderboard_table_with_local_score_file(state["leaderboard_table"], score_dir)
     # Write the leaderboard table to a file
-    generate_leaderboard_csv(
-        state["leaderboard_table"], score_dir, model_names, test_categories
-    )
+    # generate_leaderboard_csv(
+    #     state["leaderboard_table"], score_dir, model_names, test_categories
+    # )
 
     # Clean up the executable expected output files
     # They should be re-generated the next time the evaluation is run
