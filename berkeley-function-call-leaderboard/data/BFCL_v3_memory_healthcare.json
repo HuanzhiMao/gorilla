@@ -13,14 +13,14 @@
 {"id": "memory_base_12", "question": [[{"role": "patient", "content": "What is one exercise modification the patient made as they’ve aged?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_13", "question": [[{"role": "patient", "content": "How does the patient maintain social connections as they age?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_14", "question": [[{"role": "patient", "content": "What activities does the patient undertake to keep their memory sharp?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_15", "question": [[{"role": "patient", "content": "What was the patient's most recent fasting blood glucose reading?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_16", "question": [[{"role": "patient", "content": "What was the patient's A1C value?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_15", "question": [[{"role": "patient", "content": "What was the patient's most recent fasting blood glucose reading? Give the value in mg/dL."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_16", "question": [[{"role": "patient", "content": "What was the patient's A1C value? Give the value in %."}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_17", "question": [[{"role": "patient", "content": "What should the fasting blood glucose level ideally be?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_18", "question": [[{"role": "patient", "content": "What is the patient's LDL cholesterol level?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_19", "question": [[{"role": "patient", "content": "What was the patient's blood pressure reading at the last check-up?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_20", "question": [[{"role": "patient", "content": "What was the patient's vitamin D level?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_21", "question": [[{"role": "patient", "content": "What was the patient's ALT level?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_22", "question": [[{"role": "patient", "content": "What were the patient's ESR results?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_23", "question": [[{"role": "patient", "content": "What medication+dosage does the patient take for Type 2 Diabetes?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_24", "question": [[{"role": "patient", "content": "What medication+dosage does the patient take for high blood pressure?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_18", "question": [[{"role": "patient", "content": "What is the patient's LDL cholesterol level? Give the value in mg/dL."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_19", "question": [[{"role": "patient", "content": "What was the patient's blood pressure reading at the last check-up? Give the value in mmHg."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_20", "question": [[{"role": "patient", "content": "What was the patient's vitamin D level? Give the value in ng/mL."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_21", "question": [[{"role": "patient", "content": "What was the patient's ALT level? Give me the value in U/L."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_22", "question": [[{"role": "patient", "content": "What were the patient's ESR results? Give me the value in mm/hr."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_23", "question": [[{"role": "patient", "content": "What medication+dosage does the patient take for Type 2 Diabetes? Give me the answer in the format: 'medication X mg' (e.g. Caffeine 200 mg)"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_24", "question": [[{"role": "patient", "content": "What medication+dosage does the patient take for high blood pressure? Give me the answer in the format: 'medication X mg' (e.g. Caffeine 200 mg)"}]], "involved_classes": ["MemoryAPI"]}
 
