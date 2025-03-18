@@ -46,7 +46,7 @@
 {"id": "simple_45", "ground_truth": [{"thermo.calculate_energy": {"mass": [100], "phase_transition": ["vaporization"], "substance": ["water", ""]}}]}
 {"id": "simple_46", "ground_truth": [{"calculate_final_temperature": {"mass1": [20], "temperature1": [30], "mass2": [15], "temperature2": [60], "specific_heat_capacity": ["", 4.2]}}]}
 {"id": "simple_47", "ground_truth": [{"get_boiling_melting_points": {"substance": ["water"], "sea_level": [5000]}}]}
-{"id": "simple_48", "ground_truth": [{"calculate_density": {"mass": [45], "volume": [15], "unit": ["", "kg/m\u00b3"]}}]}
+{"id": "simple_48", "ground_truth": [{"calculate_density": {"mass": [45], "volume": [15], "unit": ["", "kg/m³"]}}]}
 {"id": "simple_49", "ground_truth": [{"calc_absolute_pressure": {"atm_pressure": [1], "gauge_pressure": [2]}}]}
 {"id": "simple_50", "ground_truth": [{"entropy_change.calculate": {"substance": ["ice"], "mass": [1], "initial_temperature": [0], "final_temperature": [100], "pressure": ["", 1]}}]}
 {"id": "simple_51", "ground_truth": [{"calculate_entropy_change": {"initial_temp": [300], "final_temp": [400], "heat_capacity": [5], "isothermal": ["", true]}}]}
@@ -338,7 +338,7 @@
 {"id": "simple_337", "ground_truth": [{"poker_game_winner": {"players": [["Alex", "Sam", "Robert", "Steve"]], "cards": [{"Alex": [["A of spades", "K of spades"]], "Sam": [["2 of diamonds", "3 of clubs"]], "Robert": [["Q of hearts", "10 of hearts"]], "Steve": [["4 of spades", "5 of spades"]]}], "type": ["Texas Holdem", ""]}}]}
 {"id": "simple_338", "ground_truth": [{"card_game_probability.calculate": {"total_cards": [52], "desired_cards": [13], "cards_drawn": ["", 1]}}]}
 {"id": "simple_339", "ground_truth": [{"poker_probability.full_house": {"deck_size": [52], "hand_size": [5]}}]}
-{"id": "simple_340", "ground_truth": [{"card_games.poker_determine_winner": {"player1": ["John"], "hand1": [["8\u2665", "10\u2665", "J\u2665", "Q\u2665", "K\u2665"]], "player2": ["Mike"], "hand2": [["9\u2660", "J\u2660", "10\u2660", "Q\u2660", "K\u2660"]]}}]}
+{"id": "simple_340", "ground_truth": [{"card_games.poker_determine_winner": {"player1": ["John"], "hand1": [["8♥", "10♥", "J♥", "Q♥", "K♥"]], "player2": ["Mike"], "hand2": [["9♠", "J♠", "10♠", "Q♠", "K♠"]]}}]}
 {"id": "simple_341", "ground_truth": [{"deck_of_cards.odds": {"suit": ["hearts"], "deck_type": ["without_joker", "normal"]}}]}
 {"id": "simple_342", "ground_truth": [{"game_list.get_games": {"release_year": [2019], "multiplayer": [true], "ESRB_rating": ["Everyone"]}}]}
 {"id": "simple_343", "ground_truth": [{"game_stats.fetch_player_statistics": {"game": ["Zelda"], "username": ["Sam"], "platform": ["Switch"]}}]}

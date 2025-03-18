@@ -28,7 +28,7 @@
 {"id": "web_search_27", "ground_truth": ["7"], "source": ["https://www.apple.com/apple-events/"]}
 {"id": "web_search_28", "ground_truth": ["8", "eight"], "source": ["https://www.netflix.com/title/81588093"]}
 {"id": "web_search_29", "ground_truth": ["134"], "source": ["https://www.nasaspaceflight.com/2025/01/spacex-roundup-2024/#:~:text=SpaceX%20is%20gearing%20up%20for,its%20Falcon%20family%20of%20rockets."]}
-{"id": "web_search_30", "ground_truth": ["L'empire des lumi\u00e8res", "L'empire des lumieres","L\u2019empire des lumi\u00e8res"], "source": ["https://www.artnews.com/art-news/news/most-valuable-artworks-sold-at-auction-in-2024-1234728501/"]}
+{"id": "web_search_30", "ground_truth": ["L'empire des lumières", "L'empire des lumieres", "L’empire des lumières"], "source": ["https://www.artnews.com/art-news/news/most-valuable-artworks-sold-at-auction-in-2024-1234728501/"]}
 {"id": "web_search_31", "ground_truth": ["Livia Voigt"], "source": ["https://www.forbes.com/sites/monicahunter-hart/2024/03/31/worlds-youngest-billionaires-2024-john-collison-ben-francis-evan-spiegel/"]}
 {"id": "web_search_32", "ground_truth": ["Astro Bot"], "source": ["https://www.nacongaming.com/en-US/blog/game-awards-2024-results#:~:text=Astro%20Bot%20takes%20the%20crown,by%20the%20irreplaceable%20Geoff%20Keighley."]}
 {"id": "web_search_33", "ground_truth": ["Walmart"], "source": ["https://en.wikipedia.org/wiki/List_of_largest_employers"]}
@@ -38,17 +38,17 @@
 {"id": "web_search_37", "ground_truth": ["Python"], "source": ["https://github.blog/news-insights/octoverse/octoverse-2024/"]}
 {"id": "web_search_38", "ground_truth": ["El Capitan"], "source": ["https://www.amd.com/en/newsroom/press-releases/2024-11-18-amd-accelerates-exascale-computing-to-new-heights-.html#:~:text=The%20El%20Capitan%20supercomputer%2C%20housed,on%20the%20latest%20Top500%20list."]}
 {"id": "web_search_39", "ground_truth": ["Inside Out 2"], "source": ["https://www.boxofficemojo.com/year/world/2024/"]}
-{"id": "web_search_40", "ground_truth": ["L\u00e9on Marchand", "Leon Marchand"], "source": ["https://login.statista.com/authorize?__sso_redirect=%2Fstatistics%2F1484667%2Fmost-golds-athletes-paris-olympics%2F&connection=ip-login&audience=statista-api&ui_locales=en&response_type=code&client_id=xjVF0FFWFPOcG7XJO8C0XleeRPllUFfI&redirect_uri=https%3A%2F%2Fwww.statista.com%2Fsso%2Fcallback&state=ed09164a-a372-45c7-8c45-990cfe9aaf06&scope=openid+profile+offline_access"]}
+{"id": "web_search_40", "ground_truth": ["Léon Marchand", "Leon Marchand"], "source": ["https://login.statista.com/authorize?__sso_redirect=%2Fstatistics%2F1484667%2Fmost-golds-athletes-paris-olympics%2F&connection=ip-login&audience=statista-api&ui_locales=en&response_type=code&client_id=xjVF0FFWFPOcG7XJO8C0XleeRPllUFfI&redirect_uri=https%3A%2F%2Fwww.statista.com%2Fsso%2Fcallback&state=ed09164a-a372-45c7-8c45-990cfe9aaf06&scope=openid+profile+offline_access"]}
 {"id": "web_search_41", "ground_truth": ["55646"], "source": ["https://www.nyrr.org/media-center/press-release/2024_1104_tcsnycmbythenumbers"]}
 {"id": "web_search_42", "ground_truth": ["5471"], "source": ["https://www.youtube.com/watch?v=kcPGk1_QeT8"]}
 {"id": "web_search_43", "ground_truth": ["Kendrick Lamar"], "source": ["https://www.cbsnews.com/news/super-bowl-halftime-show-2025-performers/"]}
 {"id": "web_search_44", "ground_truth": ["2", "two"], "source": ["https://genius.com/Kendrick-lamar-not-like-us-lyrics"]}
-{"id": "web_search_45", "ground_truth": ["\u042d\u0442", "\u044d\u0442", "et"], "source": ["https://sakhatyla.ru/translate?q=\u043c\u044f\u0441\u043e"]}
+{"id": "web_search_45", "ground_truth": ["Эт", "эт", "et"], "source": ["https://sakhatyla.ru/translate?q=мясо"]}
 {"id": "web_search_46", "ground_truth": ["Ursula von der Leyen"], "source": ["https://www.forbes.com/lists/power-women/"]}
 {"id": "web_search_47", "ground_truth": ["Disfrutar"], "source": ["https://www.cnn.com/travel/worlds-50-best-restaurants-for-2024/index.html"]}
 {"id": "web_search_48", "ground_truth": ["110"], "source": ["https://blog.google/products/translate/google-translate-new-languages-2024/"]}
 {"id": "web_search_49", "ground_truth": ["Die With a Smile"], "source": ["https://www.instagram.com/pjm.jiminsh/p/DCVl_JpC2sE/"]}
-{"id": "web_search_50", "ground_truth": ["Tadej Poga\u010dar", "Tadej Pogacar"], "source": ["https://www.olympics.com/en/news/tour-de-france-2024-daily-stage-results-and-general-classification-standings"]}
+{"id": "web_search_50", "ground_truth": ["Tadej Pogačar", "Tadej Pogacar"], "source": ["https://www.olympics.com/en/news/tour-de-france-2024-daily-stage-results-and-general-classification-standings"]}
 {"id": "web_search_51", "ground_truth": ["Air New Zealand"], "source": ["https://www.airlineratings.com/articles/air-new-zealand-named-worlds-safest-airline-for-2024"]}
 {"id": "web_search_52", "ground_truth": ["Coco Gauff"], "source": ["https://www.wtatennis.com/videos/4166023/champions-reel-how-coco-gauff-won-the-2024-wta-finals-riyadh"]}
 {"id": "web_search_53", "ground_truth": ["Samsung"], "source": ["https://www.counterpointresearch.com/insights/global-smartphone-share/"]}

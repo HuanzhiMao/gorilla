@@ -9,7 +9,7 @@
 {"id": "memory_base_8", "question": [[{"role": "patient", "content": "What is the patient's biggest focus right now regarding health?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_9", "question": [[{"role": "patient", "content": "What does the patient typically have for breakfast?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_10", "question": [[{"role": "patient", "content": "What is one change in the bedtime routine has the patient brought to improve sleep?"}]], "involved_classes": ["MemoryAPI"]}
-{"id": "memory_base_11", "question": [[{"role": "patient", "content": "What is one of the patient’s favorite go-to meals?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_11", "question": [[{"role": "patient", "content": "What is one of the patient's favorite go-to meals?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_12", "question": [[{"role": "patient", "content": "What is one exercise modification the patient made as they’ve aged?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_13", "question": [[{"role": "patient", "content": "How does the patient maintain social connections as they age?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_14", "question": [[{"role": "patient", "content": "What activities does the patient undertake to keep their memory sharp?"}]], "involved_classes": ["MemoryAPI"]}
@@ -23,4 +23,3 @@
 {"id": "memory_base_22", "question": [[{"role": "patient", "content": "What were the patient's ESR results?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_23", "question": [[{"role": "patient", "content": "What medication+dosage does the patient take for Type 2 Diabetes?"}]], "involved_classes": ["MemoryAPI"]}
 {"id": "memory_base_24", "question": [[{"role": "patient", "content": "What medication+dosage does the patient take for high blood pressure?"}]], "involved_classes": ["MemoryAPI"]}
-

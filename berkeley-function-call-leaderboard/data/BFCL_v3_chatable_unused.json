@@ -40,15 +40,15 @@
 {"question": "Calculate the electric field at a point 3 meters away from a charge of 2 coulombs.", "function": ""}
 {"question": "Calculate the magnetic field produced at the center of a circular loop carrying current of 5 Ampere with a radius of 4 meters", "function": ""}
 {"question": "Calculate the electromagnetic force between two charges of 5C and 7C placed 3 meters apart.", "function": ""}
-{"question": "Calculate the resonant frequency of an LC circuit given capacitance of 100\u00b5F and inductance of 50mH.", "function": ""}
+{"question": "Calculate the resonant frequency of an LC circuit given capacitance of 100µF and inductance of 50mH.", "function": ""}
 {"question": "Calculate the magnetic field strength 10 meters away from a long wire carrying a current of 20 Amperes.", "function": ""}
 {"question": "Calculate the electric field strength 4 meters away from a charge of 0.01 Coulombs.", "function": ""}
 {"question": "Calculate the energy (in Joules) absorbed or released during the phase change of 100g of water from liquid to steam at its boiling point.", "function": ""}
 {"question": "Calculate the final temperature when 20 kg of water at 30 degree Celsius is mixed with 15 kg of water at 60 degree Celsius.", "function": ""}
 {"question": "Find the boiling point and melting point of water under the sea level of 5000m.", "function": ""}
-{"question": "What is the density of a substance with a mass of 45 kg and a volume of 15 m\u00b3?", "function": ""}
+{"question": "What is the density of a substance with a mass of 45 kg and a volume of 15 m³?", "function": ""}
 {"question": "Calculate the absolute pressure in pascals given atmospheric pressure of 1 atm and a gauge pressure of 2 atm.", "function": ""}
-{"question": "What is the change in entropy in Joules per Kelvin of a 1kg ice block at 0\u00b0C if it is heated to 100\u00b0C under 1 atmosphere of pressure?", "function": ""}
+{"question": "What is the change in entropy in Joules per Kelvin of a 1kg ice block at 0°C if it is heated to 100°C under 1 atmosphere of pressure?", "function": ""}
 {"question": "Calculate the entropy change for a certain process given an initial temperature of 300K, a final temperature of 400K, and a heat capacity of 5J/K.", "function": ""}
 {"question": "Calculate the heat capacity at constant pressure for air, given its temperature is 298K and volume is 10 m^3.", "function": ""}
 {"question": "Retrieve the sequence of DNA molecule with id `DNA123`.", "function": ""}

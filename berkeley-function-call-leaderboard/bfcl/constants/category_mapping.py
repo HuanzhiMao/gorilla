@@ -32,6 +32,10 @@ TEST_FILE_MAPPING = {
     "multi_turn_miss_param": f"{VERSION_PREFIX}_multi_turn_miss_param.json",
     "multi_turn_long_context": f"{VERSION_PREFIX}_multi_turn_long_context.json",
     # "multi_turn_composite": f"{VERSION_PREFIX}_multi_turn_composite.json",
+
+    # Agentic Datasets
+    "web_search_multihop": f"{VERSION_PREFIX}_web_search_multihop.json",
+    # "memory"
 }
 
 TEST_COLLECTION_MAPPING = {

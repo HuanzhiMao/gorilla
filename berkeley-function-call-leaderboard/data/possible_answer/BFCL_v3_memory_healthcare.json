@@ -23,9 +23,3 @@
 {"id": "memory_base_22", "ground_truth": ["18 mm/hr"], "source": "\"My ESR (erythrocyte sedimentation rate) was 18 mm/hr\""}
 {"id": "memory_base_23", "ground_truth": ["Metformin 1000 mg", "Metformin at 1000 mg "], "source": "\"For my Type 2 Diabetes, I’ve been taking metformin 1000 mg twice daily for the last several years.\""}
 {"id": "memory_base_24", "ground_truth": ["Losartan 50 mg", "Losartan at 50 mg"], "source": "\"For my high blood pressure, I take losartan 50 mg once daily.\""}
-
-
-
-
-
-

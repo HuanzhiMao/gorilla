@@ -105,7 +105,7 @@
 {"id": "multiple_104", "ground_truth": [{"get_shortest_driving_distance": {"origin": ["New York City", "NYC"], "destination": ["Washington D.C.", "D.C.", "DC"], "unit": ["", "kilometers"]}}]}
 {"id": "multiple_105", "ground_truth": [{"calculate_magnetic_field": {"current": [5], "radius": [4], "permeability": ["", 0.01]}}]}
 {"id": "multiple_106", "ground_truth": [{"calculate_electric_field_strength": {"charge": [0.01], "distance": [4], "medium": ["", "vacuum"]}}]}
-{"id": "multiple_107", "ground_truth": [{"calculate_density": {"mass": [45], "volume": [15], "unit": ["kg/m\u00b3", ""]}}]}
+{"id": "multiple_107", "ground_truth": [{"calculate_density": {"mass": [45], "volume": [15], "unit": ["kg/m³", ""]}}]}
 {"id": "multiple_108", "ground_truth": [{"calc_heat_capacity": {"temp": [298], "volume": [10], "gas": ["air", ""]}}]}
 {"id": "multiple_109", "ground_truth": [{"cellbio.get_proteins": {"cell_compartment": ["plasma membrane"], "include_description": [false, ""]}}]}
 {"id": "multiple_110", "ground_truth": [{"mutation_type.find": {"snp_id": ["rs6034464"], "species": ["Homo sapiens", ""]}}]}
