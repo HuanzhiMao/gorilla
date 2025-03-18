@@ -1,8 +1,9 @@
+import os
 import subprocess
 import threading
 import time
-import os
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 import requests
 from bfcl.constants.eval_config import (
@@ -17,6 +18,7 @@ from bfcl.model_handler.utils import (
     func_doc_language_specific_pre_processing,
     system_prompt_pre_processing_chat_model,
 )
+from bfcl.utils import is_agentic, is_multi_turn
 from openai import OpenAI
 from overrides import EnforceOverrides, final, override
 from tqdm import tqdm
@@ -36,7 +38,7 @@ class OSSHandler(BaseHandler, EnforceOverrides):
         self.client = OpenAI(base_url=self.base_url, api_key="EMPTY")
 
     @override
-    def inference(self, test_entry: dict, include_input_log: bool, exclude_state_log: bool):
+    def inference(self, test_entry: dict, include_input_log: bool, exclude_state_log: bool, result_dir=RESULT_PATH):
         """
         OSS models have a different inference method.
         They needs to spin up a server first and then send requests to it.
@@ -190,6 +192,7 @@ class OSSHandler(BaseHandler, EnforceOverrides):
 
             # Once the server is ready, make the completion requests
             futures = []
+            events = {test_case["id"]: threading.Event() for test_case in test_entries}
             with ThreadPoolExecutor(max_workers=100) as executor:
                 with tqdm(
                     total=len(test_entries),
@@ -200,8 +203,10 @@ class OSSHandler(BaseHandler, EnforceOverrides):
                         future = executor.submit(
                             self._multi_threaded_inference,
                             test_case,
+                            events,
                             include_input_log,
                             exclude_state_log,
+                            result_dir,
                         )
                         futures.append(future)
 
@@ -234,17 +239,21 @@ class OSSHandler(BaseHandler, EnforceOverrides):
 
     @final
     def _multi_threaded_inference(
-        self, test_case, include_input_log: bool, exclude_state_log: bool
+        self, test_case, events, include_input_log: bool, exclude_state_log: bool, result_dir: Path
     ):
         """
         This is a wrapper function to make sure that, if an error occurs during inference, the process does not stop.
         """
         assert type(test_case["function"]) is list
 
+        # Wait for all dependencies to complete
+        for dependency_id in test_case.get("depends_on", []):
+            events[dependency_id].wait()  # Wait until the dependent task sets its event
+
         try:
-            if "multi_turn" in test_case["id"]:
+            if is_multi_turn(test_case["id"]) or is_agentic(test_case["id"]):
                 model_responses, metadata = self.inference_multi_turn_prompting(
-                    test_case, include_input_log, exclude_state_log
+                    test_case, include_input_log, exclude_state_log, result_dir
                 )
             else:
                 model_responses, metadata = self.inference_single_turn_prompting(
@@ -260,6 +269,9 @@ class OSSHandler(BaseHandler, EnforceOverrides):
 
             model_responses = f"Error during inference: {str(e)}"
             metadata = {}
+
+        # Signal that the current task is complete
+        events[test_case["id"]].set()
 
         result_to_write = {
             "id": test_case["id"],
@@ -315,6 +327,7 @@ class OSSHandler(BaseHandler, EnforceOverrides):
                 temperature=self.temperature,
                 prompt=formatted_prompt,
                 max_tokens=leftover_tokens_count,
+                timeout=3600,
                 extra_body=extra_body,
             )
         else:
@@ -323,6 +336,7 @@ class OSSHandler(BaseHandler, EnforceOverrides):
                 temperature=self.temperature,
                 prompt=formatted_prompt,
                 max_tokens=leftover_tokens_count,
+                timeout=3600,
             )
         end_time = time.time()
 

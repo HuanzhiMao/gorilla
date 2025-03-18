@@ -13,6 +13,7 @@ from bfcl.constants.eval_config import (
     RESULT_PATH,
     SCORE_PATH,
 )
+from bfcl.eval_checker.agentic_eval.agentic_checker import agentic_checker
 from bfcl.eval_checker.ast_eval.ast_checker import ast_checker
 from bfcl.eval_checker.eval_runner_helper import *
 from bfcl.eval_checker.executable_eval.custom_exception import BadAPIStatusError
@@ -35,6 +36,140 @@ def get_handler(model_name):
     return HANDLER_MAP[model_name](
         model_name, temperature=0
     )  # Temperature doesn't matter for evaluation
+
+
+def agentic_runner(
+    handler, model_result, prompt, possible_answer, model_name, test_category, score_dir
+):
+    assert (
+        len(model_result) == len(prompt) == len(possible_answer)
+    ), f"The length of the model result ({len(model_result)}) does not match the length of the prompt ({len(prompt)}) or possible answer ({len(possible_answer)}). Please check the input files for completeness."
+
+    result = []
+    correct_count = 0
+    for i in range(len(model_result)):
+        index: str = model_result[i]["id"]
+        # Model result is stored as a list of list of model responses. Each inner list represents a turn.
+        # In this case, the outer list only contains one element, as there should only be one turn.
+        model_result_list: list[list] = model_result[i]["result"]
+        possible_answer_item: list[str] = possible_answer[i]["ground_truth"]
+        test_entry: dict = prompt[i]
+
+        # Remove the function doc from the score file for better readability; they are repeated and way too long
+        if "function" in test_entry:
+            del test_entry["function"]
+
+        if type(model_result_list) != list or len(model_result_list) != 1:
+            result.append(
+                {
+                    "id": index,
+                    "model_name": model_name,
+                    "test_category": test_category,
+                    "valid": False,
+                    "error": {
+                        "error_message": [
+                            "Error during inference phase. Model did not output a list of model responses."
+                        ],
+                        "error_type": "agentic:inference_error",
+                    },
+                    "prompt": test_entry,
+                    "model_result": model_result_list,
+                    "possible_answer": possible_answer_item,
+                }
+            )
+            continue
+
+        # Try decoding the model results into executable function calls
+        # Note: We only care about the last non-function-call message, which should fail to get decoded.
+        # We don't care about the function calls in the middle of the conversation.
+        # We only check if the expected answer is mentioned in the last message.
+        # decode_execute returns a list of strings
+        model_result_list_decoded: list[list[str]] = []
+        last_unsuccessful_decoding_message = None
+
+        for model_result_item in model_result_list[0]:
+            # model_result_item is per step
+            try:
+                decoded_result: list[str] = handler.decode_execute(model_result_item)
+                if is_empty_execute_response(decoded_result):
+                    last_unsuccessful_decoding_message = model_result_item
+                    continue
+
+                model_result_list_decoded.append(decoded_result)
+
+            except Exception as e:
+                last_unsuccessful_decoding_message = model_result_item
+                continue
+
+        if not last_unsuccessful_decoding_message:
+            result.append(
+                {
+                    "id": index,
+                    "model_name": model_name,
+                    "test_category": test_category,
+                    "valid": False,
+                    "error": {
+                        "error_message": [
+                            "Cannot find the last chat message that is not a function call."
+                        ],
+                        "error_type": "agentic:no_last_message",
+                    },
+                    "prompt": test_entry,
+                    "model_result": model_result_list,
+                    "model_result_decoded": model_result_list_decoded,
+                    "possible_answer": possible_answer_item,
+                }
+            )
+            continue
+
+        # Check if the model output contains the expected answer
+        accuracy_checker_result = agentic_checker(
+            last_unsuccessful_decoding_message,
+            possible_answer_item,
+        )
+
+        if not accuracy_checker_result["valid"]:
+            temp = {}
+            temp["id"] = index
+            temp["model_name"] = model_name
+            temp["test_category"] = test_category
+            temp["valid"] = accuracy_checker_result.pop("valid")
+            temp["error"] = accuracy_checker_result
+            temp["prompt"] = test_entry
+            temp["model_result_raw"] = model_result_list
+            temp["model_result_decoded"] = model_result_list_decoded
+            temp["possible_answer"] = possible_answer_item
+            temp["inference_log"] = model_result[i].get("inference_log", "")
+            # result.append(temp)
+        else:
+            temp = {}
+            temp["id"] = index
+            # temp["model_name"] = model_name
+            # temp["test_category"] = test_category
+            temp["valid"] = accuracy_checker_result.pop("valid")
+            # temp["error"] = accuracy_checker_result
+            # temp["prompt"] = test_entry
+            temp["model_result_raw"] = model_result_list
+            temp["model_result_decoded"] = model_result_list_decoded
+            temp["possible_answer"] = possible_answer_item
+            # temp["inference_log"] = model_result[i].get("inference_log", "")
+            result.append(temp)
+            correct_count += 1
+
+    accuracy = correct_count / len(model_result)
+    result.insert(
+        0,
+        {
+            "accuracy": accuracy,
+            "correct_count": correct_count,
+            "total_count": len(model_result),
+        },
+    )
+    output_file_name = f"{VERSION_PREFIX}_{test_category}_score.json"
+    output_file_dir = score_dir / model_name
+    write_list_of_dicts_to_file(output_file_name, result, output_file_dir)
+
+    return accuracy, len(model_result)
 
 
 def multi_turn_runner(
@@ -370,7 +505,11 @@ def ast_file_runner(
     for i in range(len(model_result)):
         index: str = model_result[i]["id"]
         model_result_item = model_result[i]["result"]
-        prompt_item = prompt[i]["function"]
+        if is_sql(test_category):
+            with open((MULTI_TURN_FUNC_DOC_PATH/"sql.json").resolve(), "r") as f:
+                prompt_item = [json.loads(line) for line in f.readlines()]
+        else:
+            prompt_item = prompt[i]["function"]
         possible_answer_item = possible_answer[i]["ground_truth"]
 
         try:
@@ -504,7 +643,11 @@ def runner(model_names, test_categories, api_sanity_check, result_dir, score_dir
 
             # We don't evaluate chatable and SQL models in our current
             # leaderboard.
-            if is_chatable(test_category) or is_sql(test_category):
+            if (
+                is_chatable(test_category)
+                or is_memory_prereq(test_category)
+                or "conflict" in test_category
+            ):
                 continue
 
             model_result = load_file(model_result_json, sort_by_id=True)
@@ -525,9 +668,9 @@ def runner(model_names, test_categories, api_sanity_check, result_dir, score_dir
     # evaluation for a subset of models and test categories.
     update_leaderboard_table_with_local_score_file(state["leaderboard_table"], score_dir)
     # Write the leaderboard table to a file
-    generate_leaderboard_csv(
-        state["leaderboard_table"], score_dir, model_names, test_categories
-    )
+    # generate_leaderboard_csv(
+    #     state["leaderboard_table"], score_dir, model_names, test_categories
+    # )
 
     # Clean up the executable expected output files
     # They should be re-generated the next time the evaluation is run
@@ -633,6 +776,16 @@ def evaluate_task(
                 score_dir,
             )
 
+        elif is_agentic(test_category):
+            accuracy, total_count = agentic_runner(
+                handler,
+                model_result,
+                prompt,
+                possible_answer,
+                model_name,
+                test_category,
+                score_dir,
+            )
         # Single turn test
         else:
             accuracy, total_count = ast_file_runner(

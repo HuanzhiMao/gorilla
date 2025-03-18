@@ -1,0 +1,18 @@
+[package]
+name = "partiql_parser"
+version = "0.1.0"
+edition = "2021"
+[dependencies]
+pyo3 = { version = "0.18.1", features = ["extension-module"] }
+anyhow = "1.0"
+partiql-parser = { git = "https://github.com/partiql/partiql-lang-rust", package = "partiql-parser" }
+
+thiserror = "1.0"     # Helpful for error handling
+serde = { version = "1.0", features = ["derive"] }  # Optional, for serialization
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+extension-module = ["pyo3/extension-module"]
+default = ["extension-module"]

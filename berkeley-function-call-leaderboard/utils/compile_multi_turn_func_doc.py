@@ -14,6 +14,7 @@ CLASS_FILE_PATH_MAPPING = {
     "TradingBot": "bfcl.eval_checker.multi_turn_eval.func_source_code.trading_bot",
     "TravelAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.travel_booking",
     "VehicleControlAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.vehicle_control",
+    "MemoryAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.memory",
 }
 
 

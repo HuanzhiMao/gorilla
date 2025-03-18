@@ -1,0 +1,26 @@
+{"id": "memory_base_0", "question": [[{"role": "patient", "content": "What is the biggest health issue mentioned by the patient?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_1", "question": [[{"role": "patient", "content": "How many years ago was the patient diagnosed with Type 2 Diabetes?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_2", "question": [[{"role": "patient", "content": "What is one lifestyle change the patient adopted to help manage their glucose levels?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_3", "question": [[{"role": "patient", "content": "Which health condition led to an emergency room visit for the patient?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_4", "question": [[{"role": "patient", "content": "What surgery did the patient have a few years ago?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_5", "question": [[{"role": "patient", "content": "How does the patient keep track of their many doctor's appointments and medications?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_6", "question": [[{"role": "patient", "content": "What condition was the patient diagnosed with in their early 40s?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_7", "question": [[{"role": "patient", "content": "After a bout of pneumonia, what preventive measures does the patient take?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_8", "question": [[{"role": "patient", "content": "What is the patient's biggest focus right now regarding health?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_9", "question": [[{"role": "patient", "content": "What does the patient typically have for breakfast?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_10", "question": [[{"role": "patient", "content": "What is one change in the bedtime routine has the patient brought to improve sleep?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_11", "question": [[{"role": "patient", "content": "What is one of the patient’s favorite go-to meals?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_12", "question": [[{"role": "patient", "content": "What is one exercise modification the patient made as they’ve aged?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_13", "question": [[{"role": "patient", "content": "How does the patient maintain social connections as they age?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_14", "question": [[{"role": "patient", "content": "What activities does the patient undertake to keep their memory sharp?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_15", "question": [[{"role": "patient", "content": "What was the patient's most recent fasting blood glucose reading?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_16", "question": [[{"role": "patient", "content": "What was the patient's A1C value?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_17", "question": [[{"role": "patient", "content": "What should the fasting blood glucose level ideally be?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_18", "question": [[{"role": "patient", "content": "What is the patient's LDL cholesterol level?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_19", "question": [[{"role": "patient", "content": "What was the patient's blood pressure reading at the last check-up?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_20", "question": [[{"role": "patient", "content": "What was the patient's vitamin D level?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_21", "question": [[{"role": "patient", "content": "What was the patient's ALT level?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_22", "question": [[{"role": "patient", "content": "What were the patient's ESR results?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_23", "question": [[{"role": "patient", "content": "What medication+dosage does the patient take for Type 2 Diabetes?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_24", "question": [[{"role": "patient", "content": "What medication+dosage does the patient take for high blood pressure?"}]], "involved_classes": ["MemoryAPI"]}
+

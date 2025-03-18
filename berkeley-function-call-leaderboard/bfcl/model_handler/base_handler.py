@@ -14,8 +14,21 @@ from bfcl.eval_checker.multi_turn_eval.multi_turn_utils import (
     execute_multi_turn_func_call,
     is_empty_execute_response,
 )
+from bfcl.model_handler.constant import (
+    DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
+    DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING,
+    MAXIMUM_STEP_LIMIT,
+)
 from bfcl.model_handler.model_style import ModelStyle
-from bfcl.utils import load_file, make_json_serializable, sort_key
+from bfcl.utils import (
+    is_agentic,
+    is_memory,
+    is_memory_prereq,
+    is_multi_turn,
+    load_file,
+    make_json_serializable,
+    sort_key,
+)
 from overrides import final
 
 
@@ -30,38 +43,48 @@ class BaseHandler:
         self.model_name_underline_replaced = (
             model_name.replace("/", "_").replace("-", "_").replace(".", "_")
         )
+        # The directory name for the model
+        self.model_name_dir = model_name.replace("/", "_")
         self.temperature = temperature
         self.is_fc_model = False  # Whether the model is a function calling model
 
-    def inference(self, test_entry: dict, include_input_log: bool, exclude_state_log: bool):
+    def inference(self, test_entry: dict, include_input_log: bool, exclude_state_log: bool, result_dir=RESULT_PATH):
         # This method is used to retrive model response for each model.
 
         # FC model
         # TODO: Let all models have the is_fc_model attribute and remove the "FC" check
         if "FC" in self.model_name or self.is_fc_model:
-            if "multi_turn" in test_entry["id"]:
+            if is_multi_turn(test_entry["id"]) or is_agentic(test_entry["id"]):
                 return self.inference_multi_turn_FC(
-                    test_entry, include_input_log, exclude_state_log
+                    test_entry, include_input_log, exclude_state_log, result_dir
                 )
             else:
                 return self.inference_single_turn_FC(test_entry, include_input_log)
         # Prompting model
         else:
-            if "multi_turn" in test_entry["id"]:
+            if is_multi_turn(test_entry["id"]) or is_agentic(test_entry["id"]):
                 return self.inference_multi_turn_prompting(
-                    test_entry, include_input_log, exclude_state_log
+                    test_entry, include_input_log, exclude_state_log, result_dir
                 )
             else:
                 return self.inference_single_turn_prompting(test_entry, include_input_log)
 
     @final
     def inference_multi_turn_FC(
-        self, test_entry: dict, include_input_log: bool, exclude_state_log: bool
+        self, test_entry: dict, include_input_log: bool, exclude_state_log: bool, result_dir: Path,
     ) -> tuple[list[list], dict]:
-        initial_config: dict = test_entry["initial_config"]
+        initial_config: dict = test_entry.get("initial_config", {})
         involved_classes: list = test_entry["involved_classes"]
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
+
+        # Special handling for the memory category, as it loads the initial configuration from local files
+        if is_memory(test_entry_id):
+            initial_config["MemoryAPI"] = {
+                "result_dir": result_dir,
+                "model_name_dir": self.model_name_dir,
+                "test_entry_id": test_entry_id,
+            }
 
         # This is only for the miss function category
         # A mapping from turn index to function to holdout
@@ -78,6 +101,7 @@ class BaseHandler:
         )  # The debugging log for human to understand
         force_quit = False  # Whether the model has been forced to quit. If True, this whole entry will be failed.
 
+        involved_instances = []
         # Execute no function call, but just to get a reference to all the instances to get the initial state for logging purpose
         if not exclude_state_log:
             _, involved_instances = execute_multi_turn_func_call(
@@ -292,6 +316,17 @@ class BaseHandler:
             if force_quit:
                 break
 
+        # Special handling for the memory category
+        # Need to flush the memory to local file at the end of the conversation
+        if is_memory_prereq(test_entry_id):
+            assert len(involved_instances) == 1, "Memory category should only involve one class."
+            memory_instance = list(involved_instances.values())[0]
+            memory_instance._flush_memory_to_local_file(
+                result_dir,
+                self.model_name_dir,
+                test_entry_id,
+            )
+  
         metadata = {
             "input_token_count": total_input_token_count,
             "output_token_count": total_output_token_count,
@@ -303,12 +338,20 @@ class BaseHandler:
 
     @final
     def inference_multi_turn_prompting(
-        self, test_entry: dict, include_input_log: bool, exclude_state_log: bool
+        self, test_entry: dict, include_input_log: bool, exclude_state_log: bool, result_dir: Path,
     ) -> tuple[list[list], dict]:
-        initial_config: dict = test_entry["initial_config"]
+        initial_config: dict = test_entry.get("initial_config", {})
         involved_classes: list = test_entry["involved_classes"]
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
+
+        # Special handling for the memory category, as it loads the initial configuration from local files
+        if is_memory(test_entry_id):
+            initial_config["MemoryAPI"] = {
+                "result_dir": result_dir,
+                "model_name_dir": self.model_name_dir,
+                "test_entry_id": test_entry_id,
+            }
 
         # This is only for the miss function category
         # A mapping from turn index to function to holdout
@@ -545,6 +588,17 @@ class BaseHandler:
 
             if force_quit:
                 break
+
+        # Special handling for the memory category
+        # Need to flush the memory to local file at the end of the conversation
+        if is_memory_prereq(test_entry_id):
+            assert len(involved_instances) == 1, "Memory category should only involve one class."
+            memory_instance = list(involved_instances.values())[0]
+            memory_instance._flush_memory_to_local_file(
+                result_dir,
+                self.model_name_dir,
+                test_entry_id,
+            )
 
         metadata = {
             "input_token_count": total_input_token_count,
