@@ -34,36 +34,10 @@ class VectorMemoryAPI:
     A class that provides APIs to manage short-term and long-term memory data.
     """
 
-    def __init__(self, port=None):
+    def __init__(self):
         self.long_term_memory = {}
-
-        self.port = port if isinstance(port, int) and port > 0 else random.randint(6500, 7000)
-        # Check if Redis is already running on this port
-        try:
-            test_client = redis.Redis(host='localhost', port=self.port, db=0)
-            test_client.ping()
-            print(f"Redis already running on port {self.port}, reusing connection")
-            self.redis_client = test_client
-            # ensure not starting new process if not needed
-            self.redis_process = None
-        except redis.ConnectionError:
-            # if server isn't already running, start a new one
-            try:
-                print(f"Starting Redis server on port {self.port}")
-                self.redis_process = subprocess.Popen(["redis-server", "--port", str(self.port)])
-                time.sleep(2)
-                # Connect to Redis
-                self.redis_client = redis.Redis(host='localhost', port=self.port, db=0)
-                self.redis_client.ping()
-            except Exception as e:
-                print(f"Redis server startup failed: {e}")
-                # Force terminate if process was started
-                if hasattr(self, 'redis_process'):
-                    try:
-                        os.kill(self.redis_process.pid, signal.SIGKILL)
-                    except:
-                        pass
-                raise
+        self.redis_client = None
+        self.redis_process = None
         #init sentence transformer for text embeddings now
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         
@@ -75,6 +49,7 @@ class VectorMemoryAPI:
         self.next_index = 0
 
         self.short_term_memory_count = 0
+        self.port = None
 
         self._api_description = """This tool belongs to the memory suite, which provides APIs to manage both short-term and long-term memory data. Short-term memory is limited in size and can be accessed quickly, while long-term memory is larger but takes longer to access. Both type of memory is persistent across multiple conversations with the user, and can be accessed in a later interactions. You should actively manage the memory data to ensure that it is up-to-date and easy to retrieve later."""
     
@@ -82,7 +57,7 @@ class VectorMemoryAPI:
         self._cleanup()
     
     def _cleanup(self):
-        if hasattr(self, 'redis_process'):
+        if hasattr(self, 'redis_process') and self.redis_process is not None:
             try:
                 self.redis_process.terminate()
                 self.redis_process.wait(timeout=3)
@@ -91,7 +66,49 @@ class VectorMemoryAPI:
                     os.kill(self.redis_process.pid, signal.SIGKILL)
             except:
                 pass
-    
+
+    def setup_vector_store(self, port=None, db=0):
+        self._cleanup()
+        self.port = port if isinstance(port, int) and port > 0 else random.randint(6500, 7000)
+        try:
+            test_client = redis.Redis(host='localhost', port=self.port, db=db)
+            test_client.ping()
+            print(f"Redis already running on port {self.port}, reusing connection for db {db}")
+            self.redis_client = test_client
+            self.redis_process = None
+        except redis.ConnectionError:
+            try:
+                print(f"Starting Redis server on port {self.port}")
+                self.redis_process = subprocess.Popen(["redis-server", "--port", str(self.port)])
+                time.sleep(2)
+                # Connect to Redis
+                self.redis_client = redis.Redis(host='localhost', port=self.port, db=db)
+                self.redis_client.ping()
+            except Exception as e:
+                print(f"Redis server startup failed: {e}")
+                # Force terminate if process was started
+                if hasattr(self, 'redis_process'):
+                    try:
+                        os.kill(self.redis_process.pid, signal.SIGKILL)
+                    except:
+                        pass
+                return False
+        
+        if self.embedding_model is None:
+            self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        
+        # Initialize faiss index if not already done
+        if self.faiss_index is None:
+            self.faiss_index = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
+        
+        # Reset other state variables
+        self.id_to_index_map = {}
+        self.next_index = 0
+        self.short_term_memory_count = 0
+        
+        return True
+
+
     def _get_text_embedding(self, text: str) -> np.ndarray:
         embedding = self.embedding_model.encode(text)
         return embedding.astype(np.float32)
@@ -182,7 +199,6 @@ class VectorMemoryAPI:
                 # use text as both the key and the value pair 
                 text = text_bytes.decode('utf-8')
                 result[text] = text
-        
         return result
     
     def _import_short_term_memory(self, memory_dict: Dict[str, str]):
@@ -211,6 +227,19 @@ class VectorMemoryAPI:
             target_file = target_dir / f"{test_category}_final.json"
         else:
             target_file = target_dir / f"{test_category}_prereq_final.json"
+
+        try:
+            parts = test_entry_id.split('_')
+            if len(parts) >= 3 and parts[0] == "memory":
+                db_number = int(parts[-1])  # Get the last part which should be the number
+            else:
+                db_number = 0
+        except:
+            db_number = 0
+            
+        print(f"Using Redis database {db_number} for test {test_entry_id}")
+
+        self.setup_vector_store(db=db_number)
 
         # TODO: Use a more elegant way to handle this
         if is_first_memory_prereq_entry(test_entry_id):
