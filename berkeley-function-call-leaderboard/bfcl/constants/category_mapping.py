@@ -35,7 +35,11 @@ TEST_FILE_MAPPING = {
 
     # Agentic Datasets
     "web_search": f"{VERSION_PREFIX}_web_search.json",
-    # "memory"
+    "memory_base": f"{VERSION_PREFIX}_memory_base.json",
+    "memory_customer": f"{VERSION_PREFIX}_memory_customer.json",
+    "memory_finance": f"{VERSION_PREFIX}_memory_finance.json",
+    "memory_healthcare": f"{VERSION_PREFIX}_memory_healthcare.json",
+    "memory_personal_notes": f"{VERSION_PREFIX}_memory_personal_notes.json",
 }
 
 TEST_COLLECTION_MAPPING = {
