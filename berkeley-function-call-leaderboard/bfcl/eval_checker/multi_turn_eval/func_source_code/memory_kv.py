@@ -1,5 +1,11 @@
 import json
 import shutil
+import redis
+import os
+import signal
+import subprocess
+import random
+from typing import Dict, List, Tuple, Any
 from copy import deepcopy
 from pathlib import Path
 
@@ -22,9 +28,107 @@ class KVMemoryAPI:
     """
 
     def __init__(self):
-        self.short_term_memory = {}
+        self.redis_client = None
+        self.redis_process = None
+        self.port = None
         self.long_term_memory = {}
         self._api_description = """This tool belongs to the memory suite, which provides APIs to manage both short-term and long-term memory data. Short-term memory is limited in size and can be accessed quickly, while long-term memory is larger but takes longer to access. Both type of memory is persistent across multiple conversations with the user, and can be accessed in a later interactions. You should actively manage the memory data to ensure that it is up-to-date and easy to retrieve later."""
+
+    def __del__(self):
+        self._cleanup()
+
+    def _cleanup(self):
+        """Clean up Redis process if it exists."""
+        if hasattr(self, 'redis_process') and self.redis_process is not None:
+            try:
+                self.redis_process.terminate()
+                self.redis_process.wait(timeout=3)
+                
+                if self.redis_process.poll() is None:
+                    os.kill(self.redis_process.pid, signal.SIGKILL)
+                    
+                self.redis_process = None
+            except:
+                pass
+    
+    def setup_redis_store(self, port=None, db=0):
+        """
+        Set up Redis connection for key-value storage.
+        
+        Args:
+            port (int, optional): Redis server port. Random if not specified.
+            db (int, optional): Redis database number. Defaults to 0.
+            
+        Returns:
+            bool: True if setup succeeded, False otherwise.
+        """
+        self._cleanup()
+        self.port = port if isinstance(port, int) and port > 0 else random.randint(6500, 7000)
+        try:
+            test_client = redis.Redis(host='localhost', port=self.port, db=db)
+            test_client.ping()
+            print(f"Redis already running on port {self.port}, reusing connection for db {db}")
+            self.redis_client = test_client
+            self.redis_process = None
+        except redis.ConnectionError:
+            try:
+                print(f"Starting Redis server on port {self.port}")
+                self.redis_process = subprocess.Popen(["redis-server", "--port", str(self.port)])
+                time.sleep(2)
+                # Connect to Redis
+                self.redis_client = redis.Redis(host='localhost', port=self.port, db=db)
+                self.redis_client.ping()
+            except Exception as e:
+                print(f"Redis server startup failed: {e}")
+                # Force terminate if process was started
+                if hasattr(self, 'redis_process'):
+                    try:
+                        os.kill(self.redis_process.pid, signal.SIGKILL)
+                    except:
+                        pass
+                return False
+        
+        return True
+
+    def _export_short_term_memory(self) -> Dict[str, str]:
+        """
+        Export short-term memory from Redis to dictionary.
+        
+        Returns:
+            Dict[str, str]: Key-value pairs from Redis
+        """
+        if not self.redis_client:
+            return {}
+            
+        result = {}
+        # Get all keys
+        all_keys = self.redis_client.keys("*")
+        
+        for key_bytes in all_keys:
+            key = key_bytes.decode('utf-8')
+            value_bytes = self.redis_client.get(key)
+            if value_bytes:
+                value = value_bytes.decode('utf-8')
+                result[key] = value
+        
+        return result
+
+    def _import_short_term_memory(self, memory_dict: Dict[str, str]):
+        """
+        Import memory entries from dictionary to Redis.
+        
+        Args:
+            memory_dict (Dict[str, str]): Memory entries
+        """
+        if not self.redis_client:
+            return
+            
+        # Clear existing data
+        self.redis_client.flushdb()
+        
+        # Add all entries
+        for key, value in memory_dict.items():
+            self.redis_client.set(key, value)
 
     def _load_scenario(self, initial_config: dict, long_context: bool = False):
         # We don't care about the long_context parameter here
@@ -38,6 +142,19 @@ class KVMemoryAPI:
             target_file = target_dir / f"{test_category}_final.json"
         else:
             target_file = target_dir / f"{test_category}_prereq_final.json"
+        
+        try:
+            parts = test_entry_id.split('_')
+            if len(parts) >= 3 and parts[0] == "memory":
+                db_number = int(parts[-1])  # This last part is db number
+            else:
+                db_number = 0
+        except:
+            db_number = 0
+            
+        print(f"Using Redis database {db_number} for test {test_entry_id}")
+        
+        self.setup_redis_store(db=db_number)
 
         # TODO: Use a more elegant way to handle this
         if is_first_memory_prereq_entry(test_entry_id):
@@ -86,7 +203,7 @@ class KVMemoryAPI:
         with open(target_dir / f"{test_entry_id}.json", "w") as f:
             json.dump(
                 {
-                    "short_term_memory": self.short_term_memory,
+                    "short_term_memory": self._export_short_term_memory(),
                     "long_term_memory": self.long_term_memory,
                 },
                 f,
@@ -95,7 +212,7 @@ class KVMemoryAPI:
         with open(target_dir / f"{test_category}_final.json", "w") as f:
             json.dump(
                 {
-                    "short_term_memory": self.short_term_memory,
+                    "short_term_memory": self._export_short_term_memory(),
                     "long_term_memory": self.long_term_memory,
                 },
                 f,
@@ -133,17 +250,20 @@ class KVMemoryAPI:
         Returns:
             status (str): Status of the operation.
         """
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+        
         key, value = str(key), str(value)
-        if len(self.short_term_memory) >= MAX_SHORT_TERM_MEMORY_SIZE:
+        if len(self._export_short_term_memory()) >= MAX_SHORT_TERM_MEMORY_SIZE:
             return {"error": "Short term memory is full. Please clear some entries."}
         if len(value) > MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH:
             return {
                 "error": f"Entry is too long. Please shorten the entry to less than {MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH} characters."
             }
-        if key in self.short_term_memory:
+        if self.redis_client.exists(key):
             return {"error": "Key name must be unique."}
 
-        self.short_term_memory[key] = value
+        self.redis_client.set(key, value)
         return {"status": "Key added."}
 
     def short_term_memory_remove(self, key: str):
@@ -156,8 +276,11 @@ class KVMemoryAPI:
         Returns:
             status (str): Status of the operation.
         """
-        if key in self.short_term_memory:
-            del self.short_term_memory[key]
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+        
+        if self.redis_client.exists(key):
+            self.redis_client.delete(key)
             return {"status": "Key removed."}
         else:
             return {"error": "Key not found."}
@@ -173,15 +296,19 @@ class KVMemoryAPI:
         Returns:
             status (str): Status of the operation.
         """
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+        
         key, value = str(key), str(value)
-        if key not in self.short_term_memory:
+        if not self.redis_client.exists(key):
             return {"error": "Key not found."}
+
         if len(value) > MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH:
             return {
                 "error": f"Entry is too long. Please shorten the entry to less than {MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH} characters."
             }
 
-        self.short_term_memory[key] = value
+        self.redis_client.set(key, value)
         return {"status": "Key replaced."}
 
     def short_term_memory_clear(self):
@@ -191,8 +318,12 @@ class KVMemoryAPI:
         Returns:
             status (str): Status of the operation.
         """
-        self.short_term_memory = {}
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+            
+        self.redis_client.flushdb()
         return {"status": "Short term memory cleared."}
+
 
     def short_term_memory_retrieve(self, key: str):
         """
@@ -205,9 +336,14 @@ class KVMemoryAPI:
             value (str): The value associated with the key.
 
         """
-        if key not in self.short_term_memory:
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+            
+        value = self.redis_client.get(key)
+        if value is None:
             return {"error": "Key not found."}
-        return {"value": self.short_term_memory[key]}
+        #need to decode due to redis encoding automatically 
+        return {"value": value.decode('utf-8')}
 
     def short_term_memory_list_keys(self):
         """
@@ -216,7 +352,11 @@ class KVMemoryAPI:
         Returns:
             keys (List[str]): A list of all keys in the short-term memory.
         """
-        return {"keys": list(self.short_term_memory.keys())}
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+            
+        all_keys = self.redis_client.keys("*")
+        return {"keys": [key.decode('utf-8') for key in all_keys]}
 
     def short_term_memory_key_search(self, query: str, k: int = 5):
         """
@@ -229,7 +369,10 @@ class KVMemoryAPI:
         Returns:
             ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
         """
-        keys = deepcopy(list(self.short_term_memory.keys()))
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+            
+        keys = [key.decode('utf-8') for key in self.redis_client.keys("*")]
         return self._similarity_search(query, keys, k)
 
     def short_term_memory_retrieve_all(self):
@@ -239,7 +382,10 @@ class KVMemoryAPI:
         Returns:
             dict: A dictionary of all key-value pairs in the short-term memory.
         """
-        return self.short_term_memory
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+            
+        return self._export_short_term_memory()
 
     def long_term_memory_add(self, key: str, value: str):
         """
