@@ -11,6 +11,7 @@ from bfcl.constants.category_mapping import (
     TEST_FILE_MAPPING,
 )
 from bfcl.constants.eval_config import (
+    MEMORY_PREREQ_CONVERSATION_PATH,
     MULTI_TURN_FUNC_DOC_PATH,
     PROJECT_ROOT,
     PROMPT_PATH,
@@ -24,6 +25,7 @@ from bfcl.utils import (
     check_api_key_supplied,
     extract_test_category_from_id,
     is_agentic,
+    is_web_search,
     is_executable,
     is_memory,
     is_multi_turn,
@@ -206,11 +208,11 @@ def process_memory_test_case(test_cases):
 
 def process_web_search_test_case(test_cases):
     """
-    Web search multihop test cases need to have the web search phase carried out before the inference phase. So we configure some test case dependencies here.
+    Web search test cases need to have a specific response format. We add this to the prompt here.
     """
     for entry in test_cases:
-        if "web_search" in entry["id"]:
-            entry["question"][0][0]["content"] += " You must respond in this format: {'answer': your answer, make it short and concise, 'context': summarization of what you found}. If you do not know the answer, respond with {'answer': 'I do not know', 'context': 'I do not know'}. If you think the question cannot be answered, response with {'answer': 'I cannot answer this question', 'context': reason why you cannot answer the question}"
+        if is_web_search(entry["id"]):
+            entry["question"][0][0]["content"] += " You must respond in this format: {'answer': A short and precise answer to the question, 'context': A brief explanation of how you arrived at this answer or why it is correct}. If you do not know the answer, respond with {'answer': 'I do not know', 'context': 'I do not know'}. If you think the question cannot be properly answered, response with {'answer': 'I cannot answer this question', 'context': A short reason explaining why this question cannot be answered}."
     return test_cases
 
 

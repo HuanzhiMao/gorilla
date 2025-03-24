@@ -32,6 +32,10 @@ def find_file_with_suffix(folder_path: Path, suffix: str) -> Path:
     raise FileNotFoundError(f"No JSON file found with suffix: {suffix}")
 
 
+def is_web_search(test_category):
+    return "web_search" in test_category
+
+
 def is_memory(test_category):
     return "memory" in test_category
 

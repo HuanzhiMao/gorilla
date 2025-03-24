@@ -16,6 +16,7 @@ SCORE_PATH = "./score/"
 DOTENV_PATH = "./.env"
 UTILS_PATH = "./utils/"
 TEST_IDS_TO_GENERATE_PATH = "./test_case_ids_to_generate.json"
+MEMORY_PREREQ_CONVERSATION_PATH = "./data/memory_prereq_conversation/"
 # These two files are for the API status sanity check
 REST_API_GROUND_TRUTH_FILE_PATH = (
     "./bfcl/eval_checker/executable_eval/data/api_status_check_ground_truth_REST.json"
@@ -102,6 +103,7 @@ SCORE_PATH = (PROJECT_ROOT / SCORE_PATH).resolve()
 DOTENV_PATH = (PROJECT_ROOT / DOTENV_PATH).resolve()
 UTILS_PATH = (PROJECT_ROOT / UTILS_PATH).resolve()
 TEST_IDS_TO_GENERATE_PATH = (PROJECT_ROOT / TEST_IDS_TO_GENERATE_PATH).resolve()
+MEMORY_PREREQ_CONVERSATION_PATH = (PROJECT_ROOT / MEMORY_PREREQ_CONVERSATION_PATH).resolve()
 
 RESULT_PATH.mkdir(parents=True, exist_ok=True)
 SCORE_PATH.mkdir(parents=True, exist_ok=True)

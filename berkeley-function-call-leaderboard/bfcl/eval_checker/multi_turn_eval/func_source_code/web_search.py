@@ -6,12 +6,18 @@ import requests
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
 from serpapi import GoogleSearch
+from typing import Optional
 
 
 class WebSearchAPI:
+    def __init__(self):
+        self._api_description = "This tool belongs to the Web Search API category. It provides functions to search the web and browse search results."
 
     def duckduckgo_search(
-        self, keywords: str, max_results: int = 10, region: str = "wt-wt"
+        self,
+        keywords: str,
+        max_results: Optional[int] = 10,
+        region: Optional[str] = "wt-wt",
     ) -> list:
         """
         This function searches DuckDuckGo for the provided keywords and region.

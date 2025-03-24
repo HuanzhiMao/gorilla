@@ -34,7 +34,7 @@ TEST_FILE_MAPPING = {
     # "multi_turn_composite": f"{VERSION_PREFIX}_multi_turn_composite.json",
 
     # Agentic Datasets
-    "web_search_multihop": f"{VERSION_PREFIX}_web_search_multihop.json",
+    "web_search": f"{VERSION_PREFIX}_web_search.json",
     # "memory"
 }
 
