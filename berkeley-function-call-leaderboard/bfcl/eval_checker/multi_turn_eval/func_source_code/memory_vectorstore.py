@@ -187,21 +187,19 @@ class VectorMemoryAPI:
 
         return results
 
-    def _export_short_term_memory(self) -> Dict[str, str]:
-        # create dictionary for our key-value pairs
-        result = {}
+    def _export_short_term_memory(self) -> List[str]:
+        result = []
         all_keys = self.redis_client.keys("*")
         text_ids = [key.decode() for key in all_keys if not key.decode().startswith("vec:")]
 
         for text_id in text_ids:
             text_bytes = self.redis_client.get(text_id)
             if text_bytes:
-                # use text as both the key and the value pair 
-                text = text_bytes.decode('utf-8')
-                result[text] = text
+                result.append(text_bytes.decode('utf-8'))
         return result
+
     
-    def _import_short_term_memory(self, memory_dict: Dict[str, str]):
+    def _import_short_term_memory(self, memory_list: List[str]):
         #clear redis state
         all_keys = self.redis_client.keys("*")
         for key in all_keys:
@@ -212,8 +210,8 @@ class VectorMemoryAPI:
         self.next_index = 0
         self.short_term_memory_count = 0
 
-        for value in memory_dict.values():
-            self._add_to_vector_store(value)
+        for text in memory_list:
+            self._add_to_vector_store(text)
 
     def _load_scenario(self, initial_config: dict, long_context: bool = False):
         # We don't care about the long_context parameter here
