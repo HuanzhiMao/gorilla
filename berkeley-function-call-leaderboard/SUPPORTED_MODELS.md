@@ -56,6 +56,7 @@ Below is a comprehensive table of models supported for running leaderboard evalu
 |nova-macro-v1.0| Function Calling|
 |command-r-plus-FC | Function Calling|
 |command-r7b-12-2024-FC | Function Calling|
+|command-a-03-2025-FC | Function Calling|
 |databrick-dbrx-instruct | Prompt|
 |firefunction-{v1,v2}-FC | Function Calling|
 |yi-large-fc | Function Calling|
@@ -68,7 +69,7 @@ Below is a comprehensive table of models supported for running leaderboard evalu
 |palmyra-x-004 | Function Calling|
 |BitAgent/GoGoAgent | Prompt|
 |deepseek-ai/DeepSeek-R1 💻| Prompt|
-|google/gemma-2-{2b,9b,27b}-it 💻| Prompt|
+|google/gemma-3-{1b,4b,12b,27b}-it 💻| Prompt|
 |mistralai/Ministral-8B-Instruct-2410 💻| Function Calling|
 |meta-llama/Meta-Llama-3-{8B,70B}-Instruct 💻| Prompt|
 |meta-llama/Llama-3.1-{8B,70B}-Instruct-FC 💻| Function Calling|
