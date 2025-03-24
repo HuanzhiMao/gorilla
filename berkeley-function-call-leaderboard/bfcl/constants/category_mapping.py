@@ -180,4 +180,5 @@ MULTI_TURN_FUNC_DOC_FILE_MAPPING = {
     "TradingBot": "trading_bot.json",
     "TravelAPI": "travel_booking.json",
     "VehicleControlAPI": "vehicle_control.json",
+    "WebSearchAPI": "web_search.json",
 }
