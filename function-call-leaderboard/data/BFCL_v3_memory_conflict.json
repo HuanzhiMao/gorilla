@@ -1,0 +1,27 @@
+{"id": "memory_conflict_0", "question": [[{"role": "user", "content": "What class did I drop?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_1", "question": [[{"role": "user", "content": "What class am I taking that doesn't count towards my major?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_2", "question": [[{"role": "user", "content": "What humanities elective am I taking this semester?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_3", "question": [[{"role": "user", "content": "What are the pronouns of my Advanced Algorithms professor?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_4", "question": [[{"role": "user", "content": "How much time do I spend reading before bed?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_5", "question": [[{"role": "user", "content": "How many servers crashed in the lab?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_6", "question": [[{"role": "user", "content": "Where is the a cappella group stationed?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_7", "question": [[{"role": "user", "content": "Who is the 'Tech for Good' day organized by?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_8", "question": [[{"role": "user", "content": "What just got prohibited at the Rivalry Game pep rally this year?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_9", "question": [[{"role": "user", "content": "What big conference am I aiming to submit a paper to?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_10", "question": [[{"role": "user", "content": "What did the student-run radio station stop hosting?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_11", "question": [[{"role": "user", "content": "What kind of post-grad work model am I against?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_12", "question": [[{"role": "user", "content": "What's my biggest fear?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_13", "question": [[{"role": "user", "content": "Where did I go for a sailing trip before sophomore year?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_14", "question": [[{"role": "user", "content": "In terms of best lobsters I've had, what's the rank of the lobsters I had in Maine? Give the number."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_15", "question": [[{"role": "user", "content": "Who got me into sci-fi novels?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_16", "question": [[{"role": "user", "content": "What place do I not want to take my crush to anymore?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_17", "question": [[{"role": "user", "content": "What's my crush's minor?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_18", "question": [[{"role": "user", "content": "What breed is my dog?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_19", "question": [[{"role": "user", "content": "What year of college did I get my dog?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_20", "question": [[{"role": "user", "content": "What part of Archie's body was sensitive?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_21", "question": [[{"role": "user", "content": "What club did I drop recently?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_22", "question": [[{"role": "user", "content": "Who else was in the lab the night Carla and Ibonded over pizza at 3 a.m.?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_23", "question": [[{"role": "user", "content": "How old am I?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_24", "question": [[{"role": "user", "content": "How old is my sister?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_25", "question": [[{"role": "user", "content": "When does Midnight Breakfast start? Return in the format: HH:MM AM/PM (e.g. 01:30 AM)."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_conflict_26", "question": [[{"role": "user", "content": "What's my dad's occupation?"}]], "involved_classes": ["MemoryAPI"]}

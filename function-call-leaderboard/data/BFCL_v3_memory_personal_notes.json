@@ -1,0 +1,25 @@
+{"id": "memory_base_0", "question": [[{"role": "user", "content": "What time is the daycare drop-off for my kid on Monday? Give the time in hh:mm AM/PM format."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_1", "question": [[{"role": "user", "content": "I almost forgot, when is the monthly daycare payment due?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_2", "question": [[{"role": "user", "content": "What is the deadline to finalize that Q1 budget report?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_3", "question": [[{"role": "user", "content": "Wait a minute, what should I do after IT updates the security protocols?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_4", "question": [[{"role": "user", "content": "I remember that the client call with Jacob rescheduled. When is it now?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_5", "question": [[{"role": "user", "content": "I need to report to my manager about the workflow slow down. What slowed down the workflow on Tuesday?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_6", "question": [[{"role": "user", "content": "What should I review before next month’s deadline set by HR?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_7", "question": [[{"role": "user", "content": "What time is the daycare pickup? Give the time in hh:mm AM/PM format"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_8", "question": [[{"role": "user", "content": "Wait a minute, what am I supposed to do with the client proposal draft on Wednesday?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_9", "question": [[{"role": "user", "content": "I am stressed up. Please tell me, what task needs to be completed before EOD on Thursday?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_10", "question": [[{"role": "user", "content": "Quick! What does Finance want by Thursday?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_11", "question": [[{"role": "user", "content": "I need to know something for the vendor planning tasks. How many vendors responded to the follow-up on Friday?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_12", "question": [[{"role": "user", "content": "I may be forgetting, what is the urgent task related to tax documents I need to focus on?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_13", "question": [[{"role": "user", "content": "What should I do about the weird noise in my car engine? It's bugging me."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_14", "question": [[{"role": "user", "content": "Are the vendor contracts reviewed?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_15", "question": [[{"role": "user", "content": "Is there some sort of a deadline I set for myself for taking out the trash?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_16", "question": [[{"role": "user", "content": "What should I do with the car on Sunday? Was it washing or something else, I'm not sure anymore. "}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_17", "question": [[{"role": "user", "content": "I misremember the plan for restocking the pantry. What should I be restocking again?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_18", "question": [[{"role": "user", "content": "What is the exact time window for the system downtime on Tuesday? Give me the window in the format: 'hh AM/PM - hh AM/PM' (e.g. '01 AM - 02 AM')."}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_19", "question": [[{"role": "user", "content": "What specific task is required for onboarding the new hire on Wednesday?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_20", "question": [[{"role": "user", "content": "Are there any health supplements to be taken daily?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_21", "question": [[{"role": "user", "content": "Sunday meal prep plan... Did I have any?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_22", "question": [[{"role": "user", "content": "Did I plan some cheap DIY fixes for stuff at home?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_23", "question": [[{"role": "user", "content": "What specific items are needed for the kid’s school supplies?"}]], "involved_classes": ["MemoryAPI"]}
+{"id": "memory_base_24", "question": [[{"role": "user", "content": "What specific numbers did the teacher tell my kid focus on during counting practice? Give me the range in the format: 'X-Y' (e.g. '37-83')."}]], "involved_classes": ["MemoryAPI"]}

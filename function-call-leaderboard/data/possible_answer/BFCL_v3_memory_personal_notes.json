@@ -1,0 +1,25 @@
+{"id":"memory_base_0","ground_truth":["08:00 PM","8:00 PM"],"source":"Daycare: Drop-off at 8 AM, pick-up at 5 PM."}
+{"id":"memory_base_1","ground_truth":["Friday"],"source":"Daycare: Monthly payment due Friday."}
+{"id":"memory_base_2","ground_truth":["Before Friday","Friday"],"source":"Monday: Need to finalize Q1 budget report before Friday."}
+{"id":"memory_base_3","ground_truth":["Change passwords ASAP","Change passwords","Need to change passwords"],"source":"Monday: IT updated security protocols\u2014change passwords ASAP."}
+{"id":"memory_base_4","ground_truth":["Wednesday"],"source":"Monday: Client call with Jacob\u2014delayed till Wednesday."}
+{"id":"memory_base_5","ground_truth":["System downtime from 10 AM - 12 PM","System downtime","Downtime","10 AM - 12 PM system downtime"],"source":"Tuesday: System downtime from 10 AM - 12 PM, slowed down workflow."}
+{"id":"memory_base_6","ground_truth":["Updated benefits package"],"source":"Tuesday: HR sent updated benefits package\u2014review before next month\u2019s deadline."}
+{"id":"memory_base_7","ground_truth":["05:00 PM","5:00 PM"],"source":"Daycare: Drop-off at 8 AM, pick-up at 5 PM."}
+{"id":"memory_base_8","ground_truth":["Send it for legal approval"],"source":"Wednesday: Client proposal draft ready\u2014send it for legal approval."}
+{"id":"memory_base_9","ground_truth":["Fix last month\u2019s sales data"],"source":"Thursday: Caught a mistake in last month\u2019s sales data."}
+{"id":"memory_base_10","ground_truth":["Cost-cutting recommendations","Cost cutting recommendations","Cost-cutting recommendation","Cost cutting recommendation"],"source":"Thursday: Finance wants cost-cutting recommendations \u2014 brainstorm ideas."}
+{"id":"memory_base_11","ground_truth":["Two","2"],"source":"Friday: Followed up with vendors\u2014two responded, one still pending."}
+{"id":"memory_base_12","ground_truth":["Submit tax documents before Friday"],"source":"Urgent: Submit tax documents before Friday."}
+{"id":"memory_base_13","ground_truth":["Call auto repair shop"],"source":"Urgent: Call auto repair shop about weird noise in the engine."}
+{"id":"memory_base_14","ground_truth":["Review vendor contract before signing"],"source":"Work-related: Review vendor contract before signing."}
+{"id":"memory_base_15","ground_truth":["Update phone software"],"source":"Tech: Update phone software."}
+{"id":"memory_base_16","ground_truth":["Wash and vacuum","Wash & vacuum","Vacuum and wash","Vacuum & wash"],"source":"Car: Wash and vacuum on Sunday."}
+{"id":"memory_base_17","ground_truth":["Rice and cereal","Rice & cereal","Cereal and rice","Cereal & rice"],"source":"Organizing: Restock pantry\u2014running low on rice and cereal."}
+{"id":"memory_base_18","ground_truth":["10 AM - 12 PM"],"source":"Tuesday: System downtime from 10 AM - 12 PM, slowed down workflow. HR sent updated benefits package\u2014review before next month\u2019s deadline. Sent follow-up emails to vendors, waiting on response."}
+{"id":"memory_base_19","ground_truth":["Schedule one-on-one","One-on-one","One on one","1 on 1","1-on-1"],"source":"Wednesday: Presentation to leadership went well, but need to tweak a few slides for next week\u2019s review. Client proposal draft ready\u2014send it for legal approval. Need to onboard new hire\u2014schedule one-on-one."}
+{"id":"memory_base_20","ground_truth":["Vitamin D3\u20141000 IU daily","Omega-3s","Iron supplements","Probiotics"],"source":"Supplements & Meds: Vitamin D3\u20141000 IU daily. Omega-3s\u2014good for joints. Iron levels were low last check-up\u2014remember to take supplements. Probiotics\u2014help with digestion, take in the morning."}
+{"id":"memory_base_21","ground_truth":["Grilled chicken, quinoa, and veggies","Grilled chicken","Quinoa","Veggies"],"source":"Diet: Meal prep on Sunday\u2014grilled chicken, quinoa, and veggies."}
+{"id":"memory_base_22","ground_truth":["Tighten loose cabinet handle. Replace bathroom lightbulb. Patch up minor wall scuffs."],"source":"DIY Fixes: Tighten loose cabinet handle. Replace bathroom lightbulb. Patch up minor wall scuffs."}
+{"id":"memory_base_23","ground_truth":["Crayons","Notebooks","Notebook","Glue sticks","Glue stick","Gluestick","Gluesticks"],"source":"Shopping: Buy more diapers. Get school supplies\u2014crayons, notebooks, glue sticks. Pack extra snacks in daycare bag."}
+{"id":"memory_base_24","ground_truth":["1-20","Numbers 1-20"],"source":"Family time: Take kid to park this weekend. Pick out a new bedtime story book. Help with counting practice\u2014teacher says focus on numbers 1-20."}
