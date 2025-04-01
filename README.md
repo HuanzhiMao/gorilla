@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-- [Function Calling Leaderboard (fcl)](#berkeley-function-calling-leaderboard-fcl)
+- [Function Calling Leaderboard (fcl)](#function-calling-leaderboard-fcl)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Installation \& Setup](#installation--setup)
@@ -24,21 +24,12 @@
       - [(Optional) WandB Evaluation Logging](#optional-wandb-evaluation-logging)
       - [(Alternate) Script Execution for Evaluation](#alternate-script-execution-for-evaluation)
   - [Contributing \& How to Add New Models](#contributing--how-to-add-new-models)
-  - [Additional Resources](#additional-resources)
 
 ---
 
 ## Introduction
 
 We introduce the Function Calling Leaderboard (fcl), the **first comprehensive and executable function call evaluation** dedicated to assessing Large Language Models' (LLMs) ability to invoke functions. Unlike previous evaluations, fcl accounts for various forms of function calls, diverse scenarios, and executability.
-
-💡 Read more in our blog posts:
-
-- [fcl v1 (original) Blog Post](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html)
-- [fcl v2 (live dataset) Blog Post](https://gorilla.cs.berkeley.edu/blogs/12_fcl_v2_live.html)
-- [fcl v3 (multi-turn) Blog Post](https://gorilla.cs.berkeley.edu/blogs/13_fcl_v3_multi_turn.html)
-
-🦍 See the live leaderboard at [Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html#leaderboard)
 
 ![Architecture Diagram](./architecture_diagram.png)
 
@@ -52,9 +43,6 @@ We introduce the Function Calling Leaderboard (fcl), the **first comprehensive a
 # Create a new Conda environment with Python 3.10
 conda create -n fcl python=3.10
 conda activate fcl
-
-# Clone the Gorilla repository
-git clone https://github.com/ShishirPatil/gorilla.git
 
 # Change directory to the `function-call-leaderboard`
 cd gorilla/function-call-leaderboard
@@ -251,13 +239,3 @@ We welcome contributions! To add a new model:
 
 For detailed steps, please see the [Contributing Guide](./CONTRIBUTING.md).
 
----
-
-## Additional Resources
-
-- [Gorilla Discord](https://discord.gg/grXXvj9Whz) (`#leaderboard` channel)
-- [Project Website](https://gorilla.cs.berkeley.edu/)
-
-All the leaderboard statistics, and data used to train the models are released under Apache 2.0.
-Gorilla is an open source effort from UC Berkeley and we welcome contributors.
-Please email us your comments, criticisms, and questions. More information about the project can be found at [https://gorilla.cs.berkeley.edu/](https://gorilla.cs.berkeley.edu/)
