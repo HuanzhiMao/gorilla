@@ -1,6 +1,6 @@
 import re
 from typing import List, Dict, Union
-from bfcl.constants.type_mappings import JAVA_TYPE_CONVERSION
+from fcl.constants.type_mappings import JAVA_TYPE_CONVERSION
 
 
 def java_type_converter(value, expected_type, nested_type=None):

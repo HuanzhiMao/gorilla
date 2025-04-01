@@ -1,5 +1,5 @@
-from bfcl.model_handler.local_inference.base_oss_handler import OSSHandler
-from bfcl.model_handler.utils import (
+from fcl.model_handler.local_inference.base_oss_handler import OSSHandler
+from fcl.model_handler.utils import (
     combine_consecutive_user_prompts,
     func_doc_language_specific_pre_processing,
     system_prompt_pre_processing_chat_model,

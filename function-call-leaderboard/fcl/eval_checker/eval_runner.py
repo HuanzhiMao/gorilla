@@ -1,11 +1,11 @@
 import argparse
 
-from bfcl.constants.category_mapping import (
+from fcl.constants.category_mapping import (
     TEST_COLLECTION_MAPPING,
     TEST_FILE_MAPPING,
     VERSION_PREFIX,
 )
-from bfcl.constants.eval_config import (
+from fcl.constants.eval_config import (
     DOTENV_PATH,
     POSSIBLE_ANSWER_PATH,
     PROJECT_ROOT,
@@ -13,20 +13,20 @@ from bfcl.constants.eval_config import (
     RESULT_PATH,
     SCORE_PATH,
 )
-from bfcl.eval_checker.ast_eval.ast_checker import ast_checker
-from bfcl.eval_checker.eval_runner_helper import *
-from bfcl.eval_checker.executable_eval.custom_exception import BadAPIStatusError
-from bfcl.eval_checker.executable_eval.executable_checker import (
+from fcl.eval_checker.ast_eval.ast_checker import ast_checker
+from fcl.eval_checker.eval_runner_helper import *
+from fcl.eval_checker.executable_eval.custom_exception import BadAPIStatusError
+from fcl.eval_checker.executable_eval.executable_checker import (
     executable_checker_non_rest,
     executable_checker_rest,
 )
-from bfcl.eval_checker.multi_turn_eval.multi_turn_checker import (
+from fcl.eval_checker.multi_turn_eval.multi_turn_checker import (
     multi_turn_checker,
     multi_turn_irrelevance_checker,
 )
-from bfcl.eval_checker.multi_turn_eval.multi_turn_utils import is_empty_execute_response
-from bfcl.model_handler.handler_map import HANDLER_MAP
-from bfcl.utils import *
+from fcl.eval_checker.multi_turn_eval.multi_turn_utils import is_empty_execute_response
+from fcl.model_handler.handler_map import HANDLER_MAP
+from fcl.utils import *
 from dotenv import load_dotenv
 from tqdm import tqdm
 
@@ -703,7 +703,7 @@ def main(model, test_categories, api_sanity_check, result_dir, score_dir):
         print("----------")
 
     print(
-        f"🏁 Evaluation completed. See {score_dir / 'data_overall.csv'} for overall evaluation results on BFCL V3."
+        f"🏁 Evaluation completed. See {score_dir / 'data_overall.csv'} for overall evaluation results on fcl V3."
     )
     print(
         f"See {score_dir / 'data_live.csv'}, {score_dir / 'data_non_live.csv'} and {score_dir / 'data_multi_turn.csv'} for detailed evaluation results on each sub-section categories respectively."

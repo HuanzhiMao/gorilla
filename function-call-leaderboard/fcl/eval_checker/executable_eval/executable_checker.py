@@ -3,11 +3,11 @@ import time
 from functools import lru_cache
 
 import requests  # Do not remove this import even though it seems to be unused. It's used in the executable_checker_rest function.
-from bfcl.constants.eval_config import (
+from fcl.constants.eval_config import (
     REAL_TIME_MATCH_ALLOWED_DIFFERENCE,
     REST_EVAL_GROUND_TRUTH_PATH,
 )
-from bfcl.eval_checker.executable_eval.custom_exception import NoAPIKeyError
+from fcl.eval_checker.executable_eval.custom_exception import NoAPIKeyError
 
 # Load the ground truth data for the `rest` test category
 @lru_cache(maxsize=1)  # cache the result, effectively loading data once
@@ -211,7 +211,7 @@ def executable_checker_simple(
 
     try:
         exec(
-            "from bfcl.eval_checker.executable_eval.data.executable_python_function import *" + "\nresult=" + function_call,
+            "from fcl.eval_checker.executable_eval.data.executable_python_function import *" + "\nresult=" + function_call,
             exec_dict,
         )
         exec_output = exec_dict["result"]

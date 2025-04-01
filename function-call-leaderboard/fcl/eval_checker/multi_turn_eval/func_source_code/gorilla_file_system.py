@@ -3,7 +3,7 @@ import subprocess
 from copy import deepcopy
 from typing import Dict, List, Optional, Union
 
-from bfcl.eval_checker.multi_turn_eval.func_source_code.long_context import (
+from fcl.eval_checker.multi_turn_eval.func_source_code.long_context import (
     FILE_CONTENT_EXTENSION, FILES_TAIL_USED, POPULATE_FILE_EXTENSION)
 
 

@@ -4,7 +4,7 @@ When running tests, you can use the optional `--test-category` parameter to defi
 
 ### Available Test Groups
 
-You can specify a broad category (test group) to run multiple related tests at once (you can also use `bfcl test-categories` command to see this list):
+You can specify a broad category (test group) to run multiple related tests at once (you can also use `fcl test-categories` command to see this list):
 
 - `all`: All test categories.
   - This is the default option if no test category is provided.

@@ -1,6 +1,6 @@
 # Table of Supported Models
 
-Below is a comprehensive table of models supported for running leaderboard evaluations. Each model entry indicates whether it supports native Function Calling (FC) or requires a special prompt format to generate function calls. Models marked with `💻` are intended to be hosted locally (using vllm or sglang), while models without the `💻` icon are accessed via API calls. To quickly see all available models, you can also run the `bfcl models` command.
+Below is a comprehensive table of models supported for running leaderboard evaluations. Each model entry indicates whether it supports native Function Calling (FC) or requires a special prompt format to generate function calls. Models marked with `💻` are intended to be hosted locally (using vllm or sglang), while models without the `💻` icon are accessed via API calls. To quickly see all available models, you can also run the `fcl models` command.
 
 ## Function Calling (FC) vs. Prompt Mode
 
@@ -14,7 +14,7 @@ Below is a comprehensive table of models supported for running leaderboard evalu
 
 For model names containing `{...}`, multiple versions are available. For example, `meta-llama/Llama-3.1-{8B,70B}-Instruct` means we support both models: `meta-llama/Llama-3.1-8B-Instruct` and `meta-llama/Llama-3.1-70B-Instruct`.
 
-| Base Model                                     | Type             | Provider       | Model ID on BFCL                                            |
+| Base Model                                     | Type             | Provider       | Model ID on fcl                                            |
 | ---------------------------------------------- | ---------------- | -------------- | ----------------------------------------------------------- |
 | Amazon-Nova-Lite-v1:0                          | Function Calling | AWS            | nova-lite-v1.0                                              |
 | Amazon-Nova-Micro-v1:0                         | Function Calling | AWS            | nova-micro-v1.0                                             |
@@ -130,6 +130,3 @@ For model names containing `{...}`, multiple versions are available. For example
 - **Nova Models (AWS Bedrock):**
   For `Nova` models, set your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` in your `.env` file. Make sure the necessary AWS Bedrock permissions are granted in the `us-east-1` region.
 
----
-
-For more details and a summary of feature support across different models, see the [Berkeley Function Calling Leaderboard blog post](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html#prompt).

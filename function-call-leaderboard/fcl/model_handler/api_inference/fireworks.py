@@ -1,8 +1,8 @@
 import os
 import time
 
-from bfcl.model_handler.model_style import ModelStyle
-from bfcl.model_handler.api_inference.openai import OpenAIHandler
+from fcl.model_handler.model_style import ModelStyle
+from fcl.model_handler.api_inference.openai import OpenAIHandler
 from openai import OpenAI
 
 

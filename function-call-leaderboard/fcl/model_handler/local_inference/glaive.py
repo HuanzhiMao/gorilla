@@ -1,7 +1,7 @@
 import json
 
-from bfcl.model_handler.local_inference.base_oss_handler import OSSHandler
-from bfcl.model_handler.utils import convert_to_function_call
+from fcl.model_handler.local_inference.base_oss_handler import OSSHandler
+from fcl.model_handler.utils import convert_to_function_call
 from overrides import override
 
 

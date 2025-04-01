@@ -3,9 +3,9 @@ import json
 from typing import Dict, List
 
 import datamodel_code_generator
-from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
-from bfcl.model_handler.local_inference.base_oss_handler import OSSHandler
-from bfcl.model_handler.utils import (
+from fcl.constants.type_mappings import GORILLA_TO_OPENAPI
+from fcl.model_handler.local_inference.base_oss_handler import OSSHandler
+from fcl.model_handler.utils import (
     convert_to_tool,
     func_doc_language_specific_pre_processing,
     resolve_ast_call,

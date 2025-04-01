@@ -1,10 +1,10 @@
-from bfcl.constants.eval_config import UNDERSCORE_TO_DOT
-from bfcl.constants.type_mappings import (
+from fcl.constants.eval_config import UNDERSCORE_TO_DOT
+from fcl.constants.type_mappings import (
     JAVA_TYPE_CONVERSION,
     JS_TYPE_CONVERSION,
 )
-from bfcl.eval_checker.ast_eval.type_convertor.java_type_converter import java_type_converter
-from bfcl.eval_checker.ast_eval.type_convertor.js_type_converter import js_type_converter
+from fcl.eval_checker.ast_eval.type_convertor.java_type_converter import java_type_converter
+from fcl.eval_checker.ast_eval.type_convertor.js_type_converter import js_type_converter
 import re
 
 #### Constants ####

@@ -1,5 +1,5 @@
 import re
-from bfcl.constants.type_mappings import JS_TYPE_CONVERSION
+from fcl.constants.type_mappings import JS_TYPE_CONVERSION
 
 
 def js_type_converter(value, expected_type, nested_type=None):

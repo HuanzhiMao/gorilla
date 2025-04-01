@@ -3,9 +3,9 @@ requires = ["setuptools>=40.8.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bfcl"
+name = "fcl"
 version = "1.0.0"
-description = "Berkeley Function Calling Leaderboard (BFCL)"
+description = "Function Calling Leaderboard (fcl)"
 authors = [{ name = "Sky Computing Lab", email = "sky@cs.berkeley.edu" }]
 readme = "README.md"
 requires-python = ">=3.10"
@@ -38,10 +38,10 @@ dependencies = [
 ]
 
 [project.scripts]
-bfcl = "bfcl.__main__:cli"
+fcl = "fcl.__main__:cli"
 
 [tool.setuptools.packages.find]
-include = ["bfcl*"]
+include = ["fcl*"]
 
 [project.urls]
 Repository = "https://github.com/ShishirPatil/gorilla/tree/main/function-call-leaderboard"

@@ -9,7 +9,6 @@ We welcome your contributions to the Leaderboard! This guide provides step-by-st
   - [Creating Your Model Handler](#creating-your-model-handler)
   - [Updating the Handler Map and Model Metadata](#updating-the-handler-map-and-model-metadata)
   - [Submitting Your Pull Request](#submitting-your-pull-request)
-  - [Join Our Community](#join-our-community)
 
 ## Repository Structure
 
@@ -17,7 +16,7 @@ The repository is organized as follows:
 
 ```plaintext
 function-call-leaderboard/
-├── bfcl/
+├── fcl/
 │   ├── eval_checker/             # Evaluation modules
 │   │   ├── ast_eval/             # AST-based evaluation
 │   │   ├── executable_eval/      # Evaluation by execution
@@ -45,8 +44,8 @@ To add a new model, focus primarily on the `model_handler` directory. You do not
 
 ## Where to Begin
 
-- **Base Handler:** Start by reviewing `bfcl/model_handler/base_handler.py`. All model handlers inherit from this base class. The `inference_single_turn` and `inference_multi_turn` methods defined there are helpful for understanding the model response generation pipeline. The `base_handler.py` contains many useful details in the docstrings of each abstract method, so be sure to review them.
-  - If your model is hosted locally, you should also look at `bfcl/model_handler/local_inference/base_oss_handler.py`.
+- **Base Handler:** Start by reviewing `fcl/model_handler/base_handler.py`. All model handlers inherit from this base class. The `inference_single_turn` and `inference_multi_turn` methods defined there are helpful for understanding the model response generation pipeline. The `base_handler.py` contains many useful details in the docstrings of each abstract method, so be sure to review them.
+  - If your model is hosted locally, you should also look at `fcl/model_handler/local_inference/base_oss_handler.py`.
 - **Reference Handlers:** Checkout some of the existing model handlers (such as `openai.py`, `claude.py`, etc); you can likely reuse some of the existing code if your new model outputs in a similar format.
   - If your model is OpenAI-compatible, the `openai.py` handler will be helpful (and you might be able to just use it as is).
   - If your model is locally hosted, the `llama_fc.py` handler or the `deepseek_coder.py` handler can be good starting points.
@@ -97,11 +96,11 @@ Regardless of mode or model type, you should implement the following methods to 
 
 ## Updating the Handler Map and Model Metadata
 
-1. **Update `bfcl/model_handler/handler_map.py`:**  
+1. **Update `fcl/model_handler/handler_map.py`:**  
    Add your new model’s handler class and associate it with the model’s name.
 
-2. **Update `bfcl/constants/model_metadata.py`:**  
-   In `bfcl/constants/model_metadata.py`, add entries in `MODEL_METADATA_MAPPING` to include:
+2. **Update `fcl/constants/model_metadata.py`:**  
+   In `fcl/constants/model_metadata.py`, add entries in `MODEL_METADATA_MAPPING` to include:
 
    - Model display name (as shown in the leaderboard)
    - URL to the model’s documentation or homepage
@@ -115,7 +114,7 @@ Regardless of mode or model type, you should implement the following methods to 
 
    If the model is API-based but free, add it to the `NO_COST_API_BASED_MODELS` list.
 
-3. **Update `bfcl/constants/eval_config.py`:**  
+3. **Update `fcl/constants/eval_config.py`:**  
    If your model is a Function Calling model and it does not support `.` in the function name (such as GPT in FC mode), add the model name to the `UNDERSCORE_TO_DOT` list.
 
 4. **Update `SUPPORTED_MODELS.md`:**  
@@ -123,15 +122,6 @@ Regardless of mode or model type, you should implement the following methods to 
 
 ## Submitting Your Pull Request
 
-- Raise a [Pull Request](https://github.com/ShishirPatil/gorilla/pulls) with your new Model Handler and the necessary updates to the metadata.
+- Raise a Pull Request with your new Model Handler and the necessary updates to the metadata.
 - Ensure that the model you add is publicly accessible, either open-source or behind a publicly available API. While you may require authentication, billing, registration, or tokens, the general public should ultimately be able to access the endpoint.
   - If your model is not publicly accessible, we would still welcome your contribution, but we unfortunately cannot include it in the public-facing leaderboard.
-
-## Join Our Community
-
-- Have questions or need help? Join the [Gorilla Discord](https://discord.gg/grXXvj9Whz) and visit the `#leaderboard` channel.
-- Feel free to reach out if you have any questions, concerns, or would like guidance while adding your new model. We’re happy to assist!
-
----
-
-Thank you for contributing to the Berkeley Function Calling Leaderboard! We look forward to seeing your model added to the community.

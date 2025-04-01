@@ -4,10 +4,10 @@ import time
 
 from anthropic import Anthropic, RateLimitError
 from anthropic.types import TextBlock, ToolUseBlock
-from bfcl.model_handler.base_handler import BaseHandler
-from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
-from bfcl.model_handler.model_style import ModelStyle
-from bfcl.model_handler.utils import (
+from fcl.model_handler.base_handler import BaseHandler
+from fcl.constants.type_mappings import GORILLA_TO_OPENAPI
+from fcl.model_handler.model_style import ModelStyle
+from fcl.model_handler.utils import (
     ast_parse,
     combine_consecutive_user_prompts,
     convert_system_prompt_into_user_prompt,
@@ -19,7 +19,7 @@ from bfcl.model_handler.utils import (
     retry_with_backoff,
     system_prompt_pre_processing_chat_model,
 )
-from bfcl.utils import is_multi_turn
+from fcl.utils import is_multi_turn
 
 
 class ClaudeHandler(BaseHandler):

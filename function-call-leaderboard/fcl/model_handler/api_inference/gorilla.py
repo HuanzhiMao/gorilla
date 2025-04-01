@@ -2,9 +2,9 @@ import json
 import time
 
 import requests
-from bfcl.model_handler.base_handler import BaseHandler
-from bfcl.model_handler.model_style import ModelStyle
-from bfcl.model_handler.utils import ast_parse
+from fcl.model_handler.base_handler import BaseHandler
+from fcl.model_handler.model_style import ModelStyle
+from fcl.model_handler.utils import ast_parse
 
 
 class GorillaHandler(BaseHandler):

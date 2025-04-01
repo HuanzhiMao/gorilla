@@ -1,8 +1,8 @@
-# Berkeley Function Calling Leaderboard (BFCL)
+# Function Calling Leaderboard (fcl)
 
 ## Table of Contents
 
-- [Berkeley Function Calling Leaderboard (BFCL)](#berkeley-function-calling-leaderboard-bfcl)
+- [Function Calling Leaderboard (fcl)](#berkeley-function-calling-leaderboard-fcl)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Installation \& Setup](#installation--setup)
@@ -30,15 +30,15 @@
 
 ## Introduction
 
-We introduce the Berkeley Function Calling Leaderboard (BFCL), the **first comprehensive and executable function call evaluation** dedicated to assessing Large Language Models' (LLMs) ability to invoke functions. Unlike previous evaluations, BFCL accounts for various forms of function calls, diverse scenarios, and executability.
+We introduce the Function Calling Leaderboard (fcl), the **first comprehensive and executable function call evaluation** dedicated to assessing Large Language Models' (LLMs) ability to invoke functions. Unlike previous evaluations, fcl accounts for various forms of function calls, diverse scenarios, and executability.
 
 💡 Read more in our blog posts:
 
-- [BFCL v1 (original) Blog Post](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html)
-- [BFCL v2 (live dataset) Blog Post](https://gorilla.cs.berkeley.edu/blogs/12_bfcl_v2_live.html)
-- [BFCL v3 (multi-turn) Blog Post](https://gorilla.cs.berkeley.edu/blogs/13_bfcl_v3_multi_turn.html)
+- [fcl v1 (original) Blog Post](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html)
+- [fcl v2 (live dataset) Blog Post](https://gorilla.cs.berkeley.edu/blogs/12_fcl_v2_live.html)
+- [fcl v3 (multi-turn) Blog Post](https://gorilla.cs.berkeley.edu/blogs/13_fcl_v3_multi_turn.html)
 
-🦍 See the live leaderboard at [Berkeley Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html#leaderboard)
+🦍 See the live leaderboard at [Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html#leaderboard)
 
 ![Architecture Diagram](./architecture_diagram.png)
 
@@ -50,8 +50,8 @@ We introduce the Berkeley Function Calling Leaderboard (BFCL), the **first compr
 
 ```bash
 # Create a new Conda environment with Python 3.10
-conda create -n BFCL python=3.10
-conda activate BFCL
+conda create -n fcl python=3.10
+conda activate fcl
 
 # Clone the Gorilla repository
 git clone https://github.com/ShishirPatil/gorilla.git
@@ -128,12 +128,12 @@ The evaluation script will automatically search for dataset files in the default
 You can provide multiple models or test categories by separating them with commas. For example:
 
 ```bash
-bfcl generate --model claude-3-5-sonnet-20241022-FC,gpt-4o-2024-11-20-FC --test-category parallel,multiple,exec_simple
+fcl generate --model claude-3-5-sonnet-20241022-FC,gpt-4o-2024-11-20-FC --test-category parallel,multiple,exec_simple
 ```
 
 #### Output and Logging
 
-- All generated model responses are stored in `./result/` folder, organized by model and test category: `result/MODEL_NAME/BFCL_v3_TEST_CATEGORY_result.json`
+- All generated model responses are stored in `./result/` folder, organized by model and test category: `result/MODEL_NAME/fcl_v3_TEST_CATEGORY_result.json`
 - To use a custom directory for the result file, specify using `--result-dir`; path should be relative to the `function-call-leaderboard` root folder,
 
 An inference log is included with the model responses to help analyze/debug the model's performance, and to better understand the model behavior. For more verbose logging, use the `--include-input-log` flag. Refer to [LOG_GUIDE.md](./LOG_GUIDE.md) for details on how to interpret the inference logs.
@@ -141,7 +141,7 @@ An inference log is included with the model responses to help analyze/debug the 
 #### For API-based Models
 
 ```bash
-bfcl generate --model MODEL_NAME --test-category TEST_CATEGORY --num-threads 1
+fcl generate --model MODEL_NAME --test-category TEST_CATEGORY --num-threads 1
 ```
 
 - Use `--num-threads` to control the level of parallel inference. The default (`1`) means no parallelization.
@@ -150,7 +150,7 @@ bfcl generate --model MODEL_NAME --test-category TEST_CATEGORY --num-threads 1
 #### For Locally-hosted OSS Models
 
 ```bash
-bfcl generate --model MODEL_NAME --test-category TEST_CATEGORY --backend {vllm|sglang} --num-gpus 1 --gpu-memory-utilization 0.9
+fcl generate --model MODEL_NAME --test-category TEST_CATEGORY --backend {vllm|sglang} --num-gpus 1 --gpu-memory-utilization 0.9
 ```
 
 - Choose your backend using `--backend vllm` or `--backend sglang`. The default backend is `vllm`.
@@ -161,7 +161,7 @@ bfcl generate --model MODEL_NAME --test-category TEST_CATEGORY --backend {vllm|s
 If you have a server already running (e.g., vLLM in a SLURM cluster), you can bypass the vLLM/sglang setup phase and directly generate responses by using the `--skip-server-setup` flag:
 
 ```bash
-bfcl generate --model MODEL_NAME --test-category TEST_CATEGORY --skip-server-setup
+fcl generate --model MODEL_NAME --test-category TEST_CATEGORY --skip-server-setup
 ```
 
 In addition, you should specify the endpoint and port used by the server. By default, the endpoint is `localhost` and the port is `1053`. These can be overridden by the `VLLM_ENDPOINT` and `VLLM_PORT` environment variables in the `.env` file:
@@ -189,7 +189,7 @@ When specifying multiple models or test categories, separate them with **spaces*
 Once you have the results, run:
 
 ```bash
-bfcl evaluate --model MODEL_NAME --test-category TEST_CATEGORY
+fcl evaluate --model MODEL_NAME --test-category TEST_CATEGORY
 ```
 
 The `MODEL_NAME` and `TEST_CATEGORY` options are the same as those used in the [Generating LLM Responses](#generating-llm-responses) section. For details, refer to [SUPPORTED_MODELS.md](./SUPPORTED_MODELS.md) and [TEST_CATEGORIES.md](./TEST_CATEGORIES.md).
@@ -207,7 +207,7 @@ If any of your test categories involve executable tests (e.g., category name con
 
 #### Output Structure
 
-Evaluation scores are stored in `./score/`, mirroring the structure of `./result/`: `score/MODEL_NAME/BFCL_v3_TEST_CATEGORY_score.json`
+Evaluation scores are stored in `./score/`, mirroring the structure of `./result/`: `score/MODEL_NAME/fcl_v3_TEST_CATEGORY_score.json`
 
 - To use a custom directory for the score file, specify using `--score-dir`; path should be relative to the `function-call-leaderboard` root folder.
 
@@ -226,15 +226,15 @@ If you'd like to log evaluation results to WandB artifacts:
 pip install -e.[wandb]
 ```
 
-Mkae sure you also set `WANDB_BFCL_PROJECT=ENTITY:PROJECT` in `.env`.
+Mkae sure you also set `WANDB_fcl_PROJECT=ENTITY:PROJECT` in `.env`.
 
 #### (Alternate) Script Execution for Evaluation
 
 For those who prefer using script execution instead of the CLI, you can run the following command:
 
 ```bash
-# Make sure you are inside the `function-call-leaderboard/bfcl/eval_checker` directory
-cd bfcl/eval_checker
+# Make sure you are inside the `function-call-leaderboard/fcl/eval_checker` directory
+cd fcl/eval_checker
 python eval_runner.py --model MODEL_NAME --test-category TEST_CATEGORY
 ```
 
@@ -244,9 +244,9 @@ When specifying multiple models or test categories, separate them with **spaces*
 
 We welcome contributions! To add a new model:
 
-1. Review `bfcl/model_handler/base_handler.py` and/or `bfcl/model_handler/local_inference/base_oss_handler.py` (if your model is hosted locally).
+1. Review `fcl/model_handler/base_handler.py` and/or `fcl/model_handler/local_inference/base_oss_handler.py` (if your model is hosted locally).
 2. Implement a new handler class for your model.
-3. Update `bfcl/model_handler/handler_map.py` and `bfcl/constants/model_metadata.py`.
+3. Update `fcl/model_handler/handler_map.py` and `fcl/constants/model_metadata.py`.
 4. Submit a Pull Request.
 
 For detailed steps, please see the [Contributing Guide](./CONTRIBUTING.md).

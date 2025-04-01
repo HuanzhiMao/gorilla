@@ -1,5 +1,5 @@
-from bfcl.model_handler.api_inference.openai import OpenAIHandler
-from bfcl.model_handler.model_style import ModelStyle
+from fcl.model_handler.api_inference.openai import OpenAIHandler
+from fcl.model_handler.model_style import ModelStyle
 from openai import OpenAI
 
 # For setup instructions, please refer to https://github.com/MeetKai/functionary for setup details. 

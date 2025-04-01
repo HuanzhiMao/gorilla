@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 from typing import Union
 
-from bfcl.constants.category_mapping import TEST_COLLECTION_MAPPING, TEST_FILE_MAPPING, VERSION_PREFIX
+from fcl.constants.category_mapping import TEST_COLLECTION_MAPPING, TEST_FILE_MAPPING, VERSION_PREFIX
 
 
 def extract_test_category(input_string: Union[str, Path]) -> str:

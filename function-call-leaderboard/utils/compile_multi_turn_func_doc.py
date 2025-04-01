@@ -3,17 +3,17 @@ import inspect
 import json
 
 from _compile_helper import function_to_json
-from bfcl.constants.eval_config import MULTI_TURN_FUNC_DOC_PATH
+from fcl.constants.eval_config import MULTI_TURN_FUNC_DOC_PATH
 
 CLASS_FILE_PATH_MAPPING = {
-    "GorillaFileSystem": "bfcl.eval_checker.multi_turn_eval.func_source_code.gorilla_file_system",
-    "MathAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.math_api",
-    "MessageAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.message_api",
-    "TwitterAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.posting_api",
-    "TicketAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.ticket_api",
-    "TradingBot": "bfcl.eval_checker.multi_turn_eval.func_source_code.trading_bot",
-    "TravelAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.travel_booking",
-    "VehicleControlAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.vehicle_control",
+    "GorillaFileSystem": "fcl.eval_checker.multi_turn_eval.func_source_code.gorilla_file_system",
+    "MathAPI": "fcl.eval_checker.multi_turn_eval.func_source_code.math_api",
+    "MessageAPI": "fcl.eval_checker.multi_turn_eval.func_source_code.message_api",
+    "TwitterAPI": "fcl.eval_checker.multi_turn_eval.func_source_code.posting_api",
+    "TicketAPI": "fcl.eval_checker.multi_turn_eval.func_source_code.ticket_api",
+    "TradingBot": "fcl.eval_checker.multi_turn_eval.func_source_code.trading_bot",
+    "TravelAPI": "fcl.eval_checker.multi_turn_eval.func_source_code.travel_booking",
+    "VehicleControlAPI": "fcl.eval_checker.multi_turn_eval.func_source_code.vehicle_control",
 }
 
 

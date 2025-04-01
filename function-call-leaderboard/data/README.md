@@ -4,20 +4,20 @@ language:
   - en
 ---
 
-# Berkeley Function Calling Leaderboard
+# Function Calling Leaderboard
 
-The Berkeley function calling leaderboard is a live leaderboard to evaluate the ability of different LLMs to call functions (also referred to as tools).
+The Function Calling Leaderboard is a live leaderboard to evaluate the ability of different LLMs to call functions (also referred to as tools).
 We built this dataset from our learnings to be representative of most users' function calling use-cases, for example, in agents, as a part of enterprise workflows, etc.
 To this end, our evaluation dataset spans diverse categories, and across multiple languages.
 
 Checkout the Leaderboard at [gorilla.cs.berkeley.edu/leaderboard.html](https://gorilla.cs.berkeley.edu/leaderboard.html)
 and our release blogs:
 
-[BFCL V1](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html): Our initial BFCL release
+[fcl V1](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html): Our initial fcl release
 
-[BFCL V2](https://gorilla.cs.berkeley.edu/blogs/12_bfcl_v2_live.html): Our second release, employing enterprise and OSS-contributed live data
+[fcl V2](https://gorilla.cs.berkeley.edu/blogs/12_fcl_v2_live.html): Our second release, employing enterprise and OSS-contributed live data
 
-[BFCL V3](https://gorilla.cs.berkeley.edu/blogs/13_bfcl_v3_multi_turn.html#composition): Introduces multi-turn and multi-step function calling scenarios
+[fcl V3](https://gorilla.cs.berkeley.edu/blogs/13_fcl_v3_multi_turn.html#composition): Introduces multi-turn and multi-step function calling scenarios
 
 **_Latest Version Release Date_**: 09/22/2024
 
@@ -25,9 +25,9 @@ and our release blogs:
 
 ## Prepare Evaluation Dataset
 
-To use the BFCL dataset, please follow the instructions detailed in the README [here](https://github.com/ShishirPatil/gorilla/tree/main/function-call-leaderboard).
+To use the fcl dataset, please follow the instructions detailed in the README [here](https://github.com/ShishirPatil/gorilla/tree/main/function-call-leaderboard).
 
-The BFCL dataset is organized in multiple JSON files, where each file representing a test category. Each line in the JSON file is a JSON object. You can use the following helper functions to load the dataset:
+The fcl dataset is organized in multiple JSON files, where each file representing a test category. Each line in the JSON file is a JSON object. You can use the following helper functions to load the dataset:
 
 ```python
 def load_file(file_path: str):
@@ -72,23 +72,23 @@ ds = load_json_dataset(test_entries)
 
 We break down our dataset into our 3 major releases. The composition of each release is as follows:
 
-**BFCL V1**:
+**fcl V1**:
 
 ![image/png](https://cdn-uploads.huggingface.co/production/uploads/63814d392dd1f3e7bf59862f/IE-HwJL1OUSi-Tc2fT-oo.png)
 
-**BFCL V2 Live**:
+**fcl V2 Live**:
 
 ![image/png](https://gorilla.cs.berkeley.edu/assets/img/blog_post_12_composition.png)
 
-**BFCL V3 Multi-Turn**:
+**fcl V3 Multi-Turn**:
 
 <p align="center">
-  <img src="https://gorilla.cs.berkeley.edu/assets/img/blog_post_13_data_composition.png" alt="BFCL V3 data composition"/>
+  <img src="https://gorilla.cs.berkeley.edu/assets/img/blog_post_13_data_composition.png" alt="fcl V3 data composition"/>
 </p>
 
 ### Dataset Description
 
-## BFCL V1:
+## fcl V1:
 
 In our first release, the majority of our evaluation is broken into two categories:
 
@@ -119,15 +119,15 @@ While the previous categories consist of the majority of our evaluations, we inc
 
 For REST API, we use an executable evaluation to check for the executable outputs' effective execution, response type, and response JSON key consistencies. On the AST, we chose not to perform AST evaluation on REST mainly because of the immense number of possible answers; the enumeration of all possible answers is exhaustive for complicated defined APIs.
 
-**SQL (100)**: SQL evaluation data includes our customized `sql.execute` functions that contain sql_keyword, table_name, columns, and conditions. Those four parameters provide the necessary information to construct a simple SQL query like `SELECT column_A from table_B where column_C == D` Through this, we want to see if through function calling, SQL query can be reliably constructed and utilized rather than training a SQL-specific model. In our evaluation dataset, we restricted the scenarios and supported simple keywords, including `SELECT`, `INSERT INTO`, `UPDATE`, `DELETE`, and `CREATE`. We included 100 examples for SQL AST evaluation. Note that SQL AST evaluation will not be shown in our leaderboard calculations. We use SQL evaluation to test the generalization ability of function calling for programming languages that are not included in the training set for Gorilla OpenFunctions-v2. We opted to exclude SQL performance from the AST evaluation in the BFCL due to the multiplicity of methods to construct SQL function calls achieving identical outcomes. We're currently working on a better evaluation of SQL and are open to suggestions and feedback from the community. Therefore, SQL has been omitted from the current leaderboard to pave the way for a more comprehensive evaluation in subsequent iterations.
+**SQL (100)**: SQL evaluation data includes our customized `sql.execute` functions that contain sql_keyword, table_name, columns, and conditions. Those four parameters provide the necessary information to construct a simple SQL query like `SELECT column_A from table_B where column_C == D` Through this, we want to see if through function calling, SQL query can be reliably constructed and utilized rather than training a SQL-specific model. In our evaluation dataset, we restricted the scenarios and supported simple keywords, including `SELECT`, `INSERT INTO`, `UPDATE`, `DELETE`, and `CREATE`. We included 100 examples for SQL AST evaluation. Note that SQL AST evaluation will not be shown in our leaderboard calculations. We use SQL evaluation to test the generalization ability of function calling for programming languages that are not included in the training set for Gorilla OpenFunctions-v2. We opted to exclude SQL performance from the AST evaluation in the fcl due to the multiplicity of methods to construct SQL function calls achieving identical outcomes. We're currently working on a better evaluation of SQL and are open to suggestions and feedback from the community. Therefore, SQL has been omitted from the current leaderboard to pave the way for a more comprehensive evaluation in subsequent iterations.
 
 **Java (100) and Javascript (50)**: Despite function calling formats being the same across most programming languages, each programming language has language-specific types. For example, Java has the `HashMap` type. The goal of this test category is to understand how well the function calling model can be extended to not just Python type but all the language-specific typings. We included 100 examples for Java AST evaluation and 70 examples for Javascript AST evaluation.
 
 The categories outlined above provide insight into the performance of different models across popular API call scenarios, offering valuable perspectives on the potential of function-calling models.
 
-## BFCL V2 Live:
+## fcl V2 Live:
 
-Our second release uses real world data in order to better measure LLM function calling performance in real world uses cases. To this end, there is a greater focus on the multiple function scenario, as well as relevance/irrelevance detection. The data in BFCL V2 Live is comprised of **simple (258)**, **multiple (1037)**, **parallel (16)**, and **parallel multiple (24)** categories, similar to those described in BFCL V1. In addition to these, we have the **Relevance** category, which can be broken down into the following two subcategories.
+Our second release uses real world data in order to better measure LLM function calling performance in real world uses cases. To this end, there is a greater focus on the multiple function scenario, as well as relevance/irrelevance detection. The data in fcl V2 Live is comprised of **simple (258)**, **multiple (1037)**, **parallel (16)**, and **parallel multiple (24)** categories, similar to those described in fcl V1. In addition to these, we have the **Relevance** category, which can be broken down into the following two subcategories.
 
 #### Relevance Evaluation
 
@@ -135,7 +135,7 @@ Our second release uses real world data in order to better measure LLM function 
 
 **Relevance Detection (41)**: The opposite of irrelevance detection. The scenario where at least one of the function choices provided are relevant to the user query and should be invoked, but the way the user prompt or the function doc is stated means that there could be infinitely many correct function calls and impossible to use a pre-defined possible answer set to evaluate. We expect the model to output some function call (one or multiple) that is relevant to the user query; we don't check for the correctness of the function call in this category (eg, correct parameter value).
 
-## BFCL V3:
+## fcl V3:
 
 This release introduces scenarios that require multi-step function calling, where multiple internal function calls can be used to address a single user request, as well as multi-turn function calls, which involve multiple exchanges or function calls between user and assistant. Within our multi-step and multi-turn data are the following categories:
 
@@ -154,7 +154,7 @@ The augmented multiturn data is comprised of the followin subcategories:
 
 ### Evaluation
 
-This dataset serves as the question + function documentation pairs for Berkeley Function-Calling Leaderboard (BFCL) evaluation. The source code for the evaluation process can be found [here](https://github.com/ShishirPatil/gorilla/tree/main/function-call-leaderboard) with detailed instructions on how to use this dataset to compare LLM tool use capabilities across different models and categories.
+This dataset serves as the question + function documentation pairs for Berkeley Function-Calling Leaderboard (fcl) evaluation. The source code for the evaluation process can be found [here](https://github.com/ShishirPatil/gorilla/tree/main/function-call-leaderboard) with detailed instructions on how to use this dataset to compare LLM tool use capabilities across different models and categories.
 
 More details on evaluation metrics, i.e. rules for the Abstract Syntax Tree (AST) and executable evaluation can be found in the [release blog](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html#metrics).
 
@@ -169,7 +169,7 @@ More information about the project can be found at https://gorilla.cs.berkeley.e
 
 ```bibtex
 @misc{berkeley-function-calling-leaderboard,
-  title={Berkeley Function Calling Leaderboard},
+  title={Function Calling Leaderboard},
   author={Fanjia Yan and Huanzhi Mao and Charlie Cheng-Jie Ji and Tianjun Zhang and Shishir G. Patil and Ion Stoica and Joseph E. Gonzalez},
   howpublished={\url{https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html}},
   year={2024},

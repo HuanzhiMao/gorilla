@@ -5,13 +5,13 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
-from bfcl.constants.eval_config import (
+from fcl.constants.eval_config import (
     RESULT_PATH,
     VLLM_PORT,
 )
-from bfcl.model_handler.base_handler import BaseHandler
-from bfcl.model_handler.model_style import ModelStyle
-from bfcl.model_handler.utils import (
+from fcl.model_handler.base_handler import BaseHandler
+from fcl.model_handler.model_style import ModelStyle
+from fcl.model_handler.utils import (
     default_decode_ast_prompting,
     default_decode_execute_prompting,
     func_doc_language_specific_pre_processing,

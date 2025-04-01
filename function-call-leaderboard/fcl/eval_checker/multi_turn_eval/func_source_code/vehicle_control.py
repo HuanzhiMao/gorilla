@@ -2,7 +2,7 @@ import random
 from copy import deepcopy
 from typing import Dict, List, Union
 
-from bfcl.eval_checker.multi_turn_eval.func_source_code.long_context import (
+from fcl.eval_checker.multi_turn_eval.func_source_code.long_context import (
     CAR_STATUS_METADATA_EXTENSION,
     INTERMEDIARY_CITIES,
     LONG_WEATHER_EXTENSION,

@@ -1,8 +1,8 @@
 from keyword import kwlist
 
-from bfcl._llm_response_generation import parse_test_category_argument
-from bfcl.constants.eval_config import PROMPT_PATH
-from bfcl.utils import is_java, is_js, load_file
+from fcl._llm_response_generation import parse_test_category_argument
+from fcl.constants.eval_config import PROMPT_PATH
+from fcl.utils import is_java, is_js, load_file
 
 """
 This script checks for the correct format of the function description for test category in Python.

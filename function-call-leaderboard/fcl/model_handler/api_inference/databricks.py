@@ -2,9 +2,9 @@ import os
 import re
 import time
 
-from bfcl.model_handler.api_inference.openai import OpenAIHandler
-from bfcl.model_handler.model_style import ModelStyle
-from bfcl.model_handler.utils import (
+from fcl.model_handler.api_inference.openai import OpenAIHandler
+from fcl.model_handler.model_style import ModelStyle
+from fcl.model_handler.utils import (
     ast_parse,
     combine_consecutive_user_prompts,
     func_doc_language_specific_pre_processing,

@@ -1,4 +1,4 @@
-from bfcl.model_handler.local_inference.base_oss_handler import OSSHandler
+from fcl.model_handler.local_inference.base_oss_handler import OSSHandler
 from overrides import override
 
 # Note: This is the handler for the Bielik in prompting mode. This model does not support function calls.

@@ -1,4 +1,4 @@
-VERSION_PREFIX = "BFCL_v3"
+VERSION_PREFIX = "fcl_v3"
 
 # These are in the PROMPT_PATH
 # Commented out ones are not used in the current version of benchmarking

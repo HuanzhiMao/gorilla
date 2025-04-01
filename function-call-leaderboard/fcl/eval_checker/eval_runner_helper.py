@@ -5,14 +5,14 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from bfcl._apply_function_credential_config import apply_function_credential_config
-from bfcl.constants.category_mapping import TEST_FILE_MAPPING
-from bfcl.constants.column_headers import *
-from bfcl.constants.eval_config import *
-from bfcl.constants.model_metadata import *
-from bfcl.eval_checker.executable_eval.custom_exception import BadAPIStatusError
-from bfcl.model_handler.handler_map import local_inference_handler_map
-from bfcl.utils import (
+from fcl._apply_function_credential_config import apply_function_credential_config
+from fcl.constants.category_mapping import TEST_FILE_MAPPING
+from fcl.constants.column_headers import *
+from fcl.constants.eval_config import *
+from fcl.constants.model_metadata import *
+from fcl.eval_checker.executable_eval.custom_exception import BadAPIStatusError
+from fcl.model_handler.handler_map import local_inference_handler_map
+from fcl.utils import (
     extract_test_category,
     find_file_with_suffix,
     load_file,
@@ -24,7 +24,7 @@ from tqdm import tqdm
 def api_status_sanity_check_rest():
 
     # We only need to import the executable_checker_rest in this function. So a local import is used.
-    from bfcl.eval_checker.executable_eval.executable_checker import (
+    from fcl.eval_checker.executable_eval.executable_checker import (
         executable_checker_rest,
     )
 
@@ -57,7 +57,7 @@ def api_status_sanity_check_rest():
 
 
 def api_status_sanity_check_executable():
-    from bfcl.eval_checker.executable_eval.executable_checker import (
+    from fcl.eval_checker.executable_eval.executable_checker import (
         executable_checker_simple,
     )
 
@@ -129,7 +129,7 @@ def get_executable_expected_output(prompt_file_path, possible_answer_file_path):
 
         for i in range(len(ground_truth)):
             exec(
-                "from bfcl.eval_checker.executable_eval.data.executable_python_function import *"
+                "from fcl.eval_checker.executable_eval.data.executable_python_function import *"
                 + "\nresult="
                 + ground_truth[i],
                 exec_dict,
@@ -605,7 +605,7 @@ def generate_leaderboard_csv(
     #         category_status, eval_models=eval_models, eval_categories=eval_categories
     #     )
 
-    wandb_project = os.getenv("WANDB_BFCL_PROJECT")
+    wandb_project = os.getenv("WANDB_fcl_PROJECT")
     if wandb_project and wandb_project != "ENTITY:PROJECT":
         import wandb
 
@@ -614,7 +614,7 @@ def generate_leaderboard_csv(
             # wandb_project is 'entity:project'
             entity=wandb_project.split(":")[0],
             project=wandb_project.split(":")[1],
-            name=f"BFCL-v3-{datetime.now().strftime('%Y%m%d-%H%M%S')}",
+            name=f"fcl-v3-{datetime.now().strftime('%Y%m%d-%H%M%S')}",
         )
 
         # Log CSV files to WandB
@@ -631,19 +631,19 @@ def generate_leaderboard_csv(
         overall_table = wandb.Table(dataframe=overall_df)
 
         # Create artifacts
-        bfcl_artifact = wandb.Artifact("bfcl_results", type="dataset")
+        fcl_artifact = wandb.Artifact("fcl_results", type="dataset")
 
         # Add tables to artifact
-        bfcl_artifact.add(non_live_table, "non_live_results")
-        bfcl_artifact.add(live_table, "live_results")
-        bfcl_artifact.add(multi_turn_table, "multi_turn_results")
-        bfcl_artifact.add(overall_table, "overall_results")
+        fcl_artifact.add(non_live_table, "non_live_results")
+        fcl_artifact.add(live_table, "live_results")
+        fcl_artifact.add(multi_turn_table, "multi_turn_results")
+        fcl_artifact.add(overall_table, "overall_results")
 
         # Add raw CSV files to artifact
-        bfcl_artifact.add_file(str(output_path / "data_non_live.csv"))
-        bfcl_artifact.add_file(str(output_path / "data_live.csv"))
-        bfcl_artifact.add_file(str(output_path / "data_multi_turn.csv"))
-        bfcl_artifact.add_file(str(output_path / "data_overall.csv"))
+        fcl_artifact.add_file(str(output_path / "data_non_live.csv"))
+        fcl_artifact.add_file(str(output_path / "data_live.csv"))
+        fcl_artifact.add_file(str(output_path / "data_multi_turn.csv"))
+        fcl_artifact.add_file(str(output_path / "data_overall.csv"))
 
         # Log tables directly
         wandb.log(
@@ -656,7 +656,7 @@ def generate_leaderboard_csv(
         )
 
         # Log artifact
-        wandb.log_artifact(bfcl_artifact)
+        wandb.log_artifact(fcl_artifact)
         wandb.finish()
 
 

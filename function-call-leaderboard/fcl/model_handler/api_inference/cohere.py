@@ -5,10 +5,10 @@ import time
 from typing import Any
 
 import cohere
-from bfcl.model_handler.base_handler import BaseHandler
-from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
-from bfcl.model_handler.model_style import ModelStyle
-from bfcl.model_handler.utils import (
+from fcl.model_handler.base_handler import BaseHandler
+from fcl.constants.type_mappings import GORILLA_TO_OPENAPI
+from fcl.model_handler.model_style import ModelStyle
+from fcl.model_handler.utils import (
     convert_to_tool,
     func_doc_language_specific_pre_processing,
     retry_with_backoff,
