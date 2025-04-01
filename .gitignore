@@ -10,27 +10,22 @@ dist
 .editorconfig
 .DS_Store
 **/*.pyc
-goex/exec_engine/checkpoints/
-goex/exec_engine/credentials/*
-!goex/exec_engine/credentials/credentials_utils.py
-!goex/exec_engine/credentials/supported.txt
-goex/docker/*/requirements.txt
-goex/docker/misc/images.json
 
-################## Berkley Function Call Leaderboard ##########################
+
+################## Function Call Leaderboard ##########################
 
 # Ignore inference results
-berkeley-function-call-leaderboard/result/
+function-call-leaderboard/result/
 
 # Ignore leaderboard score
-berkeley-function-call-leaderboard/score/
+function-call-leaderboard/score/
 
 # Ignore environment variables
-berkeley-function-call-leaderboard/.env
-!berkeley-function-call-leaderboard/.env.example
+function-call-leaderboard/.env
+!function-call-leaderboard/.env.example
 
 # Ignore multi turn ground truth conversation log
-berkeley-function-call-leaderboard/utils/ground_truth_conversation/
+function-call-leaderboard/utils/ground_truth_conversation/
 
 .direnv/
 .venv
