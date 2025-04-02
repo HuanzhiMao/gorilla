@@ -31,7 +31,7 @@
 
 We introduce the Function Calling Leaderboard (fcl), the **first comprehensive and executable function call evaluation** dedicated to assessing Large Language Models' (LLMs) ability to invoke functions. Unlike previous evaluations, fcl accounts for various forms of function calls, diverse scenarios, and executability.
 
-![Architecture Diagram](./architecture_diagram.png)
+![Architecture Diagram](./function-call-leaderboard/architecture_diagram.png)
 
 ---
 
