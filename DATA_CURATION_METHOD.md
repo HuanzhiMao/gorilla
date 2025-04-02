@@ -4,7 +4,7 @@
 
 ### Data Collection
 
-For the *single-turn* tasks, we divide the data collection into two categories based on their evaluation method: **AST** categories that use Abstract Syntax Tree, and **Execute** categories that evaluate by execution. The evaluation methodology is discussed in Sections [AST Substring Matching](#) and [Execution Matching](#).
+For the *single-turn* tasks, we divide the data collection into two categories based on their evaluation method: **AST** categories that use Abstract Syntax Tree, and **Execute** categories that evaluate by execution. The evaluation methodology is discussed in Sections AST Substring Matching and Execution Matching.
 
 - **AST**:  
   We collect functions from popular GitHub repositories (top 100 starred) in Python, Java, and JavaScript. These functions are well-documented, making them ideal candidates for our downstream tasks. We exclude trivial functions such as `__init__`, `__eq__`, and functions with fewer than two parameters (excluding the `self` parameter) to ensure complexity and relevance.
