@@ -62,6 +62,7 @@ Here, we show the histogram of the number of missing functions, missing function
 ### Distribution missing parameter turn idx in `miss_param` category:
 
 Here we show the histogram of the missing parameter turn idx in `miss_param` category:
+
 ![Multi-Turn Category Miss Parameter Turn ID Statistics](/function-call-leaderboard/assets/multi-turn-miss-param.png)
 
 | Turn ID Statistics | Value |
