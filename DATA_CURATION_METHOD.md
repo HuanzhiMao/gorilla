@@ -104,9 +104,15 @@ In addition to the single-turn validation steps, we also ensure:
 
 The multi-turn dataset was built using a custom API codebase spanning eight domains: Vehicle Control, Trading Bots, Travel Booking, File System, Messaging, Twitter, Ticket Booking, and Math. Each API simulates real-world multi-turn function calls. Here, we call Vehicle Control, Trading Bots, Travel Booking, File System as "primary" APIs, and Messaging, Twitter, Ticket Booking as "companion" APIs.
 
+The four primary API domains are evenly distributed across the test cases in Base, and Augmented Multi-Turn. For example, there are 200 test entries in Base category and 0-49 utilizes Gorilla File System, 50-99 utilizes Vehicle Control, 100-149 utilizes Trading Bots, and 150-199 utilizes Travel Booking.
+
+
 ### Data Preprocessing
 
-We constructed a graph of function dependencies, where each function is a node and edges represent output dependencies. This setup models realistic multi-turn interactions across different APIs and domains.
+Once the API codebase is established, we (5 trained undergraduates) manually construct an execution (or dependency) graph where each function represents a node. We manually map out direct edges, meaning a function's output is an input of the downstream function. This graph allows us to model cross-API behaviors, simulating realistic multi-turn function calls across different domains. Whenever we need a dataset, we sample a node on the graph, and randomly traverse through the graph to generate an execution path. Through the execution path, we are able to extrapolate the scenario that will be presented to the LLMs. For example, one of the edges can be from `get_stock_info` to `place_order`, since the stock name or price of the stock is the input of the `place_order` function. 
+
+![API Execution Graph](./function-call-leaderboard/assets/multi-turn-graph-edges.png)
+
 
 ### Data Generation
 
@@ -119,7 +125,7 @@ The data generation process for multi-turn interactions included:
   - Elderly hermits  
 
 - **Function Lists**:  
-  For each task, a list of available functions from both primary and companion APIs was provided.
+  For each task, a list of available functions from both primary and companion APIs was provided. This was randomly sampled from the primary and companion APIs that follows the API dependency graph paths.
 
 - **Initial Configurations**:  
   Initial states (e.g., pre-authenticated sessions) were set to avoid redundant interactions and focus on meaningful tasks.
@@ -129,7 +135,7 @@ The data generation process for multi-turn interactions included:
 
 ### Data Transformation
 
-We scaled the dataset by sampling execution paths through the dependency graph. Incomplete tasks were corrected with additional configurations and function calls to ensure logical coherence.
+For miss_func, miss_params, we start from the same 200 base entries. We "augment" these entries by manually (5 trained undergraduates) to identify one turn to get rid of one informoation. For miss_func, we remove one tool in one of the turns, for example, when using the FileSystem API, we remove the `ls` function call, and remove the LLM's capability to use `ls` function call and see directory structure. In this case, we are testing the LLM's ability to identify the missing function call and ask for clarification. For miss_params, we manually remove one parameter information in one turn of the conversation, modify the user's query, and see if the LLM can identify the missing parameter and ask for clarification.
 
 ### Data Validation
 
