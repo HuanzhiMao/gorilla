@@ -139,10 +139,44 @@ For miss_func, miss_params, we start from the same 200 base entries. We "augment
 
 ### Data Validation
 
-Validation involved:
+The validation for the multi-turn dataset involved a combination of **manual human expert review** and **automated programmatic checks** (*No LLM involved*):
 
-- **Question Validation**: Questions were checked for specificity and completeness.
-- **Ground Truth Validation**: Multi-turn function call sequences were verified against ground truth.
-- **Initial Configuration Validation**: Ensured completeness and relevance of initial states.
-- **Function List Validation**: Verified that all necessary functions were included.
-- **API Code Validation**: Used unit tests and format checkers to ensure code compliance and consistency.
+#### 1. Question Validation (*Manual*)
+Human reviewers (5 trained undergraduates) manually reviewed each question to ensure specificity and completeness:
+
+- **Clarity and Specificity**: Ambiguous questions were refined for explicitness.  
+  *Example*: "Upload the document" refined to "Upload the `<NUMBER_OF_BYTES>.pdf` document."
+
+- **Complete Information**: Ensured each question or preceding questions contain all necessary details for correct function invocation.  
+  *Example*: For queries involving the TradingBot API, explicitly mentioning the stock name (e.g., Nvidia) to avoid ambiguity.
+
+#### 2. Human-Labeled Ground Truth Validation (*Manual + Programmatic*)
+
+- **Executability**: Validated that the labeled function sequences could execute without runtime errors.  
+  *Example*: For flight booking queries, verified correct execution of `book_flight`.
+
+- **Alignment with User Request**: Confirmed logical consistency with user intent, explicit or implicit.  
+  *Example*: If flight price isn't specified, ensured the execution path first retrieves the price with `get_flight_cost` before booking.
+
+- **Minimal yet sufficient GT**: Ensured the ground truth function sequences are minimal yet sufficient, since we use both state-based and response-based evaluation for multi-turn tasks.  
+  *Example*: To correctly post a tweet with mentions, only `authenticate` and `post_tweet` are necessary, not additional functions such as `get_mentions`.
+
+#### 3. Initial Configuration Validation (*Programmatic*)
+
+- **Completeness**: Automated scripts confirmed initial states provided necessary context for function calls.  
+  *Example*: Ensured files targeted for deletion existed and locations were specified.
+
+#### 4. Function List Validation (*Programmatic*)
+
+- **Completeness**: Automated checks ensured the function list contained all necessary functions.  
+  *Example*: Confirmed presence of critical functions such as `post_tweet` for tweet-related tasks entries.
+
+#### 5. API Code Validation (*Manual + Programmatic*)
+
+- **Unit Tests for Functionality**: Comprehensive tests validated both individual functions and chained function interactions.  
+  *Example*: `mkdir()` tested alongside subsequent functions like `ls()` to verify correct chained execution.
+
+- **Error Handling Tests**: Ensured functions raised clear errors for incorrect or incomplete inputs, enabling effective feedback for models.  
+  *Example*: Verified `post_tweet()` provided explicit error messages when called without credentials.
+
+- **Automated Format Checkers**: Employed `mypy` and `pydocstyle` for type consistency and documentation formatting, adhering strictly to standards defined by PEP484.
