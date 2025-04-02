@@ -21,3 +21,40 @@ Here is a histogram of the number of turns in multi-turn `base` (note that other
 ### Distribution of tools used in multi-turn `base` category:
 Here, we show the histogram of the number of tools used in multi-turn `base` category (note that other multi-turn categories have same distributions, since we "augment" other categories from the `base` entries):
 ![Multi-Turn Category Tool Statistics](./function-call-leaderboard/assets/multi-turn-tools-distribution.png)
+
+### Distribution of missing functions, missing function turn idx, and number of missing functions in `miss_func` category:
+Here, we show the histogram of the number of missing functions, missing function turn idx, and number of missing functions in `miss_func` category:
+![Multi-Turn Category Miss Function Statistics](./function-call-leaderboard/assets/multi-turn-miss-function-stats.png)
+
+| Turn ID Statistics | Value |
+|-------------------|-------|
+| Count | 222.000000 |
+| Mean | 1.932432 |
+| Std | 1.117501 |
+| Min | 1.000000 |
+| 25% | 1.000000 |
+| 50% | 2.000000 |
+| 75% | 3.000000 |
+| Max | 6.000000 |
+
+| Missed Functions per Turn Statistics | Value |
+|-------------------------------------|-------|
+| Count | 222.000000 |
+| Mean | 1.234234 |
+| Std | 0.537380 |
+| Min | 1.000000 |
+| 25% | 1.000000 |
+| 50% | 1.000000 |
+| 75% | 1.000000 |
+| Max | 3.000000 |
+
+| Total Missed Functions per Example Statistics | Value |
+|---------------------------------------------|-------|
+| Count | 200.000000 |
+| Mean | 1.110000 |
+| Std | 0.372281 |
+| Min | 1.000000 |
+| 25% | 1.000000 |
+| 50% | 1.000000 |
+| 75% | 1.000000 |
+| Max | 3.000000 |
