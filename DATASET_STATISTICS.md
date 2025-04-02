@@ -58,3 +58,19 @@ Here, we show the histogram of the number of missing functions, missing function
 | 50% | 1.000000 |
 | 75% | 1.000000 |
 | Max | 3.000000 |
+
+### Distribution missing parameter turn idx in `miss_param` category:
+
+Here we show the histogram of the missing parameter turn idx in `miss_param` category:
+![Multi-Turn Category Miss Parameter Turn ID Statistics](./function-call-leaderboard/assets/multi-turn-miss-param.png)
+
+| Turn ID Statistics | Value |
+|-------------------|-------|
+| Count | 203.000000 |
+| Mean | 1.256158 |
+| Std | 1.306268 |
+| Min | 0.000000 |
+| 25% | 0.000000 |
+| 50% | 1.000000 |
+| 75% | 2.000000 |
+| Max | 6.000000 |
