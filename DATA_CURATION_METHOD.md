@@ -102,7 +102,7 @@ In addition to the single-turn validation steps, we also ensure:
 
 ### Data Collection
 
-The multi-turn dataset was built using a custom API codebase spanning eight domains: Vehicle Control, Trading Bots, Travel Booking, File System, Messaging, Twitter, Ticket Booking, and Math. Each API simulates real-world multi-turn function calls.
+The multi-turn dataset was built using a custom API codebase spanning eight domains: Vehicle Control, Trading Bots, Travel Booking, File System, Messaging, Twitter, Ticket Booking, and Math. Each API simulates real-world multi-turn function calls. Here, we call Vehicle Control, Trading Bots, Travel Booking, File System as "primary" APIs, and Messaging, Twitter, Ticket Booking as "companion" APIs.
 
 ### Data Preprocessing
 
