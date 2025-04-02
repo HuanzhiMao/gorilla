@@ -111,7 +111,7 @@ The four primary API domains are evenly distributed across the test cases in Bas
 
 Once the API codebase is established, we (5 trained undergraduates) manually construct an execution (or dependency) graph where each function represents a node. We manually map out direct edges, meaning a function's output is an input of the downstream function. This graph allows us to model cross-API behaviors, simulating realistic multi-turn function calls across different domains. Whenever we need a dataset, we sample a node on the graph, and randomly traverse through the graph to generate an execution path. Through the execution path, we are able to extrapolate the scenario that will be presented to the LLMs. For example, one of the edges can be from `get_stock_info` to `place_order`, since the stock name or price of the stock is the input of the `place_order` function. 
 
-![API Execution Graph](./function-call-leaderboard/assets/multi-turn-graph-edges.png)
+![API Execution Graph](/function-call-leaderboard/assets/multi-turn-graph-edges.png)
 
 
 ### Data Generation

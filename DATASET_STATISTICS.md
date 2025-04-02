@@ -4,7 +4,7 @@
 
 ### Number of turns in each multi-turn category:
 
-![Multi-Turn Category Turn Statistics](./function-call-leaderboard/assets/multi-turn-turns-statistics.png)
+![Multi-Turn Category Turn Statistics](/function-call-leaderboard/assets/multi-turn-turns-statistics.png)
 
 
 | Category     | Min | Max | Median | Mean | Std Dev |
@@ -16,15 +16,15 @@
 
 Here is a histogram of the number of turns in multi-turn `base` (note that other multi-turn categories have same distributions shape, and `miss_func` and `miss_param` are shifted to the right by 1 turn due to the additional turn requiring users to have clarification):
 
-![Multi-Turn Category Turn Statistics](./function-call-leaderboard/assets/multi-turn-base-turn-statistics.png)
+![Multi-Turn Category Turn Statistics](/function-call-leaderboard/assets/multi-turn-base-turn-statistics.png)
 
 ### Distribution of tools used in multi-turn `base` category:
 Here, we show the histogram of the number of tools used in multi-turn `base` category (note that other multi-turn categories have same distributions, since we "augment" other categories from the `base` entries):
-![Multi-Turn Category Tool Statistics](./function-call-leaderboard/assets/multi-turn-tools-distribution.png)
+![Multi-Turn Category Tool Statistics](/function-call-leaderboard/assets/multi-turn-tools-distribution.png)
 
 ### Distribution of missing functions, missing function turn idx, and number of missing functions in `miss_func` category:
 Here, we show the histogram of the number of missing functions, missing function turn idx, and number of missing functions in `miss_func` category:
-![Multi-Turn Category Miss Function Statistics](./function-call-leaderboard/assets/multi-turn-miss-function-stats.png)
+![Multi-Turn Category Miss Function Statistics](/function-call-leaderboard/assets/multi-turn-miss-function-stats.png)
 
 | Turn ID Statistics | Value |
 |-------------------|-------|
@@ -62,7 +62,7 @@ Here, we show the histogram of the number of missing functions, missing function
 ### Distribution missing parameter turn idx in `miss_param` category:
 
 Here we show the histogram of the missing parameter turn idx in `miss_param` category:
-![Multi-Turn Category Miss Parameter Turn ID Statistics](./function-call-leaderboard/assets/multi-turn-miss-param.png)
+![Multi-Turn Category Miss Parameter Turn ID Statistics](/function-call-leaderboard/assets/multi-turn-miss-param.png)
 
 | Turn ID Statistics | Value |
 |-------------------|-------|
@@ -85,13 +85,13 @@ Since max input token is dependent on the models' max context length and the mul
 - `gemini-2.0-pro-exp-02-05`
 - `meta-llama_Llama-3.3-70B-Instruct`
 
-![gpt-4o-2024-11-20-FC](./function-call-leaderboard/assets/max-context-gpt.png)
+![gpt-4o-2024-11-20-FC](/function-call-leaderboard/assets/max-context-gpt.png)
 
-![Qwen_Qwen2.5-72B-Instruct-FC](./function-call-leaderboard/assets/max-context-qwen.png)
+![Qwen_Qwen2.5-72B-Instruct-FC](/function-call-leaderboard/assets/max-context-qwen.png)
 
-![gemini-2.0-pro-exp-02-05](./function-call-leaderboard/assets/max-context-gemini.png)
+![gemini-2.0-pro-exp-02-05](/function-call-leaderboard/assets/max-context-gemini.png)
 
-![meta-llama_Llama-3.3-70B-Instruct](./function-call-leaderboard/assets/max-context-llama.png)
+![meta-llama_Llama-3.3-70B-Instruct](/function-call-leaderboard/assets/max-context-llama.png)
 
 
 
