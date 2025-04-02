@@ -74,3 +74,24 @@ Here we show the histogram of the missing parameter turn idx in `miss_param` cat
 | 50% | 1.000000 |
 | 75% | 2.000000 |
 | Max | 6.000000 |
+
+### Distribution of max input tokens in each category:
+Here we show the boxplot of the max input tokens in each category.
+
+Since max input token is dependent on the models' max context length and the multi-step and multi-turn behavior. We display the following representative models to show the distribution:
+
+- `gpt-4o-2024-11-20-FC`
+- `Qwen_Qwen2.5-72B-Instruct-FC`
+- `gemini-2.0-pro-exp-02-05`
+- `meta-llama_Llama-3.3-70B-Instruct`
+
+![gpt-4o-2024-11-20-FC](./function-call-leaderboard/assets/max-context-gpt.png)
+
+![Qwen_Qwen2.5-72B-Instruct-FC](./function-call-leaderboard/assets/max-context-qwen.png)
+
+![gemini-2.0-pro-exp-02-05](./function-call-leaderboard/assets/max-context-gemini.png)
+
+![meta-llama_Llama-3.3-70B-Instruct](./function-call-leaderboard/assets/max-context-llama.png)
+
+
+
