@@ -135,7 +135,7 @@ The data generation process for multi-turn interactions included:
 
 ### Data Transformation
 
-For miss_func, miss_params, we start from the same 200 base entries. We "augment" these entries by manually (5 trained undergraduates) to identify one turn to get rid of one informoation. For miss_func, we remove one tool in one of the turns, for example, when using the FileSystem API, we remove the `ls` function call, and remove the LLM's capability to use `ls` function call and see directory structure. In this case, we are testing the LLM's ability to identify the missing function call and ask for clarification. For miss_params, we manually remove one parameter information in one turn of the conversation, modify the user's query, and see if the LLM can identify the missing parameter and ask for clarification.
+For miss_func, miss_params, we start from the same 200 base entries. We "augment" these entries by manually (5 trained undergraduates) to identify one turn to get rid of one informoation. For miss_func, we remove one or more tool in one of the turns, for example, when using the FileSystem API, we remove the `ls` function call, and remove the LLM's capability to use `ls` function call and see directory structure. In this case, we are testing the LLM's ability to identify the missing function call and ask for clarification. For miss_params, we manually remove one parameter information in one turn of the conversation, modify the user's query, and see if the LLM can identify the missing parameter and ask for clarification.
 
 ### Data Validation
 
