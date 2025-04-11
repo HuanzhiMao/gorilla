@@ -36,11 +36,11 @@ TEST_FILE_MAPPING = {
 
     # Agentic Datasets
     "web_search": f"{VERSION_PREFIX}_web_search.json",
-    "memory_base": f"{VERSION_PREFIX}_memory_base.json",
+    "memory_student": f"{VERSION_PREFIX}_memory_student.json",
     "memory_customer": f"{VERSION_PREFIX}_memory_customer.json",
     "memory_finance": f"{VERSION_PREFIX}_memory_finance.json",
     "memory_healthcare": f"{VERSION_PREFIX}_memory_healthcare.json",
-    "memory_personal_notes": f"{VERSION_PREFIX}_memory_personal_notes.json",
+    "memory_notetaker": f"{VERSION_PREFIX}_memory_notetaker.json",
 }
 
 TEST_COLLECTION_MAPPING = {
@@ -132,6 +132,13 @@ TEST_COLLECTION_MAPPING = {
         "live_parallel_multiple",
         "live_irrelevance",
         "live_relevance",
+    ],
+    "memory": [
+        "memory_student",
+        "memory_customer",
+        "memory_finance",
+        "memory_healthcare",
+        "memory_notetaker",
     ],
 }
 

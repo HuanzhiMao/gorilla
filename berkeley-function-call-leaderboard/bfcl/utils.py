@@ -9,7 +9,7 @@ from bfcl.constants.category_mapping import TEST_COLLECTION_MAPPING, TEST_FILE_M
 
 def extract_test_category(input_string: Union[str, Path]) -> str:
     input_string = str(input_string)
-    pattern = rf".*{VERSION_PREFIX}_(\w+?)(?:_unused)?(?:_score|_result)?\.json"
+    pattern = rf".*{VERSION_PREFIX}_(\w+?)(?:_score|_result)?\.json"
     match = re.search(pattern, input_string)
 
     # Check if there's a match and extract the captured group
@@ -159,21 +159,21 @@ def sort_key(entry):
         index = index.split("-")[0]
 
     # Make sure the memory prereq entries are inferenced first to avoid the memory entries being blocked due to dependencies.
-    # Prereq happen first
-    if is_memory_prereq(test_category):
+    # Single-turn happen first
+    if not is_multi_turn(test_category) and not is_agentic(test_category):
         priority = 0
-    # Single-turn happen second
-    elif not is_multi_turn(test_category) and not is_agentic(test_category):
-        priority = 1
-    # Multi-turn happen fourth
+    # Multi-turn happen second
     elif is_multi_turn(test_category):
+        priority = 1
+    # Prereq happen third
+    elif is_memory_prereq(test_category):
+        priority = 2
+    # Agentic (web search) happen third
+    elif is_agentic(test_category) and not is_memory(test_category):
         priority = 3
     # Memory happen last
     elif is_memory(test_category):
         priority = 4
-    # Agentic (web search) happen third
-    elif is_agentic(test_category):
-        priority = 2
 
     return (priority, test_category, int(index))
 

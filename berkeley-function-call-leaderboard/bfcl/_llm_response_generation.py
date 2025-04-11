@@ -7,7 +7,11 @@ from copy import deepcopy
 
 from bfcl.constants.category_mapping import (
     MULTI_TURN_FUNC_DOC_FILE_MAPPING,
+    TEST_COLLECTION_MAPPING,
     TEST_FILE_MAPPING,
+)
+from bfcl.constants.default_prompts import (
+    ADDITIONAL_USER_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
 )
 from bfcl.constants.eval_config import (
     MEMORY_PREREQ_CONVERSATION_PATH,
@@ -21,15 +25,14 @@ from bfcl.eval_checker.eval_runner_helper import load_file
 from bfcl.model_handler.handler_map import HANDLER_MAP
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.utils import (
-    check_api_key_supplied,
     extract_test_category_from_id,
     is_agentic,
-    is_web_search,
-    is_executable,
     is_memory,
+    is_memory_prereq,
     is_multi_turn,
-    parse_test_category_argument,
     is_sql,
+    is_web_search,
+    parse_test_category_argument,
     sort_key,
 )
 from tqdm import tqdm
@@ -154,53 +157,58 @@ def process_memory_test_case(test_cases):
     if not any([is_memory(entry["id"]) for entry in test_cases]):
         return test_cases
 
-    memory_base = load_file(MEMORY_PREREQ_CONVERSATION_PATH / "memory_base.json")
-    memory_conflict = load_file(MEMORY_PREREQ_CONVERSATION_PATH / "memory_conflict.json")
+    MEMORY_CATEGORIES = TEST_COLLECTION_MAPPING["memory"]
 
-    memory_base_ids = []
-    memory_conflict_ids = []
+    mapping = {}
 
-    add_basic, add_conflict = False, False
+    for test_case in test_cases:
+        test_category = extract_test_category_from_id(test_case["id"])
+        if test_category in mapping:
+            mapping[test_category].append(test_case)
+        else:
+            mapping[test_category] = [test_case]
 
-    # Assign unique IDs and dependencies to each prerequisite entry
-    for i, entry in enumerate(memory_base):
-        entry["id"] = f"memory_base_prereq_{i}"
-        entry["depends_on"] = deepcopy(memory_base_ids)
-        memory_base_ids.append(entry["id"])
+    for test_category, category_test_cases in mapping.items():
+        if test_category not in MEMORY_CATEGORIES:
+            continue
+        pre_req_entries = load_file(
+            MEMORY_PREREQ_CONVERSATION_PATH / f"{test_category}.json"
+        )
+        pre_req_ids = []
+        for i, entry in enumerate(pre_req_entries):
+            entry["id"] = f"{test_category}_prereq_{i}"
+            entry["depends_on"] = deepcopy(pre_req_ids)
+            pre_req_ids.append(entry["id"])
 
-    for i, entry in enumerate(memory_conflict):
-        entry["id"] = f"memory_conflict_prereq_{i}"
-        entry["depends_on"] = deepcopy(memory_conflict_ids)
-        memory_conflict_ids.append(entry["id"])
+        for entry in category_test_cases:
+            entry["depends_on"] = deepcopy(pre_req_ids)
 
-    assert len(memory_base_ids) == len(memory_base) == 10
+        test_cases.extend(pre_req_entries)
 
-    # Assign dependencies to the actual test cases
-    for entry in test_cases:
-        if is_memory(entry["id"]):
-            if "conflict" in entry["id"]:
-                entry["depends_on"] = deepcopy(memory_conflict_ids)
-                add_conflict = True
-            else:
-                entry["depends_on"] = deepcopy(memory_base_ids)
-                add_basic = True
-            entry["question"][0][0]["content"] += "   You must respond in this format: `{'answer': YOUR_ANSWER}`. If you do not know the answer, respond with `{'answer': 'I do not know', 'reason': WHY_YOU_CANNOT_ANSWER}`."
-
-    # Add the memory prerequisite entries to the test cases
-    if add_basic:
-        test_cases += memory_base
-    if add_conflict:
-        test_cases += memory_conflict
     return test_cases
 
-def process_web_search_test_case(test_cases):
+
+def process_agentic_test_case(test_cases):
     """
-    Web search test cases need to have a specific response format. We add this to the prompt here.
+    Agentic test cases need to have a specific response format. We add this to the user query here.
     """
     for entry in test_cases:
-        if is_web_search(entry["id"]):
-            entry["question"][0][0]["content"] += " You must respond in this format: {'answer': A short and precise answer to the question, 'context': A brief explanation of how you arrived at this answer or why it is correct}. If you do not know the answer, respond with {'answer': 'I do not know', 'context': 'I do not know'}. If you think the question cannot be properly answered, response with {'answer': 'I cannot answer this question', 'context': A short reason explaining why this question cannot be answered}."
+        if is_agentic(entry["id"]) and not is_memory_prereq(entry["id"]):
+            entry["question"][0][0][
+                "content"
+            ] += ADDITIONAL_USER_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT
+
     return test_cases
+
+
+# def process_web_search_test_case(test_cases):
+#     """
+#     Web search test cases need to have a specific response format. We add this to the prompt here.
+#     """
+#     for entry in test_cases:
+#         if is_web_search(entry["id"]):
+#             entry["question"][0][0]["content"] += "\nYou must respond in this format: {'answer': A short and precise answer to the question, 'context': A brief explanation of how you arrived at this answer or why it is correct}. If you do not know the answer, respond with {'answer': 'I do not know', 'context': 'I do not know'}. If you think the question cannot be properly answered, response with {'answer': 'I cannot answer this question', 'context': A short reason explaining why this question cannot be answered}."
+#     return test_cases
 
 
 def populate_test_cases_with_predefined_functions(test_cases):
@@ -208,7 +216,11 @@ def populate_test_cases_with_predefined_functions(test_cases):
     Multi-turn and Agentic test cases don't have the function doc in the prompt. We need to add them here.
     """
     for entry in test_cases:
-        if not is_multi_turn(entry["id"]) and not is_agentic(entry["id"]) and not is_sql(entry["id"]):
+        if (
+            not is_multi_turn(entry["id"])
+            and not is_agentic(entry["id"])
+            and not is_sql(entry["id"])
+        ):
             continue
         involved_classes = entry["involved_classes"]
         entry["function"] = []
