@@ -142,7 +142,8 @@ def collect_test_cases(
     ]
 
     test_cases_to_generate = process_memory_test_case(test_cases_to_generate)
-    test_cases_to_generate = process_web_search_test_case(test_cases_to_generate)
+    # FIXME: Add different memory backends here
+    test_cases_to_generate = process_agentic_test_case(test_cases_to_generate)
     test_cases_to_generate = populate_test_cases_with_predefined_functions(
         test_cases_to_generate
     )
