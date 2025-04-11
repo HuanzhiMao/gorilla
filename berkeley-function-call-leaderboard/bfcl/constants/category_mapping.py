@@ -34,8 +34,12 @@ TEST_FILE_MAPPING = {
     # "multi_turn_composite": f"{VERSION_PREFIX}_multi_turn_composite.json",
 
     # Agentic Datasets
-    "web_search_multihop": f"{VERSION_PREFIX}_web_search_multihop.json",
-    # "memory"
+    "web_search": f"{VERSION_PREFIX}_web_search.json",
+    "memory_base": f"{VERSION_PREFIX}_memory_base.json",
+    "memory_customer": f"{VERSION_PREFIX}_memory_customer.json",
+    "memory_finance": f"{VERSION_PREFIX}_memory_finance.json",
+    "memory_healthcare": f"{VERSION_PREFIX}_memory_healthcare.json",
+    "memory_personal_notes": f"{VERSION_PREFIX}_memory_personal_notes.json",
 }
 
 TEST_COLLECTION_MAPPING = {
@@ -180,4 +184,5 @@ MULTI_TURN_FUNC_DOC_FILE_MAPPING = {
     "TradingBot": "trading_bot.json",
     "TravelAPI": "travel_booking.json",
     "VehicleControlAPI": "vehicle_control.json",
+    "WebSearchAPI": "web_search.json",
 }

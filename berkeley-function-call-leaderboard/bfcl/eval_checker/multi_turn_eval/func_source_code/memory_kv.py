@@ -1,3 +1,503 @@
+import json
+import shutil
+import redis
+import os
+import signal
+import subprocess
+import random
+from typing import Dict, List, Tuple, Any
+from copy import deepcopy
+from pathlib import Path
+
+from bfcl.utils import (
+    extract_test_category_from_id,
+    is_first_memory_prereq_entry,
+    is_memory_prereq,
+)
+from rank_bm25 import BM25Plus
+
+MAX_SHORT_TERM_MEMORY_SIZE = 7
+MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH = 300
+MAX_LONG_TERM_MEMORY_SIZE = 100  # FIXME: Change this to 50
+MAX_LONG_TERM_MEMORY_ENTRY_LENGTH = 2000
+
+
+class KVMemoryAPI:
+    """
+    A class that provides APIs to manage short-term and long-term memory data.
+    """
+
+    def __init__(self):
+        self.redis_client = None
+        self.redis_process = None
+        self.port = None
+        self.long_term_memory = {}
+        self._api_description = """This tool belongs to the memory suite, which provides APIs to manage both short-term and long-term memory data. Short-term memory is limited in size and can be accessed quickly, while long-term memory is larger but takes longer to access. Both type of memory is persistent across multiple conversations with the user, and can be accessed in a later interactions. You should actively manage the memory data to ensure that it is up-to-date and easy to retrieve later."""
+
+    def __del__(self):
+        self._cleanup()
+
+    def _cleanup(self):
+        """Clean up Redis process if it exists."""
+        if hasattr(self, 'redis_process') and self.redis_process is not None:
+            try:
+                self.redis_process.terminate()
+                self.redis_process.wait(timeout=3)
+                
+                if self.redis_process.poll() is None:
+                    os.kill(self.redis_process.pid, signal.SIGKILL)
+                    
+                self.redis_process = None
+            except:
+                pass
+    
+    def setup_redis_store(self, port=None, db=0):
+        """
+        Set up Redis connection for key-value storage.
+        
+        Args:
+            port (int, optional): Redis server port. Random if not specified.
+            db (int, optional): Redis database number. Defaults to 0.
+            
+        Returns:
+            bool: True if setup succeeded, False otherwise.
+        """
+        self._cleanup()
+        self.port = port if isinstance(port, int) and port > 0 else random.randint(6500, 7000)
+        try:
+            test_client = redis.Redis(host='localhost', port=self.port, db=db)
+            test_client.ping()
+            print(f"Redis already running on port {self.port}, reusing connection for db {db}")
+            self.redis_client = test_client
+            self.redis_process = None
+        except redis.ConnectionError:
+            try:
+                print(f"Starting Redis server on port {self.port}")
+                self.redis_process = subprocess.Popen(["redis-server", "--port", str(self.port)])
+                time.sleep(2)
+                # Connect to Redis
+                self.redis_client = redis.Redis(host='localhost', port=self.port, db=db)
+                self.redis_client.ping()
+            except Exception as e:
+                print(f"Redis server startup failed: {e}")
+                # Force terminate if process was started
+                if hasattr(self, 'redis_process'):
+                    try:
+                        os.kill(self.redis_process.pid, signal.SIGKILL)
+                    except:
+                        pass
+                return False
+        
+        return True
+
+    def _export_short_term_memory(self) -> Dict[str, str]:
+        """
+        Export short-term memory from Redis to dictionary.
+        
+        Returns:
+            Dict[str, str]: Key-value pairs from Redis
+        """
+        if not self.redis_client:
+            return {}
+            
+        result = {}
+        # Get all keys
+        all_keys = self.redis_client.keys("*")
+        
+        for key_bytes in all_keys:
+            key = key_bytes.decode('utf-8')
+            value_bytes = self.redis_client.get(key)
+            if value_bytes:
+                value = value_bytes.decode('utf-8')
+                result[key] = value
+        
+        return result
+
+    def _import_short_term_memory(self, memory_dict: Dict[str, str]):
+        """
+        Import memory entries from dictionary to Redis.
+        
+        Args:
+            memory_dict (Dict[str, str]): Memory entries
+        """
+        if not self.redis_client:
+            return
+            
+        # Clear existing data
+        self.redis_client.flushdb()
+        
+        # Add all entries
+        for key, value in memory_dict.items():
+            self.redis_client.set(key, value)
+
+    def _load_scenario(self, initial_config: dict, long_context: bool = False):
+        # We don't care about the long_context parameter here
+        # It's there to match the signature of functions in the multi-turn evaluation code
+        result_dir: Path = initial_config["result_dir"]
+        model_name_dir: str = initial_config["model_name_dir"]
+        test_entry_id: str = initial_config["test_entry_id"]
+        test_category: str = extract_test_category_from_id(test_entry_id)
+        target_dir = result_dir / model_name_dir / "memory_snapshot"
+        if is_memory_prereq(test_category):
+            target_file = target_dir / f"{test_category}_final.json"
+        else:
+            target_file = target_dir / f"{test_category}_prereq_final.json"
+        
+        try:
+            parts = test_entry_id.split('_')
+            if len(parts) >= 3 and parts[0] == "memory":
+                db_number = int(parts[-1])  # This last part is db number
+            else:
+                db_number = 0
+        except:
+            db_number = 0
+            
+        print(f"Using Redis database {db_number} for test {test_entry_id}")
+        
+        self.setup_redis_store(db=db_number)
+
+        # TODO: Use a more elegant way to handle this
+        if is_first_memory_prereq_entry(test_entry_id):
+            if target_dir.exists():
+                # Removes the folder and all its contents
+                for item in target_dir.iterdir():
+                    if item.is_dir():
+                        # Remove subdirectory and its contents
+                        shutil.rmtree(item)
+                    else:
+                        # Remove file
+                        item.unlink()
+            else:
+                target_dir.mkdir(parents=True, exist_ok=True)
+
+            # TODO: Move this to the generation pipeline section
+            if (
+                result_dir / model_name_dir / f"BFCL_v3_{test_category}_result.json"
+            ).exists():
+                (
+                    result_dir / model_name_dir / f"BFCL_v3_{test_category}_result.json"
+                ).unlink()
+
+        elif target_file.exists():
+            with open(target_file, "r") as f:
+                memory_data = json.load(f)
+                self.short_term_memory = deepcopy(memory_data["short_term_memory"])
+                self.long_term_memory = deepcopy(memory_data["long_term_memory"])
+
+        else:
+            raise FileNotFoundError(f"Memory snapshot file not found: {target_file}")
+            print(f"Memory snapshot file not found: {target_file}")
+
+    def _flush_memory_to_local_file(
+        self, result_dir: Path, model_name_dir: str, test_entry_id: str
+    ):
+        """
+        Flush (save) current memory (both short-term and long-term)
+        to a local JSON file.
+        """
+        test_category = extract_test_category_from_id(test_entry_id)
+
+        target_dir = result_dir / model_name_dir / "memory_snapshot"
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        with open(target_dir / f"{test_entry_id}.json", "w") as f:
+            json.dump(
+                {
+                    "short_term_memory": self._export_short_term_memory(),
+                    "long_term_memory": self.long_term_memory,
+                },
+                f,
+                indent=4,
+            )
+        with open(target_dir / f"{test_category}_final.json", "w") as f:
+            json.dump(
+                {
+                    "short_term_memory": self._export_short_term_memory(),
+                    "long_term_memory": self.long_term_memory,
+                },
+                f,
+                indent=4,
+            )
+            
+    @staticmethod
+    def _similarity_search(query: str, corpus: list[str], k: int = 5):
+        """
+        Search for the most similar text in the corpus to the query using BM25+ algorithm.
+
+        Args:
+            query (str): The query text to search for.
+            corpus (list[str]): A list of text strings to search in.
+            k (int): The number of results to return.
+
+        Returns:
+            ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the text string.
+        """
+        tokenized_corpus = [text.replace("_", " ").lower().split() for text in corpus]
+        bm25 = BM25Plus(tokenized_corpus)
+        tokenized_query = query.replace("_", " ").lower().split()
+        scores = bm25.get_scores(tokenized_query)
+        ranked_results = sorted(zip(scores, corpus), key=lambda x: x[0], reverse=True)
+        return {"ranked_results": ranked_results[:k]}
+
+    def short_term_memory_add(self, key: str, value: str):
+        """
+        Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later.
+
+        Args:
+            key (str): The key under which the value is stored. The key should be unique and case-sensitive. Keys must be snake_case and cannot contain spaces.
+            value (str): The value to store in the short-term memory.
+
+        Returns:
+            status (str): Status of the operation.
+        """
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+        
+        key, value = str(key), str(value)
+        if len(self._export_short_term_memory()) >= MAX_SHORT_TERM_MEMORY_SIZE:
+            return {"error": "Short term memory is full. Please clear some entries."}
+        if len(value) > MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH:
+            return {
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH} characters."
+            }
+        if self.redis_client.exists(key):
+            return {"error": "Key name must be unique."}
+
+        self.redis_client.set(key, value)
+        return {"status": "Key added."}
+
+    def short_term_memory_remove(self, key: str):
+        """
+        Remove a key-value pair from the short-term memory.
+
+        Args:
+            key (str): The key to remove from the short-term memory. Case-sensitive.
+
+        Returns:
+            status (str): Status of the operation.
+        """
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+        
+        if self.redis_client.exists(key):
+            self.redis_client.delete(key)
+            return {"status": "Key removed."}
+        else:
+            return {"error": "Key not found."}
+
+    def short_term_memory_replace(self, key: str, value: str):
+        """
+        Replace a key-value pair in the short-term memory with a new value.
+
+        Args:
+            key (str): The key to replace in the short-term memory. Case-sensitive.
+            value (str): The new value associated with the key.
+
+        Returns:
+            status (str): Status of the operation.
+        """
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+        
+        key, value = str(key), str(value)
+        if not self.redis_client.exists(key):
+            return {"error": "Key not found."}
+
+        if len(value) > MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH:
+            return {
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH} characters."
+            }
+
+        self.redis_client.set(key, value)
+        return {"status": "Key replaced."}
+
+    def short_term_memory_clear(self):
+        """
+        Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible.
+
+        Returns:
+            status (str): Status of the operation.
+        """
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+            
+        self.redis_client.flushdb()
+        return {"status": "Short term memory cleared."}
+
+
+    def short_term_memory_retrieve(self, key: str):
+        """
+        Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search.
+
+        Args:
+            key (str): The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory.
+
+        Returns:
+            value (str): The value associated with the key.
+
+        """
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+            
+        value = self.redis_client.get(key)
+        if value is None:
+            return {"error": "Key not found."}
+        #need to decode due to redis encoding automatically 
+        return {"value": value.decode('utf-8')}
+
+    def short_term_memory_list_keys(self):
+        """
+        List all keys currently in the short-term memory.
+
+        Returns:
+            keys (List[str]): A list of all keys in the short-term memory.
+        """
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+            
+        all_keys = self.redis_client.keys("*")
+        return {"keys": [key.decode('utf-8') for key in all_keys]}
+
+    def short_term_memory_key_search(self, query: str, k: int = 5):
+        """
+        Search for key names in the short-term memory that are similar to the query using BM25+ algorithm.
+
+        Args:
+            query (str): The query text to search for.
+            k (int, optional): The number of results to return.
+
+        Returns:
+            ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
+        """
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+            
+        keys = [key.decode('utf-8') for key in self.redis_client.keys("*")]
+        return self._similarity_search(query, keys, k)
+
+    def short_term_memory_retrieve_all(self):
+        """
+        Retrieve all key-value pairs from the short-term memory.
+
+        Returns:
+            dict: A dictionary of all key-value pairs in the short-term memory.
+        """
+        if not self.redis_client:
+            return {"error": "Memory system not initialized."}
+            
+        return self._export_short_term_memory()
+
+    def long_term_memory_add(self, key: str, value: str):
+        """
+        Add a key-value pair to the long-term memory. Make sure to use meaningful keys for easy retrieval later.
+        Args:
+            key (str): The key under which the value is stored. The key should be unique and case-sensitive. Keys must be snake_case and cannot contain spaces.
+            value (str): The value to store in the long-term memory.
+
+        Returns:
+            status (str): Status of the operation.
+        """
+        key, value = str(key), str(value)
+        if len(self.long_term_memory) >= MAX_LONG_TERM_MEMORY_SIZE:
+            return {"error": "Long term memory is full. Please clear some entries."}
+        if len(value) > MAX_LONG_TERM_MEMORY_ENTRY_LENGTH:
+            return {
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_LONG_TERM_MEMORY_ENTRY_LENGTH} characters."
+            }
+        if key in self.long_term_memory:
+            return {"error": "Key name must be unique."}
+
+        self.long_term_memory[key] = value
+        return {"status": "Key added."}
+
+    def long_term_memory_remove(self, key: str):
+        """
+        Remove a key-value pair from the long-term memory.
+
+        Args:
+            key (str): The key to remove from the long-term memory. Case-sensitive.
+
+        Returns:
+            status (str): Status of the operation.
+        """
+        if key in self.long_term_memory:
+            del self.long_term_memory[key]
+            return {"status": "Key removed."}
+        else:
+            return {"error": "Key not found."}
+
+    def long_term_memory_replace(self, key: str, value: str):
+        """
+        Replace a key-value pair in the long-term memory with a new value.
+
+        Args:
+            key (str): The key to replace in the long-term memory. Case-sensitive.
+            value (str): The new value associated with the key.
+
+        Returns:
+            status (str): Status of the operation.
+        """
+        key, value = str(key), str(value)
+        if key not in self.long_term_memory:
+            return {"error": "Key not found."}
+        if len(value) > MAX_LONG_TERM_MEMORY_ENTRY_LENGTH:
+            return {
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_LONG_TERM_MEMORY_ENTRY_LENGTH} characters."
+            }
+
+        self.long_term_memory[key] = value
+        return {"status": "Key replaced."}
+
+    def long_term_memory_clear(self):
+        """
+        Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible.
+
+        Returns:
+            status (str): Status of the operation.
+        """
+        self.long_term_memory = {}
+        return {"status": "Long term memory cleared."}
+
+    def long_term_memory_retrieve(self, key: str):
+        """
+        Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search.
+
+        Args:
+            key (str): The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory.
+
+        Returns:
+            value (str): The value associated with the key.
+        """
+        if key not in self.long_term_memory:
+            return {"error": "Key not found."}
+        return {"value": self.long_term_memory[key]}
+
+    def long_term_memory_list_keys(self):
+        """
+        List all keys currently in the long-term memory.
+
+        Returns:
+            keys (List[str]): A list of all keys in the long-term memory.
+        """
+        return {"keys": list(self.long_term_memory.keys())}
+
+    def long_term_memory_key_search(self, query: str, k: int = 5):
+        """
+        Search for key names in the long-term memory that are similar to the query using BM25+ algorithm.
+
+        Args:
+            query (str): The query text to search for.
+            k (int, optional): The number of results to return.
+
+        Returns:
+            ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
+        """
+        keys = deepcopy(list(self.long_term_memory.keys()))
+        return self._similarity_search(query, keys, k)
+
+
+
+
 import os
 import signal
 import json
@@ -187,21 +687,19 @@ class VectorMemoryAPI:
 
         return results
 
-    def _export_short_term_memory(self) -> Dict[str, str]:
-        # create dictionary for our key-value pairs
-        result = {}
+    def _export_short_term_memory(self) -> List[str]:
+        result = []
         all_keys = self.redis_client.keys("*")
         text_ids = [key.decode() for key in all_keys if not key.decode().startswith("vec:")]
 
         for text_id in text_ids:
             text_bytes = self.redis_client.get(text_id)
             if text_bytes:
-                # use text as both the key and the value pair 
-                text = text_bytes.decode('utf-8')
-                result[text] = text
+                result.append(text_bytes.decode('utf-8'))
         return result
+
     
-    def _import_short_term_memory(self, memory_dict: Dict[str, str]):
+    def _import_short_term_memory(self, memory_list: List[str]):
         #clear redis state
         all_keys = self.redis_client.keys("*")
         for key in all_keys:
@@ -212,8 +710,8 @@ class VectorMemoryAPI:
         self.next_index = 0
         self.short_term_memory_count = 0
 
-        for value in memory_dict.values():
-            self._add_to_vector_store(value)
+        for text in memory_list:
+            self._add_to_vector_store(text)
 
     def _load_scenario(self, initial_config: dict, long_context: bool = False):
         # We don't care about the long_context parameter here

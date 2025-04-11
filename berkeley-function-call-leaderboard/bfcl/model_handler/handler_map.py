@@ -94,6 +94,7 @@ api_inference_handler_map = {
     "databricks-dbrx-instruct": DatabricksHandler,
     "command-r-plus-FC": CohereHandler,
     "command-r7b-12-2024-FC": CohereHandler,
+    "command-a-03-2025-FC": CohereHandler,
     "snowflake/arctic": NvidiaHandler,
     "nvidia/nemotron-4-340b-instruct": NvidiaHandler,
     "BitAgent/GoGoAgent": GoGoAgentHandler,
@@ -105,9 +106,10 @@ api_inference_handler_map = {
 # Inference through local hosting
 local_inference_handler_map = {
     "deepseek-ai/DeepSeek-R1": DeepseekReasoningHandler,  # This is the local version of DeepSeek-R1
-    "google/gemma-2-2b-it": GemmaHandler,
-    "google/gemma-2-9b-it": GemmaHandler,
-    "google/gemma-2-27b-it": GemmaHandler,
+    "google/gemma-3-1b-it": GemmaHandler,
+    "google/gemma-3-4b-it": GemmaHandler,
+    "google/gemma-3-12b-it": GemmaHandler,
+    "google/gemma-3-27b-it": GemmaHandler,
     "meta-llama/Meta-Llama-3-8B-Instruct": LlamaHandler,
     "meta-llama/Meta-Llama-3-70B-Instruct": LlamaHandler,
     "meta-llama/Llama-3.1-8B-Instruct-FC": LlamaFCHandler,
