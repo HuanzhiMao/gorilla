@@ -327,7 +327,6 @@ class OSSHandler(BaseHandler, EnforceOverrides):
                 temperature=self.temperature,
                 prompt=formatted_prompt,
                 max_tokens=leftover_tokens_count,
-                timeout=3600,
                 extra_body=extra_body,
                 timeout=72000,  # Avoid timeout errors
             )

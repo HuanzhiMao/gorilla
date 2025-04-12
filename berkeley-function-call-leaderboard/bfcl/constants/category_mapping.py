@@ -18,7 +18,6 @@ TEST_FILE_MAPPING = {
     # "rest": f"{VERSION_PREFIX}_rest.json",
     # "sql": f"{VERSION_PREFIX}_sql.json",
     # "chatable": f"{VERSION_PREFIX}_chatable.json",
-
     # V2 Live Datasets
     "live_simple": f"{VERSION_PREFIX}_live_simple.json",
     "live_multiple": f"{VERSION_PREFIX}_live_multiple.json",
@@ -26,14 +25,12 @@ TEST_FILE_MAPPING = {
     "live_parallel_multiple": f"{VERSION_PREFIX}_live_parallel_multiple.json",
     "live_irrelevance": f"{VERSION_PREFIX}_live_irrelevance.json",
     "live_relevance": f"{VERSION_PREFIX}_live_relevance.json",
-
     # V3 Multi-turn Datasets
     "multi_turn_base": f"{VERSION_PREFIX}_multi_turn_base.json",
     "multi_turn_miss_func": f"{VERSION_PREFIX}_multi_turn_miss_func.json",
     "multi_turn_miss_param": f"{VERSION_PREFIX}_multi_turn_miss_param.json",
     "multi_turn_long_context": f"{VERSION_PREFIX}_multi_turn_long_context.json",
     # "multi_turn_composite": f"{VERSION_PREFIX}_multi_turn_composite.json",
-
     # Agentic Datasets
     "web_search": f"{VERSION_PREFIX}_web_search.json",
     "memory_student": f"{VERSION_PREFIX}_memory_student.json",
@@ -152,8 +149,15 @@ MULTI_TURN_FUNC_DOC_FILE_MAPPING = {
     "TravelAPI": "travel_booking.json",
     "VehicleControlAPI": "vehicle_control.json",
     "WebSearchAPI": "web_search.json",
-    "MemoryAPI_KV": "memory_api_kv.json",
-    "MemoryAPI_Vector": "memory_api_vector.json",
-    "MemoryAPI_Knowledge": "memory_api_knowledge.json",
-    "MemoryAPI_Recursive": "memory_api_recursive.json",
+    "MemoryAPI_kv_store": "memory_api_kv.json",
+    "MemoryAPI_vector_store": "memory_api_vector.json",
+    "MemoryAPI_knowledge_graph": "memory_api_knowledge.json",
+    "MemoryAPI_recursive_summary": "memory_api_recursive.json",
 }
+
+ALL_AVAILABLE_MEMORY_BACKENDS = [
+    "kv_store",
+    "vector_store",
+    "recursive_summary",
+    "knowledge_graph",
+]

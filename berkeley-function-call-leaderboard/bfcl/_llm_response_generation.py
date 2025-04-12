@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 
 from bfcl.constants.category_mapping import (
+    ALL_AVAILABLE_MEMORY_BACKENDS,
     MULTI_TURN_FUNC_DOC_FILE_MAPPING,
     TEST_COLLECTION_MAPPING,
     TEST_FILE_MAPPING,
@@ -71,7 +72,7 @@ def get_args():
         "--memory-backend",
         default="all",
         type=str,
-        choices=["all", "kv_store", "vector_store", "recursive_summary", "knowledge_graph"],
+        choices=["all"] + ALL_AVAILABLE_MEMORY_BACKENDS,
         help="Specify the memory backend to use. Default is 'all'.",
     )
     args = parser.parse_args()
@@ -160,61 +161,71 @@ def collect_test_cases(
     return sorted(test_cases_to_generate, key=sort_key)
 
 
-def process_memory_test_case(test_cases, memory_backend):
+def process_memory_test_case(test_cases, memory_backends):
     """
     Memory test cases needs to have the memory write phase carried out before the inference phase. So we configure some test case dependencies here.
     Also, we need to configure the proper memory backend for the test cases.
     """
     assert (
-        type(memory_backend) is list and len(memory_backend) > 0
+        type(memory_backends) is list and len(memory_backends) > 0
     ), "Memory backend should be a list of strings."
-    
-    for backend_type in memory_backend:
-        assert backend_type in [
-            "all",
-            "kv_store",
-            "vector_store",
-            "recursive_summary",
-            "knowledge_graph",
-        ], f"Invalid memory backend: {backend_type}. Supported backends are: all, kv_store, vector_store, recursive_summary, knowledge_graph"
 
-    if "all" in memory_backend:
-        memory_backend = [
-            "kv_store",
-            "vector_store",
-            "recursive_summary",
-            "knowledge_graph",
-        ]
+    for backend_type in memory_backends:
+        assert (
+            backend_type in ALL_AVAILABLE_MEMORY_BACKENDS or backend_type == "all"
+        ), f"Invalid memory backend: {backend_type}. Supported backends are: all, kv_store, vector_store, recursive_summary, knowledge_graph"
 
+    if "all" in memory_backends:
+        memory_backends = ALL_AVAILABLE_MEMORY_BACKENDS
+
+    all_test_cases = []
     MEMORY_CATEGORIES = TEST_COLLECTION_MAPPING["memory"]
 
-    mapping = {}
-
+    # Group test cases by category
+    # So that we can know if any memory test cases are actually involved
+    test_cases_by_category = {}
     for test_case in test_cases:
         test_category = extract_test_category_from_id(test_case["id"])
-        if test_category in mapping:
-            mapping[test_category].append(test_case)
+        if test_category in test_cases_by_category:
+            test_cases_by_category[test_category].append(test_case)
         else:
-            mapping[test_category] = [test_case]
+            test_cases_by_category[test_category] = [test_case]
 
-    for test_category, category_test_cases in mapping.items():
+    for test_category, category_test_cases in test_cases_by_category.items():
         if test_category not in MEMORY_CATEGORIES:
+            all_test_cases.extend(category_test_cases)
             continue
+
         pre_req_entries = load_file(
             MEMORY_PREREQ_CONVERSATION_PATH / f"{test_category}.json"
         )
-        pre_req_ids = []
-        for i, entry in enumerate(pre_req_entries):
-            entry["id"] = f"{test_category}_prereq_{i}"
-            entry["depends_on"] = deepcopy(pre_req_ids)
-            pre_req_ids.append(entry["id"])
 
-        for entry in category_test_cases:
-            entry["depends_on"] = deepcopy(pre_req_ids)
+        for backend_type in memory_backends:
+            backend_class_name = f"MemoryAPI_{backend_type}"
 
-        test_cases.extend(pre_req_entries)
+            pre_req_ids = []
+            # We will make deepcopy of the pre_req_entries here, since that will also be used for other backend types
+            for i, entry in enumerate(deepcopy(pre_req_entries)):
+                entry["id"] = f"{test_category}_{backend_type}_pre_req_{i}"
+                entry["depends_on"] = deepcopy(pre_req_ids)
+                entry["involved_classes"] = [backend_class_name]
+                pre_req_ids.append(entry["id"])
+                all_test_cases.append(entry)
 
-    return test_cases
+            # deepcopy the category_test_cases here as well
+            for entry in deepcopy(category_test_cases):
+                index_to_insert = len(extract_test_category_from_id(entry["id"])) - 1
+                entry["id"] = (
+                    entry["id"][:index_to_insert]
+                    + "_"
+                    + backend_type
+                    + entry["id"][index_to_insert:]
+                )
+                entry["depends_on"] = deepcopy(pre_req_ids)
+                entry["involved_classes"] = [backend_class_name]
+                all_test_cases.append(entry)
+
+    return all_test_cases
 
 
 def process_agentic_test_case(test_cases):
