@@ -152,4 +152,8 @@ MULTI_TURN_FUNC_DOC_FILE_MAPPING = {
     "TravelAPI": "travel_booking.json",
     "VehicleControlAPI": "vehicle_control.json",
     "WebSearchAPI": "web_search.json",
+    "MemoryAPI_KV": "memory_api_kv.json",
+    "MemoryAPI_Vector": "memory_api_vector.json",
+    "MemoryAPI_Knowledge": "memory_api_knowledge.json",
+    "MemoryAPI_Recursive": "memory_api_recursive.json",
 }

@@ -148,7 +148,9 @@ def collect_test_cases(
         if test_case["id"] not in existing_ids
     ]
 
-    test_cases_to_generate = process_memory_test_case(test_cases_to_generate)
+    test_cases_to_generate = process_memory_test_case(
+        test_cases_to_generate, args.memory_backend
+    )
     # FIXME: Add different memory backends here
     test_cases_to_generate = process_agentic_test_case(test_cases_to_generate)
     test_cases_to_generate = populate_test_cases_with_predefined_functions(
@@ -158,12 +160,31 @@ def collect_test_cases(
     return sorted(test_cases_to_generate, key=sort_key)
 
 
-def process_memory_test_case(test_cases):
+def process_memory_test_case(test_cases, memory_backend):
     """
     Memory test cases needs to have the memory write phase carried out before the inference phase. So we configure some test case dependencies here.
+    Also, we need to configure the proper memory backend for the test cases.
     """
-    if not any([is_memory(entry["id"]) for entry in test_cases]):
-        return test_cases
+    assert (
+        type(memory_backend) is list and len(memory_backend) > 0
+    ), "Memory backend should be a list of strings."
+    
+    for backend_type in memory_backend:
+        assert backend_type in [
+            "all",
+            "kv_store",
+            "vector_store",
+            "recursive_summary",
+            "knowledge_graph",
+        ], f"Invalid memory backend: {backend_type}. Supported backends are: all, kv_store, vector_store, recursive_summary, knowledge_graph"
+
+    if "all" in memory_backend:
+        memory_backend = [
+            "kv_store",
+            "vector_store",
+            "recursive_summary",
+            "knowledge_graph",
+        ]
 
     MEMORY_CATEGORIES = TEST_COLLECTION_MAPPING["memory"]
 
@@ -364,6 +385,9 @@ def main(args):
 
     if type(args.model) is not list:
         args.model = [args.model]
+    if type(args.test_category) is not list:
+        args.test_category = [args.test_category]
+
     if type(args.test_category) is not list:
         args.test_category = [args.test_category]
 
