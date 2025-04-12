@@ -166,6 +166,7 @@ def process_memory_test_case(test_cases, memory_backends):
     Memory test cases needs to have the memory write phase carried out before the inference phase. So we configure some test case dependencies here.
     Also, we need to configure the proper memory backend for the test cases.
     """
+    # Validate inputs
     assert (
         type(memory_backends) is list and len(memory_backends) > 0
     ), "Memory backend should be a list of strings."
@@ -181,8 +182,8 @@ def process_memory_test_case(test_cases, memory_backends):
     all_test_cases = []
     MEMORY_CATEGORIES = TEST_COLLECTION_MAPPING["memory"]
 
-    # Group test cases by category
-    # So that we can know if any memory test cases are actually involved
+    # Group test cases by their category.
+    # This helps to identify which test cases need memory-specific handling.
     test_cases_by_category = {}
     for test_case in test_cases:
         test_category = extract_test_category_from_id(test_case["id"])
@@ -204,7 +205,8 @@ def process_memory_test_case(test_cases, memory_backends):
             backend_class_name = f"MemoryAPI_{backend_type}"
 
             pre_req_ids = []
-            # We will make deepcopy of the pre_req_entries here, since that will also be used for other backend types
+            # Create and modify pre-requisite entries so that their dependency are properly linked
+            # We deepcopy the prerequisite entries to avoid conflicts when reusing them across backends.
             for i, entry in enumerate(deepcopy(pre_req_entries)):
                 entry["id"] = f"{test_category}_{backend_type}_pre_req_{i}"
                 entry["depends_on"] = deepcopy(pre_req_ids)
@@ -212,7 +214,7 @@ def process_memory_test_case(test_cases, memory_backends):
                 pre_req_ids.append(entry["id"])
                 all_test_cases.append(entry)
 
-            # deepcopy the category_test_cases here as well
+            # deepcopy the category_test_cases here as well, since they are also reused across backends
             for entry in deepcopy(category_test_cases):
                 index_to_insert = len(extract_test_category_from_id(entry["id"])) - 1
                 entry["id"] = (
