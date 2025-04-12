@@ -67,6 +67,13 @@ def get_args():
         default=False,
         help="Skip vLLM/SGLang server setup and use existing endpoint specified by the VLLM_ENDPOINT and VLLM_PORT environment variables.",
     )
+    parser.add_argument(
+        "--memory-backend",
+        default="all",
+        type=str,
+        choices=["all", "kv_store", "vector_store", "recursive_summary", "knowledge_graph"],
+        help="Specify the memory backend to use. Default is 'all'.",
+    )
     args = parser.parse_args()
     return args
 

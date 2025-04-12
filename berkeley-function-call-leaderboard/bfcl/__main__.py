@@ -87,14 +87,14 @@ def models():
 @cli.command()
 def generate(
     model: List[str] = typer.Option(
-        ["gorilla-openfunctions-v2"], 
+        ["gorilla-openfunctions-v2"],
         help="A list of model names to generate the llm response. Use commas to separate multiple models.",
-        callback=handle_multiple_input
+        callback=handle_multiple_input,
     ),
     test_category: List[str] = typer.Option(
-        ["all"], 
+        ["all"],
         help="A list of test categories to run the evaluation on. Use commas to separate multiple test categories.",
-        callback=handle_multiple_input
+        callback=handle_multiple_input,
     ),
     temperature: float = typer.Option(
         0.001, help="The temperature parameter for the model."
@@ -134,6 +134,11 @@ def generate(
         "--run-ids",
         help="If true, also run the test entry mentioned in the test_case_ids_to_generate.json file, in addition to the --test_category argument.",
     ),
+    memory_backend: List[str] = typer.Option(
+        ["all"],
+        help="A list of memory backends to run the evaluation on. Only relevant for memory test categories. Available options: ['all', 'kv_store', 'vector_store', 'recursive_summary', 'knowledge_graph']",
+        callback=handle_multiple_input,
+    ),
 ):
     """
     Generate the LLM response for one or more models on a test-category (same as openfunctions_evaluation.py).
@@ -153,6 +158,7 @@ def generate(
         result_dir=result_dir,
         allow_overwrite=allow_overwrite,
         run_ids=run_ids,
+        memory_backend=memory_backend,
     )
     load_dotenv(dotenv_path=DOTENV_PATH, verbose=True, override=True)  # Load the .env file
     generation_main(args)
@@ -217,14 +223,12 @@ def results(
 @cli.command()
 def evaluate(
     model: List[str] = typer.Option(
-        None, 
-        help="A list of model names to evaluate.",
-        callback=handle_multiple_input
+        None, help="A list of model names to evaluate.", callback=handle_multiple_input
     ),
     test_category: List[str] = typer.Option(
-        ["all"], 
+        ["all"],
         help="A list of test categories to run the evaluation on.",
-        callback=handle_multiple_input
+        callback=handle_multiple_input,
     ),
     result_dir: str = typer.Option(
         None,
