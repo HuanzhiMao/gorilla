@@ -33,6 +33,7 @@ TEST_FILE_MAPPING = {
     # "multi_turn_composite": f"{VERSION_PREFIX}_multi_turn_composite.json",
     # Agentic Datasets
     "web_search": f"{VERSION_PREFIX}_web_search.json",
+    "web_search_conflict": f"{VERSION_PREFIX}_web_search_conflict.json",
     "memory_student": f"{VERSION_PREFIX}_memory_student.json",
     "memory_customer": f"{VERSION_PREFIX}_memory_customer.json",
     "memory_finance": f"{VERSION_PREFIX}_memory_finance.json",

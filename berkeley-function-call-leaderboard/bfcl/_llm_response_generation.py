@@ -400,9 +400,12 @@ def main(args):
         args.model = [args.model]
     if type(args.test_category) is not list:
         args.test_category = [args.test_category]
+        
+    # FIXME
+    args.test_category = ["web_search", "web_search_conflict"]
 
-    if type(args.test_category) is not list:
-        args.test_category = [args.test_category]
+    if type(args.memory_backend) is not list:
+        args.memory_backend = [args.memory_backend]
 
     (
         all_test_file_paths,
