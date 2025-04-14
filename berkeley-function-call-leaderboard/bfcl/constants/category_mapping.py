@@ -60,6 +60,8 @@ TEST_COLLECTION_MAPPING = {
         "multi_turn_miss_func",
         "multi_turn_miss_param",
         "multi_turn_long_context",
+        "web_search",
+        "web_search_conflict",
     ],
     "multi_turn": [
         "multi_turn_base",
