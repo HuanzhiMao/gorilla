@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 from typing import Union
 
-from bfcl.constants.category_mapping import TEST_COLLECTION_MAPPING, TEST_FILE_MAPPING, VERSION_PREFIX
+from bfcl.constants.category_mapping import TEST_COLLECTION_MAPPING, VERSION_PREFIX, ALL_AVAILABLE_MEMORY_BACKENDS, MEMORY_CATEGORY_BASE
 
 
 def extract_test_category(input_string: Union[str, Path]) -> str:
@@ -242,3 +242,45 @@ def parse_test_category_argument(test_category_args):
             raise Exception(f"Invalid test category name provided: {test_category}")
 
     return sorted(list(test_filename_total)), sorted(list(test_name_total))
+
+
+def handle_memory_category_argument(test_category):
+    """
+    The memory test categories are a special case because there are four kinds of memory backends and five individual topics.
+    It would be too verbose to list all 20 test categories, along with their corresponding test group short cuts.
+    This function handles that.
+    """
+    pass
+
+
+# def retrieve_test_file_path(test_category):
+#     """
+#     This function retrieves the test file path for a given test category.
+#     It first checks if the test category is in TEST_COLLECTION_MAPPING, and if so, it retrieves the corresponding test file path.
+#     If the test category is not found, it raises an exception.
+#     """
+#     test_file_path = find_file_with_suffix(Path(TEST_COLLECTION_MAPPING[test_category]), TEST_FILE_MAPPING[test_category])
+#     return test_file_path
+
+
+def retrieve_memory_category_base(test_category):
+    assert is_memory(test_category), f"Test category {test_category} is not a memory category."
+    assert any(test_category.endswith(suffix) for suffix in ALL_AVAILABLE_MEMORY_BACKENDS), f"Test category {test_category} does not end with a valid memory backend suffix."
+    for base_category in MEMORY_CATEGORY_BASE:
+        if test_category.startswith(base_category):
+            return base_category
+    raise ValueError(f"Test category {test_category} does not match any memory category base.")
+
+
+def load_dataset_entry(test_category):
+    """
+    This function retrieves the dataset entry for a given test category.
+    The input should not be a test category goup, but a specific test category.
+    """
+    if not is_memory(test_category):
+        file_path = f"{VERSION_PREFIX}_{test_category}.json"
+        entries = load_file(file_path, sort_by_id=True)
+    else:
+        file_path = f"{VERSION_PREFIX}_{test_category}.json"
+        entries = load_file(file_path, sort_by_id=True)
+    return entries
