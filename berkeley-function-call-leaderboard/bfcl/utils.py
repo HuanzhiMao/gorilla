@@ -133,7 +133,7 @@ def sort_key(entry):
     test_category, index = parts[0], parts[1]
     # This handles the case where the index is in the form TestCategory_Index-FuncDocSubIndex-PromptSubIndex
     if "-" in index:
-        index = index.split("-")[0]
+        index = index.split("-")[-1]
     return (test_category, int(index))
 
 
