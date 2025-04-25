@@ -309,7 +309,10 @@ def ast_file_runner(
             test_category,
             model_name,
         )
-
+        # Remove the function doc from the score file for better readability; they are repeated and way too long
+        if "function" in prompt[i]:
+            del prompt[i]["function"]
+            
         if checker_result["valid"]:
             correct_count += 1
         else:
