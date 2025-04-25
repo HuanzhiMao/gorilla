@@ -270,6 +270,8 @@ def main(args):
     if type(args.test_category) is not list:
         args.test_category = [args.test_category]
 
+    args.test_category = ["live_multiple"]
+    
     (
         all_test_file_paths,
         all_test_categories,
