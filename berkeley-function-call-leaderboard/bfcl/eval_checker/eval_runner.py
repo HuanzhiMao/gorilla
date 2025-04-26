@@ -274,7 +274,7 @@ def ast_file_runner(
                     "valid": False,
                     "error": [f"Invalid syntax. Failed to decode AST. {str(e)}"],
                     "error_type": "ast_decoder:decoder_failed",
-                    "prompt": prompt[i],
+                    # "prompt": prompt[i],
                     "model_result_raw": model_result_item_raw,
                     "possible_answer": possible_answer_item,
                 }
@@ -293,7 +293,7 @@ def ast_file_runner(
                         "Did not output in the specified format. Note: the model_result is wrapped in a string to ensure json serializability."
                     ],
                     "error_type": "ast_decoder:decoder_wrong_output_format",
-                    "prompt": prompt[i],
+                    # "prompt": prompt[i],
                     "model_result_raw": str(model_result_item_raw),
                     "model_result_decoded": str(model_result_item),
                     "possible_answer": possible_answer_item,
@@ -310,8 +310,8 @@ def ast_file_runner(
             model_name,
         )
         # Remove the function doc from the score file for better readability; they are repeated and way too long
-        if "function" in prompt[i]:
-            del prompt[i]["function"]
+        # if "function" in prompt[i]:
+        #     del prompt[i]["function"]
             
         if checker_result["valid"]:
             correct_count += 1
@@ -323,7 +323,7 @@ def ast_file_runner(
             temp["valid"] = checker_result["valid"]
             temp["error"] = checker_result["error"]
             temp["error_type"] = checker_result["error_type"]
-            temp["prompt"] = prompt[i]
+            # temp["prompt"] = ""
             temp["model_result_raw"] = model_result_item_raw
             temp["model_result_decoded"] = model_result_item
             temp["possible_answer"] = possible_answer_item
