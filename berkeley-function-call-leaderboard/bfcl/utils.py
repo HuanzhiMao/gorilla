@@ -1,10 +1,25 @@
 import json
 import os
 import re
+from copy import deepcopy
 from pathlib import Path
 from typing import Union
 
-from bfcl.constants.category_mapping import TEST_COLLECTION_MAPPING, VERSION_PREFIX, ALL_AVAILABLE_MEMORY_BACKENDS, MEMORY_CATEGORY_BASE
+from bfcl.constants.category_mapping import (
+    ALL_CATEGORIES,
+    MEMORY_TOPIC_NAME,
+    MULTI_TURN_FUNC_DOC_FILE_MAPPING,
+    TEST_COLLECTION_MAPPING,
+    VERSION_PREFIX,
+)
+from bfcl.constants.default_prompts import (
+    ADDITIONAL_USER_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
+)
+from bfcl.constants.eval_config import (
+    MEMORY_PREREQ_CONVERSATION_PATH,
+    MULTI_TURN_FUNC_DOC_PATH,
+    PROMPT_PATH,
+)
 
 
 def extract_test_category(input_string: Union[str, Path]) -> str:
@@ -55,6 +70,7 @@ def is_agentic(test_category):
 def is_multi_turn(test_category):
     return "multi_turn" in test_category
 
+
 def is_sql(test_category):
     return "sql" in test_category
 
@@ -89,6 +105,18 @@ def is_js(test_category):
 
 def is_sql(test_category):
     return "sql" in test_category
+
+
+def extract_memory_backend_type(test_category):
+    """
+    This function extracts the memory backend type from the test category.
+    The test category should be in the form of `memory_kv` or `memory_knowledge_graph`, etc.
+    """
+    if not is_memory(test_category):
+        raise ValueError(f"Test category {test_category} is not a memory category.")
+
+    # Split the test category by underscores and extract the backend type
+    return test_category[len("memory_") :]
 
 
 def load_file(file_path, sort_by_id=False):
@@ -178,6 +206,7 @@ def sort_key(entry):
     return (priority, test_category, int(index))
 
 
+# TODO: Reorganize this function to be more readable
 def is_function_calling_format_output(decoded_output):
     """
     Ensure the output is a list of dictionaries of the form:
@@ -200,6 +229,7 @@ def is_function_calling_format_output(decoded_output):
     return True
 
 
+# TODO: Patch runner to check for format first
 def is_executable_format_output(decoded_output):
     # Ensure the output is a list of strings (one or more strings)
     if type(decoded_output) == list:
@@ -227,30 +257,18 @@ def is_empty_output(decoded_output):
 
 def parse_test_category_argument(test_category_args):
     test_name_total = set()
-    test_filename_total = set()
 
     for test_category in test_category_args:
         if test_category in TEST_COLLECTION_MAPPING:
             for test_name in TEST_COLLECTION_MAPPING[test_category]:
                 test_name_total.add(test_name)
-                test_filename_total.add(TEST_FILE_MAPPING[test_name])
-        elif test_category in TEST_FILE_MAPPING:
+        elif test_category in ALL_CATEGORIES:
             test_name_total.add(test_category)
-            test_filename_total.add(TEST_FILE_MAPPING[test_category])
         else:
             # Invalid test category name
             raise Exception(f"Invalid test category name provided: {test_category}")
 
-    return sorted(list(test_filename_total)), sorted(list(test_name_total))
-
-
-def handle_memory_category_argument(test_category):
-    """
-    The memory test categories are a special case because there are four kinds of memory backends and five individual topics.
-    It would be too verbose to list all 20 test categories, along with their corresponding test group short cuts.
-    This function handles that.
-    """
-    pass
+    return sorted(list(test_name_total))
 
 
 # def retrieve_test_file_path(test_category):
@@ -263,13 +281,168 @@ def handle_memory_category_argument(test_category):
 #     return test_file_path
 
 
-def retrieve_memory_category_base(test_category):
-    assert is_memory(test_category), f"Test category {test_category} is not a memory category."
-    assert any(test_category.endswith(suffix) for suffix in ALL_AVAILABLE_MEMORY_BACKENDS), f"Test category {test_category} does not end with a valid memory backend suffix."
-    for base_category in MEMORY_CATEGORY_BASE:
-        if test_category.startswith(base_category):
-            return base_category
-    raise ValueError(f"Test category {test_category} does not match any memory category base.")
+def _get_language_specific_hint(test_category):
+    if test_category == "java":
+        return " Note that the provided function is in Java 8 SDK syntax."
+    elif test_category == "javascript":
+        return " Note that the provided function is in JavaScript syntax."
+    else:
+        return " Note that the provided function is in Python 3 syntax."
+
+
+def _func_doc_language_specific_pre_processing(function, test_category):
+    if len(function) == 0:
+        return function
+
+    assert type(function) == list
+    for item in function:
+        # Add language specific hints to the function description
+        item["description"] = item["description"] + _get_language_specific_hint(
+            test_category
+        )
+        # Process the parameters
+        properties = item["parameters"]["properties"]
+        if test_category == "java":
+            for key, value in properties.items():
+                if value["type"] == "any":
+                    properties[key][
+                        "description"
+                    ] += " This parameter can be of any type of Java object in string representation."
+                else:
+                    value[
+                        "description"
+                    ] += f" This is Java {value['type']} type parameter in string representation."
+                if value["type"] == "ArrayList" or value["type"] == "Array":
+                    value[
+                        "description"
+                    ] += f" The list elements are of type {value['items']['type']}; they are not in string representation."
+                    del value["items"]
+
+                value["type"] = "string"
+
+        elif test_category == "javascript":
+            for key, value in properties.items():
+                if value["type"] == "any":
+                    properties[key][
+                        "description"
+                    ] += " This parameter can be of any type of JavaScript object in string representation."
+                else:
+                    value[
+                        "description"
+                    ] += f" This is JavaScript {value['type']} type parameter in string representation."
+                if value["type"] == "array":
+                    value[
+                        "description"
+                    ] += f" The list elements are of type {value['items']['type']}; they are not in string representation."
+                    del value["items"]
+
+                if value["type"] == "dict":
+                    if "properties" in value:  # not every dict has properties
+                        value[
+                            "description"
+                        ] += f" The dictionary entries have the following schema; they are not in string representation. {json.dumps(value['properties'])}"
+                        del value["properties"]
+
+                value["type"] = "string"
+
+    return function
+
+
+def process_func_doc(test_cases):
+    """
+    This function adds language-specific hints to the function description and processes the parameters accordingly.
+    """
+    for entry in test_cases:
+        assert "function" in entry
+        test_category = extract_test_category_from_id(entry["id"])
+        entry["function"] = _func_doc_language_specific_pre_processing(
+            entry["function"], test_category
+        )
+
+    return test_cases
+
+
+def process_memory_test_case(test_cases, test_category, memory_topic_name):
+    """
+    Memory test cases needs to have the memory write phase carried out before the inference phase. So we configure some test case dependencies here.
+    Also, we need to configure the proper memory backend for the test cases.
+    """
+    all_test_cases = []
+
+    for test_case in test_cases:
+        pre_req_entries = load_file(
+            MEMORY_PREREQ_CONVERSATION_PATH / f"memory_{memory_topic_name}.json"
+        )
+
+        backend_type = extract_memory_backend_type(test_category)
+        backend_class_name = f"MemoryAPI_{backend_type}"
+
+        pre_req_ids = []
+        # Create and modify pre-requisite entries so that their dependency are properly linked
+        for i, entry in enumerate(pre_req_entries):
+            entry["id"] = f"{test_category}_{memory_topic_name}_prereq_{i}"
+            entry["depends_on"] = deepcopy(pre_req_ids)
+            entry["involved_classes"] = [backend_class_name]
+            pre_req_ids.append(entry["id"])
+            all_test_cases.append(entry)
+
+        # Update the test case with the backend class name and dependencies
+        for entry in test_cases:
+            entry["id"] = f"{test_category}_{memory_topic_name}_{i}"
+            entry["depends_on"] = deepcopy(pre_req_ids)
+            entry["involved_classes"] = [backend_class_name]
+            all_test_cases.append(entry)
+
+    return all_test_cases
+
+
+def process_agentic_test_case(test_cases):
+    """
+    Agentic test cases need to have a specific response format. We add this to the user query here.
+    """
+    for entry in test_cases:
+        if is_agentic(entry["id"]) and not is_memory_prereq(entry["id"]):
+            entry["question"][0].insert(
+                0,
+                {
+                    "role": "system",
+                    "content": ADDITIONAL_USER_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
+                },
+            )
+
+    return test_cases
+
+
+def populate_test_cases_with_predefined_functions(test_cases):
+    """
+    Multi-turn and Agentic test cases don't have the function doc in the prompt. We need to add them here.
+    """
+    for entry in test_cases:
+        if not is_multi_turn(entry["id"]) and not is_agentic(entry["id"]):
+            continue
+        involved_classes = entry["involved_classes"]
+        entry["function"] = []
+        for func_collection in involved_classes:
+            # func_doc is a list of dict
+            func_doc = load_file(
+                MULTI_TURN_FUNC_DOC_PATH / MULTI_TURN_FUNC_DOC_FILE_MAPPING[func_collection]
+            )
+            entry["function"].extend(func_doc)
+
+        # Handle Miss Func category; we need to remove the holdout function doc
+        if "missed_function" in entry:
+            for turn_index, missed_func_names in entry["missed_function"].items():
+                entry["missed_function"][turn_index] = []
+                for missed_func_name in missed_func_names:
+                    for i, func_doc in enumerate(entry["function"]):
+                        if func_doc["name"] == missed_func_name:
+                            # Add the missed function doc to the missed_function list
+                            entry["missed_function"][turn_index].append(func_doc)
+                            # Remove it from the function list
+                            entry["function"].pop(i)
+                            break
+
+    return test_cases
 
 
 def load_dataset_entry(test_category):
@@ -278,9 +451,18 @@ def load_dataset_entry(test_category):
     The input should not be a test category goup, but a specific test category.
     """
     if not is_memory(test_category):
-        file_path = f"{VERSION_PREFIX}_{test_category}.json"
-        entries = load_file(file_path, sort_by_id=True)
+        file_name = f"{VERSION_PREFIX}_{test_category}.json"
+        all_entries = load_file(PROMPT_PATH / file_name)
     else:
-        file_path = f"{VERSION_PREFIX}_{test_category}.json"
-        entries = load_file(file_path, sort_by_id=True)
-    return entries
+        # Memory categories
+        all_entries = []
+        for topic in MEMORY_TOPIC_NAME:
+            file_name = f"{VERSION_PREFIX}_memory_{topic}.json"
+            entries = load_file(PROMPT_PATH / file_name)
+            all_entries += process_memory_test_case(entries, test_category, topic)
+
+    all_entries = process_agentic_test_case(all_entries)
+    all_entries = populate_test_cases_with_predefined_functions(all_entries)
+    all_entries = process_func_doc(all_entries)
+
+    return all_entries
