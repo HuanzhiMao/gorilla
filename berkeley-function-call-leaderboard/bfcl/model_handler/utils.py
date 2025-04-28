@@ -19,6 +19,11 @@ from tenacity import (
     wait_random_exponential,
 )
 
+# FIXME
+def func_doc_language_specific_pre_processing(**kwargs):
+    raise NotImplementedError(
+        "Function doc language specific pre-processing is not implemented yet."
+    )
 
 def _cast_to_openai_type(properties, mapping):
     for key, value in properties.items():

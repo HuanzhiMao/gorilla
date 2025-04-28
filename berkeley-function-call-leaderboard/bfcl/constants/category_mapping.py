@@ -1,20 +1,5 @@
 VERSION_PREFIX = "BFCL_v3"
 
-MULTI_TURN_FUNC_DOC_FILE_MAPPING = {
-    "GorillaFileSystem": "gorilla_file_system.json",
-    "MathAPI": "math_api.json",
-    "MessageAPI": "message_api.json",
-    "TwitterAPI": "posting_api.json",
-    "TicketAPI": "ticket_api.json",
-    "TradingBot": "trading_bot.json",
-    "TravelAPI": "travel_booking.json",
-    "VehicleControlAPI": "vehicle_control.json",
-    "WebSearchAPI": "web_search.json",
-    "MemoryAPI_kv": "memory_api_kv.json",
-    "MemoryAPI_vector": "memory_api_vector.json",
-    "MemoryAPI_rec_sum": "memory_api_rec_sum.json",
-    "MemoryAPI_knowledge_graph": "memory_api_knowledge_graph.json",
-}
 
 ALL_AVAILABLE_MEMORY_BACKENDS = [
     "kv",

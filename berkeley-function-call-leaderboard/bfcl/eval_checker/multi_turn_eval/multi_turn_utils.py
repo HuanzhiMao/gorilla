@@ -1,28 +1,13 @@
+import copy
 import importlib
 import inspect
 import json
 import re
-import copy
 
-CLASS_FILE_PATH_MAPPING = {
-    "GorillaFileSystem": "bfcl.eval_checker.multi_turn_eval.func_source_code.gorilla_file_system",
-    "MathAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.math_api",
-    "MessageAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.message_api",
-    "TwitterAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.posting_api",
-    "TicketAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.ticket_api",
-    "TradingBot": "bfcl.eval_checker.multi_turn_eval.func_source_code.trading_bot",
-    "TravelAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.travel_booking",
-    "VehicleControlAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.vehicle_control",
-    # The following classes are not part of the multi-turn categories suite, but they share the same evaluation pipeline for simplicity
-    "WebSearchAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.web_search",
-    "MemoryAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.memory",
-}
-
-# These classes are stateless and do not require any initial configuration
-STATELESS_CLASSES = [
-    "MathAPI",
-    "WebSearchAPI",
-]
+from bfcl.constants.executable_backend_mapping import (
+    CLASS_FILE_PATH_MAPPING,
+    STATELESS_CLASSES,
+)
 
 
 def execute_multi_turn_func_call(

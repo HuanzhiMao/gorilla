@@ -8,7 +8,6 @@ from typing import Union
 from bfcl.constants.category_mapping import (
     ALL_CATEGORIES,
     MEMORY_TOPIC_NAME,
-    MULTI_TURN_FUNC_DOC_FILE_MAPPING,
     TEST_COLLECTION_MAPPING,
     VERSION_PREFIX,
 )
@@ -20,6 +19,7 @@ from bfcl.constants.eval_config import (
     MULTI_TURN_FUNC_DOC_PATH,
     PROMPT_PATH,
 )
+from bfcl.constants.executable_backend_mapping import MULTI_TURN_FUNC_DOC_FILE_MAPPING
 
 
 def extract_test_category(input_string: Union[str, Path]) -> str:
