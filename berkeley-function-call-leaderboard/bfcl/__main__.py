@@ -140,11 +140,6 @@ def generate(
         "--run-ids",
         help="If true, also run the test entry mentioned in the test_case_ids_to_generate.json file, in addition to the --test_category argument.",
     ),
-    memory_backend: List[str] = typer.Option(
-        ["all"],
-        help="A list of memory backends to run the evaluation on. Only relevant for memory test categories. Available options: ['all', 'kv_store', 'vector_store', 'recursive_summary', 'knowledge_graph']",
-        callback=handle_multiple_input,
-    ),
 ):
     """
     Generate the LLM response for one or more models on a test-category (same as openfunctions_evaluation.py).
@@ -165,7 +160,6 @@ def generate(
         result_dir=result_dir,
         allow_overwrite=allow_overwrite,
         run_ids=run_ids,
-        memory_backend=memory_backend,
     )
     load_dotenv(dotenv_path=DOTENV_PATH, verbose=True, override=True)  # Load the .env file
     generation_main(args)

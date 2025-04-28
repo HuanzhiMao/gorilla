@@ -5,33 +5,17 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 
-from bfcl.constants.category_mapping import (
-    ALL_AVAILABLE_MEMORY_BACKENDS,
-    MULTI_TURN_FUNC_DOC_FILE_MAPPING,
-    TEST_COLLECTION_MAPPING,
-)
-from bfcl.constants.default_prompts import (
-    ADDITIONAL_USER_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
-)
 from bfcl.constants.eval_config import (
-    MEMORY_PREREQ_CONVERSATION_PATH,
-    MULTI_TURN_FUNC_DOC_PATH,
     PROJECT_ROOT,
-    PROMPT_PATH,
     RESULT_PATH,
     TEST_IDS_TO_GENERATE_PATH,
 )
-from bfcl.eval_checker.eval_runner_helper import load_file
 from bfcl.constants.model_config import MODEL_CONFIG_MAPPING
+from bfcl.eval_checker.eval_runner_helper import load_file
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.utils import (
-    extract_test_category_from_id,
-    is_agentic,
-    is_memory,
-    is_memory_prereq,
-    is_multi_turn,
-    is_sql,
-    is_web_search,
+    find_file_by_category,
+    load_dataset_entry,
     parse_test_category_argument,
     sort_key,
 )
@@ -67,13 +51,6 @@ def get_args():
         default=False,
         help="Skip vLLM/SGLang server setup and use existing endpoint specified by the VLLM_ENDPOINT and VLLM_PORT environment variables.",
     )
-    parser.add_argument(
-        "--memory-backend",
-        default="all",
-        type=str,
-        choices=["all"] + ALL_AVAILABLE_MEMORY_BACKENDS,
-        help="Specify the memory backend to use. Default is 'all'.",
-    )
     # Optional local model path
     parser.add_argument(
         "--local-model-path",
@@ -92,51 +69,39 @@ def build_handler(model_name, temperature):
 
 
 def get_involved_test_entries(test_category_args, run_ids):
-    all_test_file_paths, all_test_categories, all_test_entries_involved = [], [], []
+    all_test_categories, all_test_entries_involved = [], []
     if run_ids:
         with open(TEST_IDS_TO_GENERATE_PATH) as f:
             test_ids_to_generate = json.load(f)
         for category, test_ids in test_ids_to_generate.items():
             if len(test_ids) == 0:
                 continue
-            test_file_path = TEST_FILE_MAPPING[category]
             all_test_entries_involved.extend(
-                [
-                    entry
-                    for entry in load_file(PROMPT_PATH / test_file_path)
-                    if entry["id"] in test_ids
-                ]
+                [entry for entry in load_dataset_entry(category) if entry["id"] in test_ids]
             )
             all_test_categories.append(category)
-            all_test_file_paths.append(test_file_path)
 
     else:
-        all_test_file_paths, all_test_categories = parse_test_category_argument(
-            test_category_args
-        )
-        # Make a copy here since we are removing list elemenets inside the for loop
-        for test_category, file_to_open in zip(
-            all_test_categories[:], all_test_file_paths[:]
-        ):
-            all_test_entries_involved.extend(load_file(PROMPT_PATH / file_to_open))
+        all_test_categories = parse_test_category_argument(test_category_args)
+        for test_category in all_test_categories:
+            all_test_entries_involved.extend(load_dataset_entry(test_category))
 
     return (
-        all_test_file_paths,
         all_test_categories,
         all_test_entries_involved,
     )
 
 
-def collect_test_cases(
-    args, model_name, all_test_categories, all_test_file_paths, all_test_entries_involved
-):
+def collect_test_cases(args, model_name, all_test_categories, all_test_entries_involved):
     model_name_dir = model_name.replace("/", "_")
     model_result_dir = args.result_dir / model_name_dir
 
     existing_result = []
-    for test_category, file_to_open in zip(all_test_categories, all_test_file_paths):
+    for test_category in all_test_categories:
 
-        result_file_path = model_result_dir / file_to_open.replace(".json", "_result.json")
+        result_file_path = find_file_by_category(
+            model_result_dir, test_category, is_result_file=True
+        )
         if result_file_path.exists():
             # Not allowing overwrite, we will load the existing results
             if not args.allow_overwrite:
@@ -155,15 +120,6 @@ def collect_test_cases(
         for test_case in all_test_entries_involved
         if test_case["id"] not in existing_ids
     ]
-
-    test_cases_to_generate = process_memory_test_case(
-        test_cases_to_generate, args.memory_backend
-    )
-    # FIXME: Add different memory backends here
-    test_cases_to_generate = process_agentic_test_case(test_cases_to_generate)
-    test_cases_to_generate = populate_test_cases_with_predefined_functions(
-        test_cases_to_generate
-    )
 
     return sorted(test_cases_to_generate, key=sort_key)
 
@@ -280,15 +236,11 @@ def main(args):
         args.model = [args.model]
     if type(args.test_category) is not list:
         args.test_category = [args.test_category]
-        
-    # FIXME
-    args.test_category = ["web_search", "web_search_conflict"]
 
     if type(args.memory_backend) is not list:
         args.memory_backend = [args.memory_backend]
 
     (
-        all_test_file_paths,
         all_test_categories,
         all_test_entries_involved,
     ) = get_involved_test_entries(args.test_category, args.run_ids)
@@ -309,7 +261,6 @@ def main(args):
             args,
             model_name,
             all_test_categories,
-            all_test_file_paths,
             all_test_entries_involved,
         )
 

@@ -40,11 +40,31 @@ def extract_test_category_from_id(test_entry_id: str) -> str:
     return test_entry_id.rsplit("_", 1)[0]
 
 
-def find_file_with_suffix(folder_path: Path, suffix: str) -> Path:
-    for json_file in folder_path.glob("*.json"):
-        if extract_test_category(json_file) == suffix:
+def find_file_by_category(
+    folder_path: Path,
+    test_category: str,
+    is_result_file: bool = False,
+    is_score_file: bool = False,
+) -> Path:
+    """
+    Find a JSON file in the specified folder that matches the given test category.
+    By default, it looks for a file with the suffix ".json".
+    If `is_result_file` is True, it looks for a file with the suffix "_result.json".
+    If `is_score_file` is True, it looks for a file with the suffix "_score.json".
+    """
+    assert not (is_result_file and is_score_file), "Cannot be both result and score file."
+
+    if is_result_file:
+        suffix = "_result.json"
+    elif is_score_file:
+        suffix = "_score.json"
+    else:
+        suffix = ".json"
+
+    for json_file in folder_path.glob(f"*{suffix}"):
+        if extract_test_category(json_file) == test_category:
             return json_file
-    raise FileNotFoundError(f"No JSON file found with suffix: {suffix}")
+    raise FileNotFoundError(f"No JSON file found with category: {test_category}")
 
 
 def is_web_search(test_category):
@@ -269,16 +289,6 @@ def parse_test_category_argument(test_category_args):
             raise Exception(f"Invalid test category name provided: {test_category}")
 
     return sorted(list(test_name_total))
-
-
-# def retrieve_test_file_path(test_category):
-#     """
-#     This function retrieves the test file path for a given test category.
-#     It first checks if the test category is in TEST_COLLECTION_MAPPING, and if so, it retrieves the corresponding test file path.
-#     If the test category is not found, it raises an exception.
-#     """
-#     test_file_path = find_file_with_suffix(Path(TEST_COLLECTION_MAPPING[test_category]), TEST_FILE_MAPPING[test_category])
-#     return test_file_path
 
 
 def _get_language_specific_hint(test_category):
