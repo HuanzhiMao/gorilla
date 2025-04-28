@@ -12,14 +12,14 @@ from bfcl.constants.category_mapping import (
     VERSION_PREFIX,
 )
 from bfcl.constants.default_prompts import (
-    ADDITIONAL_USER_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
+    ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
 )
 from bfcl.constants.eval_config import (
     MEMORY_PREREQ_CONVERSATION_PATH,
     MULTI_TURN_FUNC_DOC_PATH,
     PROMPT_PATH,
 )
-from bfcl.constants.executable_backend_mapping import MULTI_TURN_FUNC_DOC_FILE_MAPPING
+from bfcl.constants.executable_backend_config import MULTI_TURN_FUNC_DOC_FILE_MAPPING
 
 
 def extract_test_category(input_string: Union[str, Path]) -> str:
@@ -420,7 +420,7 @@ def process_agentic_test_case(test_cases: list[dict]) -> list[dict]:
                 0,
                 {
                     "role": "system",
-                    "content": ADDITIONAL_USER_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
+                    "content": ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
                 },
             )
 
