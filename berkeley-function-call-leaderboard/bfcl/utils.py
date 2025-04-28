@@ -275,7 +275,7 @@ def is_empty_output(decoded_output):
     return False
 
 
-def parse_test_category_argument(test_category_args):
+def parse_test_category_argument(test_category_args: list[str]) -> list[str]:
     test_name_total = set()
 
     for test_category in test_category_args:
@@ -300,7 +300,9 @@ def _get_language_specific_hint(test_category):
         return " Note that the provided function is in Python 3 syntax."
 
 
-def _func_doc_language_specific_pre_processing(function, test_category):
+def _func_doc_language_specific_pre_processing(
+    function: list[dict], test_category: str
+) -> list[dict]:
     if len(function) == 0:
         return function
 
@@ -358,7 +360,7 @@ def _func_doc_language_specific_pre_processing(function, test_category):
     return function
 
 
-def process_func_doc(test_cases):
+def process_func_doc(test_cases: list[dict]) -> list[dict]:
     """
     This function adds language-specific hints to the function description and processes the parameters accordingly.
     """
@@ -372,7 +374,9 @@ def process_func_doc(test_cases):
     return test_cases
 
 
-def process_memory_test_case(test_cases, test_category, memory_topic_name):
+def process_memory_test_case(
+    test_cases: list[dict], test_category: str, memory_topic_name: str
+) -> list[dict]:
     """
     Memory test cases needs to have the memory write phase carried out before the inference phase. So we configure some test case dependencies here.
     Also, we need to configure the proper memory backend for the test cases.
@@ -406,7 +410,7 @@ def process_memory_test_case(test_cases, test_category, memory_topic_name):
     return all_test_cases
 
 
-def process_agentic_test_case(test_cases):
+def process_agentic_test_case(test_cases: list[dict]) -> list[dict]:
     """
     Agentic test cases need to have a specific response format. We add this to the user query here.
     """
@@ -423,7 +427,7 @@ def process_agentic_test_case(test_cases):
     return test_cases
 
 
-def populate_test_cases_with_predefined_functions(test_cases):
+def populate_test_cases_with_predefined_functions(test_cases: list[dict]) -> list[dict]:
     """
     Multi-turn and Agentic test cases don't have the function doc in the prompt. We need to add them here.
     """
@@ -455,7 +459,7 @@ def populate_test_cases_with_predefined_functions(test_cases):
     return test_cases
 
 
-def load_dataset_entry(test_category):
+def load_dataset_entry(test_category: str) -> list[dict]:
     """
     This function retrieves the dataset entry for a given test category.
     The input should not be a test category goup, but a specific test category.
@@ -476,3 +480,26 @@ def load_dataset_entry(test_category):
     all_entries = process_func_doc(all_entries)
 
     return all_entries
+
+
+def clean_up_memory_prereq_entries(test_cases: list[dict]) -> list[dict]:
+    """
+    Remove memory-prerequisite test cases when their corresponding
+    non-prerequisite memory cases are absent.
+    """
+    memory_entries = [entry for entry in test_cases if is_memory(entry["id"])]
+
+    # Group test cases by their category to help identify the count
+    test_cases_by_category = {}
+    for entry in memory_entries:
+        test_category = extract_test_category_from_id(entry["id"])
+        test_cases_by_category.setdefault(test_category, []).append(entry)
+
+    for test_category, category_test_cases in test_cases_by_category.items():
+        if is_memory_prereq(test_category) and len(category_test_cases) != 0:
+            if test_category.replace("_prereq", "") not in test_cases_by_category:
+                # Remove the memory pre-requisite entries from the test cases
+                for entry in category_test_cases:
+                    test_cases.remove(entry)
+
+    return test_cases

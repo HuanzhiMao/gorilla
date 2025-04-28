@@ -14,6 +14,7 @@ from bfcl.constants.model_config import MODEL_CONFIG_MAPPING
 from bfcl.eval_checker.eval_runner_helper import load_file
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.utils import (
+    clean_up_memory_prereq_entries,
     find_file_by_category,
     load_dataset_entry,
     parse_test_category_argument,
@@ -120,6 +121,8 @@ def collect_test_cases(args, model_name, all_test_categories, all_test_entries_i
         for test_case in all_test_entries_involved
         if test_case["id"] not in existing_ids
     ]
+
+    test_cases_to_generate = clean_up_memory_prereq_entries(test_cases_to_generate)
 
     return sorted(test_cases_to_generate, key=sort_key)
 
