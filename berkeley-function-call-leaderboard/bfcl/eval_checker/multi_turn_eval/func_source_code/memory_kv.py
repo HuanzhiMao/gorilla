@@ -16,9 +16,9 @@ MAX_LONG_TERM_MEMORY_SIZE = 100  # FIXME: Change this to 50
 MAX_LONG_TERM_MEMORY_ENTRY_LENGTH = 2000
 
 
-class MemoryAPI:
+class MemoryAPI_kv:
     """
-    A class that provides APIs to manage short-term and long-term memory data.
+    A class that provides APIs to manage short-term and long-term memory data in a key-value format.
     """
 
     def __init__(self):
