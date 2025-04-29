@@ -44,7 +44,7 @@ WEB_SEARCH_CATEGORY = [
 ]
 
 MEMORY_CATEGORY = [f"memory_{backend}" for backend in ALL_AVAILABLE_MEMORY_BACKENDS]
-MEMORY_TOPIC_NAME = [
+MEMORY_SCENARIO_NAME = [
     "student",
     "customer",
     "finance",

@@ -29,12 +29,13 @@ class MemoryAPI_kv:
         # It's there to match the signature of functions in the multi-turn evaluation code
         model_result_dir: Path = initial_config["model_result_dir"]
         self.test_id: str = initial_config["test_id"]
+        self.scenario: str = initial_config["scenario"]
         test_category: str = extract_test_category_from_id(self.test_id)
 
         # TODO: use helper function to assemble the path
         self.snapshot_folder = model_result_dir / "memory_snapshot" / test_category
         self.snapshot_folder.mkdir(parents=True, exist_ok=True)
-        self.latest_snapshot_file = self.snapshot_folder / f"{test_category}_final.json"
+        self.latest_snapshot_file = self.snapshot_folder / f"{self.scenario}_final.json"
 
         if not is_first_memory_prereq_entry(self.test_id):
             assert (

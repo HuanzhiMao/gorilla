@@ -7,7 +7,7 @@ from typing import Union
 
 from bfcl.constants.category_mapping import (
     ALL_CATEGORIES,
-    MEMORY_TOPIC_NAME,
+    MEMORY_SCENARIO_NAME,
     TEST_COLLECTION_MAPPING,
     VERSION_PREFIX,
 )
@@ -204,6 +204,7 @@ def sort_key(entry):
     test_category, index = parts[0], parts[1]
     # This handles the case where the index is in the form TestCategory_Index-FuncDocSubIndex-PromptSubIndex
     if "-" in index:
+        assert index.count("-") == 2, f"Invalid index format: {index}"
         index = index.split("-")[0]
 
     # Make sure the memory prereq entries are inferenced first to avoid the memory entries being blocked due to dependencies.
@@ -375,7 +376,7 @@ def process_func_doc(test_cases: list[dict]) -> list[dict]:
 
 
 def process_memory_test_case(
-    test_cases: list[dict], test_category: str, memory_topic_name: str
+    test_cases: list[dict], test_category: str, memory_scenario_name: str
 ) -> list[dict]:
     """
     Memory test cases needs to have the memory write phase carried out before the inference phase. So we configure some test case dependencies here.
@@ -384,7 +385,7 @@ def process_memory_test_case(
     all_test_cases = []
 
     pre_req_entries = load_file(
-        MEMORY_PREREQ_CONVERSATION_PATH / f"memory_{memory_topic_name}.json"
+        MEMORY_PREREQ_CONVERSATION_PATH / f"memory_{memory_scenario_name}.json"
     )
 
     backend_type = extract_memory_backend_type(test_category)
@@ -393,17 +394,19 @@ def process_memory_test_case(
     pre_req_ids = []
     # Create and modify pre-requisite entries so that their dependency are properly linked
     for i, entry in enumerate(pre_req_entries):
-        entry["id"] = f"{test_category}_{memory_topic_name}_prereq_{i}"
+        entry["id"] = f"{test_category}_prereq_{memory_scenario_name}-{i}"
         entry["depends_on"] = deepcopy(pre_req_ids)
         entry["involved_classes"] = [backend_class_name]
+        entry["scenario"] = memory_scenario_name
         pre_req_ids.append(entry["id"])
         all_test_cases.append(entry)
 
     # Update the test case with the backend class name and dependencies
-    for entry in test_cases:
-        entry["id"] = f"{test_category}_{memory_topic_name}_{i}"
+    for i, entry in enumerate(test_cases):
+        entry["id"] = f"{test_category}_{memory_scenario_name}-{i}"
         entry["depends_on"] = deepcopy(pre_req_ids)
         entry["involved_classes"] = [backend_class_name]
+        entry["scenario"] = memory_scenario_name
         all_test_cases.append(entry)
 
     return all_test_cases
@@ -469,10 +472,10 @@ def load_dataset_entry(test_category: str) -> list[dict]:
     else:
         # Memory categories
         all_entries = []
-        for topic in MEMORY_TOPIC_NAME:
-            file_name = f"{VERSION_PREFIX}_memory_{topic}.json"
+        for scenario in MEMORY_SCENARIO_NAME:
+            file_name = f"{VERSION_PREFIX}_memory_{scenario}.json"
             entries = load_file(PROMPT_PATH / file_name)
-            all_entries += process_memory_test_case(entries, test_category, topic)
+            all_entries += process_memory_test_case(entries, test_category, scenario)
 
     all_entries = process_agentic_test_case(all_entries)
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
@@ -517,6 +520,7 @@ def populate_initial_settings_for_memory_test_cases(
             init_config = {
                 involved_classes[0]: {
                     "model_result_dir": model_result_dir,
+                    "scenario_name": entry["scenario"],
                     "test_id": entry["id"],
                 }
             }
