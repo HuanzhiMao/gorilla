@@ -3,11 +3,7 @@ import re
 from copy import deepcopy
 from pathlib import Path
 
-from bfcl.utils import (
-    extract_test_category_from_id,
-    is_first_memory_prereq_entry,
-    is_memory_prereq,
-)
+from bfcl.utils import extract_test_category_from_id, is_first_memory_prereq_entry
 from rank_bm25 import BM25Plus
 
 # https://lilianweng.github.io/posts/2023-06-23-agent/#component-two-memory
