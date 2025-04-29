@@ -7,7 +7,10 @@ import re
 from functools import reduce
 from typing import Callable, List, Optional, Type, Union
 
-from bfcl.constants.default_prompts import DEFAULT_SYSTEM_PROMPT
+from bfcl.constants.default_prompts import (
+    DEFAULT_SYSTEM_PROMPT,
+    MEMORY_BACKEND_INSTRUCTION,
+)
 from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.model_handler.parser.java_parser import parse_java_function_call
@@ -18,6 +21,7 @@ from tenacity import (
     retry_if_exception_type,
     wait_random_exponential,
 )
+
 
 # FIXME
 def func_doc_language_specific_pre_processing(**kwargs):
@@ -310,6 +314,7 @@ def resolve_ast_by_type(value):
     return output
 
 
+# TODO: consider moving this step to pipeline instead of in each model handler
 def system_prompt_pre_processing_chat_model(prompts, function_docs, test_category):
     """
     Add a system prompt to the chat model to instruct the model on the available functions and the expected response format.
@@ -528,3 +533,28 @@ def retry_with_backoff(
         return wrapped
 
     return decorator
+
+
+#### utils for memory category ####
+
+
+def add_memory_instruction_system_prompt(prompts: list[dict], scenario_setting: str, memory_content: str) -> list[dict]:
+    """
+    Memory categories requires a system prompt that instructs the model on how to use the memory backend, and also provides the content in core memory.
+    """
+
+    system_prompt_template = MEMORY_BACKEND_INSTRUCTION
+
+    system_prompt = system_prompt_template.format(scenario_setting=scenario_setting, memory_content=memory_content)
+    # System prompt must be in the first position
+    # If the question comes with a system prompt, append its content at the end of the chat template.
+    if prompts[0]["role"] == "system":
+        prompts[0]["content"] = system_prompt + "\n\n" + prompts[0]["content"]
+    # Otherwise, use the system prompt template to create a new system prompt.
+    else:
+        prompts.insert(
+            0,
+            {"role": "system", "content": system_prompt},
+        )
+
+    return prompts
