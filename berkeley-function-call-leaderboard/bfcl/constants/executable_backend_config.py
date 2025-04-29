@@ -39,3 +39,11 @@ STATELESS_CLASSES = [
     "WebSearchAPI",
 ]
 
+# These classes are stateful, but their state is too verbose to include in the inference log
+# Their state will be displayed and stored in separate files
+OMIT_STATE_INFO_CLASSES = [
+    "MemoryAPI_kv",
+    "MemoryAPI_vector",
+    "MemoryAPI_rec_sum",
+    "MemoryAPI_knowledge_graph",
+]

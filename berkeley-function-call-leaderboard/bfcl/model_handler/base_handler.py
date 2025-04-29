@@ -10,12 +10,13 @@ from bfcl.constants.default_prompts import (
     MAXIMUM_STEP_LIMIT,
 )
 from bfcl.constants.eval_config import RESULT_PATH
+from bfcl.constants.executable_backend_config import (
+    OMIT_STATE_INFO_CLASSES,
+    STATELESS_CLASSES,
+)
 from bfcl.eval_checker.multi_turn_eval.multi_turn_utils import (
     execute_multi_turn_func_call,
     is_empty_execute_response,
-)
-from bfcl.constants.executable_backend_config import (
-    STATELESS_CLASSES
 )
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.utils import (
@@ -76,14 +77,6 @@ class BaseHandler:
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
 
-        # Special handling for the memory category, as it loads the initial configuration from local files
-        if is_memory(test_entry_id):
-            initial_config["MemoryAPI"] = {
-                "result_dir": result_dir,
-                "model_name_dir": self.model_name_dir,
-                "test_entry_id": test_entry_id,
-            }
-
         # This is only for the miss function category
         # A mapping from turn index to function to holdout
         holdout_function: dict[int, list] = test_entry.get("missed_function", {})
@@ -116,7 +109,7 @@ class BaseHandler:
             )
             state_log = []
             for class_name, class_instance in involved_instances.items():
-                if class_name in STATELESS_CLASSES:
+                if class_name in STATELESS_CLASSES or class_name in OMIT_STATE_INFO_CLASSES:
                     continue
                 # Avoid modification in future turns
                 class_instance = deepcopy(class_instance)
@@ -306,7 +299,7 @@ class BaseHandler:
             if not exclude_state_log:
                 state_log = []
                 for class_name, class_instance in involved_instances.items():
-                    if class_name in STATELESS_CLASSES:
+                    if class_name in STATELESS_CLASSES or class_name in OMIT_STATE_INFO_CLASSES:
                         continue
                     # Avoid modification in future turns
                     class_instance = deepcopy(class_instance)
@@ -331,11 +324,7 @@ class BaseHandler:
         if is_memory_prereq(test_entry_id):
             assert len(involved_instances) == 1, "Memory category should only involve one class."
             memory_instance = list(involved_instances.values())[0]
-            memory_instance._flush_memory_to_local_file(
-                result_dir,
-                self.model_name_dir,
-                test_entry_id,
-            )
+            memory_instance._flush_memory_to_local_file()
   
         metadata = {
             "input_token_count": total_input_token_count,
@@ -360,14 +349,6 @@ class BaseHandler:
         involved_classes: list = test_entry["involved_classes"]
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
-
-        # Special handling for the memory category, as it loads the initial configuration from local files
-        if is_memory(test_entry_id):
-            initial_config["MemoryAPI"] = {
-                "result_dir": result_dir,
-                "model_name_dir": self.model_name_dir,
-                "test_entry_id": test_entry_id,
-            }
 
         # This is only for the miss function category
         # A mapping from turn index to function to holdout
@@ -399,7 +380,7 @@ class BaseHandler:
             )
             state_log = []
             for class_name, class_instance in involved_instances.items():
-                if class_name in STATELESS_CLASSES:
+                if class_name in STATELESS_CLASSES or class_name in OMIT_STATE_INFO_CLASSES:
                     continue
                 # Avoid modification in future turns
                 class_instance = deepcopy(class_instance)
@@ -585,7 +566,7 @@ class BaseHandler:
             if not exclude_state_log:
                 state_log = []
                 for class_name, class_instance in involved_instances.items():
-                    if class_name in STATELESS_CLASSES:
+                    if class_name in STATELESS_CLASSES or class_name in OMIT_STATE_INFO_CLASSES:
                         continue
                     # Avoid modification in future turns
                     class_instance = deepcopy(class_instance)
@@ -610,11 +591,7 @@ class BaseHandler:
         if is_memory_prereq(test_entry_id):
             assert len(involved_instances) == 1, "Memory category should only involve one class."
             memory_instance = list(involved_instances.values())[0]
-            memory_instance._flush_memory_to_local_file(
-                result_dir,
-                self.model_name_dir,
-                test_entry_id,
-            )
+            memory_instance._flush_memory_to_local_file()
 
         metadata = {
             "input_token_count": total_input_token_count,

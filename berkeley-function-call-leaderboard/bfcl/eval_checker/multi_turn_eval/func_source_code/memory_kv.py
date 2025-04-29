@@ -1,5 +1,5 @@
 import json
-import shutil
+import re
 from copy import deepcopy
 from pathlib import Path
 
@@ -97,6 +97,14 @@ class MemoryAPI_kv:
         ranked_results = sorted(zip(scores, corpus), key=lambda x: x[0], reverse=True)
         return {"ranked_results": ranked_results[:k]}
 
+    @staticmethod
+    def _is_valid_key_format(s):
+        """
+        Check if the key is in snake_case format and does not contain spaces.
+        """
+        pattern = r"^[a-z]+(_[a-z0-9]+)*$"
+        return bool(re.match(pattern, s))
+
     def core_memory_add(self, key: str, value: str):
         """
         Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later.
@@ -109,17 +117,20 @@ class MemoryAPI_kv:
             status (str): Status of the operation.
         """
         key, value = str(key), str(value)
-        if len(self.core_memory) >= MAX_core_MEMORY_SIZE:
-            return {"error": "Short term memory is full. Please clear some entries."}
-        if len(value) > MAX_core_MEMORY_ENTRY_LENGTH:
+        if len(self.core_memory) >= MAX_CORE_MEMORY_SIZE:
+            return {"error": "Core memory is full. Please clear some entries."}
+        if len(value) > MAX_CORE_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_core_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_CORE_MEMORY_ENTRY_LENGTH} characters."
             }
+
+        if not self._is_valid_key_format(key):
+            return {"error": "Key must be in snake_case format and cannot contain spaces."}
         if key in self.core_memory:
             return {"error": "Key name must be unique."}
 
         self.core_memory[key] = value
-        return {"status": "Key added."}
+        return {"status": "Key-value pair added."}
 
     def core_memory_remove(self, key: str):
         """
@@ -151,9 +162,9 @@ class MemoryAPI_kv:
         key, value = str(key), str(value)
         if key not in self.core_memory:
             return {"error": "Key not found."}
-        if len(value) > MAX_core_MEMORY_ENTRY_LENGTH:
+        if len(value) > MAX_CORE_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_core_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_CORE_MEMORY_ENTRY_LENGTH} characters."
             }
 
         self.core_memory[key] = value
@@ -205,7 +216,7 @@ class MemoryAPI_kv:
             ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
         """
         keys = deepcopy(list(self.core_memory.keys()))
-        return self.similarity_search(query, keys, k)
+        return self._similarity_search(query, keys, k)
 
     def core_memory_retrieve_all(self):
         """
@@ -227,12 +238,15 @@ class MemoryAPI_kv:
             status (str): Status of the operation.
         """
         key, value = str(key), str(value)
-        if len(self.archival_memory) >= MAX_archival_MEMORY_SIZE:
+        if len(self.archival_memory) >= MAX_ARCHIVAL_MEMORY_SIZE:
             return {"error": "Long term memory is full. Please clear some entries."}
-        if len(value) > MAX_archival_MEMORY_ENTRY_LENGTH:
+        if len(value) > MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_archival_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH} characters."
             }
+
+        if not self._is_valid_key_format(key):
+            return {"error": "Key must be in snake_case format and cannot contain spaces."}
         if key in self.archival_memory:
             return {"error": "Key name must be unique."}
 
@@ -269,9 +283,9 @@ class MemoryAPI_kv:
         key, value = str(key), str(value)
         if key not in self.archival_memory:
             return {"error": "Key not found."}
-        if len(value) > MAX_archival_MEMORY_ENTRY_LENGTH:
+        if len(value) > MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_archival_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH} characters."
             }
 
         self.archival_memory[key] = value
@@ -322,4 +336,4 @@ class MemoryAPI_kv:
             ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
         """
         keys = deepcopy(list(self.archival_memory.keys()))
-        return self.similarity_search(query, keys, k)
+        return self._similarity_search(query, keys, k)
