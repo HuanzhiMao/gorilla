@@ -278,10 +278,10 @@ def main(args):
             all_test_categories,
             all_test_entries_involved,
         )
-        print(all_test_categories)
-        print(len(test_cases_total), "test cases to generate for", model_name)
+        # print(all_test_categories)
+        # print(len(test_cases_total), "test cases to generate for", model_name)
         
-        print([item["id"] for item in test_cases_total])
+        # print([item["id"] for item in test_cases_total])
 
         # if len(test_cases_total) == 0:
         #     print(
