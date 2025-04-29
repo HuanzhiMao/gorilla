@@ -8,10 +8,10 @@ MULTI_TURN_FUNC_DOC_FILE_MAPPING = {
     "TravelAPI": "travel_booking.json",
     "VehicleControlAPI": "vehicle_control.json",
     "WebSearchAPI": "web_search.json",
-    "MemoryAPI_kv": "memory_api_kv.json",
-    "MemoryAPI_vector": "memory_api_vector.json",
-    "MemoryAPI_rec_sum": "memory_api_rec_sum.json",
-    "MemoryAPI_knowledge_graph": "memory_api_knowledge_graph.json",
+    "MemoryAPI_kv": "memory_kv.json",
+    "MemoryAPI_vector": "memory_vector.json",
+    "MemoryAPI_rec_sum": "memory_rec_sum.json",
+    "MemoryAPI_knowledge_graph": "memory_knowledge_graph.json",
 }
 
 BACKEND_PATH_PREFIX = "bfcl.eval_checker.multi_turn_eval.func_source_code"
