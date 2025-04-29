@@ -16,7 +16,6 @@ from bfcl.eval_checker.eval_runner_helper import load_file
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.utils import (
     clean_up_memory_prereq_entries,
-    find_file_by_category,
     is_memory,
     load_dataset_entry,
     parse_test_category_argument,
@@ -103,9 +102,7 @@ def collect_test_cases(args, model_name, all_test_categories, all_test_entries_i
     existing_result = []
     for test_category in all_test_categories:
 
-        result_file_path = find_file_by_category(
-            model_result_dir, test_category, is_result_file=True
-        )
+        result_file_path = model_result_dir / f"{test_category}.json"
         if result_file_path.exists():
             # Not allowing overwrite, we will load the existing results
             if not args.allow_overwrite:
