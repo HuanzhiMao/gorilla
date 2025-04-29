@@ -4,7 +4,7 @@ import inspect
 import json
 import re
 
-from bfcl.constants.executable_backend_mapping import (
+from bfcl.constants.executable_backend_config import (
     CLASS_FILE_PATH_MAPPING,
     STATELESS_CLASSES,
 )

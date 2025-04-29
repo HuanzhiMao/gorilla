@@ -258,9 +258,6 @@ def main(args):
     if type(args.test_category) is not list:
         args.test_category = [args.test_category]
 
-    if type(args.memory_backend) is not list:
-        args.memory_backend = [args.memory_backend]
-
     (
         all_test_categories,
         all_test_entries_involved,
@@ -284,10 +281,11 @@ def main(args):
             all_test_categories,
             all_test_entries_involved,
         )
+        print(len(test_cases_total), "test cases to generate for", model_name)
 
-        if len(test_cases_total) == 0:
-            print(
-                f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
-            )
-        else:
-            generate_results(args, model_name, test_cases_total)
+        # if len(test_cases_total) == 0:
+        #     print(
+        #         f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
+        #     )
+        # else:
+        #     generate_results(args, model_name, test_cases_total)

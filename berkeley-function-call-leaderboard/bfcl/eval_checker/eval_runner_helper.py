@@ -5,11 +5,10 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from bfcl.constants.category_mapping import TEST_FILE_MAPPING
 from bfcl.constants.column_headers import *
 from bfcl.constants.eval_config import *
 from bfcl.constants.model_config import MODEL_CONFIG_MAPPING
-from bfcl.utils import extract_test_category, load_file
+from bfcl.utils import extract_test_category, load_file, load_dataset_entry
 
 
 def calculate_weighted_accuracy(accuracy_dict_list, display_na_if_category_missing=True):
@@ -140,8 +139,7 @@ def get_category_score(score_dict: dict, test_category: str) -> dict:
         score["display_accuracy"] = score["accuracy"]
         return score
     else:
-        test_file_path = TEST_FILE_MAPPING[test_category]
-        num_entry = len(load_file(PROMPT_PATH / test_file_path))
+        num_entry = len(load_dataset_entry(test_category))
         # If a category is not being evaluated, it needs to be distinguished from the situation where the evaluation score is 0
         # It will still be considered 0 in the overall score calculation though
         # We use `display_accuracy` to special handle
