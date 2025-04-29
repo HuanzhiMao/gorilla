@@ -383,29 +383,28 @@ def process_memory_test_case(
     """
     all_test_cases = []
 
-    for test_case in test_cases:
-        pre_req_entries = load_file(
-            MEMORY_PREREQ_CONVERSATION_PATH / f"memory_{memory_topic_name}.json"
-        )
+    pre_req_entries = load_file(
+        MEMORY_PREREQ_CONVERSATION_PATH / f"memory_{memory_topic_name}.json"
+    )
 
-        backend_type = extract_memory_backend_type(test_category)
-        backend_class_name = f"MemoryAPI_{backend_type}"
+    backend_type = extract_memory_backend_type(test_category)
+    backend_class_name = f"MemoryAPI_{backend_type}"
 
-        pre_req_ids = []
-        # Create and modify pre-requisite entries so that their dependency are properly linked
-        for i, entry in enumerate(pre_req_entries):
-            entry["id"] = f"{test_category}_{memory_topic_name}_prereq_{i}"
-            entry["depends_on"] = deepcopy(pre_req_ids)
-            entry["involved_classes"] = [backend_class_name]
-            pre_req_ids.append(entry["id"])
-            all_test_cases.append(entry)
+    pre_req_ids = []
+    # Create and modify pre-requisite entries so that their dependency are properly linked
+    for i, entry in enumerate(pre_req_entries):
+        entry["id"] = f"{test_category}_{memory_topic_name}_prereq_{i}"
+        entry["depends_on"] = deepcopy(pre_req_ids)
+        entry["involved_classes"] = [backend_class_name]
+        pre_req_ids.append(entry["id"])
+        all_test_cases.append(entry)
 
-        # Update the test case with the backend class name and dependencies
-        for entry in test_cases:
-            entry["id"] = f"{test_category}_{memory_topic_name}_{i}"
-            entry["depends_on"] = deepcopy(pre_req_ids)
-            entry["involved_classes"] = [backend_class_name]
-            all_test_cases.append(entry)
+    # Update the test case with the backend class name and dependencies
+    for entry in test_cases:
+        entry["id"] = f"{test_category}_{memory_topic_name}_{i}"
+        entry["depends_on"] = deepcopy(pre_req_ids)
+        entry["involved_classes"] = [backend_class_name]
+        all_test_cases.append(entry)
 
     return all_test_cases
 
