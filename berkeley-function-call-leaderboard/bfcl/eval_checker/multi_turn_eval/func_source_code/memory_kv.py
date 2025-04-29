@@ -26,66 +26,51 @@ class MemoryAPI_kv:
         self.core_memory = {}
         self.archival_memory = {}
         self._api_description = """This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system."""
+        self.snapshot_folder = None
 
     def _load_scenario(self, initial_config: dict, long_context: bool = False):
         # We don't care about the long_context parameter here
         # It's there to match the signature of functions in the multi-turn evaluation code
-        result_dir: Path = initial_config["result_dir"]
-        model_name_dir: str = initial_config["model_name_dir"]
+        model_result_dir: Path = initial_config["model_result_dir"]
         test_entry_id: str = initial_config["test_entry_id"]
         test_category: str = extract_test_category_from_id(test_entry_id)
-        
-        target_dir = result_dir / model_name_dir / "memory_snapshot"
-        if is_memory_prereq(test_category):
-            target_file = target_dir / f"{test_category}_final.json"
-        else:
-            target_file = target_dir / f"{test_category}_prereq_final.json"
 
-        # TODO: Use a more elegant way to handle this
-        if is_first_memory_prereq_entry(test_entry_id):
-            if target_dir.exists():
-                # Removes the folder and all its contents
-                for item in target_dir.iterdir():
-                    if item.is_dir():
-                        # Remove subdirectory and its contents
-                        shutil.rmtree(item)
-                    else:
-                        # Remove file
-                        item.unlink()
-            else:
-                target_dir.mkdir(parents=True, exist_ok=True)
+        # TODO: use helper function to assemble the path
+        self.snapshot_folder = model_result_dir / "memory_snapshot" / test_category
+        self.snapshot_folder.mkdir(parents=True, exist_ok=True)
+        self.latest_snapshot_file = self.snapshot_folder / f"{test_category}_final.json"
 
-            # TODO: Move this to the generation pipeline section
-            if (
-                result_dir / model_name_dir / f"BFCL_v3_{test_category}_result.json"
-            ).exists():
-                (
-                    result_dir / model_name_dir / f"BFCL_v3_{test_category}_result.json"
-                ).unlink()
+        if not is_first_memory_prereq_entry(test_entry_id):
+            assert (
+                self.latest_snapshot_file.exists()
+            ), f"Not first memory entry, but no snapshot file found in this path: {self.latest_snapshot_file}"
 
-        elif target_file.exists():
-            with open(target_file, "r") as f:
+            with open(self.latest_snapshot_file, "r") as f:
                 memory_data = json.load(f)
                 self.core_memory = deepcopy(memory_data["core_memory"])
                 self.archival_memory = deepcopy(memory_data["archival_memory"])
-
-        else:
-            raise FileNotFoundError(f"Memory snapshot file not found: {target_file}")
-            print(f"Memory snapshot file not found: {target_file}")
 
     def _flush_memory_to_local_file(
         self, result_dir: Path, model_name_dir: str, test_entry_id: str
     ):
         """
-        Flush (save) current memory (both short-term and long-term)
-        to a local JSON file.
+        Flush (save) current memory (both core and archival) to a local JSON file.
         """
         test_category = extract_test_category_from_id(test_entry_id)
 
-        target_dir = result_dir / model_name_dir / "memory_snapshot"
-        target_dir.mkdir(parents=True, exist_ok=True)
+        # Write the snapshot file for the current test entry
+        with open(self.snapshot_folder / f"{test_entry_id}.json", "w") as f:
+            json.dump(
+                {
+                    "core_memory": self.core_memory,
+                    "archival_memory": self.archival_memory,
+                },
+                f,
+                indent=4,
+            )
 
-        with open(target_dir / f"{test_entry_id}.json", "w") as f:
+        # Update the latest snapshot file content
+        with open(self.latest_snapshot_file, "w") as f:
             json.dump(
                 {
                     "core_memory": self.core_memory,
@@ -94,16 +79,7 @@ class MemoryAPI_kv:
                 f,
                 indent=4,
             )
-        with open(target_dir / f"{test_category}_final.json", "w") as f:
-            json.dump(
-                {
-                    "core_memory": self.core_memory,
-                    "archival_memory": self.archival_memory,
-                },
-                f,
-                indent=4,
-            )
-            
+
     @staticmethod
     def _similarity_search(query: str, corpus: list[str], k: int = 5):
         """
@@ -232,7 +208,7 @@ class MemoryAPI_kv:
             ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
         """
         keys = deepcopy(list(self.core_memory.keys()))
-        return self._similarity_search(query, keys, k)
+        return self.similarity_search(query, keys, k)
 
     def core_memory_retrieve_all(self):
         """
@@ -349,4 +325,4 @@ class MemoryAPI_kv:
             ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
         """
         keys = deepcopy(list(self.archival_memory.keys()))
-        return self._similarity_search(query, keys, k)
+        return self.similarity_search(query, keys, k)

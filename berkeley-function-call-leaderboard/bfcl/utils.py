@@ -503,3 +503,18 @@ def clean_up_memory_prereq_entries(test_cases: list[dict]) -> list[dict]:
                     test_cases.remove(entry)
 
     return test_cases
+
+
+def populate_initial_settings_for_memory_test_cases(
+    test_cases: list[dict], model_result_dir: Path
+) -> list[dict]:
+    """
+    Special handling for the memory category, as it loads the initial configuration from local files
+    """
+    for entry in test_cases:
+        if is_memory(entry["id"]):
+            involved_classes = entry["involved_classes"]
+            entry["initial_config"][involved_classes] = {
+                "model_result_dir": model_result_dir,
+                "test_entry_id": entry["id"],
+            }

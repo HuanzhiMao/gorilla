@@ -1,5 +1,6 @@
 import argparse
 import json
+import shutil
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -16,10 +17,11 @@ from bfcl.model_handler.model_style import ModelStyle
 from bfcl.utils import (
     clean_up_memory_prereq_entries,
     find_file_by_category,
+    is_memory,
     load_dataset_entry,
     parse_test_category_argument,
     sort_key,
-    is_memory,
+    populate_initial_settings_for_memory_test_cases,
 )
 from tqdm import tqdm
 
@@ -114,9 +116,18 @@ def collect_test_cases(args, model_name, all_test_categories, all_test_entries_i
             # Allow overwrite and running specific test ids, we will do nothing here
             else:
                 pass
+
         if is_memory(test_category):
-            # We also need to handle the pre-requisite entries for memory test cases
-            if 
+            # We also need to special handle the pre-requisite entries and the snapshot result for memory test cases
+            snapshot_folder = model_result_dir / "memory_snapshot" / test_category
+            if snapshot_folder.exists():
+                if not args.allow_overwrite:
+                    for prereq_result_file in snapshot_folder.glob("*.json"):
+                        # The final result file is only the memory backend snapshot for human readalibity; so it can be ignored
+                        if "_final" not in prereq_result_file.name:
+                            existing_result += load_file(prereq_result_file)
+                elif not args.run_ids:
+                    shutil.rmtree(snapshot_folder)
 
         existing_ids = [entry["id"] for entry in existing_result]
 
@@ -127,6 +138,9 @@ def collect_test_cases(args, model_name, all_test_categories, all_test_entries_i
     ]
 
     test_cases_to_generate = clean_up_memory_prereq_entries(test_cases_to_generate)
+    test_cases_to_generate = populate_initial_settings_for_memory_test_cases(
+        test_cases_to_generate, model_result_dir
+    )
 
     return sorted(test_cases_to_generate, key=sort_key)
 

@@ -11,9 +11,11 @@ from bfcl.constants.default_prompts import (
 )
 from bfcl.constants.eval_config import RESULT_PATH
 from bfcl.eval_checker.multi_turn_eval.multi_turn_utils import (
-    STATELESS_CLASSES,
     execute_multi_turn_func_call,
     is_empty_execute_response,
+)
+from bfcl.constants.executable_backend_config import (
+    STATELESS_CLASSES
 )
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.utils import (
