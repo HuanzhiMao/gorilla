@@ -19,6 +19,7 @@ from bfcl.utils import (
     load_dataset_entry,
     parse_test_category_argument,
     sort_key,
+    is_memory,
 )
 from tqdm import tqdm
 
@@ -113,6 +114,9 @@ def collect_test_cases(args, model_name, all_test_categories, all_test_entries_i
             # Allow overwrite and running specific test ids, we will do nothing here
             else:
                 pass
+        if is_memory(test_category):
+            # We also need to handle the pre-requisite entries for memory test cases
+            if 
 
         existing_ids = [entry["id"] for entry in existing_result]
 

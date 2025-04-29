@@ -10,10 +10,11 @@ from bfcl.utils import (
 )
 from rank_bm25 import BM25Plus
 
-MAX_SHORT_TERM_MEMORY_SIZE = 7
-MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH = 300
-MAX_LONG_TERM_MEMORY_SIZE = 100  # FIXME: Change this to 50
-MAX_LONG_TERM_MEMORY_ENTRY_LENGTH = 2000
+# https://lilianweng.github.io/posts/2023-06-23-agent/#component-two-memory
+MAX_CORE_MEMORY_SIZE = 7
+MAX_CORE_MEMORY_ENTRY_LENGTH = 300
+MAX_ARCHIVAL_MEMORY_SIZE = 100  # FIXME: Change this to 50
+MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH = 2000
 
 
 class MemoryAPI_kv:
@@ -22,9 +23,9 @@ class MemoryAPI_kv:
     """
 
     def __init__(self):
-        self.short_term_memory = {}
-        self.long_term_memory = {}
-        self._api_description = """This tool belongs to the memory suite, which provides APIs to manage both short-term and long-term memory data. Short-term memory is limited in size and can be accessed quickly, while long-term memory is larger but takes longer to access. Both type of memory is persistent across multiple conversations with the user, and can be accessed in a later interactions. You should actively manage the memory data to ensure that it is up-to-date and easy to retrieve later."""
+        self.core_memory = {}
+        self.archival_memory = {}
+        self._api_description = """This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system."""
 
     def _load_scenario(self, initial_config: dict, long_context: bool = False):
         # We don't care about the long_context parameter here
@@ -33,6 +34,7 @@ class MemoryAPI_kv:
         model_name_dir: str = initial_config["model_name_dir"]
         test_entry_id: str = initial_config["test_entry_id"]
         test_category: str = extract_test_category_from_id(test_entry_id)
+        
         target_dir = result_dir / model_name_dir / "memory_snapshot"
         if is_memory_prereq(test_category):
             target_file = target_dir / f"{test_category}_final.json"
@@ -64,8 +66,8 @@ class MemoryAPI_kv:
         elif target_file.exists():
             with open(target_file, "r") as f:
                 memory_data = json.load(f)
-                self.short_term_memory = deepcopy(memory_data["short_term_memory"])
-                self.long_term_memory = deepcopy(memory_data["long_term_memory"])
+                self.core_memory = deepcopy(memory_data["core_memory"])
+                self.archival_memory = deepcopy(memory_data["archival_memory"])
 
         else:
             raise FileNotFoundError(f"Memory snapshot file not found: {target_file}")
@@ -86,8 +88,8 @@ class MemoryAPI_kv:
         with open(target_dir / f"{test_entry_id}.json", "w") as f:
             json.dump(
                 {
-                    "short_term_memory": self.short_term_memory,
-                    "long_term_memory": self.long_term_memory,
+                    "core_memory": self.core_memory,
+                    "archival_memory": self.archival_memory,
                 },
                 f,
                 indent=4,
@@ -95,8 +97,8 @@ class MemoryAPI_kv:
         with open(target_dir / f"{test_category}_final.json", "w") as f:
             json.dump(
                 {
-                    "short_term_memory": self.short_term_memory,
-                    "long_term_memory": self.long_term_memory,
+                    "core_memory": self.core_memory,
+                    "archival_memory": self.archival_memory,
                 },
                 f,
                 indent=4,
@@ -122,7 +124,7 @@ class MemoryAPI_kv:
         ranked_results = sorted(zip(scores, corpus), key=lambda x: x[0], reverse=True)
         return {"ranked_results": ranked_results[:k]}
 
-    def short_term_memory_add(self, key: str, value: str):
+    def core_memory_add(self, key: str, value: str):
         """
         Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later.
 
@@ -134,19 +136,19 @@ class MemoryAPI_kv:
             status (str): Status of the operation.
         """
         key, value = str(key), str(value)
-        if len(self.short_term_memory) >= MAX_SHORT_TERM_MEMORY_SIZE:
+        if len(self.core_memory) >= MAX_core_MEMORY_SIZE:
             return {"error": "Short term memory is full. Please clear some entries."}
-        if len(value) > MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH:
+        if len(value) > MAX_core_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_core_MEMORY_ENTRY_LENGTH} characters."
             }
-        if key in self.short_term_memory:
+        if key in self.core_memory:
             return {"error": "Key name must be unique."}
 
-        self.short_term_memory[key] = value
+        self.core_memory[key] = value
         return {"status": "Key added."}
 
-    def short_term_memory_remove(self, key: str):
+    def core_memory_remove(self, key: str):
         """
         Remove a key-value pair from the short-term memory.
 
@@ -156,13 +158,13 @@ class MemoryAPI_kv:
         Returns:
             status (str): Status of the operation.
         """
-        if key in self.short_term_memory:
-            del self.short_term_memory[key]
+        if key in self.core_memory:
+            del self.core_memory[key]
             return {"status": "Key removed."}
         else:
             return {"error": "Key not found."}
 
-    def short_term_memory_replace(self, key: str, value: str):
+    def core_memory_replace(self, key: str, value: str):
         """
         Replace a key-value pair in the short-term memory with a new value.
 
@@ -174,27 +176,27 @@ class MemoryAPI_kv:
             status (str): Status of the operation.
         """
         key, value = str(key), str(value)
-        if key not in self.short_term_memory:
+        if key not in self.core_memory:
             return {"error": "Key not found."}
-        if len(value) > MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH:
+        if len(value) > MAX_core_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_core_MEMORY_ENTRY_LENGTH} characters."
             }
 
-        self.short_term_memory[key] = value
+        self.core_memory[key] = value
         return {"status": "Key replaced."}
 
-    def short_term_memory_clear(self):
+    def core_memory_clear(self):
         """
         Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible.
 
         Returns:
             status (str): Status of the operation.
         """
-        self.short_term_memory = {}
+        self.core_memory = {}
         return {"status": "Short term memory cleared."}
 
-    def short_term_memory_retrieve(self, key: str):
+    def core_memory_retrieve(self, key: str):
         """
         Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search.
 
@@ -205,20 +207,20 @@ class MemoryAPI_kv:
             value (str): The value associated with the key.
 
         """
-        if key not in self.short_term_memory:
+        if key not in self.core_memory:
             return {"error": "Key not found."}
-        return {"value": self.short_term_memory[key]}
+        return {"value": self.core_memory[key]}
 
-    def short_term_memory_list_keys(self):
+    def core_memory_list_keys(self):
         """
         List all keys currently in the short-term memory.
 
         Returns:
             keys (List[str]): A list of all keys in the short-term memory.
         """
-        return {"keys": list(self.short_term_memory.keys())}
+        return {"keys": list(self.core_memory.keys())}
 
-    def short_term_memory_key_search(self, query: str, k: int = 5):
+    def core_memory_key_search(self, query: str, k: int = 5):
         """
         Search for key names in the short-term memory that are similar to the query using BM25+ algorithm.
 
@@ -229,19 +231,19 @@ class MemoryAPI_kv:
         Returns:
             ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
         """
-        keys = deepcopy(list(self.short_term_memory.keys()))
+        keys = deepcopy(list(self.core_memory.keys()))
         return self._similarity_search(query, keys, k)
 
-    def short_term_memory_retrieve_all(self):
+    def core_memory_retrieve_all(self):
         """
         Retrieve all key-value pairs from the short-term memory.
 
         Returns:
             dict: A dictionary of all key-value pairs in the short-term memory.
         """
-        return self.short_term_memory
+        return self.core_memory
 
-    def long_term_memory_add(self, key: str, value: str):
+    def archival_memory_add(self, key: str, value: str):
         """
         Add a key-value pair to the long-term memory. Make sure to use meaningful keys for easy retrieval later.
         Args:
@@ -252,19 +254,19 @@ class MemoryAPI_kv:
             status (str): Status of the operation.
         """
         key, value = str(key), str(value)
-        if len(self.long_term_memory) >= MAX_LONG_TERM_MEMORY_SIZE:
+        if len(self.archival_memory) >= MAX_archival_MEMORY_SIZE:
             return {"error": "Long term memory is full. Please clear some entries."}
-        if len(value) > MAX_LONG_TERM_MEMORY_ENTRY_LENGTH:
+        if len(value) > MAX_archival_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_LONG_TERM_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_archival_MEMORY_ENTRY_LENGTH} characters."
             }
-        if key in self.long_term_memory:
+        if key in self.archival_memory:
             return {"error": "Key name must be unique."}
 
-        self.long_term_memory[key] = value
+        self.archival_memory[key] = value
         return {"status": "Key added."}
 
-    def long_term_memory_remove(self, key: str):
+    def archival_memory_remove(self, key: str):
         """
         Remove a key-value pair from the long-term memory.
 
@@ -274,13 +276,13 @@ class MemoryAPI_kv:
         Returns:
             status (str): Status of the operation.
         """
-        if key in self.long_term_memory:
-            del self.long_term_memory[key]
+        if key in self.archival_memory:
+            del self.archival_memory[key]
             return {"status": "Key removed."}
         else:
             return {"error": "Key not found."}
 
-    def long_term_memory_replace(self, key: str, value: str):
+    def archival_memory_replace(self, key: str, value: str):
         """
         Replace a key-value pair in the long-term memory with a new value.
 
@@ -292,27 +294,27 @@ class MemoryAPI_kv:
             status (str): Status of the operation.
         """
         key, value = str(key), str(value)
-        if key not in self.long_term_memory:
+        if key not in self.archival_memory:
             return {"error": "Key not found."}
-        if len(value) > MAX_LONG_TERM_MEMORY_ENTRY_LENGTH:
+        if len(value) > MAX_archival_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_LONG_TERM_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_archival_MEMORY_ENTRY_LENGTH} characters."
             }
 
-        self.long_term_memory[key] = value
+        self.archival_memory[key] = value
         return {"status": "Key replaced."}
 
-    def long_term_memory_clear(self):
+    def archival_memory_clear(self):
         """
         Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible.
 
         Returns:
             status (str): Status of the operation.
         """
-        self.long_term_memory = {}
+        self.archival_memory = {}
         return {"status": "Long term memory cleared."}
 
-    def long_term_memory_retrieve(self, key: str):
+    def archival_memory_retrieve(self, key: str):
         """
         Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search.
 
@@ -322,20 +324,20 @@ class MemoryAPI_kv:
         Returns:
             value (str): The value associated with the key.
         """
-        if key not in self.long_term_memory:
+        if key not in self.archival_memory:
             return {"error": "Key not found."}
-        return {"value": self.long_term_memory[key]}
+        return {"value": self.archival_memory[key]}
 
-    def long_term_memory_list_keys(self):
+    def archival_memory_list_keys(self):
         """
         List all keys currently in the long-term memory.
 
         Returns:
             keys (List[str]): A list of all keys in the long-term memory.
         """
-        return {"keys": list(self.long_term_memory.keys())}
+        return {"keys": list(self.archival_memory.keys())}
 
-    def long_term_memory_key_search(self, query: str, k: int = 5):
+    def archival_memory_key_search(self, query: str, k: int = 5):
         """
         Search for key names in the long-term memory that are similar to the query using BM25+ algorithm.
 
@@ -346,5 +348,5 @@ class MemoryAPI_kv:
         Returns:
             ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
         """
-        keys = deepcopy(list(self.long_term_memory.keys()))
+        keys = deepcopy(list(self.archival_memory.keys()))
         return self._similarity_search(query, keys, k)
