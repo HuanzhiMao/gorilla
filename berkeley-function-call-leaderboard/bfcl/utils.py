@@ -514,7 +514,12 @@ def populate_initial_settings_for_memory_test_cases(
     for entry in test_cases:
         if is_memory(entry["id"]):
             involved_classes = entry["involved_classes"]
-            entry["initial_config"][involved_classes] = {
-                "model_result_dir": model_result_dir,
-                "test_id": entry["id"],
+
+            init_config = {
+                involved_classes[0]: {
+                    "model_result_dir": model_result_dir,
+                    "test_id": entry["id"],
+                }
             }
+            entry["initial_config"] = init_config
+    return test_cases
