@@ -393,11 +393,10 @@ def process_memory_test_case(
 
     pre_req_ids = []
     # Create and modify pre-requisite entries so that their dependency are properly linked
-    for i, entry in enumerate(pre_req_entries):
+    for entry in pre_req_entries:
         entry["id"] = entry["id"].replace("memory", test_category)
         entry["depends_on"] = deepcopy(pre_req_ids)
         entry["involved_classes"] = [backend_class_name]
-        entry["scenario"] = memory_scenario_name
         pre_req_ids.append(entry["id"])
         all_test_cases.append(entry)
 
@@ -406,7 +405,6 @@ def process_memory_test_case(
         entry["id"] = entry["id"].replace("memory", test_category)
         entry["depends_on"] = deepcopy(pre_req_ids)
         entry["involved_classes"] = [backend_class_name]
-        entry["scenario"] = memory_scenario_name
         all_test_cases.append(entry)
 
     return all_test_cases
