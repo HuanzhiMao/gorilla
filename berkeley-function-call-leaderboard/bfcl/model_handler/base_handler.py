@@ -25,6 +25,7 @@ from bfcl.utils import (
     is_memory,
     is_memory_prereq,
     is_multi_turn,
+    contain_multi_turn_interaction,
     load_file,
     make_json_serializable,
     sort_key,
@@ -65,7 +66,7 @@ class BaseHandler:
         # FC model
         # TODO: Let all models have the is_fc_model attribute and remove the "FC" check
         if "FC" in self.model_name or self.is_fc_model:
-            if is_multi_turn(test_entry["id"]) or is_agentic(test_entry["id"]):
+            if contain_multi_turn_interaction(test_entry["id"]):
                 return self.inference_multi_turn_FC(
                     test_entry, include_input_log, exclude_state_log, result_dir
                 )
@@ -73,7 +74,7 @@ class BaseHandler:
                 return self.inference_single_turn_FC(test_entry, include_input_log)
         # Prompting model
         else:
-            if is_multi_turn(test_entry["id"]) or is_agentic(test_entry["id"]):
+            if contain_multi_turn_interaction(test_entry["id"]):
                 return self.inference_multi_turn_prompting(
                     test_entry, include_input_log, exclude_state_log, result_dir
                 )

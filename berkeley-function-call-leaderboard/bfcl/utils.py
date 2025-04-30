@@ -161,6 +161,9 @@ def is_sql(test_category):
     return "sql" in test_category
 
 
+def contain_multi_turn_interaction(test_category):
+    return is_multi_turn(test_category) or is_agentic(test_category)
+
 def extract_memory_backend_type(test_category):
     """
     This function extracts the memory backend type from the test category.

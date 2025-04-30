@@ -304,4 +304,4 @@ def main(args):
                 f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
             )
         else:
-            generate_results(args, model_name, test_cases_total[:1])
+            generate_results(args, model_name, test_cases_total[:])
