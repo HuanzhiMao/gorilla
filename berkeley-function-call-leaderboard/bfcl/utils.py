@@ -23,6 +23,9 @@ from bfcl.constants.executable_backend_config import MULTI_TURN_FUNC_DOC_FILE_MA
 
 
 def extract_test_category(input_string: Union[str, Path]) -> str:
+    """
+    Extract the test category from a given file name.
+    """
     input_string = str(input_string)
     pattern = rf".*{VERSION_PREFIX}_(\w+?)(?:_score|_result)?\.json"
     match = re.search(pattern, input_string)
@@ -36,7 +39,15 @@ def extract_test_category(input_string: Union[str, Path]) -> str:
         )
 
 
-def extract_test_category_from_id(test_entry_id: str) -> str:
+def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = False) -> str:
+    """
+    Extract the test category from the test entry ID.
+
+    If `remove_prereq` is True, it will remove the "_prereq" suffix from the test category, only relevant for memory test categories.
+    Memory test categories never contain the "_prereq" suffix, but those are added to differentiate the normal memory test cases from the pre-requisite test cases.
+    """
+    if remove_prereq:
+        test_entry_id = test_entry_id.replace("_prereq", "")
     return test_entry_id.rsplit("_", 1)[0]
 
 
@@ -76,7 +87,7 @@ def is_memory(test_category):
 
 
 def is_first_memory_prereq_entry(test_entry_id):
-    return "prereq_0" in test_entry_id
+    return "prereq" in test_entry_id and test_entry_id.endswith("_0")
 
 
 def is_memory_prereq(test_category):
@@ -520,6 +531,7 @@ def populate_initial_settings_for_memory_test_cases(
                     "model_result_dir": model_result_dir,
                     "scenario": entry["scenario"],
                     "test_id": entry["id"],
+                    "test_category": extract_test_category_from_id(entry["id"]),
                 }
             }
             entry["initial_config"] = init_config

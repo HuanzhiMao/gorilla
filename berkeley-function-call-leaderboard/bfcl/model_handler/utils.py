@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Callable, List, Optional, Type, Union
 
 from bfcl.constants.default_prompts import (
     DEFAULT_SYSTEM_PROMPT,
+    MEMORY_AGENT_SETTINGS,
     MEMORY_BACKEND_INSTRUCTION,
 )
 from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
@@ -545,7 +546,7 @@ def retry_with_backoff(
 
 
 def add_memory_instruction_system_prompt(
-    prompts: list[dict], scenario_setting: str, memory_backend_instance: "MemoryAPI"
+    prompts: list[dict], scenario: str, memory_backend_instance: "MemoryAPI"
 ) -> list[dict]:
     """
     Memory categories requires a system prompt that instructs the model on how to use the memory backend, and also provides the content in core memory.
@@ -553,6 +554,7 @@ def add_memory_instruction_system_prompt(
 
     system_prompt_template = MEMORY_BACKEND_INSTRUCTION
     memory_content = memory_backend_instance._dump_core_memory_to_context()
+    scenario_setting = MEMORY_AGENT_SETTINGS[scenario]
 
     system_prompt = system_prompt_template.format(
         scenario_setting=scenario_setting, memory_content=memory_content

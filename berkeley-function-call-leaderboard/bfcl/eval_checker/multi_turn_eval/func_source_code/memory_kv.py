@@ -33,7 +33,7 @@ class MemoryAPI_kv(MemoryAPI):
         model_result_dir: Path = initial_config["model_result_dir"]
         self.test_id: str = initial_config["test_id"]
         self.scenario: str = initial_config["scenario"]
-        test_category: str = extract_test_category_from_id(self.test_id)
+        test_category: str = extract_test_category_from_id(self.test_id, remove_prereq=True)
 
         # TODO: use helper function to assemble the path
         self.snapshot_folder = model_result_dir / "memory_snapshot" / test_category

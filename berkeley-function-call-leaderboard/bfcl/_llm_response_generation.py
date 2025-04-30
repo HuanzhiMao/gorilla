@@ -102,29 +102,36 @@ def collect_test_cases(args, model_name, all_test_categories, all_test_entries_i
     existing_result = []
     for test_category in all_test_categories:
 
-        result_file_path = model_result_dir / f"{test_category}.json"
-        if result_file_path.exists():
-            # Not allowing overwrite, we will load the existing results
-            if not args.allow_overwrite:
-                existing_result.extend(load_file(result_file_path))
-            # Allow overwrite and not running specific test ids, we will delete the existing result file before generating new results
-            elif not args.run_ids:
-                result_file_path.unlink()
-            # Allow overwrite and running specific test ids, we will do nothing here
-            else:
-                pass
+        # TODO: Simplify the handling of memory prerequisite entries/categories
+        result_file_paths = [model_result_dir / f"{test_category}.json"]
+        if is_memory(test_category):
+            # Memory test cases have the pre-requisite entries in a separate file
+            result_file_paths.append(model_result_dir / f"{test_category}_prereq.json")
+
+        for file_path in result_file_paths:
+            if file_path.exists():
+                # Not allowing overwrite, we will load the existing results
+                if not args.allow_overwrite:
+                    existing_result.extend(load_file(file_path))
+                # Allow overwrite and not running specific test ids, we will delete the existing result file before generating new results
+                elif not args.run_ids:
+                    file_path.unlink()
+                # Allow overwrite and running specific test ids, we will do nothing here
+                else:
+                    pass
 
         if is_memory(test_category):
             # We also need to special handle the pre-requisite entries and the snapshot result for memory test cases
             snapshot_folder = model_result_dir / "memory_snapshot" / test_category
             if snapshot_folder.exists():
                 if not args.allow_overwrite:
-                    for prereq_result_file in snapshot_folder.glob("*.json"):
-                        # The final result file is only the memory backend snapshot for human readalibity; so it can be ignored
-                        if "_final" not in prereq_result_file.name:
-                            existing_result += load_file(prereq_result_file)
+                    pass
                 elif not args.run_ids:
                     shutil.rmtree(snapshot_folder)
+                else:
+                    # TODO: If running id and id involes prereq entries, we should just delete those snapshot files
+                    # It's not implemented yet, but it won't affect the accuracy, as those files will be overwritten anyway (assume generatoin success)
+                    pass
 
         existing_ids = [entry["id"] for entry in existing_result]
 
@@ -281,12 +288,12 @@ def main(args):
         )
         print(all_test_categories)
         print(len(test_cases_total), "test cases to generate for", model_name)
-        
+
         # print(test_cases_total)
 
         if len(test_cases_total) == 0:
             print(
                 f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
             )
-        else:
-            generate_results(args, model_name, test_cases_total[:10])
+        # else:
+        #     generate_results(args, model_name, test_cases_total[:10])
