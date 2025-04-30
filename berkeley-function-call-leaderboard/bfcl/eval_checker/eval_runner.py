@@ -570,7 +570,7 @@ def evaluate_task(
     record_cost_latency(state["leaderboard_table"], model_name, model_result)
 
     # Find the corresponding test file.
-    prompt_file = find_file_by_category(PROMPT_PATH, test_category)
+    prompt_file = find_file_by_category(test_category, PROMPT_PATH)
     prompt = load_file(prompt_file, sort_by_id=True)
 
     if is_relevance_or_irrelevance(test_category):
@@ -580,7 +580,7 @@ def evaluate_task(
 
     else:
         # Find the corresponding possible answer file
-        possible_answer_file = find_file_by_category(POSSIBLE_ANSWER_PATH, test_category)
+        possible_answer_file = find_file_by_category(test_category, POSSIBLE_ANSWER_PATH)
         possible_answer = load_file(possible_answer_file, sort_by_id=True)
 
         if is_multi_turn(test_category):

@@ -16,11 +16,12 @@ from bfcl.eval_checker.eval_runner_helper import load_file
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.utils import (
     clean_up_memory_prereq_entries,
+    get_file_name_by_category,
     is_memory,
     load_dataset_entry,
     parse_test_category_argument,
-    sort_key,
     populate_initial_settings_for_memory_test_cases,
+    sort_key,
 )
 from tqdm import tqdm
 
@@ -103,12 +104,18 @@ def collect_test_cases(args, model_name, all_test_categories, all_test_entries_i
     for test_category in all_test_categories:
 
         # TODO: Simplify the handling of memory prerequisite entries/categories
-        result_file_paths = [model_result_dir / f"{test_category}.json"]
+        result_file_paths = [
+            model_result_dir / get_file_name_by_category(test_category, is_result_file=True)
+        ]
         if is_memory(test_category):
             # Memory test cases have the pre-requisite entries in a separate file
-            result_file_paths.append(model_result_dir / f"{test_category}_prereq.json")
+            result_file_paths.append(
+                model_result_dir
+                / get_file_name_by_category(f"{test_category}_prereq", is_result_file=True)
+            )
 
         for file_path in result_file_paths:
+            print(f"Checking for existing results in {file_path}")
             if file_path.exists():
                 # Not allowing overwrite, we will load the existing results
                 if not args.allow_overwrite:

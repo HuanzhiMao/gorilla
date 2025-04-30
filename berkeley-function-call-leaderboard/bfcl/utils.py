@@ -52,8 +52,8 @@ def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = Fals
 
 
 def find_file_by_category(
-    folder_path: Path,
     test_category: str,
+    folder_path: Path,
     is_result_file: bool = False,
     is_score_file: bool = False,
 ) -> Path:
@@ -76,6 +76,29 @@ def find_file_by_category(
         if extract_test_category(json_file) == test_category:
             return json_file
     raise FileNotFoundError(f"No JSON file found with category: {test_category}")
+
+
+def get_file_name_by_category(
+    test_category: str,
+    is_result_file: bool = False,
+    is_score_file: bool = False,
+) -> str:
+    """
+    Get the file name for a given test category.
+    By default, it returns the file name with the suffix ".json".
+    If `is_result_file` is True, it returns the file name with the suffix "_result.json".
+    If `is_score_file` is True, it returns the file name with the suffix "_score.json".
+    """
+    assert not (is_result_file and is_score_file), "Cannot be both result and score file."
+
+    if is_result_file:
+        file_name = f"{VERSION_PREFIX}_{test_category}_result.json"
+    elif is_score_file:
+        file_name = f"{VERSION_PREFIX}_{test_category}_score.json"
+    else:
+        file_name = f"{VERSION_PREFIX}_{test_category}.json"
+
+    return file_name
 
 
 def is_web_search(test_category):
