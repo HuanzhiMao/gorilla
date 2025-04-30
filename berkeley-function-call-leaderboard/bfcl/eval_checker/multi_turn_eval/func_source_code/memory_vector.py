@@ -1,18 +1,11 @@
-import os
-import signal
 import json
 import shutil
 import hashlib
-import subprocess
-import time
-import redis
-import random
 import faiss
 import numpy as np
-import pickle
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, List, Tuple, Union, Any
+from typing import List, Tuple
 from sentence_transformers import SentenceTransformer
 
 from bfcl.utils import (
@@ -23,21 +16,19 @@ from bfcl.utils import (
 
 from rank_bm25 import BM25Plus
 
-MAX_SHORT_TERM_MEMORY_SIZE = 7
-MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH = 300
-MAX_LONG_TERM_MEMORY_SIZE = 100  # FIXME: Change this to 50
-MAX_LONG_TERM_MEMORY_ENTRY_LENGTH = 2000
+MAX_CORE_MEMORY_SIZE = 7
+MAX_CORE_MEMORY_ENTRY_LENGTH = 300
+MAX_ARCHIVAL_MEMORY_SIZE = 100  # FIXME: Change this to 50
+MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH = 2000
 EMBEDDING_DIMENSION = 384
 
-class VectorMemoryAPI:
+class MemoryAPI_vector:
     """
     A class that provides APIs to manage short-term and long-term memory data.
     """
 
     def __init__(self):
-        self.long_term_memory = {}
-        self.redis_client = None
-        self.redis_process = None
+        self.archival_memory = {}
         #init sentence transformer for text embeddings now
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         
@@ -48,55 +39,19 @@ class VectorMemoryAPI:
         self.id_to_index_map = {}
         self.next_index = 0
 
-        self.short_term_memory_count = 0
-        self.port = None
+        #setup vector store
+        self.text_store = {}
+        self.vector_store = {}
+
+        self.core_memory_count = 0
 
         self._api_description = """This tool belongs to the memory suite, which provides APIs to manage both short-term and long-term memory data. Short-term memory is limited in size and can be accessed quickly, while long-term memory is larger but takes longer to access. Both type of memory is persistent across multiple conversations with the user, and can be accessed in a later interactions. You should actively manage the memory data to ensure that it is up-to-date and easy to retrieve later."""
-    
-    def __del__(self):
-        self._cleanup()
-    
-    def _cleanup(self):
-        if hasattr(self, 'redis_process') and self.redis_process is not None:
-            try:
-                self.redis_process.terminate()
-                self.redis_process.wait(timeout=3)
-                
-                if self.redis_process.poll() is None:
-                    os.kill(self.redis_process.pid, signal.SIGKILL)
-            except:
-                pass
 
-    def setup_vector_store(self, port=None, db=0):
-        self._cleanup()
-        self.port = port if isinstance(port, int) and port > 0 else random.randint(6500, 7000)
-        try:
-            test_client = redis.Redis(host='localhost', port=self.port, db=db)
-            test_client.ping()
-            print(f"Redis already running on port {self.port}, reusing connection for db {db}")
-            self.redis_client = test_client
-            self.redis_process = None
-        except redis.ConnectionError:
-            try:
-                print(f"Starting Redis server on port {self.port}")
-                self.redis_process = subprocess.Popen(["redis-server", "--port", str(self.port)])
-                time.sleep(2)
-                # Connect to Redis
-                self.redis_client = redis.Redis(host='localhost', port=self.port, db=db)
-                self.redis_client.ping()
-            except Exception as e:
-                print(f"Redis server startup failed: {e}")
-                # Force terminate if process was started
-                if hasattr(self, 'redis_process'):
-                    try:
-                        os.kill(self.redis_process.pid, signal.SIGKILL)
-                    except:
-                        pass
-                return False
-        
-        if self.embedding_model is None:
-            self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-        
+    def _setup_vector_store(self, port=None, db=0):
+        #reset vector store
+        self.text_store = {}
+        self.vector_store = {}
+
         # Initialize faiss index if not already done
         if self.faiss_index is None:
             self.faiss_index = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
@@ -104,10 +59,12 @@ class VectorMemoryAPI:
         # Reset other state variables
         self.id_to_index_map = {}
         self.next_index = 0
-        self.short_term_memory_count = 0
+        self.core_memory_count = 0
+        
+        if self.embedding_model is None:
+            self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         
         return True
-
 
     def _get_text_embedding(self, text: str) -> np.ndarray:
         embedding = self.embedding_model.encode(text)
@@ -120,15 +77,15 @@ class VectorMemoryAPI:
 
     def _add_to_vector_store(self, text: str) -> str:
         #We'll add to both faiss and redis in this
-        if self.short_term_memory_count >= MAX_SHORT_TERM_MEMORY_SIZE:
+        if self.core_memory_count >= MAX_CORE_MEMORY_SIZE:
             return None
         
         text_id = self._generate_text_id(text)
         embedding = self._get_text_embedding(text)
 
-        #redis
-        self.redis_client.set(text_id, text)
-        self.redis_client.set(f"vec:{text_id}", pickle.dumps(embedding))
+        #store
+        self.text_store[text_id] = text
+        self.vector_store[text_id] = embedding
 
         #faiss
         self.faiss_index.add(np.array([embedding], dtype=np.float32))
@@ -136,18 +93,21 @@ class VectorMemoryAPI:
         #update id-to-index map
         self.id_to_index_map[text_id] = self.next_index
         self.next_index += 1
-        self.short_term_memory_count += 1
-
+        self.core_memory_count += 1
+        
         return text_id
 
     def _remove_from_vector_store(self, text_id: str) -> bool:
         if text_id not in self.id_to_index_map:
             return False
 
-        #redis
-        self.redis_client.delete(text_id)
-        self.redis_client.delete(f"vec:{text_id}")
-        self.short_term_memory_count -= 1
+        #remove
+        if text_id in self.text_store:
+            del self.text_store[text_id]
+        if text_id in self.vector_store:
+            del self.vector_store[text_id]
+        
+        self.core_memory_count -= 1
 
         # for faiss, to actually remove we have to rebuild the index
         # don't need for now, if needed, will create helper func for it
@@ -157,7 +117,7 @@ class VectorMemoryAPI:
     def _search_vector_store(self, query: str, k: int = 5) -> List[Tuple[float, str]]:
         query_embedding = self._get_text_embedding(query)
 
-        k = min(k, self.short_term_memory_count)
+        k = min(k, self.core_memory_count)
         if k <= 0:
             return []
 
@@ -175,40 +135,30 @@ class VectorMemoryAPI:
                 if index == idx:
                     text_id = txt_id
                     break
-            #after finding our text id we do 3 things
-            # 1. get the stored text from redis
-            # 2. decode bytes back to a string
-            # 3. put the similarity score w/ text and append to results
-            if text_id:
-                text_bytes = self.redis_client.get(text_id)
-                if text_bytes:
-                    text = text_bytes.decode('utf-8')
-                    results.append((float(distances[0][i]), text))
+
+            # Get text from our in-memory store
+            if text_id and text_id in self.text_store:
+                text = self.text_store[text_id]
+                results.append((float(distances[0][i]), text))
 
         return results
 
-    def _export_short_term_memory(self) -> List[str]:
+    def _export_core_memory(self) -> List[str]:
         result = []
-        all_keys = self.redis_client.keys("*")
-        text_ids = [key.decode() for key in all_keys if not key.decode().startswith("vec:")]
-
-        for text_id in text_ids:
-            text_bytes = self.redis_client.get(text_id)
-            if text_bytes:
-                result.append(text_bytes.decode('utf-8'))
+        for text_id in self.text_store:
+            result.append(self.text_store[text_id])
         return result
 
     
-    def _import_short_term_memory(self, memory_list: List[str]):
-        #clear redis state
-        all_keys = self.redis_client.keys("*")
-        for key in all_keys:
-            self.redis_client.delete(key)
+    def _import_core_memory(self, memory_list: List[str]):
+        # Clear in-memory state
+        self.text_store = {}
+        self.vector_store = {}
         
         self.faiss_index = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
         self.id_to_index_map = {}
         self.next_index = 0
-        self.short_term_memory_count = 0
+        self.core_memory_count = 0
 
         for text in memory_list:
             self._add_to_vector_store(text)
@@ -225,19 +175,9 @@ class VectorMemoryAPI:
             target_file = target_dir / f"{test_category}_final.json"
         else:
             target_file = target_dir / f"{test_category}_prereq_final.json"
-
-        try:
-            parts = test_entry_id.split('_')
-            if len(parts) >= 3 and parts[0] == "memory":
-                db_number = int(parts[-1])  # Get the last part which should be the number
-            else:
-                db_number = 0
-        except:
-            db_number = 0
             
-        print(f"Using Redis database {db_number} for test {test_entry_id}")
-
-        self.setup_vector_store(db=db_number)
+        # init vector store
+        self._setup_vector_store()
 
         # TODO: Use a more elegant way to handle this
         if is_first_memory_prereq_entry(test_entry_id):
@@ -264,9 +204,9 @@ class VectorMemoryAPI:
         elif target_file.exists():
             with open(target_file, "r") as f:
                 memory_data = json.load(f)
-                self._import_short_term_memory(memory_data["short_term_memory"])
-                # self.short_term_memory = deepcopy(memory_data["short_term_memory"])
-                self.long_term_memory = deepcopy(memory_data["long_term_memory"])
+                self._import_core_memory(memory_data["core_memory"])
+                # self.core_memory = deepcopy(memory_data["core_memory"])
+                self.archival_memory = deepcopy(memory_data["archival_memory"])
 
         else:
             raise FileNotFoundError(f"Memory snapshot file not found: {target_file}")
@@ -287,8 +227,8 @@ class VectorMemoryAPI:
         with open(target_dir / f"{test_entry_id}.json", "w") as f:
             json.dump(
                 {
-                    "short_term_memory": self._export_short_term_memory(),
-                    "long_term_memory": self.long_term_memory,
+                    "core_memory": self._export_core_memory(),
+                    "archival_memory": self.archival_memory,
                 },
                 f,
                 indent=4,
@@ -296,8 +236,8 @@ class VectorMemoryAPI:
         with open(target_dir / f"{test_category}_final.json", "w") as f:
             json.dump(
                 {
-                    "short_term_memory": self._export_short_term_memory(),
-                    "long_term_memory": self.long_term_memory,
+                    "core_memory": self._export_core_memory(),
+                    "archival_memory": self.archival_memory,
                 },
                 f,
                 indent=4,
@@ -323,7 +263,7 @@ class VectorMemoryAPI:
         ranked_results = sorted(zip(scores, corpus), key=lambda x: x[0], reverse=True)
         return {"ranked_results": ranked_results[:k]}
 
-    def short_term_memory_add(self, value: str):
+    def core_memory_add(self, value: str):
         """
         Add a value to the short-term memory vecto store.
 
@@ -334,11 +274,11 @@ class VectorMemoryAPI:
             status (str): Status of the operation.
         """
         value = str(value)
-        if self.short_term_memory_count >= MAX_SHORT_TERM_MEMORY_SIZE:
+        if self.core_memory_count >= MAX_CORE_MEMORY_SIZE:
             return {"error": "Short term memory is full. Please clear some entries."}
-        if len(value) > MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH:
+        if len(value) > MAX_CORE_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_SHORT_TERM_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_CORE_MEMORY_ENTRY_LENGTH} characters."
             }
         
         text_id = self._add_to_vector_store(value)
@@ -348,7 +288,7 @@ class VectorMemoryAPI:
         
         return {"status": "Entry added.", "id": text_id}
 
-    def short_term_memory_remove(self, value: str):
+    def core_memory_remove(self, value: str):
         """
         Remove a value from the short-term memory.
 
@@ -364,25 +304,24 @@ class VectorMemoryAPI:
         else:
             return {"error": "Entry not found."}
 
-    def short_term_memory_clear(self):
+    def core_memory_clear(self):
         """
         Clear all values from the short-term memory, including those from previous interactions. This operation is irreversible.
 
         Returns:
             status (str): Status of the operation.
         """
-        all_keys = self.redis_client.keys("*")
-        for key in all_keys:
-            self.redis_client.delete(key)
+        self.text_store = {}
+        self.vector_store = {}
             
         self.faiss_index = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
         self.id_to_index_map = {}
         self.next_index = 0
-        self.short_term_memory_count = 0
+        self.core_memory_count = 0
         
         return {"status": "Short term memory cleared."}
 
-    def short_term_memory_search(self, query: str, k: int = 5):
+    def core_memory_search(self, query: str, k: int = 5):
         """
         Search for similar entries in the short-term memory using vector similarity.
 
@@ -396,25 +335,17 @@ class VectorMemoryAPI:
         results = self._search_vector_store(query, k)
         return {"ranked_results": results}
 
-    def short_term_memory_retrieve_all(self):
+    def core_memory_retrieve_all(self):
         """
         Retrieve all values from the short-term memory.
 
         Returns:
             list: A list of all values in the short-term memory.
         """
-        all_values = []
-        all_keys = self.redis_client.keys("*")
-        text_ids = [key.decode() for key in all_keys if not key.decode().startswith("vec:")]
-        
-        for text_id in text_ids:
-            text_bytes = self.redis_client.get(text_id)
-            if text_bytes:
-                all_values.append(text_bytes.decode('utf-8'))
-        
+        all_values = list(self.text_store.values())
         return {"values": all_values}
 
-    def long_term_memory_add(self, key: str, value: str):
+    def archival_memory_add(self, key: str, value: str):
         """
         Add a key-value pair to the long-term memory. Make sure to use meaningful keys for easy retrieval later.
         Args:
@@ -425,19 +356,19 @@ class VectorMemoryAPI:
             status (str): Status of the operation.
         """
         key, value = str(key), str(value)
-        if len(self.long_term_memory) >= MAX_LONG_TERM_MEMORY_SIZE:
+        if len(self.archival_memory) >= MAX_ARCHIVAL_MEMORY_SIZE:
             return {"error": "Long term memory is full. Please clear some entries."}
-        if len(value) > MAX_LONG_TERM_MEMORY_ENTRY_LENGTH:
+        if len(value) > MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_LONG_TERM_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH} characters."
             }
-        if key in self.long_term_memory:
+        if key in self.archival_memory:
             return {"error": "Key name must be unique."}
 
-        self.long_term_memory[key] = value
+        self.archival_memory[key] = value
         return {"status": "Key added."}
 
-    def long_term_memory_remove(self, key: str):
+    def archival_memory_remove(self, key: str):
         """
         Remove a key-value pair from the long-term memory.
 
@@ -447,13 +378,13 @@ class VectorMemoryAPI:
         Returns:
             status (str): Status of the operation.
         """
-        if key in self.long_term_memory:
-            del self.long_term_memory[key]
+        if key in self.archival_memory:
+            del self.archival_memory[key]
             return {"status": "Key removed."}
         else:
             return {"error": "Key not found."}
 
-    def long_term_memory_replace(self, key: str, value: str):
+    def archival_memory_replace(self, key: str, value: str):
         """
         Replace a key-value pair in the long-term memory with a new value.
 
@@ -465,27 +396,27 @@ class VectorMemoryAPI:
             status (str): Status of the operation.
         """
         key, value = str(key), str(value)
-        if key not in self.long_term_memory:
+        if key not in self.archival_memory:
             return {"error": "Key not found."}
-        if len(value) > MAX_LONG_TERM_MEMORY_ENTRY_LENGTH:
+        if len(value) > MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_LONG_TERM_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry is too long. Please shorten the entry to less than {MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH} characters."
             }
 
-        self.long_term_memory[key] = value
+        self.archival_memory[key] = value
         return {"status": "Key replaced."}
 
-    def long_term_memory_clear(self):
+    def archival_memory_clear(self):
         """
         Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible.
 
         Returns:
             status (str): Status of the operation.
         """
-        self.long_term_memory = {}
+        self.archival_memory = {}
         return {"status": "Long term memory cleared."}
 
-    def long_term_memory_retrieve(self, key: str):
+    def archival_memory_retrieve(self, key: str):
         """
         Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search.
 
@@ -495,20 +426,20 @@ class VectorMemoryAPI:
         Returns:
             value (str): The value associated with the key.
         """
-        if key not in self.long_term_memory:
+        if key not in self.archival_memory:
             return {"error": "Key not found."}
-        return {"value": self.long_term_memory[key]}
+        return {"value": self.archival_memory[key]}
 
-    def long_term_memory_list_keys(self):
+    def archival_memory_list_keys(self):
         """
         List all keys currently in the long-term memory.
 
         Returns:
             keys (List[str]): A list of all keys in the long-term memory.
         """
-        return {"keys": list(self.long_term_memory.keys())}
+        return {"keys": list(self.archival_memory.keys())}
 
-    def long_term_memory_key_search(self, query: str, k: int = 5):
+    def archival_memory_key_search(self, query: str, k: int = 5):
         """
         Search for key names in the long-term memory that are similar to the query using BM25+ algorithm.
 
@@ -519,5 +450,5 @@ class VectorMemoryAPI:
         Returns:
             ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
         """
-        keys = deepcopy(list(self.long_term_memory.keys()))
+        keys = deepcopy(list(self.archival_memory.keys()))
         return self._similarity_search(query, keys, k)
