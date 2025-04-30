@@ -31,8 +31,9 @@ def execute_multi_turn_func_call(
         module_name = CLASS_FILE_PATH_MAPPING[class_name]
         # TODO: Handler the model name issue from handler more elegantly
         instance_name = (
-            f"{model_name.replace('-', '_').replace('.', '_').replace('/', '_')}_{test_entry_id}_{class_name.lower()}_instance"
+            f"{model_name}_{test_entry_id}_{class_name}_instance"
         )
+        instance_name = re.sub(r'[-./]', '_', instance_name)
         if instance_name not in globals():
             module = importlib.import_module(module_name)
             class_ = getattr(module, class_name)
@@ -94,6 +95,7 @@ def execute_multi_turn_func_call(
 
             execution_results.append(func_call_result)
         except Exception as e:
+            raise e
             execution_results.append(f"Error during execution: {str(e)}")
 
     return execution_results, involved_instances
