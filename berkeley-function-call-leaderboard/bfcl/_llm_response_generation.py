@@ -162,6 +162,7 @@ def multi_threaded_inference(
             )
             break  # Success, exit the loop
         except Exception as e:
+            raise e
             if retry_count < RETRY_LIMIT and (
                 "rate limit reached" in str(e).lower()
                 or (hasattr(e, "status_code") and (e.status_code in {429, 503, 500}))
@@ -281,11 +282,11 @@ def main(args):
         print(all_test_categories)
         print(len(test_cases_total), "test cases to generate for", model_name)
         
-        print(test_cases_total)
+        # print(test_cases_total)
 
-        # if len(test_cases_total) == 0:
-        #     print(
-        #         f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
-        #     )
-        # else:
-        #     generate_results(args, model_name, test_cases_total)
+        if len(test_cases_total) == 0:
+            print(
+                f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
+            )
+        else:
+            generate_results(args, model_name, test_cases_total[:10])

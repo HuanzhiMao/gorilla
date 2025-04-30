@@ -140,7 +140,8 @@ class BaseHandler:
                         },
                     }
                 )
-            all_inference_log.append(state_log)
+            if len(state_log) > 0:
+                all_inference_log.append(state_log)
 
         inference_data: dict = {}
         inference_data = self._pre_query_processing_FC(inference_data, test_entry)
@@ -169,8 +170,10 @@ class BaseHandler:
                     assert (
                         len(involved_instances) == 1
                     ), "Memory category should only involve one class."
+
+                    memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
                     current_turn_message = add_memory_instruction_system_prompt(
-                        current_turn_message, test_entry["scenario"], involved_instances[0]
+                        current_turn_message, test_entry["scenario"], memory_instance
                     )
 
                 inference_data = self.add_first_turn_message_FC(
@@ -341,7 +344,8 @@ class BaseHandler:
                             },
                         }
                     )
-                all_inference_log.append(state_log)
+                if len(state_log) > 0:
+                    all_inference_log.append(state_log)
 
             if force_quit:
                 break
@@ -428,7 +432,8 @@ class BaseHandler:
                         },
                     }
                 )
-            all_inference_log.append(state_log)
+            if len(state_log) > 0:
+                all_inference_log.append(state_log)
 
         inference_data: dict = self._pre_query_processing_prompting(test_entry)
 
@@ -454,8 +459,10 @@ class BaseHandler:
                     assert (
                         len(involved_instances) == 1
                     ), "Memory category should only involve one class."
+
+                    memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
                     current_turn_message = add_memory_instruction_system_prompt(
-                        current_turn_message, test_entry["scenario"], involved_instances[0]
+                        current_turn_message, test_entry["scenario"], memory_instance
                     )
 
                 inference_data = self.add_first_turn_message_prompting(
@@ -625,7 +632,8 @@ class BaseHandler:
                             },
                         }
                     )
-                all_inference_log.append(state_log)
+                if len(state_log) > 0:
+                    all_inference_log.append(state_log)
 
             if force_quit:
                 break

@@ -518,7 +518,7 @@ def populate_initial_settings_for_memory_test_cases(
             init_config = {
                 involved_classes[0]: {
                     "model_result_dir": model_result_dir,
-                    "scenario_name": entry["scenario"],
+                    "scenario": entry["scenario"],
                     "test_id": entry["id"],
                 }
             }

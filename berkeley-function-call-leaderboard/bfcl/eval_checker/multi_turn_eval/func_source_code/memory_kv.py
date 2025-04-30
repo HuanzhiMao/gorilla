@@ -3,6 +3,9 @@ import re
 from copy import deepcopy
 from pathlib import Path
 
+from bfcl.eval_checker.multi_turn_eval.func_source_code.memory_api_metaclass import (
+    MemoryAPI,
+)
 from bfcl.utils import extract_test_category_from_id, is_first_memory_prereq_entry
 from rank_bm25 import BM25Plus
 
@@ -13,7 +16,7 @@ MAX_ARCHIVAL_MEMORY_SIZE = 100  # FIXME: Change this to 50
 MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH = 2000
 
 
-class MemoryAPI_kv:
+class MemoryAPI_kv(MemoryAPI):
     """
     A class that provides APIs to manage short-term and long-term memory data in a key-value format.
     """
@@ -73,6 +76,11 @@ class MemoryAPI_kv:
                 f,
                 indent=4,
             )
+
+    def _dump_core_memory_to_context(self) -> str:
+        if not self.core_memory:
+            return "There is no content in the core memory."
+        return json.dumps(self.core_memory, indent=4)
 
     @staticmethod
     def _similarity_search(query: str, corpus: list[str], k: int = 5):
