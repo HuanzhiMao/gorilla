@@ -115,7 +115,6 @@ def collect_test_cases(args, model_name, all_test_categories, all_test_entries_i
             )
 
         for file_path in result_file_paths:
-            print(f"Checking for existing results in {file_path}")
             if file_path.exists():
                 # Not allowing overwrite, we will load the existing results
                 if not args.allow_overwrite:
@@ -302,5 +301,5 @@ def main(args):
             print(
                 f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
             )
-        # else:
-        #     generate_results(args, model_name, test_cases_total[:10])
+        else:
+            generate_results(args, model_name, test_cases_total[:30])

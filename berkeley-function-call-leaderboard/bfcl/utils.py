@@ -110,7 +110,7 @@ def is_memory(test_category):
 
 
 def is_first_memory_prereq_entry(test_entry_id):
-    return "prereq" in test_entry_id and test_entry_id.endswith("_0")
+    return "prereq" in test_entry_id and test_entry_id.endswith("-0")
 
 
 def is_memory_prereq(test_category):
