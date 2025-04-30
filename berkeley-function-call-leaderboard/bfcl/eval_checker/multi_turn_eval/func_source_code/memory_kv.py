@@ -2,6 +2,7 @@ import json
 import re
 from copy import deepcopy
 from pathlib import Path
+from typing import Dict, List, Tuple
 
 from bfcl.eval_checker.multi_turn_eval.func_source_code.memory_api_metaclass import (
     MemoryAPI,
@@ -110,7 +111,7 @@ class MemoryAPI_kv(MemoryAPI):
         pattern = r"^[a-z]+(_[a-z0-9]+)*$"
         return bool(re.match(pattern, s))
 
-    def core_memory_add(self, key: str, value: str):
+    def core_memory_add(self, key: str, value: str) -> Dict[str, str]:
         """
         Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later.
 
@@ -137,7 +138,7 @@ class MemoryAPI_kv(MemoryAPI):
         self.core_memory[key] = value
         return {"status": "Key-value pair added."}
 
-    def core_memory_remove(self, key: str):
+    def core_memory_remove(self, key: str) -> Dict[str, str]:
         """
         Remove a key-value pair from the short-term memory.
 
@@ -153,7 +154,7 @@ class MemoryAPI_kv(MemoryAPI):
         else:
             return {"error": "Key not found."}
 
-    def core_memory_replace(self, key: str, value: str):
+    def core_memory_replace(self, key: str, value: str) -> Dict[str, str]:
         """
         Replace a key-value pair in the short-term memory with a new value.
 
@@ -175,7 +176,7 @@ class MemoryAPI_kv(MemoryAPI):
         self.core_memory[key] = value
         return {"status": "Key replaced."}
 
-    def core_memory_clear(self):
+    def core_memory_clear(self) -> Dict[str, str]:
         """
         Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible.
 
@@ -185,7 +186,7 @@ class MemoryAPI_kv(MemoryAPI):
         self.core_memory = {}
         return {"status": "Short term memory cleared."}
 
-    def core_memory_retrieve(self, key: str):
+    def core_memory_retrieve(self, key: str) -> Dict[str, str]:
         """
         Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search.
 
@@ -200,7 +201,7 @@ class MemoryAPI_kv(MemoryAPI):
             return {"error": "Key not found."}
         return {"value": self.core_memory[key]}
 
-    def core_memory_list_keys(self):
+    def core_memory_list_keys(self) -> Dict[str, List[str]]:
         """
         List all keys currently in the short-term memory.
 
@@ -209,30 +210,31 @@ class MemoryAPI_kv(MemoryAPI):
         """
         return {"keys": list(self.core_memory.keys())}
 
-    def core_memory_key_search(self, query: str, k: int = 5):
+    def core_memory_key_search(self, query: str, k: int = 5) -> Dict[str, List[Tuple[float, str]]]:
         """
         Search for key names in the short-term memory that are similar to the query using BM25+ algorithm.
 
         Args:
             query (str): The query text to search for.
-            k (int, optional): The number of results to return.
+            k (int): [Optional] The number of results to return.
 
         Returns:
-            ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
+            ranked_results (List[Tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
         """
         keys = deepcopy(list(self.core_memory.keys()))
         return self._similarity_search(query, keys, k)
 
-    def core_memory_retrieve_all(self):
+    def core_memory_retrieve_all(self) -> Dict[str, str]:
         """
         Retrieve all key-value pairs from the short-term memory.
 
         Returns:
-            dict: A dictionary of all key-value pairs in the short-term memory.
+            key (str): Each key in the short-term memory.
+            value (str): The value associated with each key.
         """
         return self.core_memory
 
-    def archival_memory_add(self, key: str, value: str):
+    def archival_memory_add(self, key: str, value: str) -> Dict[str, str]:
         """
         Add a key-value pair to the long-term memory. Make sure to use meaningful keys for easy retrieval later.
         Args:
@@ -258,7 +260,7 @@ class MemoryAPI_kv(MemoryAPI):
         self.archival_memory[key] = value
         return {"status": "Key added."}
 
-    def archival_memory_remove(self, key: str):
+    def archival_memory_remove(self, key: str) -> Dict[str, str]:
         """
         Remove a key-value pair from the long-term memory.
 
@@ -274,7 +276,7 @@ class MemoryAPI_kv(MemoryAPI):
         else:
             return {"error": "Key not found."}
 
-    def archival_memory_replace(self, key: str, value: str):
+    def archival_memory_replace(self, key: str, value: str) -> Dict[str, str]:
         """
         Replace a key-value pair in the long-term memory with a new value.
 
@@ -296,7 +298,7 @@ class MemoryAPI_kv(MemoryAPI):
         self.archival_memory[key] = value
         return {"status": "Key replaced."}
 
-    def archival_memory_clear(self):
+    def archival_memory_clear(self) -> Dict[str, str]:
         """
         Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible.
 
@@ -306,7 +308,7 @@ class MemoryAPI_kv(MemoryAPI):
         self.archival_memory = {}
         return {"status": "Long term memory cleared."}
 
-    def archival_memory_retrieve(self, key: str):
+    def archival_memory_retrieve(self, key: str) -> Dict[str, str]:
         """
         Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search.
 
@@ -320,7 +322,7 @@ class MemoryAPI_kv(MemoryAPI):
             return {"error": "Key not found."}
         return {"value": self.archival_memory[key]}
 
-    def archival_memory_list_keys(self):
+    def archival_memory_list_keys(self) -> Dict[str, List[str]]:
         """
         List all keys currently in the long-term memory.
 
@@ -329,16 +331,16 @@ class MemoryAPI_kv(MemoryAPI):
         """
         return {"keys": list(self.archival_memory.keys())}
 
-    def archival_memory_key_search(self, query: str, k: int = 5):
+    def archival_memory_key_search(self, query: str, k: int = 5) -> Dict[str, List[Tuple[float, str]]]:
         """
         Search for key names in the long-term memory that are similar to the query using BM25+ algorithm.
 
         Args:
             query (str): The query text to search for.
-            k (int, optional): The number of results to return.
+            k (int): [Optional] The number of results to return.
 
         Returns:
-            ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
+            ranked_results (List[Tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
         """
         keys = deepcopy(list(self.archival_memory.keys()))
         return self._similarity_search(query, keys, k)

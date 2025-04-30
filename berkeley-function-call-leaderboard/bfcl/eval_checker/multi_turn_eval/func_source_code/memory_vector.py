@@ -5,7 +5,7 @@ import faiss
 import numpy as np
 from copy import deepcopy
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from sentence_transformers import SentenceTransformer
 
 from bfcl.utils import (
@@ -263,7 +263,7 @@ class MemoryAPI_vector:
         ranked_results = sorted(zip(scores, corpus), key=lambda x: x[0], reverse=True)
         return {"ranked_results": ranked_results[:k]}
 
-    def core_memory_add(self, value: str):
+    def core_memory_add(self, value: str) -> Dict[str, str]:
         """
         Add a value to the short-term memory vecto store.
 
@@ -288,7 +288,7 @@ class MemoryAPI_vector:
         
         return {"status": "Entry added.", "id": text_id}
 
-    def core_memory_remove(self, value: str):
+    def core_memory_remove(self, value: str) -> Dict[str, str]:
         """
         Remove a value from the short-term memory.
 
@@ -304,7 +304,7 @@ class MemoryAPI_vector:
         else:
             return {"error": "Entry not found."}
 
-    def core_memory_clear(self):
+    def core_memory_clear(self) -> Dict[str, str]:
         """
         Clear all values from the short-term memory, including those from previous interactions. This operation is irreversible.
 
@@ -321,31 +321,31 @@ class MemoryAPI_vector:
         
         return {"status": "Short term memory cleared."}
 
-    def core_memory_search(self, query: str, k: int = 5):
+    def core_memory_search(self, query: str, k: int = 5) -> Dict[str, List[Tuple[float, str]]]:
         """
         Search for similar entries in the short-term memory using vector similarity.
 
         Args:
             query (str): The query text to search for.
-            k (int, optional): The number of results to return.
+            k (int): [Optional] The number of results to return.
 
         Returns:
-            ranked_results (list[tuple[float, str]]): A list of tuples containing the similarity score and the text.
+            ranked_results (List[Tuple[float, str]]): A list of tuples containing the similarity score and the text.
         """
         results = self._search_vector_store(query, k)
         return {"ranked_results": results}
 
-    def core_memory_retrieve_all(self):
+    def core_memory_retrieve_all(self) -> Dict[str, List[str]]:
         """
         Retrieve all values from the short-term memory.
 
         Returns:
-            list: A list of all values in the short-term memory.
+            values (List[str]): A list of all values in the short-term memory.
         """
         all_values = list(self.text_store.values())
         return {"values": all_values}
 
-    def archival_memory_add(self, key: str, value: str):
+    def archival_memory_add(self, key: str, value: str) -> Dict[str, str]:
         """
         Add a key-value pair to the long-term memory. Make sure to use meaningful keys for easy retrieval later.
         Args:
@@ -368,7 +368,7 @@ class MemoryAPI_vector:
         self.archival_memory[key] = value
         return {"status": "Key added."}
 
-    def archival_memory_remove(self, key: str):
+    def archival_memory_remove(self, key: str) -> Dict[str, str]:
         """
         Remove a key-value pair from the long-term memory.
 
@@ -384,7 +384,7 @@ class MemoryAPI_vector:
         else:
             return {"error": "Key not found."}
 
-    def archival_memory_replace(self, key: str, value: str):
+    def archival_memory_replace(self, key: str, value: str) -> Dict[str, str]:
         """
         Replace a key-value pair in the long-term memory with a new value.
 
@@ -406,7 +406,7 @@ class MemoryAPI_vector:
         self.archival_memory[key] = value
         return {"status": "Key replaced."}
 
-    def archival_memory_clear(self):
+    def archival_memory_clear(self) -> Dict[str, str]:
         """
         Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible.
 
@@ -416,7 +416,7 @@ class MemoryAPI_vector:
         self.archival_memory = {}
         return {"status": "Long term memory cleared."}
 
-    def archival_memory_retrieve(self, key: str):
+    def archival_memory_retrieve(self, key: str) -> Dict[str, str]:
         """
         Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search.
 
@@ -430,7 +430,7 @@ class MemoryAPI_vector:
             return {"error": "Key not found."}
         return {"value": self.archival_memory[key]}
 
-    def archival_memory_list_keys(self):
+    def archival_memory_list_keys(self) -> Dict[str, List[str]]:
         """
         List all keys currently in the long-term memory.
 
@@ -439,16 +439,16 @@ class MemoryAPI_vector:
         """
         return {"keys": list(self.archival_memory.keys())}
 
-    def archival_memory_key_search(self, query: str, k: int = 5):
+    def archival_memory_key_search(self, query: str, k: int = 5) -> Dict[str, List[Tuple[float, str]]]:
         """
         Search for key names in the long-term memory that are similar to the query using BM25+ algorithm.
 
         Args:
             query (str): The query text to search for.
-            k (int, optional): The number of results to return.
+            k (int): [Optional] The number of results to return.
 
         Returns:
-            ranked_results (list[tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
+            ranked_results (List[Tuple[float, str]]): A list of tuples containing the BM25+ score and the key.
         """
         keys = deepcopy(list(self.archival_memory.keys()))
         return self._similarity_search(query, keys, k)
