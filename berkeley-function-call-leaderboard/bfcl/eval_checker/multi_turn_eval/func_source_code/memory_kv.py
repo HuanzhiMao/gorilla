@@ -79,7 +79,7 @@ class MemoryAPI_kv(MemoryAPI):
 
     def _dump_core_memory_to_context(self) -> str:
         if not self.core_memory:
-            return "There is no content in the core memory."
+            return "There is no content in the core memory at this point."
         return json.dumps(self.core_memory, indent=4)
 
     @staticmethod

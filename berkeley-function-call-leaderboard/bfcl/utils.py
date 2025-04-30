@@ -180,7 +180,7 @@ def make_json_serializable(value):
     else:
         # Try to serialize the value directly, and if it fails, convert it to a string
         try:
-            json.dumps(value)
+            json.dumps(value, ensure_ascii=False)
             return value
         except (TypeError, ValueError):
             return str(value)
@@ -441,7 +441,7 @@ def populate_test_cases_with_predefined_functions(test_cases: list[dict]) -> lis
             func_doc = load_file(
                 MULTI_TURN_FUNC_DOC_PATH / MULTI_TURN_FUNC_DOC_FILE_MAPPING[func_collection]
             )
-            # entry["function"].extend(func_doc)
+            entry["function"].extend(func_doc)
 
         # Handle Miss Func category; we need to remove the holdout function doc
         if "missed_function" in entry:
