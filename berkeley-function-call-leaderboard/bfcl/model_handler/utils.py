@@ -553,7 +553,7 @@ def add_memory_instruction_system_prompt(
     The input for prompts is a list of list of dictionaries, where each outer list item represents a conversation turn, and each inner list item represents a message in that turn.
     System prompt are added as the first message in the first turn of the conversation.
     """
-    assert len(prompts) > 1
+    assert len(prompts) >= 1
     system_prompt_template = MEMORY_BACKEND_INSTRUCTION
     memory_content = memory_backend_instance._dump_core_memory_to_context()
     scenario_setting = MEMORY_AGENT_SETTINGS[scenario]
