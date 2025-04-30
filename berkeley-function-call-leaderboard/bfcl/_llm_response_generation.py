@@ -177,7 +177,7 @@ def multi_threaded_inference(
             )
             break  # Success, exit the loop
         except Exception as e:
-            raise e
+            # raise e
             if retry_count < RETRY_LIMIT and (
                 "rate limit reached" in str(e).lower()
                 or (hasattr(e, "status_code") and (e.status_code in {429, 503, 500}))
