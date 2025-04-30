@@ -1,7 +1,7 @@
 import json
-import time
 from copy import deepcopy
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bfcl.constants.category_mapping import VERSION_PREFIX
 from bfcl.constants.default_prompts import (
@@ -29,6 +29,11 @@ from bfcl.utils import (
     sort_key,
 )
 from overrides import final
+
+if TYPE_CHECKING:
+    from bfcl.eval_checker.multi_turn_eval.func_source_code.memory_api_metaclass import (
+        MemoryAPI,
+    )
 
 
 class BaseHandler:
@@ -323,7 +328,7 @@ class BaseHandler:
         # Need to flush the memory to local file at the end of the conversation
         if is_memory_prereq(test_entry_id):
             assert len(involved_instances) == 1, "Memory category should only involve one class."
-            memory_instance = list(involved_instances.values())[0]
+            memory_instance: MemoryAPI = list(involved_instances.values())[0]
             memory_instance._flush_memory_to_local_file()
   
         metadata = {
@@ -590,7 +595,7 @@ class BaseHandler:
         # Need to flush the memory to local file at the end of the conversation
         if is_memory_prereq(test_entry_id):
             assert len(involved_instances) == 1, "Memory category should only involve one class."
-            memory_instance = list(involved_instances.values())[0]
+            memory_instance:MemoryAPI = list(involved_instances.values())[0]
             memory_instance._flush_memory_to_local_file()
 
         metadata = {
