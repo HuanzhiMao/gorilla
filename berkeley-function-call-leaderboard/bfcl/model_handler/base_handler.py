@@ -18,6 +18,7 @@ from bfcl.eval_checker.multi_turn_eval.multi_turn_utils import (
     execute_multi_turn_func_call,
     is_empty_execute_response,
 )
+from bfcl.model_handler.utils import add_memory_instruction_system_prompt
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.utils import (
     is_agentic,
@@ -52,7 +53,13 @@ class BaseHandler:
         self.temperature = temperature
         self.is_fc_model = False  # Whether the model is a function calling model
 
-    def inference(self, test_entry: dict, include_input_log: bool, exclude_state_log: bool, result_dir=RESULT_PATH):
+    def inference(
+        self,
+        test_entry: dict,
+        include_input_log: bool,
+        exclude_state_log: bool,
+        result_dir=RESULT_PATH,
+    ):
         # This method is used to retrive model response for each model.
 
         # FC model
@@ -75,7 +82,11 @@ class BaseHandler:
 
     @final
     def inference_multi_turn_FC(
-        self, test_entry: dict, include_input_log: bool, exclude_state_log: bool, result_dir: Path,
+        self,
+        test_entry: dict,
+        include_input_log: bool,
+        exclude_state_log: bool,
+        result_dir: Path,
     ) -> tuple[list[list], dict]:
         initial_config: dict = test_entry.get("initial_config", {})
         involved_classes: list = test_entry["involved_classes"]
@@ -154,6 +165,14 @@ class BaseHandler:
                 ]
 
             if turn_idx == 0:
+                if is_memory(test_category):
+                    assert (
+                        len(involved_instances) == 1
+                    ), "Memory category should only involve one class."
+                    current_turn_message = add_memory_instruction_system_prompt(
+                        current_turn_message, test_entry["scenario"], involved_instances[0]
+                    )
+
                 inference_data = self.add_first_turn_message_FC(
                     inference_data, current_turn_message
                 )
@@ -304,7 +323,10 @@ class BaseHandler:
             if not exclude_state_log:
                 state_log = []
                 for class_name, class_instance in involved_instances.items():
-                    if class_name in STATELESS_CLASSES or class_name in OMIT_STATE_INFO_CLASSES:
+                    if (
+                        class_name in STATELESS_CLASSES
+                        or class_name in OMIT_STATE_INFO_CLASSES
+                    ):
                         continue
                     # Avoid modification in future turns
                     class_instance = deepcopy(class_instance)
@@ -327,10 +349,12 @@ class BaseHandler:
         # Special handling for the memory category
         # Need to flush the memory to local file at the end of the conversation
         if is_memory_prereq(test_entry_id):
-            assert len(involved_instances) == 1, "Memory category should only involve one class."
+            assert (
+                len(involved_instances) == 1
+            ), "Memory category should only involve one class."
             memory_instance: MemoryAPI = list(involved_instances.values())[0]
             memory_instance._flush_memory_to_local_file()
-  
+
         metadata = {
             "input_token_count": total_input_token_count,
             "output_token_count": total_output_token_count,
@@ -348,7 +372,11 @@ class BaseHandler:
 
     @final
     def inference_multi_turn_prompting(
-        self, test_entry: dict, include_input_log: bool, exclude_state_log: bool, result_dir: Path,
+        self,
+        test_entry: dict,
+        include_input_log: bool,
+        exclude_state_log: bool,
+        result_dir: Path,
     ) -> tuple[list[list], dict]:
         initial_config: dict = test_entry.get("initial_config", {})
         involved_classes: list = test_entry["involved_classes"]
@@ -422,6 +450,14 @@ class BaseHandler:
                 ]
 
             if turn_idx == 0:
+                if is_memory(test_category):
+                    assert (
+                        len(involved_instances) == 1
+                    ), "Memory category should only involve one class."
+                    current_turn_message = add_memory_instruction_system_prompt(
+                        current_turn_message, test_entry["scenario"], involved_instances[0]
+                    )
+
                 inference_data = self.add_first_turn_message_prompting(
                     inference_data, current_turn_message
                 )
@@ -571,7 +607,10 @@ class BaseHandler:
             if not exclude_state_log:
                 state_log = []
                 for class_name, class_instance in involved_instances.items():
-                    if class_name in STATELESS_CLASSES or class_name in OMIT_STATE_INFO_CLASSES:
+                    if (
+                        class_name in STATELESS_CLASSES
+                        or class_name in OMIT_STATE_INFO_CLASSES
+                    ):
                         continue
                     # Avoid modification in future turns
                     class_instance = deepcopy(class_instance)
@@ -594,8 +633,10 @@ class BaseHandler:
         # Special handling for the memory category
         # Need to flush the memory to local file at the end of the conversation
         if is_memory_prereq(test_entry_id):
-            assert len(involved_instances) == 1, "Memory category should only involve one class."
-            memory_instance:MemoryAPI = list(involved_instances.values())[0]
+            assert (
+                len(involved_instances) == 1
+            ), "Memory category should only involve one class."
+            memory_instance: MemoryAPI = list(involved_instances.values())[0]
             memory_instance._flush_memory_to_local_file()
 
         metadata = {

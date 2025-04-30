@@ -35,3 +35,7 @@ class MemoryAPI(ABC):
     @abstractmethod
     def _flush_memory_to_local_file(self):
         pass
+
+    @abstractmethod
+    def _dump_core_memory_to_context(self) -> str:
+        pass

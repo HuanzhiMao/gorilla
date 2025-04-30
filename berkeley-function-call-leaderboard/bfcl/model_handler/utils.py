@@ -5,7 +5,7 @@ import json
 import operator
 import re
 from functools import reduce
-from typing import Callable, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Type, Union
 
 from bfcl.constants.default_prompts import (
     DEFAULT_SYSTEM_PROMPT,
@@ -22,12 +22,18 @@ from tenacity import (
     wait_random_exponential,
 )
 
+if TYPE_CHECKING:
+    from bfcl.eval_checker.multi_turn_eval.func_source_code.memory_api_metaclass import (
+        MemoryAPI,
+    )
+
 
 # FIXME
 def func_doc_language_specific_pre_processing(**kwargs):
     raise NotImplementedError(
         "Function doc language specific pre-processing is not implemented yet."
     )
+
 
 def _cast_to_openai_type(properties, mapping):
     for key, value in properties.items():
@@ -538,14 +544,19 @@ def retry_with_backoff(
 #### utils for memory category ####
 
 
-def add_memory_instruction_system_prompt(prompts: list[dict], scenario_setting: str, memory_content: str) -> list[dict]:
+def add_memory_instruction_system_prompt(
+    prompts: list[dict], scenario_setting: str, memory_backend_instance: MemoryAPI
+) -> list[dict]:
     """
     Memory categories requires a system prompt that instructs the model on how to use the memory backend, and also provides the content in core memory.
     """
 
     system_prompt_template = MEMORY_BACKEND_INSTRUCTION
+    memory_content = memory_backend_instance._dump_core_memory_to_context()
 
-    system_prompt = system_prompt_template.format(scenario_setting=scenario_setting, memory_content=memory_content)
+    system_prompt = system_prompt_template.format(
+        scenario_setting=scenario_setting, memory_content=memory_content
+    )
     # System prompt must be in the first position
     # If the question comes with a system prompt, append its content at the end of the chat template.
     if prompts[0]["role"] == "system":
