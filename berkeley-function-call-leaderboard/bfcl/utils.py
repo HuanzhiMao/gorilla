@@ -441,7 +441,7 @@ def populate_test_cases_with_predefined_functions(test_cases: list[dict]) -> lis
             func_doc = load_file(
                 MULTI_TURN_FUNC_DOC_PATH / MULTI_TURN_FUNC_DOC_FILE_MAPPING[func_collection]
             )
-            entry["function"].extend(func_doc)
+            # entry["function"].extend(func_doc)
 
         # Handle Miss Func category; we need to remove the holdout function doc
         if "missed_function" in entry:

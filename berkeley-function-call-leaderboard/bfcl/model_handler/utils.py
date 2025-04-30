@@ -545,7 +545,7 @@ def retry_with_backoff(
 
 
 def add_memory_instruction_system_prompt(
-    prompts: list[dict], scenario_setting: str, memory_backend_instance: MemoryAPI
+    prompts: list[dict], scenario_setting: str, memory_backend_instance: "MemoryAPI"
 ) -> list[dict]:
     """
     Memory categories requires a system prompt that instructs the model on how to use the memory backend, and also provides the content in core memory.

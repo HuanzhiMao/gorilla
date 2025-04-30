@@ -352,7 +352,7 @@ class BaseHandler:
             assert (
                 len(involved_instances) == 1
             ), "Memory category should only involve one class."
-            memory_instance: MemoryAPI = list(involved_instances.values())[0]
+            memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
             memory_instance._flush_memory_to_local_file()
 
         metadata = {
@@ -636,7 +636,7 @@ class BaseHandler:
             assert (
                 len(involved_instances) == 1
             ), "Memory category should only involve one class."
-            memory_instance: MemoryAPI = list(involved_instances.values())[0]
+            memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
             memory_instance._flush_memory_to_local_file()
 
         metadata = {
