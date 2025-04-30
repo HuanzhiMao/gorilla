@@ -109,20 +109,29 @@ class BaseHandler:
         force_quit = False  # Whether the model has been forced to quit. If True, this whole entry will be failed.
 
         all_reasoning_content: list[list] = []
-        involved_instances = []
+
         # Execute no function call, but just to get a reference to all the instances to get the initial state for logging purpose
-        if not exclude_state_log:
-            _, involved_instances = execute_multi_turn_func_call(
-                [],
-                initial_config,
-                involved_classes,
-                self.model_name_underline_replaced,
-                test_entry_id,
-                long_context=(
-                    "long_context" in test_category or "composite" in test_category
-                ),
-                is_evaL_run=False,
+        _, involved_instances = execute_multi_turn_func_call(
+            [],
+            initial_config,
+            involved_classes,
+            self.model_name_underline_replaced,
+            test_entry_id,
+            long_context=("long_context" in test_category or "composite" in test_category),
+            is_evaL_run=False,
+        )
+
+        if is_memory(test_category):
+            assert (
+                len(involved_instances) == 1
+            ), "Memory category should only involve one class."
+
+            memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
+            test_entry["question"] = add_memory_instruction_system_prompt(
+                test_entry["question"], test_entry["scenario"], memory_instance
             )
+
+        if not exclude_state_log:
             state_log = []
             for class_name, class_instance in involved_instances.items():
                 if class_name in STATELESS_CLASSES or class_name in OMIT_STATE_INFO_CLASSES:
@@ -158,6 +167,8 @@ class BaseHandler:
                 assert (
                     len(current_turn_message) == 0
                 ), "Holdout turn should not have user message."
+                # TODO: Move this to before pre_query_processing_FC.
+                # Shouldn't be happening in the inference loop.
                 current_turn_message = [
                     {
                         "role": "user",
@@ -166,16 +177,6 @@ class BaseHandler:
                 ]
 
             if turn_idx == 0:
-                if is_memory(test_category):
-                    assert (
-                        len(involved_instances) == 1
-                    ), "Memory category should only involve one class."
-
-                    memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
-                    current_turn_message = add_memory_instruction_system_prompt(
-                        current_turn_message, test_entry["scenario"], memory_instance
-                    )
-
                 inference_data = self.add_first_turn_message_FC(
                     inference_data, current_turn_message
                 )
@@ -403,18 +404,27 @@ class BaseHandler:
         force_quit = False  # Whether the model has been forced to quit. If True, this whole entry will be failed.
 
         # Execute no function call, but just to get a reference to all the instances to get the initial state for logging purpose
-        if not exclude_state_log:
-            _, involved_instances = execute_multi_turn_func_call(
-                [],
-                initial_config,
-                involved_classes,
-                self.model_name_underline_replaced,
-                test_entry_id,
-                long_context=(
-                    "long_context" in test_category or "composite" in test_category
-                ),
-                is_evaL_run=False,
+        _, involved_instances = execute_multi_turn_func_call(
+            [],
+            initial_config,
+            involved_classes,
+            self.model_name_underline_replaced,
+            test_entry_id,
+            long_context=("long_context" in test_category or "composite" in test_category),
+            is_evaL_run=False,
+        )
+
+        if is_memory(test_category):
+            assert (
+                len(involved_instances) == 1
+            ), "Memory category should only involve one class."
+
+            memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
+            test_entry["question"] = add_memory_instruction_system_prompt(
+                test_entry["question"], test_entry["scenario"], memory_instance
             )
+
+        if not exclude_state_log:
             state_log = []
             for class_name, class_instance in involved_instances.items():
                 if class_name in STATELESS_CLASSES or class_name in OMIT_STATE_INFO_CLASSES:
@@ -455,16 +465,6 @@ class BaseHandler:
                 ]
 
             if turn_idx == 0:
-                if is_memory(test_category):
-                    assert (
-                        len(involved_instances) == 1
-                    ), "Memory category should only involve one class."
-
-                    memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
-                    current_turn_message = add_memory_instruction_system_prompt(
-                        current_turn_message, test_entry["scenario"], memory_instance
-                    )
-
                 inference_data = self.add_first_turn_message_prompting(
                     inference_data, current_turn_message
                 )

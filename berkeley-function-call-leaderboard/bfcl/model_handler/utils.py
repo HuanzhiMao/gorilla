@@ -546,12 +546,14 @@ def retry_with_backoff(
 
 
 def add_memory_instruction_system_prompt(
-    prompts: list[dict], scenario: str, memory_backend_instance: "MemoryAPI"
-) -> list[dict]:
+    prompts: list[list[dict]], scenario: str, memory_backend_instance: "MemoryAPI"
+) -> list[list[dict]]:
     """
     Memory categories requires a system prompt that instructs the model on how to use the memory backend, and also provides the content in core memory.
+    The input for prompts is a list of list of dictionaries, where each outer list item represents a conversation turn, and each inner list item represents a message in that turn.
+    System prompt are added as the first message in the first turn of the conversation.
     """
-
+    assert len(prompts) > 1
     system_prompt_template = MEMORY_BACKEND_INSTRUCTION
     memory_content = memory_backend_instance._dump_core_memory_to_context()
     scenario_setting = MEMORY_AGENT_SETTINGS[scenario]
@@ -561,11 +563,12 @@ def add_memory_instruction_system_prompt(
     )
     # System prompt must be in the first position
     # If the question comes with a system prompt, append its content at the end of the chat template.
-    if prompts[0]["role"] == "system":
-        prompts[0]["content"] = system_prompt + "\n\n" + prompts[0]["content"]
+    first_turn_prompts = prompts[0]
+    if first_turn_prompts[0]["role"] == "system":
+        first_turn_prompts[0]["content"] = system_prompt + "\n\n" + first_turn_prompts[0]["content"]
     # Otherwise, use the system prompt template to create a new system prompt.
     else:
-        prompts.insert(
+        first_turn_prompts.insert(
             0,
             {"role": "system", "content": system_prompt},
         )
