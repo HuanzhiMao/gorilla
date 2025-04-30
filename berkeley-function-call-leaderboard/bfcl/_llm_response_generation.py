@@ -163,7 +163,9 @@ def multi_threaded_inference(
 
     # Wait for all dependencies to complete
     for dependency_id in test_case.get("depends_on", []):
-        events[dependency_id].wait()  # Wait until the dependent task sets its event
+        # TODO: Improve the dependency handling, when prereq doesn't need to be re-run
+        if dependency_id in events:
+            events[dependency_id].wait()  # Wait until the dependent task sets its event
 
     print("running test case", test_case["id"])
     retry_count = 0
@@ -302,4 +304,4 @@ def main(args):
                 f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
             )
         else:
-            generate_results(args, model_name, test_cases_total[:30])
+            generate_results(args, model_name, test_cases_total[:])

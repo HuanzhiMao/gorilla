@@ -38,6 +38,7 @@ MEMORY_AGENT_SETTINGS = {
 
 
 MEMORY_BACKEND_INSTRUCTION = """{scenario_setting}
+
 You have access to an advanced memory system, consisting of two memory types 'Core Memory' and 'Archival Memory'. Both type of memory is persistent across multiple conversations with the user, and can be accessed in a later interactions. You should actively manage your memory data to keep track of important information, ensure that it is up-to-date and easy to retrieve to provide personalized responses to the user later.
 
 The Core memory is limited in size, but always visible to you in context. The Archival Memory has a much larger capacity, but will be held outside of your immediate context due to its size.
