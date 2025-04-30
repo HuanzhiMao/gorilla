@@ -16,7 +16,7 @@ CLASS_FILE_PATH_MAPPING = {
     "VehicleControlAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.vehicle_control",
     # "WebSearchAPI": "bfcl.eval_checker.multi_turn_eval.func_source_code.web_search",  FIXME
     "MemoryAPI_kv": "bfcl.eval_checker.multi_turn_eval.func_source_code.memory_kv",
-    "MemoryAPI_vector": "bfcl.eval_checker.multi_turn_eval.func_source_code.memory_vector",
+    # "MemoryAPI_vector": "bfcl.eval_checker.multi_turn_eval.func_source_code.memory_vector",
     # "MemoryAPI_rec_sum": "bfcl.eval_checker.multi_turn_eval.func_source_code.memory_rec_sum",
     # "MemoryAPI_knowledge_graph": "bfcl.eval_checker.multi_turn_eval.func_source_code.memory_knowledge_graph",
 }
