@@ -501,7 +501,7 @@ def evaluate_task(
     record_cost_latency(state["leaderboard_table"], model_name, model_result)
 
     # Find the corresponding prompt entries
-    prompt = load_dataset_entry(test_category, contain_prereq=False)
+    prompt = load_dataset_entry(test_category, include_prereq=False)
 
     if is_relevance_or_irrelevance(test_category):
         accuracy, total_count = relevance_file_runner(

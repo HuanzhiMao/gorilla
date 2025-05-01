@@ -208,7 +208,6 @@ def load_file(file_path, sort_by_id=False):
     with open(file_path) as f:
         file = f.readlines()
         for line in file:
-            print(line)
             result.append(json.loads(line))
 
     if sort_by_id:
@@ -216,7 +215,7 @@ def load_file(file_path, sort_by_id=False):
     return result
 
 
-def load_dataset_entry(test_category: str, contain_prereq: bool = True) -> list[dict]:
+def load_dataset_entry(test_category: str, include_prereq: bool = True) -> list[dict]:
     """
     This function retrieves the dataset entry for a given test category.
     The input should not be a test category goup, but a specific test category.
@@ -228,9 +227,8 @@ def load_dataset_entry(test_category: str, contain_prereq: bool = True) -> list[
     else:
         # Memory categories
         all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_memory.json")
-        if contain_prereq:
-            for scenario in MEMORY_SCENARIO_NAME:
-                all_entries = process_memory_test_case(all_entries, test_category, scenario)
+        for scenario in MEMORY_SCENARIO_NAME:
+            all_entries = process_memory_test_case(all_entries, test_category, scenario, include_prereq=include_prereq)
 
     all_entries = process_agentic_test_case(all_entries)
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
@@ -468,11 +466,12 @@ def process_func_doc(test_cases: list[dict]) -> list[dict]:
 
 
 def process_memory_test_case(
-    test_cases: list[dict], test_category: str, memory_scenario_name: str
+    test_cases: list[dict], test_category: str, memory_scenario_name: str, include_prereq: bool = True
 ) -> list[dict]:
     """
     Memory test cases needs to have the memory write phase carried out before the inference phase. So we configure some test case dependencies here.
     Also, we need to configure the proper memory backend for the test cases.
+    If `include_prereq` is True, it will include the pre-requisite entries for the memory test categories.
     """
     all_test_cases = []
 
@@ -490,7 +489,8 @@ def process_memory_test_case(
         entry["depends_on"] = deepcopy(pre_req_ids)
         entry["involved_classes"] = [backend_class_name]
         pre_req_ids.append(entry["id"])
-        all_test_cases.append(entry)
+        if include_prereq:
+            all_test_cases.append(entry)
 
     # Update the test case with the backend class name and dependencies
     for entry in test_cases:
