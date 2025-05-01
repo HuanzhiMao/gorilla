@@ -22,6 +22,9 @@ from bfcl.constants.eval_config import (
 from bfcl.constants.executable_backend_config import MULTI_TURN_FUNC_DOC_FILE_MAPPING
 
 
+#### Helper functions to extract/parse/complete test category from different formats ####
+
+
 def extract_test_category(input_string: Union[str, Path]) -> str:
     """
     Extract the test category from a given file name.
@@ -49,6 +52,18 @@ def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = Fals
     if remove_prereq:
         test_entry_id = test_entry_id.replace("_prereq", "")
     return test_entry_id.rsplit("_", 1)[0]
+
+
+def extract_memory_backend_type(test_category):
+    """
+    This function extracts the memory backend type from the test category.
+    The test category should be in the form of `memory_kv` or `memory_knowledge_graph`, etc.
+    """
+    if not is_memory(test_category):
+        raise ValueError(f"Test category {test_category} is not a memory category.")
+
+    # Split the test category by underscores and extract the backend type
+    return test_category[len("memory_") :]
 
 
 def find_file_by_category(
@@ -99,6 +114,25 @@ def get_file_name_by_category(
         file_name = f"{VERSION_PREFIX}_{test_category}.json"
 
     return file_name
+
+
+def parse_test_category_argument(test_category_args: list[str]) -> list[str]:
+    test_name_total = set()
+
+    for test_category in test_category_args:
+        if test_category in TEST_COLLECTION_MAPPING:
+            for test_name in TEST_COLLECTION_MAPPING[test_category]:
+                test_name_total.add(test_name)
+        elif test_category in ALL_CATEGORIES:
+            test_name_total.add(test_category)
+        else:
+            # Invalid test category name
+            raise Exception(f"Invalid test category name provided: {test_category}")
+
+    return sorted(list(test_name_total))
+
+
+#### Predicate functions to check the test category ####
 
 
 def is_web_search(test_category):
@@ -164,16 +198,8 @@ def is_sql(test_category):
 def contain_multi_turn_interaction(test_category):
     return is_multi_turn(test_category) or is_agentic(test_category)
 
-def extract_memory_backend_type(test_category):
-    """
-    This function extracts the memory backend type from the test category.
-    The test category should be in the form of `memory_kv` or `memory_knowledge_graph`, etc.
-    """
-    if not is_memory(test_category):
-        raise ValueError(f"Test category {test_category} is not a memory category.")
 
-    # Split the test category by underscores and extract the backend type
-    return test_category[len("memory_") :]
+#### Helper functions to load/write the dataset files ####
 
 
 def load_file(file_path, sort_by_id=False):
@@ -186,6 +212,29 @@ def load_file(file_path, sort_by_id=False):
     if sort_by_id:
         result.sort(key=sort_key)
     return result
+
+
+def load_dataset_entry(test_category: str) -> list[dict]:
+    """
+    This function retrieves the dataset entry for a given test category.
+    The input should not be a test category goup, but a specific test category.
+    """
+    if not is_memory(test_category):
+        file_name = f"{VERSION_PREFIX}_{test_category}.json"
+        all_entries = load_file(PROMPT_PATH / file_name)
+    else:
+        # Memory categories
+        all_entries = []
+        for scenario in MEMORY_SCENARIO_NAME:
+            file_name = f"{VERSION_PREFIX}_memory_{scenario}.json"
+            entries = load_file(PROMPT_PATH / file_name)
+            all_entries += process_memory_test_case(entries, test_category, scenario)
+
+    all_entries = process_agentic_test_case(all_entries)
+    all_entries = populate_test_cases_with_predefined_functions(all_entries)
+    all_entries = process_func_doc(all_entries)
+
+    return all_entries
 
 
 def write_list_of_dicts_to_file(filename, data, subdir=None):
@@ -264,6 +313,9 @@ def sort_key(entry):
     return (priority, test_category, int(index))
 
 
+#### Helper functions to check the output format ####
+
+
 # TODO: Reorganize this function to be more readable
 def is_function_calling_format_output(decoded_output):
     """
@@ -313,20 +365,7 @@ def is_empty_output(decoded_output):
     return False
 
 
-def parse_test_category_argument(test_category_args: list[str]) -> list[str]:
-    test_name_total = set()
-
-    for test_category in test_category_args:
-        if test_category in TEST_COLLECTION_MAPPING:
-            for test_name in TEST_COLLECTION_MAPPING[test_category]:
-                test_name_total.add(test_name)
-        elif test_category in ALL_CATEGORIES:
-            test_name_total.add(test_category)
-        else:
-            # Invalid test category name
-            raise Exception(f"Invalid test category name provided: {test_category}")
-
-    return sorted(list(test_name_total))
+#### Helper functions to process the dataset entries ####
 
 
 def _get_language_specific_hint(test_category):
@@ -494,29 +533,6 @@ def populate_test_cases_with_predefined_functions(test_cases: list[dict]) -> lis
                             break
 
     return test_cases
-
-
-def load_dataset_entry(test_category: str) -> list[dict]:
-    """
-    This function retrieves the dataset entry for a given test category.
-    The input should not be a test category goup, but a specific test category.
-    """
-    if not is_memory(test_category):
-        file_name = f"{VERSION_PREFIX}_{test_category}.json"
-        all_entries = load_file(PROMPT_PATH / file_name)
-    else:
-        # Memory categories
-        all_entries = []
-        for scenario in MEMORY_SCENARIO_NAME:
-            file_name = f"{VERSION_PREFIX}_memory_{scenario}.json"
-            entries = load_file(PROMPT_PATH / file_name)
-            all_entries += process_memory_test_case(entries, test_category, scenario)
-
-    all_entries = process_agentic_test_case(all_entries)
-    all_entries = populate_test_cases_with_predefined_functions(all_entries)
-    all_entries = process_func_doc(all_entries)
-
-    return all_entries
 
 
 def clean_up_memory_prereq_entries(test_cases: list[dict]) -> list[dict]:

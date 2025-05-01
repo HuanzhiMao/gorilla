@@ -482,73 +482,6 @@ def ast_file_runner(
 
 
 #### Main runner function ####
-def runner(model_names, test_categories, result_dir, score_dir):
-
-    # State udpated by each eval subtask.
-    state = dict(
-        # A dictionary to store the evaluation scores.
-        # Key is model name, value is a dictionary with keys as test category
-        # and values as a dictionary with accuracy and total count.
-        leaderboard_table={},
-    )
-
-    # Get a list of all entries in the folder
-    entries = result_dir.iterdir()
-
-    # Filter out the subdirectories
-    subdirs = [entry for entry in entries if entry.is_dir()]
-
-    # Traverse each subdirectory
-    for subdir in tqdm(subdirs, desc="Number of models evaluated"):
-
-        model_name = subdir.relative_to(result_dir).name
-        if model_names is not None and model_name not in model_names:
-            continue
-
-        model_name_escaped = model_name.replace("_", "/")
-
-        print(f"🦍 Model: {model_name}")
-
-        # Find and process all JSON files in the subdirectory
-        for model_result_json in subdir.glob("*.json"):
-            test_category = extract_test_category(model_result_json)
-            if test_category not in test_categories:
-                continue
-
-            handler = get_handler(model_name_escaped)
-
-            # We don't evaluate chatable and SQL models in our current
-            # leaderboard.
-            if (
-                is_chatable(test_category)
-                or is_executable(test_category)
-                or is_memory_prereq(test_category)
-                or "conflict" in test_category
-            ):
-                continue
-
-            model_result = load_file(model_result_json, sort_by_id=True)
-
-            state = evaluate_task(
-                test_category,
-                result_dir,
-                score_dir,
-                model_result,
-                model_name,
-                handler,
-                state,
-            )
-
-    # This function reads all the score files from local folder and updates the
-    # leaderboard table. This is helpful when you only want to run the
-    # evaluation for a subset of models and test categories.
-    update_leaderboard_table_with_local_score_file(state["leaderboard_table"], score_dir)
-    # Write the leaderboard table to a file
-    generate_leaderboard_csv(
-        state["leaderboard_table"], score_dir, model_names, test_categories
-    )
-
-
 def evaluate_task(
     test_category,
     result_dir,
@@ -621,6 +554,73 @@ def evaluate_task(
     print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy}")
 
     return state
+
+
+def runner(model_names, test_categories, result_dir, score_dir):
+
+    # State udpated by each eval subtask.
+    state = dict(
+        # A dictionary to store the evaluation scores.
+        # Key is model name, value is a dictionary with keys as test category
+        # and values as a dictionary with accuracy and total count.
+        leaderboard_table={},
+    )
+
+    # Get a list of all entries in the folder
+    entries = result_dir.iterdir()
+
+    # Filter out the subdirectories
+    subdirs = [entry for entry in entries if entry.is_dir()]
+
+    # Traverse each subdirectory
+    for subdir in tqdm(subdirs, desc="Number of models evaluated"):
+
+        model_name = subdir.relative_to(result_dir).name
+        if model_names is not None and model_name not in model_names:
+            continue
+
+        model_name_escaped = model_name.replace("_", "/")
+
+        print(f"🦍 Model: {model_name}")
+
+        # Find and process all JSON files in the subdirectory
+        for model_result_json in subdir.glob("*.json"):
+            test_category = extract_test_category(model_result_json)
+            if test_category not in test_categories:
+                continue
+
+            handler = get_handler(model_name_escaped)
+
+            # We don't evaluate chatable and SQL models in our current
+            # leaderboard.
+            if (
+                is_chatable(test_category)
+                or is_executable(test_category)
+                or is_memory_prereq(test_category)
+                or "conflict" in test_category
+            ):
+                continue
+
+            model_result = load_file(model_result_json, sort_by_id=True)
+
+            state = evaluate_task(
+                test_category,
+                result_dir,
+                score_dir,
+                model_result,
+                model_name,
+                handler,
+                state,
+            )
+
+    # This function reads all the score files from local folder and updates the
+    # leaderboard table. This is helpful when you only want to run the
+    # evaluation for a subset of models and test categories.
+    update_leaderboard_table_with_local_score_file(state["leaderboard_table"], score_dir)
+    # Write the leaderboard table to a file
+    generate_leaderboard_csv(
+        state["leaderboard_table"], score_dir, model_names, test_categories
+    )
 
 
 def main(model, test_categories, result_dir, score_dir):
