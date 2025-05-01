@@ -184,6 +184,7 @@ def generate_leaderboard_csv(
     data_non_live = []
     data_live = []
     data_multi_turn = []
+    data_agentic = []
     data_combined = []
     for model_name, value in leaderboard_table.items():
         model_name_escaped = model_name.replace("_", "/")
@@ -199,7 +200,9 @@ def generate_leaderboard_csv(
         python_simple_ast_non_live = get_category_score(value, "simple")
         python_multiple_ast_non_live = get_category_score(value, "multiple")
         python_parallel_ast_non_live = get_category_score(value, "parallel")
-        python_parallel_multiple_ast_non_live = get_category_score(value, "parallel_multiple")
+        python_parallel_multiple_ast_non_live = get_category_score(
+            value, "parallel_multiple"
+        )
         java_simple_ast_non_live = get_category_score(value, "java")
         javascript_simple_ast_non_live = get_category_score(value, "javascript")
         irrelevance_non_live = get_category_score(value, "irrelevance")
@@ -255,7 +258,9 @@ def generate_leaderboard_csv(
         python_simple_ast_live = get_category_score(value, "live_simple")
         python_multiple_ast_live = get_category_score(value, "live_multiple")
         python_parallel_ast_live = get_category_score(value, "live_parallel")
-        python_parallel_multiple_ast_live = get_category_score(value, "live_parallel_multiple")
+        python_parallel_multiple_ast_live = get_category_score(
+            value, "live_parallel_multiple"
+        )
         irrelevance_live = get_category_score(value, "live_irrelevance")
         relevance_live = get_category_score(value, "live_relevance")
         summary_ast_live = calculate_weighted_accuracy(
@@ -321,10 +326,43 @@ def generate_leaderboard_csv(
             ]
         )
 
-        # Total Score
-        single_turn_ast = calculate_unweighted_accuracy(
-            [overall_accuracy_live, overall_accuracy_non_live]
+        # Agentic Score
+        web_search = get_category_score(value, "web_search")
+        memory_kv = get_category_score(value, "memory_kv")
+        memory_vector = get_category_score(value, "memory_vector")
+        memory_rec_sum = get_category_score(value, "memory_rec_sum")
+        memory_knowledge_graph = get_category_score(value, "memory_knowledge_graph")
+        summary_memory = calculate_unweighted_accuracy(
+            [
+                memory_kv,
+                memory_vector,
+                memory_rec_sum,
+                memory_knowledge_graph,
+            ]
         )
+        overall_accuracy_agentic = calculate_unweighted_accuracy(
+            [
+                web_search,
+                summary_memory,
+            ],
+            display_na_if_category_missing=False,
+        ) 
+        
+        data_agentic.append(
+            [
+                "N/A",
+                model_config.display_name,
+                overall_accuracy_agentic["display_accuracy"],
+                web_search["display_accuracy"],
+                summary_memory["display_accuracy"],
+                memory_kv["display_accuracy"],
+                memory_vector["display_accuracy"],
+                memory_rec_sum["display_accuracy"],
+                memory_knowledge_graph["display_accuracy"],
+            ]
+        )       
+
+        # Total Score
         total_irrelevance = calculate_unweighted_accuracy(
             [irrelevance_non_live, irrelevance_live]
         )
@@ -335,6 +373,7 @@ def generate_leaderboard_csv(
                 overall_accuracy_live,
                 overall_accuracy_non_live,
                 overall_accuracy_multi_turn,
+                overall_accuracy_agentic,
             ],
             display_na_if_category_missing=False,
         )
@@ -364,6 +403,9 @@ def generate_leaderboard_csv(
                 multi_turn_miss_func["display_accuracy"],
                 multi_turn_miss_param["display_accuracy"],
                 multi_turn_long_context["display_accuracy"],
+                overall_accuracy_agentic["display_accuracy"],
+                web_search["display_accuracy"],
+                summary_memory["display_accuracy"],
                 total_relevance["display_accuracy"],
                 total_irrelevance["display_accuracy"],
                 model_config.org,
