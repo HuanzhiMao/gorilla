@@ -632,7 +632,7 @@ def main(model, test_categories, result_dir, score_dir):
     if type(test_categories) is not list:
         test_categories = [test_categories]
 
-    _, all_test_categories = parse_test_category_argument(test_categories)
+    all_test_categories = parse_test_category_argument(test_categories)
 
     model_names = None
     if model:

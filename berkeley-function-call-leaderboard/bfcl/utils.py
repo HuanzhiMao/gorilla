@@ -208,6 +208,7 @@ def load_file(file_path, sort_by_id=False):
     with open(file_path) as f:
         file = f.readlines()
         for line in file:
+            print(line)
             result.append(json.loads(line))
 
     if sort_by_id:
@@ -493,11 +494,10 @@ def process_memory_test_case(
 
     # Update the test case with the backend class name and dependencies
     for entry in test_cases:
-        if entry["scenario"] != memory_scenario_name:
-            continue
-        entry["id"] = entry["id"].replace("memory", test_category)
-        entry["depends_on"] = deepcopy(pre_req_ids)
-        entry["involved_classes"] = [backend_class_name]
+        if entry["scenario"] == memory_scenario_name:
+            entry["id"] = entry["id"].replace("memory", test_category)
+            entry["depends_on"] = deepcopy(pre_req_ids)
+            entry["involved_classes"] = [backend_class_name]
         all_test_cases.append(entry)
 
     return all_test_cases
