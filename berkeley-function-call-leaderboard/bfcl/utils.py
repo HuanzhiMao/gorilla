@@ -18,6 +18,7 @@ from bfcl.constants.eval_config import (
     MEMORY_PREREQ_CONVERSATION_PATH,
     MULTI_TURN_FUNC_DOC_PATH,
     PROMPT_PATH,
+    POSSIBLE_ANSWER_PATH,
 )
 from bfcl.constants.executable_backend_config import MULTI_TURN_FUNC_DOC_FILE_MAPPING
 
@@ -214,27 +215,41 @@ def load_file(file_path, sort_by_id=False):
     return result
 
 
-def load_dataset_entry(test_category: str) -> list[dict]:
+def load_dataset_entry(test_category: str, contain_prereq: bool = True) -> list[dict]:
     """
     This function retrieves the dataset entry for a given test category.
     The input should not be a test category goup, but a specific test category.
+    If `contain_prereq` is True, it will include the pre-requisite entries for the memory test categories.
     """
     if not is_memory(test_category):
         file_name = f"{VERSION_PREFIX}_{test_category}.json"
         all_entries = load_file(PROMPT_PATH / file_name)
     else:
         # Memory categories
-        all_entries = []
-        for scenario in MEMORY_SCENARIO_NAME:
-            file_name = f"{VERSION_PREFIX}_memory_{scenario}.json"
-            entries = load_file(PROMPT_PATH / file_name)
-            all_entries += process_memory_test_case(entries, test_category, scenario)
+        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_memory.json")
+        if contain_prereq:
+            for scenario in MEMORY_SCENARIO_NAME:
+                all_entries = process_memory_test_case(all_entries, test_category, scenario)
 
     all_entries = process_agentic_test_case(all_entries)
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
     all_entries = process_func_doc(all_entries)
 
     return all_entries
+
+
+def load_ground_truth_entry(test_category: str) -> list[dict]:
+    """
+    This function retrieves the ground truth entry for a given test category.
+    The input should not be a test category goup, but a specific test category.
+    """
+    if not is_memory(test_category):
+        file_name = f"{VERSION_PREFIX}_{test_category}.json"
+    else:
+        # Memory categories
+        file_name = f"{VERSION_PREFIX}_memory.json"
+
+    return load_file(POSSIBLE_ANSWER_PATH / file_name)
 
 
 def write_list_of_dicts_to_file(filename, data, subdir=None):
@@ -478,6 +493,8 @@ def process_memory_test_case(
 
     # Update the test case with the backend class name and dependencies
     for entry in test_cases:
+        if entry["scenario"] != memory_scenario_name:
+            continue
         entry["id"] = entry["id"].replace("memory", test_category)
         entry["depends_on"] = deepcopy(pre_req_ids)
         entry["involved_classes"] = [backend_class_name]

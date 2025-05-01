@@ -1,9 +1,6 @@
 import argparse
 
-from bfcl.constants.category_mapping import (
-    TEST_COLLECTION_MAPPING,
-    VERSION_PREFIX,
-)
+from bfcl.constants.category_mapping import VERSION_PREFIX
 from bfcl.constants.eval_config import (
     DOTENV_PATH,
     POSSIBLE_ANSWER_PATH,
@@ -12,6 +9,7 @@ from bfcl.constants.eval_config import (
     RESULT_PATH,
     SCORE_PATH,
 )
+from bfcl.constants.model_config import MODEL_CONFIG_MAPPING
 from bfcl.eval_checker.agentic_eval.agentic_checker import agentic_checker
 from bfcl.eval_checker.ast_eval.ast_checker import ast_checker
 from bfcl.eval_checker.eval_runner_helper import *
@@ -20,7 +18,6 @@ from bfcl.eval_checker.multi_turn_eval.multi_turn_checker import (
     multi_turn_irrelevance_checker,
 )
 from bfcl.eval_checker.multi_turn_eval.multi_turn_utils import is_empty_execute_response
-from bfcl.constants.model_config import MODEL_CONFIG_MAPPING
 from bfcl.utils import *
 from dotenv import load_dotenv
 from tqdm import tqdm
@@ -396,7 +393,7 @@ def ast_file_runner(
         index: str = model_result[i]["id"]
         model_result_item = model_result[i]["result"]
         if is_sql(test_category):
-            with open((MULTI_TURN_FUNC_DOC_PATH/"sql.json").resolve(), "r") as f:
+            with open((MULTI_TURN_FUNC_DOC_PATH / "sql.json").resolve(), "r") as f:
                 prompt_item = [json.loads(line) for line in f.readlines()]
         else:
             prompt_item = prompt[i]["function"]
@@ -503,9 +500,8 @@ def evaluate_task(
 
     record_cost_latency(state["leaderboard_table"], model_name, model_result)
 
-    # Find the corresponding test file.
-    prompt_file = find_file_by_category(test_category, PROMPT_PATH)
-    prompt = load_file(prompt_file, sort_by_id=True)
+    # Find the corresponding prompt entries
+    prompt = load_dataset_entry(test_category, contain_prereq=False)
 
     if is_relevance_or_irrelevance(test_category):
         accuracy, total_count = relevance_file_runner(
@@ -513,9 +509,8 @@ def evaluate_task(
         )
 
     else:
-        # Find the corresponding possible answer file
-        possible_answer_file = find_file_by_category(test_category, POSSIBLE_ANSWER_PATH)
-        possible_answer = load_file(possible_answer_file, sort_by_id=True)
+        # Find the corresponding possible answer entries
+        possible_answer = load_ground_truth_entry(test_category)
 
         if is_multi_turn(test_category):
             accuracy, total_count = multi_turn_runner(
