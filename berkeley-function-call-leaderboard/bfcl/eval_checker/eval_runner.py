@@ -2,7 +2,6 @@ import argparse
 
 from bfcl.constants.category_mapping import (
     TEST_COLLECTION_MAPPING,
-    TEST_FILE_MAPPING,
     VERSION_PREFIX,
 )
 from bfcl.constants.eval_config import (
@@ -54,6 +53,7 @@ def agentic_runner(
         if "function" in test_entry:
             del test_entry["function"]
 
+        # Agentic test is a single-turn multi-step test, so the model result should be a list of one element
         if type(model_result_list) != list or len(model_result_list) != 1:
             result.append(
                 {
@@ -130,13 +130,14 @@ def agentic_runner(
             temp["test_category"] = test_category
             temp["valid"] = accuracy_checker_result.pop("valid")
             temp["error"] = accuracy_checker_result
-            temp["prompt"] = test_entry
+            temp["prompt"] = test_entry["question"]
             temp["model_result_raw"] = model_result_list
-            temp["model_result_decoded"] = model_result_list_decoded
+            temp["last_non_fc_message"] = last_unsuccessful_decoding_message
             temp["possible_answer"] = possible_answer_item
             temp["inference_log"] = model_result[i].get("inference_log", "")
             # result.append(temp)
         else:
+            # FIXME: Remove this when release
             temp = {}
             temp["id"] = index
             # temp["model_name"] = model_name
@@ -145,7 +146,7 @@ def agentic_runner(
             # temp["error"] = accuracy_checker_result
             # temp["prompt"] = test_entry
             temp["model_result_raw"] = model_result_list
-            temp["model_result_decoded"] = model_result_list_decoded
+            temp["last_non_fc_message"] = last_unsuccessful_decoding_message
             temp["possible_answer"] = possible_answer_item
             # temp["inference_log"] = model_result[i].get("inference_log", "")
             result.append(temp)
@@ -597,7 +598,6 @@ def runner(model_names, test_categories, result_dir, score_dir):
                 is_chatable(test_category)
                 or is_executable(test_category)
                 or is_memory_prereq(test_category)
-                or "conflict" in test_category
             ):
                 continue
 
