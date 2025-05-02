@@ -145,7 +145,7 @@ class ClaudeHandler(BaseHandler):
 
         tools = convert_to_tool(functions, GORILLA_TO_OPENAPI, self.model_style)
 
-        if inference_data["caching_enabled"]:
+        if inference_data["caching_enabled"] and len(tools) > 0:
             # First time compiling tools, so adding cache control flag to the last tool
             if "tools" not in inference_data:
                 tools[-1]["cache_control"] = {"type": "ephemeral"}
