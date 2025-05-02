@@ -132,7 +132,7 @@ def agentic_runner(
             temp["last_non_fc_message"] = last_unsuccessful_decoding_message
             temp["possible_answer"] = possible_answer_item
             temp["inference_log"] = model_result[i].get("inference_log", "")
-            # result.append(temp)
+            result.append(temp)
         else:
             # FIXME: Remove this when release
             temp = {}
