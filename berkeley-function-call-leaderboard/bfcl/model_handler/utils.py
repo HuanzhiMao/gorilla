@@ -12,6 +12,9 @@ from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.model_handler.parser.java_parser import parse_java_function_call
 from bfcl.model_handler.parser.js_parser import parse_javascript_function_call
+from bfcl.model_handler.parser.xml_parser import parse_xml_function_call
+from bfcl.model_handler.parser.json_parser import parse_json_function_call
+from bfcl.model_handler.parser.typescript_parser import parse_typescript_function_call
 from tenacity import (
     retry,
     retry_if_exception_message,
@@ -238,6 +241,12 @@ def ast_parse(input_str, language="Python"):
         )  # Remove the [ and ] from the string
     elif language == "JavaScript":
         return parse_javascript_function_call(input_str[1:-1])
+    elif language == "xml":
+        return parse_xml_function_call(input_str[1:-1])
+    elif language == "json":
+        return parse_json_function_call(input_str)
+    elif language == "Typescript":
+        return parse_typescript_function_call(input_str)
     else:
         raise NotImplementedError(f"Unsupported language: {language}")
 
@@ -676,6 +685,11 @@ def format_execution_results_prompting(
 
 def default_decode_ast_prompting(result, language="Python"):
     result = result.strip("`\n ")
+    if language != "xml":
+        if result.startswith("<"):
+            result = result[result.find('>')+1:]
+        if result.endswith('>'):
+            result = result[:result.rfind('<')]
     if not result.startswith("["):
         result = "[" + result
     if not result.endswith("]"):
@@ -684,13 +698,13 @@ def default_decode_ast_prompting(result, language="Python"):
     return decoded_output
 
 
-def default_decode_execute_prompting(result):
+def default_decode_execute_prompting(result, language="Python"):
     result = result.strip("`\n ")
     if not result.startswith("["):
         result = "[" + result
     if not result.endswith("]"):
         result = result + "]"
-    decoded_output = ast_parse(result)
+    decoded_output = ast_parse(result, language)
     return decoded_output_to_execution_list(decoded_output)
 
 
