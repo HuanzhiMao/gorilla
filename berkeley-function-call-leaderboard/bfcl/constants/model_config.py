@@ -103,7 +103,7 @@ api_inference_model_map = {
         model_handler=GorillaHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "DeepSeek-R1": ModelConfig(
@@ -427,7 +427,7 @@ api_inference_model_map = {
         model_handler=NovaHandler,
         input_price=0.8,
         output_price=3.2,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=True,
     ),
     "nova-lite-v1.0": ModelConfig(
@@ -439,7 +439,7 @@ api_inference_model_map = {
         model_handler=NovaHandler,
         input_price=0.06,
         output_price=0.24,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=True,
     ),
     "nova-micro-v1.0": ModelConfig(
@@ -451,7 +451,7 @@ api_inference_model_map = {
         model_handler=NovaHandler,
         input_price=0.035,
         output_price=0.14,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=True,
     ),
     "open-mistral-nemo-2407": ModelConfig(
@@ -547,7 +547,7 @@ api_inference_model_map = {
         model_handler=NexusHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "gemini-2.0-flash-lite-001-FC": ModelConfig(
@@ -751,7 +751,7 @@ api_inference_model_map = {
         model_handler=WriterHandler,
         input_price=5,
         output_price=12,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "grok-3-beta-FC": ModelConfig(
@@ -996,7 +996,7 @@ local_inference_model_map = {
         model_handler=SalesforceLlamaHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "Salesforce/Llama-xLAM-2-8b-fc-r": ModelConfig(
@@ -1008,7 +1008,7 @@ local_inference_model_map = {
         model_handler=SalesforceLlamaHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "Salesforce/xLAM-2-32b-fc-r": ModelConfig(
@@ -1020,7 +1020,7 @@ local_inference_model_map = {
         model_handler=SalesforceQwenHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "Salesforce/xLAM-2-3b-fc-r": ModelConfig(
@@ -1032,7 +1032,7 @@ local_inference_model_map = {
         model_handler=SalesforceQwenHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "Salesforce/xLAM-2-1b-fc-r": ModelConfig(
@@ -1044,7 +1044,7 @@ local_inference_model_map = {
         model_handler=SalesforceQwenHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "mistralai/Ministral-8B-Instruct-2410": ModelConfig(
@@ -1056,7 +1056,7 @@ local_inference_model_map = {
         model_handler=MistralFCHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "microsoft/phi-4": ModelConfig(
@@ -1104,7 +1104,7 @@ local_inference_model_map = {
         model_handler=GraniteHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=True,
     ),
     "MadeAgents/Hammer2.1-7b": ModelConfig(
@@ -1116,7 +1116,7 @@ local_inference_model_map = {
         model_handler=HammerHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "MadeAgents/Hammer2.1-3b": ModelConfig(
@@ -1128,7 +1128,7 @@ local_inference_model_map = {
         model_handler=HammerHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "MadeAgents/Hammer2.1-1.5b": ModelConfig(
@@ -1140,7 +1140,7 @@ local_inference_model_map = {
         model_handler=HammerHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "MadeAgents/Hammer2.1-0.5b": ModelConfig(
@@ -1152,7 +1152,7 @@ local_inference_model_map = {
         model_handler=HammerHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "THUDM/glm-4-9b-chat": ModelConfig(
@@ -1164,7 +1164,7 @@ local_inference_model_map = {
         model_handler=GLMHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=True,
     ),
     "Qwen/Qwen2.5-0.5B-Instruct-FC": ModelConfig(
@@ -1344,7 +1344,7 @@ local_inference_model_map = {
         model_handler=LlamaHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "openbmb/MiniCPM3-4B": ModelConfig(
@@ -1380,7 +1380,7 @@ local_inference_model_map = {
         model_handler=LlamaHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "watt-ai/watt-tool-70B": ModelConfig(
@@ -1392,7 +1392,7 @@ local_inference_model_map = {
         model_handler=LlamaHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
     "ZJared/Haha-7B": ModelConfig(
@@ -1548,7 +1548,7 @@ local_inference_model_map = {
         model_handler=ThinkAgentHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
     ),
 }
