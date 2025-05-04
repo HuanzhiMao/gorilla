@@ -128,7 +128,7 @@
 {"id": "memory_127-student-47", "ground_truth": ["Gym", "Gymming", "Workout", "Working out"], "source": "I\u2019ve discovered that if I skip the gym too many days... I consider my workout time to be non-negotiable..."}
 {"id": "memory_128-student-48", "ground_truth": ["11:00 PM"], "source": "But most evenings, I try to cut off academic work by 11:00 P.M. so I can decompress."}
 {"id": "memory_129-student-49", "ground_truth": ["7", "Seven"], "source": "Sundays, I attend a group study session with seven other classmates..."}
-{"id": "memory_130-notetaker-0", "ground_truth": ["08:00 PM", "8:00 PM"], "source": "Daycare: Drop-off at 8 AM, pick-up at 5 PM."}
+{"id": "memory_130-notetaker-0", "ground_truth": ["08:00 AM", "8:00 AM"], "source": "Daycare: Drop-off at 8 AM, pick-up at 5 PM."}
 {"id": "memory_131-notetaker-1", "ground_truth": ["Friday"], "source": "Daycare: Monthly payment due Friday."}
 {"id": "memory_132-notetaker-2", "ground_truth": ["Before Friday", "Friday"], "source": "Monday: Need to finalize Q1 budget report before Friday."}
 {"id": "memory_133-notetaker-3", "ground_truth": ["Change passwords ASAP", "Change passwords", "Need to change passwords"], "source": "Monday: IT updated security protocols\u2014change passwords ASAP."}
