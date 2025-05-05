@@ -7,7 +7,7 @@ import re
 from functools import reduce
 from typing import Callable, List, Optional, Type, Union
 
-from bfcl.constants.default_prompts import DEFAULT_SYSTEM_PROMPT
+from bfcl.constants.default_prompts import OUTPUT_FORMAT_MAPPING, PROMPT_STYLE_MAPPING
 from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.model_handler.parser.java_parser import parse_java_function_call
@@ -321,9 +321,11 @@ def system_prompt_pre_processing_chat_model(prompts, function_docs, test_categor
     """
     assert type(prompts) == list
 
-    system_prompt_template = DEFAULT_SYSTEM_PROMPT
-
-    system_prompt = system_prompt_template.format(functions=function_docs)
+    # system_prompt = formulate_default_system_prompt(function_docs=function_docs) # original prompt equivalent (-original)
+    # system_prompt = formulate_default_system_prompt(prompt_format="markdown", functions=function_docs) # VAR1 (original parser) (-markdown)
+    # system_prompt = formulate_default_system_prompt(prompt_style="experimental", functions=function_docs) # VAR2 (original parser)(-experimental-prompt)
+    # system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, functions=function_docs) # VAR3 (1 line for <TOOLCALL> tags removal + original parser)(-with-tag)
+    system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="json",functions=function_docs)
 
     # System prompt must be in the first position
     # If the question comes with a system prompt, append its content at the end of the chat template.
@@ -685,6 +687,7 @@ def format_execution_results_prompting(
 
 def default_decode_ast_prompting(result, language="Python"):
     result = result.strip("`\n ")
+    result = result.replace("<TOOLCALL>", "").replace("</TOOLCALL>", "") # added for tag mode
     if language != "xml":
         if result.startswith("<"):
             result = result[result.find('>')+1:]
@@ -815,3 +818,34 @@ def retry_with_backoff(
         return wrapped
 
     return decorator
+
+def formulate_default_system_prompt(
+    prompt_format: str = "plaintext",    # 'plaintext' | 'markdown'
+    prompt_style: str = "classic",       # 'classic' | 'experimental'
+    return_format: str = "python",       # 'python' | 'json' | 'verbose_xml' | 'concise_xml'
+    has_tool_call_tag: bool = False,     # True | False
+    functions: str = ""
+) -> str:
+    """
+    Formulate the default system prompt based on the provided parameters.
+    """
+    default_prompt = ""
+
+    if prompt_format == "plaintext":
+        default_prompt = "{persona}{task}\n\n{tool_call}\n\n{multiturn}\n\n{available_tools}"
+    elif prompt_format == "markdown":
+        default_prompt = "{persona}\n\n## Task\n{task}\n\n## Tool Call Format\n{tool_call}\n\n## Multi-turn Behavior\n{multiturn}\n\n## Available Tools\n{available_tools}"
+
+    tool_call_key = "tool_call_with_tag" if has_tool_call_tag else "tool_call_no_tag"
+    available_tools_key = "available_tools_with_tag" if has_tool_call_tag else "available_tools_no_tag"
+    
+    default_prompt = default_prompt.format(
+        persona=PROMPT_STYLE_MAPPING[prompt_style]["persona"],
+        task=PROMPT_STYLE_MAPPING[prompt_style]["task"],
+        tool_call=PROMPT_STYLE_MAPPING[prompt_style][tool_call_key].format(output_format=OUTPUT_FORMAT_MAPPING[return_format]),
+        multiturn=PROMPT_STYLE_MAPPING[prompt_style]["multiturn"],
+        available_tools=PROMPT_STYLE_MAPPING[prompt_style][available_tools_key].format(functions=functions)
+    )
+
+    return default_prompt
+
