@@ -1,26 +1,24 @@
 import json
-import re
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict
 
 from bfcl.eval_checker.multi_turn_eval.func_source_code.memory_api_metaclass import (
     MemoryAPI,
 )
 from bfcl.utils import extract_test_category_from_id, is_first_memory_prereq_entry
 
-
 MAX_MEMORY_ENTRY_LENGTH = 10000  # 10k characters
 
 
 class MemoryAPI_rec_sum(MemoryAPI):
     """
-    A class that provides APIs to manage memory data in a key-value format.
+    A class that provides APIs to manage memory data via recursive summarization.
     """
 
     def __init__(self):
         self.memory = ""
-        self._api_description = """This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system."""
+        self._api_description = """This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization."""
         self.snapshot_folder = None
 
     def _load_scenario(self, initial_config: dict, long_context: bool = False):
@@ -44,7 +42,9 @@ class MemoryAPI_rec_sum(MemoryAPI):
             with open(self.latest_snapshot_file, "r") as f:
                 memory_data = json.load(f)
                 self.memory = deepcopy(memory_data["memory"])
-                self.archival_memory = deepcopy(memory_data["archival_memory"])
+                assert isinstance(
+                    self.memory, str
+                ), f"Memory data should be a string, but got {type(self.memory)} instead."
 
     def _flush_memory_to_local_file(self):
         """
@@ -77,104 +77,64 @@ class MemoryAPI_rec_sum(MemoryAPI):
 
         return str(self.memory)
 
-
-    def memory_add(self, key: str, value: str) -> Dict[str, str]:
+    def memory_append(self, text: str) -> Dict[str, str]:
         """
-        Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later.
+        Append a new text to the end of the memory.
 
         Args:
-            key (str): The key under which the value is stored. The key should be unique and case-sensitive. Keys must be snake_case and cannot contain spaces.
-            value (str): The value to store in the short-term memory.
+            text (str): The text to append to the memory.
 
         Returns:
             status (str): Status of the operation.
         """
-        key, value = str(key), str(value)
-        if len(self.memory) >= MAX_CORE_MEMORY_SIZE:
-            return {"error": "Core memory is full. Please clear some entries."}
-        if len(value) > MAX_CORE_MEMORY_ENTRY_LENGTH:
+        text = str(text)
+        combined_text = self.memory + text
+        if len(combined_text) > MAX_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_CORE_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry will be too long after appending. Please shorten the entry to less than {MAX_MEMORY_ENTRY_LENGTH} characters."
             }
 
-        if not self._is_valid_key_format(key):
-            return {"error": "Key must be in snake_case format and cannot contain spaces."}
-        if key in self.memory:
-            return {"error": "Key name must be unique."}
+        self.memory += text
+        return {"status": "Memory appended."}
 
-        self.memory[key] = value
-        return {"status": "Key-value pair added."}
-
-    def core_memory_remove(self, key: str) -> Dict[str, str]:
+    def memory_update(self, text: str) -> Dict[str, str]:
         """
-        Remove a key-value pair from the short-term memory.
+        Update the memory with new text. This will replace the existing memory content.
 
         Args:
-            key (str): The key to remove from the short-term memory. Case-sensitive.
+            text (str): The new text to set as the memory.
 
         Returns:
             status (str): Status of the operation.
         """
-        if key in self.memory:
-            del self.memory[key]
-            return {"status": "Key removed."}
-        else:
-            return {"error": "Key not found."}
-
-    def core_memory_replace(self, key: str, value: str) -> Dict[str, str]:
-        """
-        Replace a key-value pair in the short-term memory with a new value.
-
-        Args:
-            key (str): The key to replace in the short-term memory. Case-sensitive.
-            value (str): The new value associated with the key.
-
-        Returns:
-            status (str): Status of the operation.
-        """
-        key, value = str(key), str(value)
-        if key not in self.memory:
-            return {"error": "Key not found."}
-        if len(value) > MAX_CORE_MEMORY_ENTRY_LENGTH:
+        text = str(text)
+        if len(text) > MAX_MEMORY_ENTRY_LENGTH:
             return {
-                "error": f"Entry is too long. Please shorten the entry to less than {MAX_CORE_MEMORY_ENTRY_LENGTH} characters."
+                "error": f"Entry will be too long after updating. Please shorten the entry to less than {MAX_MEMORY_ENTRY_LENGTH} characters."
             }
 
-        self.memory[key] = value
-        return {"status": "Key replaced."}
+        self.memory = text
+        return {"status": "Memory updated."}
 
     def core_memory_clear(self) -> Dict[str, str]:
         """
-        Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible.
+        Clear all content in the memory, including any from previous interactions. This operation is irreversible.
 
         Returns:
             status (str): Status of the operation.
         """
-        self.memory = {}
+        self.memory = ""
         return {"status": "Short term memory cleared."}
 
-    def core_memory_retrieve(self, key: str) -> Dict[str, str]:
+    def memory_retrieve(self) -> Dict[str, str]:
         """
-        Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search.
-
-        Args:
-            key (str): The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory.
+        Retrieve the current content of the memory.
 
         Returns:
-            value (str): The value associated with the key.
-
+            memory_content (str): The current content of the memory.
         """
-        if key not in self.memory:
-            return {"error": "Key not found."}
-        return {"value": self.memory[key]}
 
-    def core_memory_retrieve_all(self) -> Dict[str, str]:
-        """
-        Retrieve all key-value pairs from the short-term memory.
+        if not self.memory:
+            return {"error": "Memory is empty."}
 
-        Returns:
-            key (str): Each key in the short-term memory.
-            value (str): The value associated with each key.
-        """
-        return self.memory
-
+        return {"memory_content": self.memory}
