@@ -2,57 +2,74 @@ import xml.etree.ElementTree as ET
 import ast
 import json
 
-def parse_xml_function_call(source_code):
-    root = ET.fromstring(source_code)
+def parse_verbose_xml_function_call(input_str):
+    def auto_cast(value):
+        """Try to automatically cast value to boolean, int, float, list, or leave as string."""
+        val = value.strip()
+        if val.lower() in ("true", "false"):
+            return val.lower() == "true"
+        try:
+            # Try JSON decoding for arrays, dicts, numbers
+            return json.loads(val)
+        except Exception:
+            try:
+                return ast.literal_eval(val)
+            except Exception:
+                pass
+        # Fallback: leave as string
+        return val
 
-    func_tag_name = None
-    if root.find('func_call') is not None:
-        func_tag_name = 'func_call'
-    elif root.find('function') is not None:
-        func_tag_name = 'function'
-    else:
-        raise Exception(
-            "Error: function tag name not supported."
-        )
+    try:
+        root = ET.fromstring(input_str)
+        results = []
 
-    result = []
-    for func_call in root.findall(func_tag_name):
-        func_name = func_call.get('name')
-        arguments = {}
-        if func_call.find('args') is not None:
-            for arg in func_call.find('args').findall('arg'):
-                arg_name = arg.get('name')
-                if 'value' in arg.attrib:
-                    arg_value = arg.get('value')
-                else:
-                    arg_value = arg.text.strip() if arg.text else ''
-                try:
-                    parsed_value = json.loads(arg_value)
-                except (ValueError, SyntaxError):
-                    parsed_value = arg_value
-                if arg_name in arguments:
-                    if not isinstance(arguments[arg_name], list):
-                        arguments[arg_name] = [arguments[arg_name]]
-                    arguments[arg_name].append(parsed_value)
-                else:
-                    arguments[arg_name] = parsed_value
-        else:
-            for arg in func_call.findall('arg'):
-                arg_name = arg.get('name')
-                if 'value' in arg.attrib:
-                    arg_value = arg.get('value')
-                else:
-                    arg_value = arg.text.strip() if arg.text else ''
-                try:
-                    parsed_value = json.loads(arg_value)
-                except (ValueError, SyntaxError):
-                    parsed_value = arg_value
-                if arg_name in arguments:
-                    raise Exception(
-                        "Error: Multiple arguments with the same name are not supported."
-                    )
-                else:
-                    arguments[arg_name] = parsed_value
+        for func_elem in root.findall("function"):
+            func_name = func_elem.attrib.get("name")
+            if not func_name:
+                continue
 
-        result.append({func_name: arguments})
-    return result
+            params = {}
+            for param_elem in func_elem.findall("param"):
+                param_name = param_elem.attrib.get("name")
+                param_text = param_elem.text.strip() if param_elem.text else ""
+
+                if param_name:
+                    params[param_name] = auto_cast(param_text)
+
+            results.append({func_name: params})
+
+        return results
+    except Exception:
+        return []
+
+def parse_concise_xml_function_call(input_str):
+    def auto_cast(value):
+        """Auto-cast string to bool, int, float, list, etc."""
+        val = value.strip()
+        if val.lower() == "true":
+            return True
+        if val.lower() == "false":
+            return False
+        try:
+            return json.loads(val)
+        except Exception:
+            try:
+                return ast.literal_eval(val)
+            except Exception:
+                return val  # fallback to string
+
+    try:
+        root = ET.fromstring(input_str)
+        results = []
+
+        for func_elem in root:
+            func_name = func_elem.tag
+            params = {
+                k: auto_cast(v)
+                for k, v in func_elem.attrib.items()
+            }
+            results.append({func_name: params})
+
+        return results
+    except Exception:
+        return []

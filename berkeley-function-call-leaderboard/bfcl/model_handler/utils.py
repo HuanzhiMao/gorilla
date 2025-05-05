@@ -12,7 +12,7 @@ from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.model_handler.parser.java_parser import parse_java_function_call
 from bfcl.model_handler.parser.js_parser import parse_javascript_function_call
-from bfcl.model_handler.parser.xml_parser import parse_xml_function_call
+from bfcl.model_handler.parser.xml_parser import parse_concise_xml_function_call, parse_verbose_xml_function_call
 from bfcl.model_handler.parser.json_parser import parse_json_function_call
 from bfcl.model_handler.parser.typescript_parser import parse_typescript_function_call
 from tenacity import (
@@ -241,10 +241,24 @@ def ast_parse(input_str, language="Python"):
         )  # Remove the [ and ] from the string
     elif language == "JavaScript":
         return parse_javascript_function_call(input_str[1:-1])
-    elif language == "xml":
-        return parse_xml_function_call(input_str[1:-1])
+    elif language == "verbose_xml":
+        # Remove ```xml and anything before/after XML
+        match = re.search(r"```xml\s*(.*?)\s*```", input_str, re.DOTALL)
+        if not match:
+            return []
+        return parse_verbose_xml_function_call(match.group(1).strip())
+    elif language == "concise_xml":
+        # Remove anything before/after <functions> and </functions>
+        match = re.search(r"<functions>(.*?)</functions>", input_str, re.DOTALL)
+        if not match:
+            return []
+        return parse_concise_xml_function_call(match.group(0))
     elif language == "json":
-        return parse_json_function_call(input_str)
+        # Remove ```json and anything before/after the JSON array
+        match = re.search(r"\[.*\]", input_str, re.DOTALL)
+        if not match:
+            return []
+        return parse_json_function_call(match.group(0))
     elif language == "Typescript":
         return parse_typescript_function_call(input_str)
     else:
@@ -325,7 +339,10 @@ def system_prompt_pre_processing_chat_model(prompts, function_docs, test_categor
     # system_prompt = formulate_default_system_prompt(prompt_format="markdown", functions=function_docs) # VAR1 (original parser) (-markdown)
     # system_prompt = formulate_default_system_prompt(prompt_style="experimental", functions=function_docs) # VAR2 (original parser)(-experimental-prompt)
     # system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, functions=function_docs) # VAR3 (1 line for <TOOLCALL> tags removal + original parser)(-with-tag)
-    system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="json",functions=function_docs)
+    
+    # system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="json",functions=function_docs) #VAR4 (json parser)(-with-tag-json)
+    # system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="verbose_xml",functions=function_docs) #VAR5 (verbose xml parser)(-with-tag-verbose-xml)
+    system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="concise_xml",functions=function_docs) #VAR6 (concise xml parser)(-with-tag-concise-xml)
 
     # System prompt must be in the first position
     # If the question comes with a system prompt, append its content at the end of the chat template.
@@ -688,15 +705,11 @@ def format_execution_results_prompting(
 def default_decode_ast_prompting(result, language="Python"):
     result = result.strip("`\n ")
     result = result.replace("<TOOLCALL>", "").replace("</TOOLCALL>", "") # added for tag mode
-    if language != "xml":
-        if result.startswith("<"):
-            result = result[result.find('>')+1:]
-        if result.endswith('>'):
-            result = result[:result.rfind('<')]
-    if not result.startswith("["):
-        result = "[" + result
-    if not result.endswith("]"):
-        result = result + "]"
+    if language != "json" and "xml" not in language:
+        if not result.startswith("["):
+            result = "[" + result
+        if not result.endswith("]"):
+            result = result + "]"
     decoded_output = ast_parse(result, language)
     return decoded_output
 
