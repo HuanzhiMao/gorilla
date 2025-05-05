@@ -2,6 +2,7 @@ import os
 import statistics
 from datetime import datetime
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
@@ -104,7 +105,7 @@ def record_cost_latency(leaderboard_table, model_name, model_output_data):
 
 def get_cost_latency_info(model_name, cost_data, latency_data):
     cost, mean_latency, std_latency, percentile_95_latency = "N/A", "N/A", "N/A", "N/A"
-    model_config = MODEL_CONFIG_MAPPING[model_name]
+    model_config = MODEL_CONFIG_MAPPING.get(model_name, SimpleNamespace(display_name=model_name, input_price=0, output_price=0,url="",org="",license="")) # editted for prompt variation testing
 
     if model_config.input_price is None or model_config.output_price is None:
         # Open source models should not have a cost or latency
@@ -190,7 +191,8 @@ def generate_leaderboard_csv(
     data_combined = []
     for model_name, value in leaderboard_table.items():
         model_name_escaped = model_name.replace("_", "/")
-        model_config = MODEL_CONFIG_MAPPING[model_name_escaped]
+        model_config = MODEL_CONFIG_MAPPING.get(model_name, SimpleNamespace(display_name=model_name, input_price=0, output_price=0,url="",org="",license="")) # editted for prompt variation testing
+
 
         cost_data = value.get("cost", {"input_data": [], "output_data": []})
         latency_data = value.get("latency", {"data": []})
