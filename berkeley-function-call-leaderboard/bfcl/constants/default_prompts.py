@@ -24,8 +24,8 @@ DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING = "{functions}\n" + DEFAUL
 OUTPUT_FORMAT_MAPPING = {
     "python": "[func_name1(params_name1=params_value1, params_name2=params_value2...), func_name2(params)]",
     "json": "```json\n[{\"function\":\"func_name1\",\"parameters\":{\"param1\":\"value1\",\"param2\":\"value2\"}},{\"function\":\"func_name2\",\"parameters\":{\"param\":\"value\"}}]\n```",
-    "verbose_xml": "```xml\n<functions><function name=\"func_name1\"><param name=\"param1\">value1</param><param name=\"param2\">value2</param></function><function name=\"func_name2\"><param name=\"param\">value</param></function></functions>\n```",
-    "concise_xml": "```xml\n<functions><func_name1 param1=\"value1\" param2=\"value2\" /><func_name2 param=\"value\" /></functions>\n```"
+    "verbose_xml": "```xml\n<functions><function name=\"func_name1\"><param name=\"param1\>value1</param><param name=\"param2\">value2</param></function><function name=\"func_name2\"><param name=\"param\">value</param></function></functions>\n```",
+    "concise_xml": "\n<functions><func_name1 param_name1=\"value1\" param_name2=\"value2\"... /><func_name2 param_name=\"value\" /></functions>\n"
 }
 
 PROMPT_STYLE_MAPPING = {
