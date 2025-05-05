@@ -137,7 +137,7 @@
 {"id": "memory_136-notetaker-6", "ground_truth": ["Updated benefits package"], "source": "Tuesday: HR sent updated benefits package\u2014review before next month\u2019s deadline."}
 {"id": "memory_137-notetaker-7", "ground_truth": ["05:00 PM", "5:00 PM"], "source": "Daycare: Drop-off at 8 AM, pick-up at 5 PM."}
 {"id": "memory_138-notetaker-8", "ground_truth": ["Send it for legal approval", "send to legal", "legal approval", "legal"], "source": "Wednesday: Client proposal draft ready\u2014send it for legal approval."}
-{"id": "memory_139-notetaker-9", "ground_truth": ["Fix last month\u2019s sales data"], "source": "Thursday: Caught a mistake in last month\u2019s sales data."}
+{"id": "memory_139-notetaker-9", "ground_truth": ["30 Minutes", "30 minutes", "thirty minutes", "Thirty minutes"], "source": "Monday: Team meeting ran over by 30 minutes."}
 {"id": "memory_140-notetaker-10", "ground_truth": ["Cost-cutting recommendations", "Cost cutting recommendations", "Cost-cutting recommendation", "Cost cutting recommendation"], "source": "Thursday: Finance wants cost-cutting recommendations \u2014 brainstorm ideas."}
 {"id": "memory_141-notetaker-11", "ground_truth": ["Two", "2"], "source": "Friday: Followed up with vendors\u2014two responded, one still pending."}
 {"id": "memory_142-notetaker-12", "ground_truth": ["Submit tax documents before Friday"], "source": "Urgent: Submit tax documents before Friday."}
