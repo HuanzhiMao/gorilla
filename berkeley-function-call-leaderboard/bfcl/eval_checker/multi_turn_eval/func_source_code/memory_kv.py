@@ -13,7 +13,7 @@ from rank_bm25 import BM25Plus
 # https://lilianweng.github.io/posts/2023-06-23-agent/#component-two-memory
 MAX_CORE_MEMORY_SIZE = 7
 MAX_CORE_MEMORY_ENTRY_LENGTH = 300
-MAX_ARCHIVAL_MEMORY_SIZE = 100  # FIXME: Change this to 50
+MAX_ARCHIVAL_MEMORY_SIZE = 50
 MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH = 2000
 
 

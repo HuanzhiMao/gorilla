@@ -1,26 +1,25 @@
+import hashlib
 import json
 import shutil
-import hashlib
-import faiss
-import numpy as np
 from copy import deepcopy
 from pathlib import Path
-from typing import List, Tuple, Dict
-from sentence_transformers import SentenceTransformer
+from typing import Dict, List, Tuple
 
+import faiss
+import numpy as np
 from bfcl.utils import (
     extract_test_category_from_id,
     is_first_memory_prereq_entry,
     is_memory_prereq,
 )
-
 from rank_bm25 import BM25Plus
+from sentence_transformers import SentenceTransformer
 
 MAX_CORE_MEMORY_SIZE = 7
 MAX_CORE_MEMORY_ENTRY_LENGTH = 300
-MAX_ARCHIVAL_MEMORY_SIZE = 100  # FIXME: Change this to 50
+MAX_ARCHIVAL_MEMORY_SIZE = 50
 MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH = 2000
-EMBEDDING_DIMENSION = 384
+
 
 class MemoryAPI_vector:
     """
@@ -29,17 +28,17 @@ class MemoryAPI_vector:
 
     def __init__(self):
         self.archival_memory = {}
-        #init sentence transformer for text embeddings now
-        self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-        
-        #need to init faiss index for vector sim. search
+        # init sentence transformer for text embeddings now
+        self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+        # need to init faiss index for vector sim. search
         self.faiss_index = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
 
-        #need to create mapping (IDs to Indices in faiss)
+        # need to create mapping (IDs to Indices in faiss)
         self.id_to_index_map = {}
         self.next_index = 0
 
-        #setup vector store
+        # setup vector store
         self.text_store = {}
         self.vector_store = {}
 
@@ -48,22 +47,22 @@ class MemoryAPI_vector:
         self._api_description = """This tool belongs to the memory suite, which provides APIs to manage both short-term and long-term memory data. Short-term memory is limited in size and can be accessed quickly, while long-term memory is larger but takes longer to access. Both type of memory is persistent across multiple conversations with the user, and can be accessed in a later interactions. You should actively manage the memory data to ensure that it is up-to-date and easy to retrieve later."""
 
     def _setup_vector_store(self, port=None, db=0):
-        #reset vector store
+        # reset vector store
         self.text_store = {}
         self.vector_store = {}
 
         # Initialize faiss index if not already done
         if self.faiss_index is None:
             self.faiss_index = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
-        
+
         # Reset other state variables
         self.id_to_index_map = {}
         self.next_index = 0
         self.core_memory_count = 0
-        
+
         if self.embedding_model is None:
-            self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-        
+            self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
         return True
 
     def _get_text_embedding(self, text: str) -> np.ndarray:
@@ -72,41 +71,41 @@ class MemoryAPI_vector:
 
     def _generate_text_id(self, text: str) -> str:
         # use md5 to hash for consistent and a fixed lenth uuid
-        # used to map text in redis and the faiss index 
+        # used to map text in redis and the faiss index
         return hashlib.md5(text.encode()).hexdigest()
 
     def _add_to_vector_store(self, text: str) -> str:
-        #We'll add to both faiss and redis in this
+        # We'll add to both faiss and redis in this
         if self.core_memory_count >= MAX_CORE_MEMORY_SIZE:
             return None
-        
+
         text_id = self._generate_text_id(text)
         embedding = self._get_text_embedding(text)
 
-        #store
+        # store
         self.text_store[text_id] = text
         self.vector_store[text_id] = embedding
 
-        #faiss
+        # faiss
         self.faiss_index.add(np.array([embedding], dtype=np.float32))
 
-        #update id-to-index map
+        # update id-to-index map
         self.id_to_index_map[text_id] = self.next_index
         self.next_index += 1
         self.core_memory_count += 1
-        
+
         return text_id
 
     def _remove_from_vector_store(self, text_id: str) -> bool:
         if text_id not in self.id_to_index_map:
             return False
 
-        #remove
+        # remove
         if text_id in self.text_store:
             del self.text_store[text_id]
         if text_id in self.vector_store:
             del self.vector_store[text_id]
-        
+
         self.core_memory_count -= 1
 
         # for faiss, to actually remove we have to rebuild the index
@@ -149,12 +148,11 @@ class MemoryAPI_vector:
             result.append(self.text_store[text_id])
         return result
 
-    
     def _import_core_memory(self, memory_list: List[str]):
         # Clear in-memory state
         self.text_store = {}
         self.vector_store = {}
-        
+
         self.faiss_index = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
         self.id_to_index_map = {}
         self.next_index = 0
@@ -175,7 +173,7 @@ class MemoryAPI_vector:
             target_file = target_dir / f"{test_category}_final.json"
         else:
             target_file = target_dir / f"{test_category}_prereq_final.json"
-            
+
         # init vector store
         self._setup_vector_store()
 
@@ -242,7 +240,7 @@ class MemoryAPI_vector:
                 f,
                 indent=4,
             )
-            
+
     @staticmethod
     def _similarity_search(query: str, corpus: list[str], k: int = 5):
         """
@@ -280,12 +278,12 @@ class MemoryAPI_vector:
             return {
                 "error": f"Entry is too long. Please shorten the entry to less than {MAX_CORE_MEMORY_ENTRY_LENGTH} characters."
             }
-        
+
         text_id = self._add_to_vector_store(value)
 
         if text_id is None:
             return {"error": "Failed to add to memory."}
-        
+
         return {"status": "Entry added.", "id": text_id}
 
     def core_memory_remove(self, value: str) -> Dict[str, str]:
@@ -313,15 +311,17 @@ class MemoryAPI_vector:
         """
         self.text_store = {}
         self.vector_store = {}
-            
+
         self.faiss_index = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
         self.id_to_index_map = {}
         self.next_index = 0
         self.core_memory_count = 0
-        
+
         return {"status": "Short term memory cleared."}
 
-    def core_memory_search(self, query: str, k: int = 5) -> Dict[str, List[Tuple[float, str]]]:
+    def core_memory_search(
+        self, query: str, k: int = 5
+    ) -> Dict[str, List[Tuple[float, str]]]:
         """
         Search for similar entries in the short-term memory using vector similarity.
 
@@ -439,7 +439,9 @@ class MemoryAPI_vector:
         """
         return {"keys": list(self.archival_memory.keys())}
 
-    def archival_memory_key_search(self, query: str, k: int = 5) -> Dict[str, List[Tuple[float, str]]]:
+    def archival_memory_key_search(
+        self, query: str, k: int = 5
+    ) -> Dict[str, List[Tuple[float, str]]]:
         """
         Search for key names in the long-term memory that are similar to the query using BM25+ algorithm.
 
@@ -452,3 +454,222 @@ class MemoryAPI_vector:
         """
         keys = deepcopy(list(self.archival_memory.keys()))
         return self._similarity_search(query, keys, k)
+
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import List, Tuple
+
+import numpy as np
+import faiss
+from sentence_transformers import SentenceTransformer
+from bfcl.eval_checker.multi_turn_eval.func_source_code.memory_api_metaclass import (
+    MemoryAPI,
+)
+
+
+class MemoryAPI_vector(MemoryAPI):
+    """
+    A class that provides APIs to manage short-term and long-term memory data using vector embeddings.
+    """
+
+    def __init__(self):
+        self._api_description = """This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system."""
+        self.snapshot_folder = None
+        self.core_memory = VectorStore(
+            max_size=MAX_CORE_MEMORY_SIZE,
+            max_entry_length=MAX_CORE_MEMORY_ENTRY_LENGTH,
+        )
+        self.archival_memory = VectorStore(
+            max_size=MAX_ARCHIVAL_MEMORY_SIZE,
+            max_entry_length=MAX_ARCHIVAL_MEMORY_ENTRY_LENGTH,
+        )
+
+    def memory_add(self, text: str) -> Dict[str, str]:
+        """
+        Add a new text entry to the vector store.
+
+        Args:
+            text (str): The text to store in the vector store.
+
+        Returns:
+            status (str): Status of the operation.
+        """
+        text = str(text)
+        vec_id = self._next_id
+        self._next_id += 1
+
+        vector = self._embed(text)
+        self._index.add_with_ids(vector, np.array([vec_id], dtype=np.int64))
+        self._store[vec_id] = text
+        return vec_id
+
+    def remove(self, vec_id: int) -> None:
+        """Remove an entry by its unique `vec_id`. O(1) in FAISS."""
+        if vec_id not in self._store:
+            raise KeyError(f"ID {vec_id} not present in store")
+        self._index.remove_ids(np.array([vec_id], dtype=np.int64))
+        del self._store[vec_id]
+
+    def update(self, vec_id: int, new_text: str) -> None:
+        """Replace the text for *vec_id* with *new_text* and re‑index its vector."""
+        if vec_id not in self._store:
+            raise KeyError(f"ID {vec_id} not present in store")
+        self._index.remove_ids(np.array([vec_id], dtype=np.int64))
+        vector = self._embed(new_text)
+        self._index.add_with_ids(vector, np.array([vec_id], dtype=np.int64))
+        self._store[vec_id] = new_text
+
+    def clear(self) -> None:
+        """Delete **all** entries and reset ID counter."""
+        self._index.reset()
+        self._store.clear()
+        self._next_id = 0
+
+    def retrieve(self, query: str, top_k: int = 5) -> List[Tuple[int, float, str]]:
+        """Return the *top_k* most similar texts.
+
+        Each item is *(id, similarity_score, text)* ordered by descending score.
+        """
+        if not self._store:
+            return []
+        q_vec = self._embed(query)
+        scores, ids = self._index.search(q_vec, min(top_k, len(self._store)))
+        return [
+            (int(vid), float(score), self._store[int(vid)])
+            for score, vid in zip(scores[0], ids[0])
+            if vid != -1
+        ]
+
+    # ----------------------------------------------------------------------
+    # Snapshot / persistence
+    # ----------------------------------------------------------------------
+    def save(self, path: str | Path) -> None:
+        """Save a JSON snapshot *path* of the current store.
+
+        The snapshot contains the SentenceTransformer model name, the next ID
+        counter, and the raw text store. Vectors are re‑computed on restore, so
+        the file stays compact and fully portable.
+        """
+        data = {
+            "snapshot_version": self.SNAPSHOT_VERSION,
+            "model_name": self._model_name,
+            "next_id": self._next_id,
+            "store": self._store,
+        }
+        Path(path).write_text(json.dumps(data, ensure_ascii=False, indent=2))
+
+    @classmethod
+    def load(cls, path: str | Path, *, use_gpu: bool = False) -> "VectorStoreMemory":
+        """Restore a :class:`VectorStoreMemory` from *path*.
+
+        Returns a new instance whose state matches the snapshot.
+        """
+        obj = json.loads(Path(path).read_text())
+        if obj.get("snapshot_version") != cls.SNAPSHOT_VERSION:
+            raise ValueError("Snapshot version mismatch – cannot load.")
+
+        inst = cls(obj["model_name"], use_gpu=use_gpu)
+        inst._next_id = obj["next_id"]
+        inst._store = {int(k): v for k, v in obj["store"].items()}
+
+        if inst._store:
+            # Bulk embed and add with known IDs
+            ids = np.array(list(inst._store.keys()), dtype=np.int64)
+            texts = list(inst._store.values())
+            vectors = inst._encoder.encode(texts, normalize_embeddings=True)
+            inst._index.add_with_ids(np.asarray(vectors, dtype=np.float32), ids)
+        return inst
+
+
+class VectorStore:
+
+    def __init__(self, max_size, max_entry_length):
+        self.max_size = max_size
+        self.max_entry_length = max_entry_length
+        # Initialize the vector store with a SentenceTransformer model and FAISS index.
+        self._encoder = SentenceTransformer("all-MiniLM-L6-v2", device="cpu")
+        self._dim = self._encoder.get_sentence_embedding_dimension()
+
+        # Cosine similarity via inner product on L2‑normalised vectors.
+        index_flat = faiss.IndexFlatIP(self._dim)
+        self._index = faiss.IndexIDMap(index_flat)
+
+        self._store: dict[int, str] = {}
+        # _next_id will always be unique and sequential
+        self._next_id: int = 0
+
+    def _embed(self, text: str | List[str]) -> np.ndarray:
+        """Return an L2-normalised NumPy array suitable for FAISS."""
+        vecs = self._encoder.encode(
+            text if isinstance(text, list) else [text], normalize_embeddings=True
+        )
+        return np.asarray(vecs, dtype=np.float32)
+
+    def add(self, text: str) -> int:
+        vec_id = self._next_id
+        self._next_id += 1
+
+        vector = self._embed(text)
+        self._index.add_with_ids(vector, np.array([vec_id], dtype=np.int64))
+        self._store[vec_id] = text
+        return vec_id
+
+    def remove(self, vec_id: int) -> None:
+        assert vec_id in self._store, f"ID {vec_id} not present in store"
+
+        self._index.remove_ids(np.array([vec_id], dtype=np.int64))
+        del self._store[vec_id]
+
+    def update(self, vec_id: int, new_text: str) -> None:
+        assert vec_id in self._store, f"ID {vec_id} not present in store"
+
+        self._index.remove_ids(np.array([vec_id], dtype=np.int64))
+        vector = self._embed(new_text)
+        self._index.add_with_ids(vector, np.array([vec_id], dtype=np.int64))
+        self._store[vec_id] = new_text
+
+    def clear(self) -> None:
+        self._index.reset()
+        self._store.clear()
+        self._next_id = 0
+
+    def retrieve(self, query: str, top_k: int = 5) -> list[dict[str, str]]:
+        """Return the *top_k* most similar texts.
+
+        Return a list of dictionary with keys 'id', 'similarity_score', and 'text'.
+        """
+        if not self._store:
+            return []
+        # q_vec has just one row (shape == (1, dim))
+        q_vec = self._embed(query)
+
+        # scores and ids come back with one row each (shape == (1, top_k))
+        scores, ids = self._index.search(q_vec, min(top_k, len(self._store)))
+
+        results = []
+        for score, vid in zip(scores[0], ids[0]):
+            # FAISS pads the id slots it can’t fill with ‑1, so we skip those
+            if vid != -1:
+                results.append(
+                    {
+                        "id": int(vid),
+                        "similarity_score": float(score),
+                        "text": self._store[int(vid)],
+                    }
+                )
+        return results
+
+    def retrieve_all(self) -> list[dict[str, str]]:
+        """Return all entries in the vector store."""
+        results = []
+        for vid, text in self._store.items():
+            results.append(
+                {
+                    "id": int(vid),
+                    "text": text,
+                }
+            )
+        return results
