@@ -71,6 +71,7 @@ class ModelConfig:
         output_price (Optional[float]): USD per million output tokens (None for open source models).
         is_fc_model (bool): True if this model is used in Function-Calling mode, otherwise False for Prompt-based mode.
         underscore_to_dot (bool): True if model does not support '.' in function names, in which case we will replace '.' with '_'.
+        use_default_system_prompt (bool): True if model uses default system prompt.
 
     """
 
@@ -92,6 +93,8 @@ class ModelConfig:
     # True if this model does not allow '.' in function names
     underscore_to_dot: bool = False
 
+    # True if this model uses default system prompt
+    use_default_system_prompt: bool = None
 
 # Inference through API calls
 api_inference_model_map = {
@@ -106,6 +109,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "DeepSeek-R1": ModelConfig(
         model_name="DeepSeek-R1",
@@ -118,6 +122,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "DeepSeek-V3-FC": ModelConfig(
         model_name="DeepSeek-V3-FC",
@@ -130,6 +135,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "gpt-4.5-preview-2025-02-27": ModelConfig(
         model_name="gpt-4.5-preview-2025-02-27",
@@ -142,6 +148,7 @@ api_inference_model_map = {
         output_price=150,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "gpt-4.5-preview-2025-02-27-FC": ModelConfig(
         model_name="gpt-4.5-preview-2025-02-27-FC",
@@ -154,6 +161,7 @@ api_inference_model_map = {
         output_price=150,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "gpt-4.1-2025-04-14-FC": ModelConfig(
         model_name="gpt-4.1-2025-04-14-FC",
@@ -166,6 +174,7 @@ api_inference_model_map = {
         output_price=8,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "gpt-4.1-2025-04-14": ModelConfig(
         model_name="gpt-4.1-2025-04-14",
@@ -178,6 +187,7 @@ api_inference_model_map = {
         output_price=8,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "gpt-4.1-mini-2025-04-14-FC": ModelConfig(
         model_name="gpt-4.1-mini-2025-04-14-FC",
@@ -190,6 +200,7 @@ api_inference_model_map = {
         output_price=1.6,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "gpt-4.1-mini-2025-04-14": ModelConfig(
         model_name="gpt-4.1-mini-2025-04-14",
@@ -202,6 +213,7 @@ api_inference_model_map = {
         output_price=1.6,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "gpt-4.1-nano-2025-04-14-FC": ModelConfig(
         model_name="gpt-4.1-nano-2025-04-14-FC",
@@ -214,6 +226,7 @@ api_inference_model_map = {
         output_price=0.4,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "gpt-4.1-nano-2025-04-14": ModelConfig(
         model_name="gpt-4.1-nano-2025-04-14",
@@ -226,6 +239,7 @@ api_inference_model_map = {
         output_price=0.4,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "o1-2024-12-17-FC": ModelConfig(
         model_name="o1-2024-12-17-FC",
@@ -238,6 +252,7 @@ api_inference_model_map = {
         output_price=60,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "o1-2024-12-17": ModelConfig(
         model_name="o1-2024-12-17",
@@ -250,6 +265,7 @@ api_inference_model_map = {
         output_price=60,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "o3-mini-2025-01-31-FC": ModelConfig(
         model_name="o3-mini-2025-01-31-FC",
@@ -262,6 +278,7 @@ api_inference_model_map = {
         output_price=4,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "o3-mini-2025-01-31": ModelConfig(
         model_name="o3-mini-2025-01-31",
@@ -274,6 +291,7 @@ api_inference_model_map = {
         output_price=4,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "gpt-4o-2024-11-20": ModelConfig(
         model_name="gpt-4o-2024-11-20",
@@ -286,6 +304,7 @@ api_inference_model_map = {
         output_price=10,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "gpt-4o-2024-11-20-FC": ModelConfig(
         model_name="gpt-4o-2024-11-20-FC",
@@ -298,6 +317,7 @@ api_inference_model_map = {
         output_price=10,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "gpt-4o-mini-2024-07-18": ModelConfig(
         model_name="gpt-4o-mini-2024-07-18",
@@ -310,6 +330,7 @@ api_inference_model_map = {
         output_price=0.6,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "gpt-4o-mini-2024-07-18-FC": ModelConfig(
         model_name="gpt-4o-mini-2024-07-18-FC",
@@ -322,6 +343,7 @@ api_inference_model_map = {
         output_price=0.6,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "claude-3-opus-20240229": ModelConfig(
         model_name="claude-3-opus-20240229",
@@ -334,6 +356,7 @@ api_inference_model_map = {
         output_price=75,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "claude-3-opus-20240229-FC": ModelConfig(
         model_name="claude-3-opus-20240229-FC",
@@ -346,6 +369,7 @@ api_inference_model_map = {
         output_price=75,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "claude-3-7-sonnet-20250219": ModelConfig(
         model_name="claude-3-7-sonnet-20250219",
@@ -358,6 +382,7 @@ api_inference_model_map = {
         output_price=15,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "claude-3-7-sonnet-20250219-FC": ModelConfig(
         model_name="claude-3-7-sonnet-20250219-FC",
@@ -370,6 +395,7 @@ api_inference_model_map = {
         output_price=15,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "claude-3-5-sonnet-20241022": ModelConfig(
         model_name="claude-3-5-sonnet-20241022",
@@ -382,6 +408,7 @@ api_inference_model_map = {
         output_price=15,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "claude-3-5-sonnet-20241022-FC": ModelConfig(
         model_name="claude-3-5-sonnet-20241022-FC",
@@ -394,6 +421,7 @@ api_inference_model_map = {
         output_price=15,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "claude-3-5-haiku-20241022": ModelConfig(
         model_name="claude-3-5-haiku-20241022",
@@ -406,6 +434,7 @@ api_inference_model_map = {
         output_price=5,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "claude-3-5-haiku-20241022-FC": ModelConfig(
         model_name="claude-3-5-haiku-20241022-FC",
@@ -418,6 +447,7 @@ api_inference_model_map = {
         output_price=5,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "nova-pro-v1.0": ModelConfig(
         model_name="nova-pro-v1.0",
@@ -430,6 +460,7 @@ api_inference_model_map = {
         output_price=3.2,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "nova-lite-v1.0": ModelConfig(
         model_name="nova-lite-v1.0",
@@ -442,6 +473,7 @@ api_inference_model_map = {
         output_price=0.24,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "nova-micro-v1.0": ModelConfig(
         model_name="nova-micro-v1.0",
@@ -454,6 +486,7 @@ api_inference_model_map = {
         output_price=0.14,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "open-mistral-nemo-2407": ModelConfig(
         model_name="open-mistral-nemo-2407",
@@ -466,6 +499,7 @@ api_inference_model_map = {
         output_price=0.15,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "open-mistral-nemo-2407-FC": ModelConfig(
         model_name="open-mistral-nemo-2407-FC",
@@ -478,6 +512,7 @@ api_inference_model_map = {
         output_price=0.15,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "mistral-large-2411": ModelConfig(
         model_name="mistral-large-2411",
@@ -490,6 +525,7 @@ api_inference_model_map = {
         output_price=6,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "mistral-large-2411-FC": ModelConfig(
         model_name="mistral-large-2411-FC",
@@ -502,6 +538,7 @@ api_inference_model_map = {
         output_price=6,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "mistral-small-2503": ModelConfig(
         model_name="mistral-small-2503",
@@ -514,6 +551,7 @@ api_inference_model_map = {
         output_price=0.3,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "mistral-small-2503-FC": ModelConfig(
         model_name="mistral-small-2503-FC",
@@ -550,6 +588,7 @@ api_inference_model_map = {
         output_price=2,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "firefunction-v2-FC": ModelConfig(
         model_name="firefunction-v2-FC",
@@ -562,6 +601,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Nexusflow-Raven-v2": ModelConfig(
         model_name="Nexusflow-Raven-v2",
@@ -574,6 +614,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "gemini-2.0-flash-lite-001-FC": ModelConfig(
         model_name="gemini-2.0-flash-lite-001-FC",
@@ -586,6 +627,7 @@ api_inference_model_map = {
         output_price=0.3,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "gemini-2.0-flash-lite-001": ModelConfig(
         model_name="gemini-2.0-flash-lite-001",
@@ -598,6 +640,7 @@ api_inference_model_map = {
         output_price=0.3,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "gemini-2.0-flash-001-FC": ModelConfig(
         model_name="gemini-2.0-flash-001-FC",
@@ -610,6 +653,7 @@ api_inference_model_map = {
         output_price=0.6,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "gemini-2.0-flash-001": ModelConfig(
         model_name="gemini-2.0-flash-001",
@@ -622,6 +666,7 @@ api_inference_model_map = {
         output_price=0.6,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "gemini-2.5-pro-preview-05-06-FC": ModelConfig(
         model_name="gemini-2.5-pro-preview-05-06-FC",
@@ -634,6 +679,7 @@ api_inference_model_map = {
         output_price=0,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "gemini-2.5-pro-preview-05-06": ModelConfig(
         model_name="gemini-2.5-pro-preview-05-06",
@@ -646,6 +692,7 @@ api_inference_model_map = {
         output_price=0,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "gemini-2.0-flash-thinking-exp-01-21": ModelConfig(
         model_name="gemini-2.0-flash-thinking-exp-01-21",
@@ -658,6 +705,7 @@ api_inference_model_map = {
         output_price=0,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "meetkai/functionary-small-v3.1-FC": ModelConfig(
         model_name="meetkai/functionary-small-v3.1-FC",
@@ -670,6 +718,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "meetkai/functionary-medium-v3.1-FC": ModelConfig(
         model_name="meetkai/functionary-medium-v3.1-FC",
@@ -682,6 +731,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "databricks-dbrx-instruct": ModelConfig(
         model_name="databricks-dbrx-instruct",
@@ -694,6 +744,7 @@ api_inference_model_map = {
         output_price=6.75,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "command-r-plus-FC": ModelConfig(
         model_name="command-r-plus-FC",
@@ -706,6 +757,7 @@ api_inference_model_map = {
         output_price=15,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "command-r7b-12-2024-FC": ModelConfig(
         model_name="command-r7b-12-2024-FC",
@@ -718,6 +770,7 @@ api_inference_model_map = {
         output_price=0.15,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "command-a-03-2025-FC": ModelConfig(
         model_name="command-a-03-2025-FC",
@@ -730,6 +783,7 @@ api_inference_model_map = {
         output_price=10,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "snowflake/arctic": ModelConfig(
         model_name="snowflake/arctic",
@@ -742,6 +796,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "nvidia/nemotron-4-340b-instruct": ModelConfig(
         model_name="nvidia/nemotron-4-340b-instruct",
@@ -754,6 +809,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "BitAgent/GoGoAgent": ModelConfig(
         model_name="BitAgent/GoGoAgent",
@@ -766,6 +822,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "palmyra-x-004": ModelConfig(
         model_name="palmyra-x-004",
@@ -778,6 +835,7 @@ api_inference_model_map = {
         output_price=12,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "grok-3-beta-FC": ModelConfig(
         model_name="grok-3-beta-FC",
@@ -790,6 +848,7 @@ api_inference_model_map = {
         output_price=15,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "grok-3-beta": ModelConfig(
         model_name="grok-3-beta",
@@ -802,6 +861,7 @@ api_inference_model_map = {
         output_price=15,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "grok-3-mini-beta-FC": ModelConfig(
         model_name="grok-3-mini-beta-FC",
@@ -814,6 +874,7 @@ api_inference_model_map = {
         output_price=0.5,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "grok-3-mini-beta": ModelConfig(
         model_name="grok-3-mini-beta",
@@ -826,6 +887,7 @@ api_inference_model_map = {
         output_price=0.5,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "xiaoming-14B": ModelConfig(
         model_name="xiaoming-14B",
@@ -838,6 +900,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "DM-Cito-8B": ModelConfig(
         model_name="DM-Cito-8B",
@@ -867,6 +930,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "google/gemma-3-1b-it": ModelConfig(
         model_name="google/gemma-3-1b-it",
@@ -879,6 +943,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "google/gemma-3-4b-it": ModelConfig(
         model_name="google/gemma-3-4b-it",
@@ -891,6 +956,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "google/gemma-3-12b-it": ModelConfig(
         model_name="google/gemma-3-12b-it",
@@ -903,6 +969,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "google/gemma-3-27b-it": ModelConfig(
         model_name="google/gemma-3-27b-it",
@@ -915,6 +982,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "meta-llama/Llama-3.1-8B-Instruct-FC": ModelConfig(
         model_name="meta-llama/Llama-3.1-8B-Instruct-FC",
@@ -927,6 +995,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "meta-llama/Llama-3.1-8B-Instruct": ModelConfig(
         model_name="meta-llama/Llama-3.1-8B-Instruct",
@@ -939,6 +1008,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "meta-llama/Llama-3.1-70B-Instruct-FC": ModelConfig(
         model_name="meta-llama/Llama-3.1-70B-Instruct-FC",
@@ -951,6 +1021,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "meta-llama/Llama-3.1-70B-Instruct": ModelConfig(
         model_name="meta-llama/Llama-3.1-70B-Instruct",
@@ -963,6 +1034,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "meta-llama/Llama-3.2-1B-Instruct-FC": ModelConfig(
         model_name="meta-llama/Llama-3.2-1B-Instruct-FC",
@@ -975,6 +1047,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "meta-llama/Llama-3.2-3B-Instruct-FC": ModelConfig(
         model_name="meta-llama/Llama-3.2-3B-Instruct-FC",
@@ -987,6 +1060,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "meta-llama/Llama-3.3-70B-Instruct-FC": ModelConfig(
         model_name="meta-llama/Llama-3.3-70B-Instruct-FC",
@@ -999,6 +1073,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "meta-llama/Llama-4-Scout-17B-16E-Instruct-FC": ModelConfig(
         model_name="meta-llama/Llama-4-Scout-17B-16E-Instruct-FC",
@@ -1011,6 +1086,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC": ModelConfig(
         model_name="meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC",
@@ -1023,6 +1099,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Salesforce/Llama-xLAM-2-70b-fc-r": ModelConfig(
         model_name="Salesforce/Llama-xLAM-2-70b-fc-r",
@@ -1035,6 +1112,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Salesforce/Llama-xLAM-2-8b-fc-r": ModelConfig(
         model_name="Salesforce/Llama-xLAM-2-8b-fc-r",
@@ -1047,6 +1125,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Salesforce/xLAM-2-32b-fc-r": ModelConfig(
         model_name="Salesforce/xLAM-2-32b-fc-r",
@@ -1059,6 +1138,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Salesforce/xLAM-2-3b-fc-r": ModelConfig(
         model_name="Salesforce/xLAM-2-3b-fc-r",
@@ -1071,6 +1151,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Salesforce/xLAM-2-1b-fc-r": ModelConfig(
         model_name="Salesforce/xLAM-2-1b-fc-r",
@@ -1083,6 +1164,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "mistralai/Ministral-8B-Instruct-2410": ModelConfig(
         model_name="mistralai/Ministral-8B-Instruct-2410",
@@ -1095,6 +1177,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "microsoft/phi-4": ModelConfig(
         model_name="microsoft/phi-4",
@@ -1107,6 +1190,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "microsoft/Phi-4-mini-instruct": ModelConfig(
         model_name="microsoft/Phi-4-mini-instruct",
@@ -1119,6 +1203,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "microsoft/Phi-4-mini-instruct-FC": ModelConfig(
         model_name="microsoft/Phi-4-mini-instruct-FC",
@@ -1131,6 +1216,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "ibm-granite/granite-20b-functioncalling": ModelConfig(
         model_name="ibm-granite/granite-20b-functioncalling",
@@ -1143,6 +1229,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "MadeAgents/Hammer2.1-7b": ModelConfig(
         model_name="MadeAgents/Hammer2.1-7b",
@@ -1155,6 +1242,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "MadeAgents/Hammer2.1-3b": ModelConfig(
         model_name="MadeAgents/Hammer2.1-3b",
@@ -1167,6 +1255,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "MadeAgents/Hammer2.1-1.5b": ModelConfig(
         model_name="MadeAgents/Hammer2.1-1.5b",
@@ -1179,6 +1268,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "MadeAgents/Hammer2.1-0.5b": ModelConfig(
         model_name="MadeAgents/Hammer2.1-0.5b",
@@ -1191,6 +1281,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "THUDM/glm-4-9b-chat": ModelConfig(
         model_name="THUDM/glm-4-9b-chat",
@@ -1203,6 +1294,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "Qwen/Qwen3-0.6B-FC": ModelConfig(
         model_name="Qwen/Qwen3-0.6B-FC",
@@ -1215,6 +1307,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Qwen/Qwen3-0.6B": ModelConfig(
         model_name="Qwen/Qwen3-0.6B",
@@ -1227,6 +1320,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "Qwen/Qwen3-1.7B-FC": ModelConfig(
         model_name="Qwen/Qwen3-1.7B-FC",
@@ -1239,6 +1333,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Qwen/Qwen3-1.7B": ModelConfig(
         model_name="Qwen/Qwen3-1.7B",
@@ -1251,11 +1346,38 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
-    "Qwen/Qwen3-4B-FC": ModelConfig(
-        model_name="Qwen/Qwen3-4B-FC",
-        display_name="Qwen3-4B (FC)",
-        url="https://huggingface.co/Qwen/Qwen3-4B",
+    "Qwen/Qwen2.5-3B-Instruct-FC": ModelConfig(
+        model_name="Qwen/Qwen2.5-3B-Instruct-FC",
+        display_name="Qwen2.5-3B-Instruct (FC)",
+        url="https://huggingface.co/Qwen/Qwen2.5-3B-Instruct",
+        org="Qwen",
+        license="qwen",
+        model_handler=QwenFCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+        use_default_system_prompt=False,
+    ),
+    "Qwen/Qwen2.5-3B-Instruct": ModelConfig(
+        model_name="Qwen/Qwen2.5-3B-Instruct",
+        display_name="Qwen2.5-3B-Instruct (Prompt)",
+        url="https://huggingface.co/Qwen/Qwen2.5-3B-Instruct",
+        org="Qwen",
+        license="qwen",
+        model_handler=QwenHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=False,
+        underscore_to_dot=False,
+        use_default_system_prompt=True,
+    ),
+    "Qwen/Qwen2.5-7B-Instruct-FC": ModelConfig(
+        model_name="Qwen/Qwen2.5-7B-Instruct-FC",
+        display_name="Qwen2.5-7B-Instruct (FC)",
+        url="https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
         org="Qwen",
         license="apache-2.0",
         model_handler=QwenFCHandler,
@@ -1263,6 +1385,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Qwen/Qwen3-4B": ModelConfig(
         model_name="Qwen/Qwen3-4B",
@@ -1275,6 +1398,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "Qwen/Qwen3-8B-FC": ModelConfig(
         model_name="Qwen/Qwen3-8B-FC",
@@ -1287,6 +1411,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Qwen/Qwen3-8B": ModelConfig(
         model_name="Qwen/Qwen3-8B",
@@ -1299,6 +1424,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "Qwen/Qwen3-14B-FC": ModelConfig(
         model_name="Qwen/Qwen3-14B-FC",
@@ -1311,6 +1437,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Qwen/Qwen3-14B": ModelConfig(
         model_name="Qwen/Qwen3-14B",
@@ -1323,6 +1450,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "Qwen/Qwen3-32B-FC": ModelConfig(
         model_name="Qwen/Qwen3-32B-FC",
@@ -1335,6 +1463,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Qwen/Qwen3-32B": ModelConfig(
         model_name="Qwen/Qwen3-32B",
@@ -1395,6 +1524,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "Team-ACE/ToolACE-2-8B": ModelConfig(
         model_name="Team-ACE/ToolACE-2-8B",
@@ -1407,6 +1537,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "openbmb/MiniCPM3-4B": ModelConfig(
         model_name="openbmb/MiniCPM3-4B",
@@ -1419,6 +1550,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "openbmb/MiniCPM3-4B-FC": ModelConfig(
         model_name="openbmb/MiniCPM3-4B-FC",
@@ -1431,6 +1563,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "watt-ai/watt-tool-8B": ModelConfig(
         model_name="watt-ai/watt-tool-8B",
@@ -1443,6 +1576,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "watt-ai/watt-tool-70B": ModelConfig(
         model_name="watt-ai/watt-tool-70B",
@@ -1455,6 +1589,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "ZJared/Haha-7B": ModelConfig(
         model_name="ZJared/Haha-7B",
@@ -1467,6 +1602,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "speakleash/Bielik-11B-v2.3-Instruct": ModelConfig(
         model_name="speakleash/Bielik-11B-v2.3-Instruct",
@@ -1479,6 +1615,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "NovaSky-AI/Sky-T1-32B-Preview": ModelConfig(
         model_name="NovaSky-AI/Sky-T1-32B-Preview",
@@ -1491,6 +1628,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "QwQ-32B": ModelConfig(
         model_name="qwq-32b",
@@ -1503,6 +1641,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "tiiuae/Falcon3-10B-Instruct-FC": ModelConfig(
         model_name="tiiuae/Falcon3-10B-Instruct-FC",
@@ -1515,6 +1654,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "tiiuae/Falcon3-7B-Instruct-FC": ModelConfig(
         model_name="tiiuae/Falcon3-7B-Instruct-FC",
@@ -1527,6 +1667,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "tiiuae/Falcon3-3B-Instruct-FC": ModelConfig(
         model_name="tiiuae/Falcon3-3B-Instruct-FC",
@@ -1539,6 +1680,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "tiiuae/Falcon3-1B-Instruct-FC": ModelConfig(
         model_name="tiiuae/Falcon3-1B-Instruct-FC",
@@ -1551,6 +1693,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "uiuc-convai/CoALM-8B": ModelConfig(
         model_name="uiuc-convai/CoALM-8B",
@@ -1563,6 +1706,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "uiuc-convai/CoALM-70B": ModelConfig(
         model_name="uiuc-convai/CoALM-70B",
@@ -1575,6 +1719,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "uiuc-convai/CoALM-405B": ModelConfig(
         model_name="uiuc-convai/CoALM-405B",
@@ -1587,6 +1732,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "BitAgent/BitAgent-8B": ModelConfig(
         model_name="BitAgent/BitAgent-8B",
@@ -1599,6 +1745,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "ThinkAgents/ThinkAgent-1B": ModelConfig(
         model_name="ThinkAgents/ThinkAgent-1B",
@@ -1611,6 +1758,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
 }
 
@@ -1628,6 +1776,7 @@ third_party_inference_model_map = {
         output_price=0.85,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "meta-llama/llama-4-maverick-17b-128e-instruct-fp8-FC-novita": ModelConfig(
         model_name="meta-llama/llama-4-maverick-17b-128e-instruct-fp8-FC-novita",
@@ -1640,6 +1789,7 @@ third_party_inference_model_map = {
         output_price=0.85,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "meta-llama/llama-4-scout-17b-16e-instruct-novita": ModelConfig(
         model_name="meta-llama/llama-4-scout-17b-16e-instruct-novita",
@@ -1652,6 +1802,7 @@ third_party_inference_model_map = {
         output_price=0.5,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "meta-llama/llama-4-scout-17b-16e-instruct-FC-novita": ModelConfig(
         model_name="meta-llama/llama-4-scout-17b-16e-instruct-FC-novita",
@@ -1664,6 +1815,7 @@ third_party_inference_model_map = {
         output_price=0.5,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "qwen/qwq-32b-FC-novita": ModelConfig(
         model_name="qwen/qwq-32b-FC-novita",
@@ -1676,6 +1828,7 @@ third_party_inference_model_map = {
         output_price=0.2,
         is_fc_model=True,
         underscore_to_dot=True,
+        use_default_system_prompt=False,
     ),
     "qwen/qwq-32b-novita": ModelConfig(
         model_name="qwen/qwq-32b-novita",
@@ -1688,6 +1841,7 @@ third_party_inference_model_map = {
         output_price=0.2,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
 }
 
