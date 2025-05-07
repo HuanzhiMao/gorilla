@@ -93,7 +93,7 @@ class ModelConfig:
     underscore_to_dot: bool = False
 
     # True if this model uses default system prompt
-    use_default_system_prompt: bool = None
+    use_default_system_prompt: bool = False
 
 # Inference through API calls
 api_inference_model_map = {
@@ -875,7 +875,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
-        use_default_system_prompt=True,
+        use_default_system_prompt=False,
     ),
 }
 
