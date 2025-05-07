@@ -858,7 +858,6 @@ def formulate_default_system_prompt(
         available_tools=PROMPT_STYLE_MAPPING[prompt_style][available_tools_key].format(functions=format_function_doc(functions, function_doc_format, has_available_tools_tag))
     )
 
-    print(default_prompt)
     return default_prompt
 
 
@@ -924,17 +923,13 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
             param_docs = "\n".join([format_param(p, params[p]) for p in params])
             docstring = f"""def {func_name}({', '.join(signature_params)}):\n    \"\"\"\n    {desc}\n\n{param_docs}\n    \"\"\"\n    pass"""
             docstrings.append(docstring)
-            print("docstring", docstring) # why nothing is printed?
-
 
         functions = "\n".join(docstrings)
 
-    print("fucntinos", functions)
     if has_available_tools_tag:
         functions = f"<AVAILABLE_TOOLS>\n{functions}\n</AVAILABLE_TOOLS>"
     else:
         functions = f"```{function_doc_format}\n{functions}\n```"
-    print("functinos after", functions) # empty
     return functions  # Fallback for unsupported formats
 
 def parse_prompt_variation_args(prompt_variation = []):
