@@ -148,6 +148,12 @@ def generate(
         "--run-ids",
         help="If true, also run the test entry mentioned in the test_case_ids_to_generate.json file, in addition to the --test_category argument.",
     ),
+    prompt_variation: List[str] = typer.Option(
+        [],
+        "--prompt-variation",
+        help="", # TODO: add help message
+        callback=handle_multiple_input,
+    )
 ):
     """
     Generate the LLM response for one or more models on a test-category (same as openfunctions_evaluation.py).
@@ -168,6 +174,7 @@ def generate(
         result_dir=result_dir,
         allow_overwrite=allow_overwrite,
         run_ids=run_ids,
+        prompt_variation=prompt_variation,
     )
     load_dotenv(dotenv_path=DOTENV_PATH, verbose=True, override=True)  # Load the .env file
     generation_main(args)

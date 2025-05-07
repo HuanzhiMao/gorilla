@@ -1,6 +1,7 @@
 import json
 import time
 from copy import deepcopy
+from typing import List
 
 from bfcl.constants.category_mapping import VERSION_PREFIX
 from bfcl.constants.default_prompts import (
@@ -15,6 +16,7 @@ from bfcl.eval_checker.multi_turn_eval.multi_turn_utils import (
     is_empty_execute_response,
 )
 from bfcl.model_handler.model_style import ModelStyle
+from bfcl.model_handler.utils import get_prompt_variation_filename_suffix
 from bfcl.utils import load_file, make_json_serializable, sort_key
 from overrides import final
 
@@ -33,7 +35,7 @@ class BaseHandler:
         self.temperature = temperature
         self.is_fc_model = False  # Whether the model is a function calling model
 
-    def inference(self, test_entry: dict, include_input_log: bool, exclude_state_log: bool):
+    def inference(self, test_entry: dict, include_input_log: bool, exclude_state_log: bool, prompt_variation: List[str]):
         # This method is used to retrive model response for each model.
 
         # FC model
@@ -49,10 +51,10 @@ class BaseHandler:
         else:
             if "multi_turn" in test_entry["id"]:
                 return self.inference_multi_turn_prompting(
-                    test_entry, include_input_log, exclude_state_log
+                    test_entry, include_input_log, exclude_state_log, prompt_variation
                 )
             else:
-                return self.inference_single_turn_prompting(test_entry, include_input_log)
+                return self.inference_single_turn_prompting(test_entry, include_input_log, prompt_variation)
 
     @final
     def inference_multi_turn_FC(
@@ -321,7 +323,7 @@ class BaseHandler:
 
     @final
     def inference_multi_turn_prompting(
-        self, test_entry: dict, include_input_log: bool, exclude_state_log: bool
+        self, test_entry: dict, include_input_log: bool, exclude_state_log: bool, prompt_variation: List[str]
     ) -> tuple[list[list], dict]:
         initial_config: dict = test_entry["initial_config"]
         involved_classes: list = test_entry["involved_classes"]
@@ -375,7 +377,7 @@ class BaseHandler:
                 )
             all_inference_log.append(state_log)
 
-        inference_data: dict = self._pre_query_processing_prompting(test_entry)
+        inference_data: dict = self._pre_query_processing_prompting(test_entry, prompt_variation)
 
         all_multi_turn_messages: list[list[dict]] = test_entry["question"]
         for turn_idx, current_turn_message in enumerate(all_multi_turn_messages):
@@ -615,9 +617,9 @@ class BaseHandler:
 
     @final
     def inference_single_turn_prompting(
-        self, test_entry: dict, include_input_log: bool
+        self, test_entry: dict, include_input_log: bool, prompt_variation: List[str]
     ) -> tuple[any, dict]:
-        inference_data: dict = self._pre_query_processing_prompting(test_entry)
+        inference_data: dict = self._pre_query_processing_prompting(test_entry, prompt_variation)
         inference_data = self.add_first_turn_message_prompting(
             inference_data, test_entry["question"][0]
         )
@@ -658,7 +660,7 @@ class BaseHandler:
         raise NotImplementedError
 
     @final
-    def write(self, result, result_dir, update_mode=False):
+    def write(self, result, result_dir, update_mode=False, prompt_variation=[]):
         model_name_dir = self.model_name.replace("/", "_")
         model_result_dir = result_dir / model_name_dir
         model_result_dir.mkdir(parents=True, exist_ok=True)
@@ -671,9 +673,11 @@ class BaseHandler:
 
         # Group entries by their `test_category` for efficient file handling
         file_entries = {}
+        prompt_variation_suffix = get_prompt_variation_filename_suffix(prompt_variation)
         for entry in entries_to_write:
             test_category = entry["id"].rsplit("_", 1)[0]
-            file_name = f"{VERSION_PREFIX}_{test_category}_result.json"
+            # file_name = f"{VERSION_PREFIX}_{test_category}_result.json"
+            file_name = f"{VERSION_PREFIX}_{test_category}_result{prompt_variation_suffix}.json"
             file_path = model_result_dir / file_name
             file_entries.setdefault(file_path, []).append(entry)
 
@@ -802,7 +806,7 @@ class BaseHandler:
         """
         raise NotImplementedError
 
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+    def _pre_query_processing_prompting(self, test_entry: dict, prompt_variation: List[str]) -> dict:
         """
         Preprocess the testset entry before sending it to the model.
         This might includes transforming the input user message into the format expected by the model, extract out the system prompt (if any), and any other necessary preprocessing steps. Those steps can also be done in the `add_first_turn_message_prompting` and `_add_next_turn_user_message_prompting` methods, but it's usually cleaner to do it here.

@@ -6,7 +6,7 @@ from bfcl.model_handler.utils import (
     system_prompt_pre_processing_chat_model,
 )
 from overrides import override
-
+from typing import List
 
 class DeepseekReasoningHandler(OSSHandler):
     """
@@ -18,7 +18,7 @@ class DeepseekReasoningHandler(OSSHandler):
         super().__init__(model_name, temperature)
 
     @override
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+    def _pre_query_processing_prompting(self, test_entry: dict, prompt_variation: List[str]) -> dict:
         functions: list = test_entry["function"]
         test_category: str = test_entry["id"].rsplit("_", 1)[0]
 
@@ -26,7 +26,7 @@ class DeepseekReasoningHandler(OSSHandler):
 
         # Deepseek R1 currently don't have native function calling support, so we still need the system prompt
         test_entry["question"][0] = system_prompt_pre_processing_chat_model(
-            test_entry["question"][0], functions, test_category
+            test_entry["question"][0], functions, test_category, prompt_variation
         )
 
         # Per https://huggingface.co/deepseek-ai/DeepSeek-R1#usage-recommendations

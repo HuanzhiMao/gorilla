@@ -2,6 +2,7 @@ import json
 import os
 import time
 
+from typing import List
 from anthropic import Anthropic, RateLimitError
 from anthropic.types import TextBlock, ToolUseBlock
 from bfcl.model_handler.base_handler import BaseHandler
@@ -255,7 +256,7 @@ class ClaudeHandler(BaseHandler):
             messages=inference_data["message"],
         )
 
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+    def _pre_query_processing_prompting(self, test_entry: dict, prompt_variation: List[str]) -> dict:
         functions: list = test_entry["function"]
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
@@ -263,7 +264,7 @@ class ClaudeHandler(BaseHandler):
         functions = func_doc_language_specific_pre_processing(functions, test_category)
 
         test_entry["question"][0] = system_prompt_pre_processing_chat_model(
-            test_entry["question"][0], functions, test_category
+            test_entry["question"][0], functions, test_category, prompt_variation
         )
         # Claude takes in system prompt in a specific field, not in the message field, so we don't need to add it to the message
         system_prompt = extract_system_prompt(test_entry["question"][0])

@@ -18,6 +18,7 @@ from bfcl.constants.eval_config import (
 from bfcl.eval_checker.eval_runner_helper import load_file
 from bfcl.constants.model_config import MODEL_CONFIG_MAPPING
 from bfcl.model_handler.model_style import ModelStyle
+from bfcl.model_handler.utils import get_prompt_variation_filename_suffix
 from bfcl.utils import is_multi_turn, parse_test_category_argument, sort_key
 from tqdm import tqdm
 
@@ -110,8 +111,9 @@ def collect_test_cases(
 
     existing_result = []
     for test_category, file_to_open in zip(all_test_categories, all_test_file_paths):
-
-        result_file_path = model_result_dir / file_to_open.replace(".json", "_result.json")
+        
+        prompt_variation_suffix = get_prompt_variation_filename_suffix(args.prompt_variation)
+        result_file_path = model_result_dir / file_to_open.replace(".json", f"_result{prompt_variation_suffix}.json")
         if result_file_path.exists():
             # Not allowing overwrite, we will load the existing results
             if not args.allow_overwrite:
@@ -167,7 +169,7 @@ def process_multi_turn_test_case(test_cases):
     return test_cases
 
 
-def multi_threaded_inference(handler, test_case, include_input_log, exclude_state_log):
+def multi_threaded_inference(handler, test_case, include_input_log, exclude_state_log, prompt_variation):
 
     assert type(test_case["function"]) is list
 
@@ -176,7 +178,7 @@ def multi_threaded_inference(handler, test_case, include_input_log, exclude_stat
     while True:
         try:
             result, metadata = handler.inference(
-                deepcopy(test_case), include_input_log, exclude_state_log
+                deepcopy(test_case), include_input_log, exclude_state_log, prompt_variation
             )
             break  # Success, exit the loop
         except Exception as e:
@@ -235,6 +237,7 @@ def generate_results(args, model_name, test_cases_total):
             exclude_state_log=args.exclude_state_log,
             result_dir=args.result_dir,
             update_mode=update_mode,
+            prompt_variation=args.prompt_variation,
         )
 
     else:
@@ -251,6 +254,7 @@ def generate_results(args, model_name, test_cases_total):
                         test_case,
                         args.include_input_log,
                         args.exclude_state_log,
+                        args.prompt_variation,
                     )
                     futures.append(future)
 
@@ -258,7 +262,7 @@ def generate_results(args, model_name, test_cases_total):
                     # This will wait for the task to complete, so that we are always writing in order
                     result = future.result()
                     handler.write(
-                        result, result_dir=args.result_dir, update_mode=args.run_ids
+                        result, result_dir=args.result_dir, update_mode=args.run_ids, prompt_variation=args.prompt_variation
                     )  # Only when we run specific test ids, we will need update_mode=True to keep entries in the same order
                     pbar.update()
 

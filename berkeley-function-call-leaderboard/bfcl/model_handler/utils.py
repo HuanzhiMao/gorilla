@@ -328,21 +328,16 @@ def resolve_ast_by_type(value):
     return output
 
 
-def system_prompt_pre_processing_chat_model(prompts, function_docs, test_category):
+def system_prompt_pre_processing_chat_model(prompts, function_docs, test_category, prompt_variation = []):
     """
     Add a system prompt to the chat model to instruct the model on the available functions and the expected response format.
     If the prompts list already contains a system prompt, append the additional system prompt content to the existing system prompt.
     """
     assert type(prompts) == list
 
-    # system_prompt = formulate_default_system_prompt(function_docs=function_docs) # original prompt equivalent (-original)
-    # system_prompt = formulate_default_system_prompt(prompt_format="markdown", functions=function_docs) # VAR1 (original parser) (-markdown)
-    # system_prompt = formulate_default_system_prompt(prompt_style="experimental", functions=function_docs) # VAR2 (original parser)(-experimental-prompt)
-    # system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, functions=function_docs) # VAR3 (1 line for <TOOLCALL> tags removal + original parser)(-with-tag)
-    
-    # system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="json",functions=function_docs) #VAR4 (json parser)(-with-tag-json)
-    # system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="verbose_xml",functions=function_docs) #VAR5 (verbose xml parser)(-with-tag-verbose-xml)
-    system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="concise_xml",functions=function_docs, has_available_tools_tag=False) #VAR6 (concise xml parser)(-with-tag-concise-xml)
+    prompt_variation_args = parse_prompt_variation_args(prompt_variation)
+
+    system_prompt = formulate_default_system_prompt(**prompt_variation_args)
 
     # System prompt must be in the first position
     # If the question comes with a system prompt, append its content at the end of the chat template.
@@ -838,7 +833,7 @@ def formulate_default_system_prompt(
     return_format: str = "python",         # 'python' | 'json' | 'verbose_xml' | 'concise_xml'
     has_tool_call_tag: bool = False,       # True | False # add <TOOLCALL> tags
     has_available_tools_tag: bool = False, # True | False # add <AVAILABLE_TOOLS> tags
-    functinon_doc_format: str = "python",  # 'python' | 'xml' | 'json'
+    function_doc_format: str = "python",  # 'python' | 'xml' | 'json'
     functions: str = ""
 ) -> str:
     """
@@ -859,7 +854,7 @@ def formulate_default_system_prompt(
         task=PROMPT_STYLE_MAPPING[prompt_style]["task"],
         tool_call=PROMPT_STYLE_MAPPING[prompt_style][tool_call_key].format(output_format=OUTPUT_FORMAT_MAPPING[return_format]),
         multiturn=PROMPT_STYLE_MAPPING[prompt_style]["multiturn"],
-        available_tools=PROMPT_STYLE_MAPPING[prompt_style][available_tools_key].format(functions=format_function_doc(functions, functinon_doc_format, has_available_tools_tag))
+        available_tools=PROMPT_STYLE_MAPPING[prompt_style][available_tools_key].format(functions=format_function_doc(functions, function_doc_format, has_available_tools_tag))
     )
 
     return default_prompt
@@ -934,6 +929,37 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
         functions = f"<AVAILABLE_TOOLS>\n{functions}\n</AVAILABLE_TOOLS>"
     else:
         functions = f"```{function_doc_format}\n{functions}\n```"
-    print(functions)
+    # print(functions)
     return functions  # Fallback for unsupported formats
 
+def parse_prompt_variation_args(prompt_variation = []):
+    prompt_arg_names = ["prompt_format", "prompt_style", "return_format", "has_tool_call_flag", "has_available_tools_tag", "function_doc_format"]
+    prompt_args = {}
+    prompt_variation_no_var_name = []
+    for prompt_var in prompt_variation:
+        if '=' in prompt_var:
+            var_name = prompt_var.split('=')[0]
+            if var_name in prompt_arg_names:
+                if var_name not in prompt_args:
+                    prompt_args[var_name] = prompt_var.split('=')[-1]
+        else:
+            prompt_variation_no_var_name.append(prompt_var)
+    
+    for prompt_var in prompt_variation_no_var_name:
+        for prompt_arg_name in prompt_arg_names:
+            if prompt_arg_name not in prompt_args:
+                prompt_args[prompt_arg_name] = prompt_var
+                break
+    if "has_tool_call_flag" in prompt_args:
+        prompt_args["has_tool_call_flag"] = prompt_args["has_tool_call_flag"] == "True"
+    if "has_available_tools_tag" in prompt_args:
+        prompt_args["has_available_tools_tag"] = prompt_args["has_available_tools_tag"] == "True"
+    return prompt_args
+
+def get_prompt_variation_filename_suffix(prompt_variation = []):
+    prompt_args = parse_prompt_variation_args(prompt_variation)
+    sorted_prompt_args = dict(sorted(prompt_args.items()))
+    file_name = ""
+    for prompt_arg in sorted_prompt_args:
+        file_name += f"_{prompt_arg}_{sorted_prompt_args[prompt_arg]}"
+    return file_name

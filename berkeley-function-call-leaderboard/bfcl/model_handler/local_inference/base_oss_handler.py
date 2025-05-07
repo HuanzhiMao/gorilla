@@ -3,7 +3,7 @@ import subprocess
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import Optional
+from typing import Optional, List
 
 import requests
 from bfcl.constants.eval_config import RESULT_PATH, VLLM_PORT
@@ -39,7 +39,7 @@ class OSSHandler(BaseHandler, EnforceOverrides):
         self.client = OpenAI(base_url=self.base_url, api_key="EMPTY")
 
     @override
-    def inference(self, test_entry: dict, include_input_log: bool, exclude_state_log: bool):
+    def inference(self, test_entry: dict, include_input_log: bool, exclude_state_log: bool, prompt_variation: List[str]):
         """
         OSS models have a different inference method.
         They needs to spin up a server first and then send requests to it.
@@ -71,6 +71,7 @@ class OSSHandler(BaseHandler, EnforceOverrides):
         exclude_state_log: bool,
         update_mode: bool,
         result_dir=RESULT_PATH,
+        prompt_variation=[],
     ):
         """
         Batch inference for OSS models.
@@ -230,13 +231,14 @@ class OSSHandler(BaseHandler, EnforceOverrides):
                             test_case,
                             include_input_log,
                             exclude_state_log,
+                            prompt_variation,
                         )
                         futures.append(future)
 
                     for future in futures:
                         # This will wait for the task to complete, so that we are always writing in order
                         result = future.result()
-                        self.write(result, result_dir, update_mode=update_mode)
+                        self.write(result, result_dir, update_mode=update_mode, prompt_variation=prompt_variation)
                         pbar.update()
 
         except Exception as e:
@@ -262,7 +264,7 @@ class OSSHandler(BaseHandler, EnforceOverrides):
 
     @final
     def _multi_threaded_inference(
-        self, test_case, include_input_log: bool, exclude_state_log: bool
+        self, test_case, include_input_log: bool, exclude_state_log: bool, prompt_variation: List[str]
     ):
         """
         This is a wrapper function to make sure that, if an error occurs during inference, the process does not stop.
@@ -272,11 +274,11 @@ class OSSHandler(BaseHandler, EnforceOverrides):
         try:
             if "multi_turn" in test_case["id"]:
                 model_responses, metadata = self.inference_multi_turn_prompting(
-                    test_case, include_input_log, exclude_state_log
+                    test_case, include_input_log, exclude_state_log, prompt_variation
                 )
             else:
                 model_responses, metadata = self.inference_single_turn_prompting(
-                    test_case, include_input_log
+                    test_case, include_input_log, prompt_variation
                 )
         except Exception as e:
             print("-" * 100)
@@ -359,14 +361,14 @@ class OSSHandler(BaseHandler, EnforceOverrides):
         return api_response, end_time - start_time
 
     @override
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+    def _pre_query_processing_prompting(self, test_entry: dict, prompt_variation: List[str]) -> dict:
         functions: list = test_entry["function"]
         test_category: str = test_entry["id"].rsplit("_", 1)[0]
 
         functions = func_doc_language_specific_pre_processing(functions, test_category)
 
         test_entry["question"][0] = system_prompt_pre_processing_chat_model(
-            test_entry["question"][0], functions, test_category
+            test_entry["question"][0], functions, test_category, prompt_variation
         )
 
         return {"message": [], "function": functions}

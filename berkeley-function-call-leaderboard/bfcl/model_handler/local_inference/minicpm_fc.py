@@ -14,6 +14,7 @@ from datamodel_code_generator import DataModelType
 from datamodel_code_generator.model import get_data_model_types
 from datamodel_code_generator.parser.jsonschema import JsonSchemaParser
 from overrides import override
+from typing import List
 
 
 class MiniCPMFCHandler(OSSHandler):
@@ -43,7 +44,7 @@ class MiniCPMFCHandler(OSSHandler):
         return formatted_prompt
 
     @override
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+    def _pre_query_processing_prompting(self, test_entry: dict, prompt_variation: List[str]) -> dict:
         functions: list = test_entry["function"]
         test_category: str = test_entry["id"].rsplit("_", 1)[0]
 

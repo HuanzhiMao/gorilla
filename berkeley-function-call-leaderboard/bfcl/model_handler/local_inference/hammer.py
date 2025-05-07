@@ -6,6 +6,7 @@ from bfcl.model_handler.utils import (
     func_doc_language_specific_pre_processing,
 )
 from overrides import override
+from typing import List
 
 TASK_INSTRUCTION = """You are a tool calling assistant. In order to complete the user's request, you need to select one or more appropriate tools from the following tools and fill in the correct values for the tool parameters. Your specific tasks are:
 1. Make one or more function/tool calls to meet the request based on the question.
@@ -146,7 +147,7 @@ class HammerHandler(OSSHandler):
         return function_call
 
     @override
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+    def _pre_query_processing_prompting(self, test_entry: dict, prompt_variation: List[str]) -> dict:
         functions: list = test_entry["function"]
         test_category: str = test_entry["id"].rsplit("_", 1)[0]
 
