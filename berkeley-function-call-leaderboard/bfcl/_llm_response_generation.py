@@ -106,14 +106,12 @@ def get_involved_test_entries(test_category_args, run_ids):
 def collect_test_cases(
     args, model_name, all_test_categories, all_test_file_paths, all_test_entries_involved
 ):
-    model_name_dir = model_name.replace("/", "_")
+    model_name_dir = model_name.replace("/", "_") + get_prompt_variation_filename_suffix(args.prompt_variation)
     model_result_dir = args.result_dir / model_name_dir
 
     existing_result = []
     for test_category, file_to_open in zip(all_test_categories, all_test_file_paths):
-        
-        prompt_variation_suffix = get_prompt_variation_filename_suffix(args.prompt_variation)
-        result_file_path = model_result_dir / file_to_open.replace(".json", f"_result{prompt_variation_suffix}.json")
+        result_file_path = model_result_dir / file_to_open.replace(".json", f"_result.json")
         if result_file_path.exists():
             # Not allowing overwrite, we will load the existing results
             if not args.allow_overwrite:

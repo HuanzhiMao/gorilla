@@ -959,7 +959,7 @@ def parse_prompt_variation_args(prompt_variation = []):
 def get_prompt_variation_filename_suffix(prompt_variation = []):
     prompt_args = parse_prompt_variation_args(prompt_variation)
     sorted_prompt_args = dict(sorted(prompt_args.items()))
-    file_name = ""
+    file_name = "|"
     for prompt_arg in sorted_prompt_args:
         file_name += f"_{prompt_arg}_{sorted_prompt_args[prompt_arg]}"
     return file_name
