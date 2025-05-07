@@ -342,7 +342,7 @@ def system_prompt_pre_processing_chat_model(prompts, function_docs, test_categor
     
     # system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="json",functions=function_docs) #VAR4 (json parser)(-with-tag-json)
     # system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="verbose_xml",functions=function_docs) #VAR5 (verbose xml parser)(-with-tag-verbose-xml)
-    system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="concise_xml",functions=function_docs) #VAR6 (concise xml parser)(-with-tag-concise-xml)
+    system_prompt = formulate_default_system_prompt(has_tool_call_tag=True, return_format="concise_xml",functions=function_docs, has_available_tools_tag=False) #VAR6 (concise xml parser)(-with-tag-concise-xml)
 
     # System prompt must be in the first position
     # If the question comes with a system prompt, append its content at the end of the chat template.
@@ -833,10 +833,12 @@ def retry_with_backoff(
     return decorator
 
 def formulate_default_system_prompt(
-    prompt_format: str = "plaintext",    # 'plaintext' | 'markdown'
-    prompt_style: str = "classic",       # 'classic' | 'experimental'
-    return_format: str = "python",       # 'python' | 'json' | 'verbose_xml' | 'concise_xml'
-    has_tool_call_tag: bool = False,     # True | False
+    prompt_format: str = "plaintext",      # 'plaintext' | 'markdown'
+    prompt_style: str = "classic",         # 'classic' | 'experimental'
+    return_format: str = "python",         # 'python' | 'json' | 'verbose_xml' | 'concise_xml'
+    has_tool_call_tag: bool = False,       # True | False # add <TOOLCALL> tags
+    has_available_tools_tag: bool = False, # True | False # add <AVAILABLE_TOOLS> tags
+    functinon_doc_format: str = "python",  # 'python' | 'xml' | 'json'
     functions: str = ""
 ) -> str:
     """
@@ -857,8 +859,81 @@ def formulate_default_system_prompt(
         task=PROMPT_STYLE_MAPPING[prompt_style]["task"],
         tool_call=PROMPT_STYLE_MAPPING[prompt_style][tool_call_key].format(output_format=OUTPUT_FORMAT_MAPPING[return_format]),
         multiturn=PROMPT_STYLE_MAPPING[prompt_style]["multiturn"],
-        available_tools=PROMPT_STYLE_MAPPING[prompt_style][available_tools_key].format(functions=functions)
+        available_tools=PROMPT_STYLE_MAPPING[prompt_style][available_tools_key].format(functions=format_function_doc(functions, functinon_doc_format, has_available_tools_tag))
     )
 
     return default_prompt
+
+
+def format_function_doc(functions, function_doc_format, has_available_tools_tag):
+    """
+    Format the function documentation based on the specified format.
+    """
+    def format_param(name, info):
+        desc = info.get("description", "")
+        optional = info.get("optional", False)
+        typ = info.get("type", "unknown")
+        default_note = " (optional)" if optional else ""
+        return f"    {name} ({typ}){default_note}: {desc}"
+
+    if function_doc_format == "xml":
+        def convert_functions_to_xml(functions):
+            xml_blocks = []
+
+            for fn in functions:
+                name = fn["name"]
+                desc = fn.get("description", "").replace("Note that the provided function is in Python 3 syntax.", "").strip()
+                props = fn["parameters"]["properties"]
+                required = set(fn["parameters"].get("required", []))
+
+                xml = f'<function name="{name}">\n'
+                xml += f'  <desc>{desc}</desc>\n'
+                xml += f'  <params>\n'
+
+                for param_name, meta in props.items():
+                    param_type = meta.get("type", "string")
+                    param_desc = meta.get("description", "")
+                    is_required = "true" if param_name in required else "false"
+                    xml += f'    <param name="{param_name}" type="{param_type}" required="{is_required}">\n'
+                    xml += f'      <desc>{param_desc}</desc>\n'
+                    xml += f'    </param>\n'
+
+                xml += f'  </params>\n'
+                xml += f'</function>\n'
+                xml_blocks.append(xml)
+
+            return "\n".join(xml_blocks)
+
+        xml_output = convert_functions_to_xml(functions)
+        functions = xml_output
+
+    elif function_doc_format == "python":
+        docstrings = []
+
+        for entry in functions:
+            name = entry["name"]
+            desc = entry.get("description", "").strip().replace("Note that the provided function is in Python 3 syntax.", "")
+            params = entry["parameters"]["properties"]
+            required = entry["parameters"].get("required", [])
+
+            func_name = name.replace(".", "_")
+            signature_params = []
+            for param_name in params:
+                if param_name in required:
+                    signature_params.append(param_name)
+                else:
+                    signature_params.append(f"{param_name}=''")
+
+            param_docs = "\n".join([format_param(p, params[p]) for p in params])
+            docstring = f"""def {func_name}({', '.join(signature_params)}):\n    \"\"\"\n    {desc}\n\n{param_docs}\n    \"\"\"\n    pass"""
+            docstrings.append(docstring)
+
+        functions = "\n".join(docstrings)
+
+    if has_available_tools_tag:
+        functions = f"<AVAILABLE_TOOLS>\n{functions}\n</AVAILABLE_TOOLS>"
+    else:
+        functions = f"```{function_doc_format}\n{functions}\n```"
+    print(functions)
+    return functions  # Fallback for unsupported formats
 
