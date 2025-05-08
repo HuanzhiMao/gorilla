@@ -6,12 +6,13 @@ from overrides import override
 
 
 class GrokHandler(OpenAIHandler):
-    def __init__(self, model_name, temperature) -> None:
+    def __init__(self, model_name, temperature, return_format="python") -> None:
         super().__init__(model_name, temperature)
         self.client = OpenAI(
             base_url="https://api.x.ai/v1",
             api_key=os.getenv("GROK_API_KEY"),
         )
+        self.return_format = return_format
         self.is_fc_model = "FC" in self.model_name
 
     @override

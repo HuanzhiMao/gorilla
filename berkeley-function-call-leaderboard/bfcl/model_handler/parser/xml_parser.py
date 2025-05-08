@@ -43,33 +43,15 @@ def parse_verbose_xml_function_call(input_str):
         return []
 
 def parse_concise_xml_function_call(input_str):
-    def auto_cast(value):
-        """Auto-cast string to bool, int, float, list, etc."""
-        val = value.strip()
-        if val.lower() == "true":
-            return True
-        if val.lower() == "false":
-            return False
-        try:
-            return json.loads(val)
-        except Exception:
-            try:
-                return ast.literal_eval(val)
-            except Exception:
-                return val  # fallback to string
+    root = ET.fromstring(input_str)
+    results = []
 
-    try:
-        root = ET.fromstring(input_str)
-        results = []
+    for func in root.findall('function'):
+        func_name = func.attrib['name']
+        params = {
+            param.attrib['name']: ast.literal_eval(param.text)
+            for param in func.findall('param')
+        }
+        results.append({func_name: params})
 
-        for func_elem in root:
-            func_name = func_elem.tag
-            params = {
-                k: auto_cast(v)
-                for k, v in func_elem.attrib.items()
-            }
-            results.append({func_name: params})
-
-        return results
-    except Exception:
-        return []
+    return results
