@@ -2,13 +2,19 @@ import json
 from pathlib import Path
 from typing import List, Optional
 
-import faiss
 import numpy as np
 from bfcl.eval_checker.multi_turn_eval.func_source_code.memory_api_metaclass import (
     MemoryAPI,
 )
 from bfcl.utils import extract_test_category_from_id, is_first_memory_prereq_entry
+
+# isort: off
+# Note: This import order is necessary to avoid segfault issue due to FAISS and PyTorch each load a different OpenMP runtime
+# See https://github.com/pytorch/pytorch/issues/149201#issuecomment-2725586827
 from sentence_transformers import SentenceTransformer
+import faiss
+
+# isort: on
 
 MAX_CORE_MEMORY_SIZE = 7
 MAX_CORE_MEMORY_ENTRY_LENGTH = 300
