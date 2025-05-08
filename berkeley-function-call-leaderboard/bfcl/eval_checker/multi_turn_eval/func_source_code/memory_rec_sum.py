@@ -116,7 +116,7 @@ class MemoryAPI_rec_sum(MemoryAPI):
         self.memory = text
         return {"status": "Memory updated."}
 
-    def core_memory_clear(self) -> Dict[str, str]:
+    def memory_clear(self) -> Dict[str, str]:
         """
         Clear all content in the memory, including any from previous interactions. This operation is irreversible.
 
@@ -125,6 +125,29 @@ class MemoryAPI_rec_sum(MemoryAPI):
         """
         self.memory = ""
         return {"status": "Short term memory cleared."}
+
+    def memory_replace(self, old_text: str, new_text: str) -> Dict[str, str]:
+        """
+        Replace a specific text in the memory with new text.
+        Args:
+            old_text (str): The text to be replaced in the memory.
+            new_text (str): The new text to replace the old text.
+        Returns:
+            status (str): Status of the operation.
+        """
+        old_text = str(old_text)
+        new_text = str(new_text)
+
+        if old_text not in self.memory:
+            return {"error": f"Text '{old_text}' not found in memory."}
+
+        if len(new_text) > MAX_MEMORY_ENTRY_LENGTH:
+            return {
+                "error": f"Entry will be too long after replacing. Please shorten the entry to less than {MAX_MEMORY_ENTRY_LENGTH} characters."
+            }
+
+        self.memory = self.memory.replace(old_text, new_text)
+        return {"status": "Memory updated."}
 
     def memory_retrieve(self) -> Dict[str, str]:
         """
