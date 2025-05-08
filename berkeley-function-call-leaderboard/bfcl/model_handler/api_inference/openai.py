@@ -20,8 +20,9 @@ from typing import List
 
 
 class OpenAIHandler(BaseHandler):
-    def __init__(self, model_name, temperature) -> None:
+    def __init__(self, model_name, temperature, return_format="python") -> None:
         super().__init__(model_name, temperature)
+        self.return_format = return_format
         self.model_style = ModelStyle.OpenAI
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -34,10 +35,7 @@ class OpenAIHandler(BaseHandler):
                 decoded_output.append({name: params})
             return decoded_output
         else:
-            # return default_decode_ast_prompting(result, language)
-            # return default_decode_ast_prompting(result, "json") # VAR4
-            # return default_decode_ast_prompting(result, "verbose_xml") # VAR5
-            return default_decode_ast_prompting(result, "concise_xml") # VAR6
+            return default_decode_ast_prompting(result, language=self.return_format)
 
     def decode_execute(self, result):
         if "FC" in self.model_name or self.is_fc_model:

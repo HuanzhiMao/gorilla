@@ -224,7 +224,8 @@ def convert_value(value, type_str):
 
 
 def ast_parse(input_str, language="Python"):
-    if language == "Python":
+    if language == "Python" or language == "python":
+        print("python_input"    , input_str)
         cleaned_input = input_str.strip("[]'")
         parsed = ast.parse(cleaned_input, mode="eval")
         extracted = []
@@ -234,6 +235,7 @@ def ast_parse(input_str, language="Python"):
             for elem in parsed.body.elts:
                 assert isinstance(elem, ast.Call)
                 extracted.append(resolve_ast_call(elem))
+        print("python_output", extracted)
         return extracted
     elif language == "Java":
         return parse_java_function_call(
