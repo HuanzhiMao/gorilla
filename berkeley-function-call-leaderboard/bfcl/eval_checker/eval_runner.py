@@ -27,14 +27,8 @@ from tqdm import tqdm
 
 
 def get_handler(model_name):
-    model_real_name = model_name.split("|")[0]
-    match = re.search(r'_return_format_(json|python|concise_xml|verbose_xml)', model_name)
-    if match:
-        return MODEL_CONFIG_MAPPING[model_real_name].model_handler(
-            model_real_name, temperature=0, return_format=match.group(1)
-        ) 
-    return MODEL_CONFIG_MAPPING[model_real_name].model_handler(
-        model_real_name, temperature=0
+    return MODEL_CONFIG_MAPPING[model_name].model_handler(
+        model_name, temperature=0
     )  # Temperature doesn't matter for evaluation
 
 
@@ -369,11 +363,10 @@ def runner(model_names, test_categories, result_dir, score_dir):
     for subdir in tqdm(subdirs, desc="Number of models evaluated"):
 
         model_name = subdir.relative_to(result_dir).name
-        # commeneted out for prompt variation testing
-        # if model_names is not None and model_name not in model_names:
-        #     continue
-        # model_name_escaped = model_name.replace("_", "/")
-        model_name_escaped = model_name
+        if model_names is not None and model_name not in model_names:
+            continue
+
+        model_name_escaped = model_name.replace("_", "/")
 
         print(f"🦍 Model: {model_name}")
 
@@ -495,9 +488,8 @@ def main(model, test_categories, result_dir, score_dir):
     if model:
         model_names = []
         for model_name in model:
-            # commented out for prompt variation testing
-            # if model_name not in MODEL_CONFIG_MAPPING:
-            #     raise ValueError(f"Invalid model name '{model_name}'.")
+            if model_name not in MODEL_CONFIG_MAPPING:
+                raise ValueError(f"Invalid model name '{model_name}'.")
             # Runner takes in the model name that contains "_", instead of "/", for the sake of file path issues.
             # This is differnet than the model name format that the generation script "openfunctions_evaluation.py" takes in (where the name contains "/").
             # We patch it here to avoid confusing the user.

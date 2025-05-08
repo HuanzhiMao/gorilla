@@ -73,16 +73,12 @@ def get_possible_answer_type(possible_answer: list):
 
 
 def convert_func_name(function_name, model_name: str):
-    model_name_escaped = model_name.replace("_", "/").split("|")[0]
+    model_name_escaped = model_name.replace("_", "/")
     if "." in function_name:
-        # print("dot in function name")
-        # print(f"function name: {model_name_escaped}....")
-        # if MODEL_CONFIG_MAPPING[model_name_escaped].underscore_to_dot:
-        #     print("Converting function name to dot notation")
-        #     # OAI does not support "." in the function name so we replace it with "_". ^[a-zA-Z0-9_-]{1,64}$ is the regex for the name.
-        #     # This happens for OpenAI, Mistral, and Google models
-        #     return re.sub(r"\.", "_", function_name)
-        return re.sub(r"\.", "_", function_name)
+        if MODEL_CONFIG_MAPPING[model_name_escaped].underscore_to_dot:
+            # OAI does not support "." in the function name so we replace it with "_". ^[a-zA-Z0-9_-]{1,64}$ is the regex for the name.
+            # This happens for OpenAI, Mistral, and Google models
+            return re.sub(r"\.", "_", function_name)
     return function_name
 
 

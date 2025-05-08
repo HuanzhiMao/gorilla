@@ -24,11 +24,10 @@ from bfcl.utils import is_multi_turn
 
 
 class ClaudeHandler(BaseHandler):
-    def __init__(self, model_name, temperature, return_format="python") -> None:
+    def __init__(self, model_name, temperature) -> None:
         super().__init__(model_name, temperature)
         self.model_style = ModelStyle.Anthropic
         self.client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-        self.return_format = return_format
 
     def decode_ast(self, result, language="Python"):
         if "FC" not in self.model_name:
@@ -39,7 +38,7 @@ class ClaudeHandler(BaseHandler):
                 func = "[" + func
             if not func.endswith("]"):
                 func = func + "]"
-            decode_output = ast_parse(func, language=self.return_format)
+            decode_output = ast_parse(func, language)
             return decode_output
 
         else:
