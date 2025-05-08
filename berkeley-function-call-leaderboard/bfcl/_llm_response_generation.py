@@ -113,7 +113,9 @@ def collect_test_cases(
     for test_category, file_to_open in zip(all_test_categories, all_test_file_paths):
         
         prompt_variation_suffix = get_prompt_variation_filename_suffix(args.prompt_variation)
-        result_file_path = model_result_dir / file_to_open.replace(".json", f"_result{prompt_variation_suffix}.json")
+        result_file_path = model_result_dir / file_to_open
+        if (args.prompt_variation is not None and args.prompt_variation != ""):
+            result_file_path = model_result_dir / "prompt_variation" / f"BFCL_v3_{test_category}_result{prompt_variation_suffix}.json"
         if result_file_path.exists():
             # Not allowing overwrite, we will load the existing results
             if not args.allow_overwrite:
