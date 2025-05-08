@@ -24,7 +24,6 @@ from overrides import final
 class BaseHandler:
     model_name: str
     model_style: ModelStyle
-    return_format: str
 
     def __init__(self, model_name, temperature) -> None:
         self.model_name = model_name

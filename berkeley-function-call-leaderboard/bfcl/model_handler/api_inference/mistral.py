@@ -18,10 +18,10 @@ from typing import List
 
 
 class MistralHandler(BaseHandler):
-    def __init__(self, model_name, temperature, return_format="python") -> None:
+    def __init__(self, model_name, temperature) -> None:
         super().__init__(model_name, temperature)
         self.model_style = ModelStyle.Mistral
-        self.return_format = return_format
+
         self.client = Mistral(api_key=os.getenv("MISTRAL_API_KEY"))
 
     def decode_ast(self, result, language="Python"):
@@ -39,7 +39,7 @@ class MistralHandler(BaseHandler):
                 func = "[" + func
             if not func.endswith("]"):
                 func = func + "]"
-            decoded_output = ast_parse(func, language=self.return_format)
+            decoded_output = ast_parse(func, language)
             return decoded_output
 
     def decode_execute(self, result):
