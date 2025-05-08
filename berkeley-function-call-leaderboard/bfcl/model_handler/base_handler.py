@@ -661,7 +661,7 @@ class BaseHandler:
 
     @final
     def write(self, result, result_dir, update_mode=False, prompt_variation=[]):
-        model_name_dir = self.model_name.replace("/", "_") + get_prompt_variation_filename_suffix(prompt_variation)
+        model_name_dir = self.model_name.replace("/", "_")
         model_result_dir = result_dir / model_name_dir
         model_result_dir.mkdir(parents=True, exist_ok=True)
 
@@ -673,10 +673,11 @@ class BaseHandler:
 
         # Group entries by their `test_category` for efficient file handling
         file_entries = {}
+        prompt_variation_suffix = get_prompt_variation_filename_suffix(prompt_variation)
         for entry in entries_to_write:
             test_category = entry["id"].rsplit("_", 1)[0]
             # file_name = f"{VERSION_PREFIX}_{test_category}_result.json"
-            file_name = f"{VERSION_PREFIX}_{test_category}_result.json"
+            file_name = f"{VERSION_PREFIX}_{test_category}_result{prompt_variation_suffix}.json"
             file_path = model_result_dir / file_name
             file_entries.setdefault(file_path, []).append(entry)
 
