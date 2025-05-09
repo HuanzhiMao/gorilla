@@ -842,6 +842,7 @@ def formulate_default_system_prompt(
     """
     Formulate the default system prompt based on the provided parameters.
     """
+    return_format = return_format.lower()
     default_prompt = ""
 
     if prompt_format == "plaintext":
@@ -906,15 +907,23 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
         functions = xml_output
 
     elif function_doc_format == "python":
-        docstrings = []
+        docstrings_by_class = {}
+        top_level_docstrings = []
 
         for entry in functions:
             name = entry["name"]
-            desc = entry.get("description", "").strip().replace("Note that the provided function is in Python 3 syntax.", "")
+            desc = entry.get("description", "").strip().replace(
+                "Note that the provided function is in Python 3 syntax.", ""
+            )
             params = entry["parameters"]["properties"]
             required = entry["parameters"].get("required", [])
 
-            func_name = name.replace(".", "_")
+            if "." in name:
+                class_name, func_name = name.split(".", 1)
+            else:
+                class_name = None
+                func_name = name
+
             signature_params = []
             for param_name in params:
                 if param_name in required:
@@ -922,12 +931,27 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
                 else:
                     signature_params.append(f"{param_name}=''")
 
-            param_docs = "\n".join([format_param(p, params[p]) for p in params])
-            docstring = f"""def {func_name}({', '.join(signature_params)}):\n    \"\"\"\n    {desc}\n\n{param_docs}\n    \"\"\"\n    pass"""
-            docstrings.append(docstring)
+            param_docs = "\n".join([f"    {format_param(p, params[p])}" for p in params])
+            param_docs = "        Args:\n" + param_docs
+            docstring_body = f"""        \"\"\"\n        {desc}\n\n{param_docs}\n        \"\"\""""
+            method_block = f"""    def {func_name}({', '.join(signature_params)}):\n{docstring_body}\n        pass"""
 
-        functions = "\n".join(docstrings)
+            if class_name:
+                docstrings_by_class.setdefault(class_name, []).append(method_block)
+            else:
+                param_docs_top = "\n".join([f"{format_param(p, params[p])}" for p in params])
+                docstring_body_top = f"""    \"\"\"\n    {desc}\n\n    Args:\n{param_docs_top}\n    \"\"\""""
+                func_block = f"""def {func_name}({', '.join(signature_params)}):\n{docstring_body_top}\n    pass"""
+                top_level_docstrings.append(func_block)
 
+        grouped_docstrings = []
+        grouped_docstrings.extend(top_level_docstrings)
+
+        for class_name, methods in docstrings_by_class.items():
+            class_block = f"class {class_name}:\n" + "\n\n".join(methods)
+            grouped_docstrings.append(class_block)
+
+        functions = "\n\n".join(grouped_docstrings)
     if has_available_tools_tag:
         functions = f"<AVAILABLE_TOOLS>\n{functions}\n</AVAILABLE_TOOLS>"
     else:
