@@ -10,7 +10,9 @@ from typing import TYPE_CHECKING, Callable, List, Optional, Type, Union
 from bfcl.constants.default_prompts import (
     DEFAULT_SYSTEM_PROMPT,
     MEMORY_AGENT_SETTINGS,
-    MEMORY_BACKEND_INSTRUCTION,
+    MEMORY_BACKEND_INSTRUCTION_CORE_ARCHIVAL,
+    MEMORY_BACKEND_INSTRUCTION_UNIFIED,
+    MEMORY_BACKEND_INSTRUCTION_UNIFIED_WITHOUT_CONTENT,
 )
 from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl.model_handler.model_style import ModelStyle
@@ -546,26 +548,43 @@ def retry_with_backoff(
 
 
 def add_memory_instruction_system_prompt(
-    prompts: list[list[dict]], scenario: str, memory_backend_instance: "MemoryAPI"
+    prompts: list[list[dict]],
+    test_category: str,
+    scenario: str,
+    memory_backend_instance: "MemoryAPI",
 ) -> list[list[dict]]:
     """
-    Memory categories requires a system prompt that instructs the model on how to use the memory backend, and also provides the content in core memory.
+    Memory categories requires a system prompt that instructs the model on how to use the memory backend, and also provides the content in core memory (if applicable).
     The input for prompts is a list of list of dictionaries, where each outer list item represents a conversation turn, and each inner list item represents a message in that turn.
     System prompt are added as the first message in the first turn of the conversation.
     """
     assert len(prompts) >= 1
-    system_prompt_template = MEMORY_BACKEND_INSTRUCTION
-    memory_content = memory_backend_instance._dump_core_memory_to_context()
-    scenario_setting = MEMORY_AGENT_SETTINGS[scenario]
 
-    system_prompt = system_prompt_template.format(
-        scenario_setting=scenario_setting, memory_content=memory_content
-    )
+    scenario_setting = MEMORY_AGENT_SETTINGS[scenario]
+    # We don't provide the content of the memory backend for knowledge graph implementation
+    if "knowledge_graph" in test_category:
+        system_prompt_template = MEMORY_BACKEND_INSTRUCTION_UNIFIED_WITHOUT_CONTENT
+        system_prompt = system_prompt_template.format(scenario_setting=scenario_setting)
+
+    else:
+        memory_content = memory_backend_instance._dump_core_memory_to_context()
+
+        if "rec_sum" in test_category:
+            system_prompt_template = MEMORY_BACKEND_INSTRUCTION_UNIFIED
+        else:
+            system_prompt_template = MEMORY_BACKEND_INSTRUCTION_CORE_ARCHIVAL
+
+        system_prompt = system_prompt_template.format(
+            scenario_setting=scenario_setting, memory_content=memory_content
+        )
+
     # System prompt must be in the first position
     # If the question comes with a system prompt, append its content at the end of the chat template.
     first_turn_prompts = prompts[0]
     if first_turn_prompts[0]["role"] == "system":
-        first_turn_prompts[0]["content"] = system_prompt + "\n\n" + first_turn_prompts[0]["content"]
+        first_turn_prompts[0]["content"] = (
+            system_prompt + "\n\n" + first_turn_prompts[0]["content"]
+        )
     # Otherwise, use the system prompt template to create a new system prompt.
     else:
         first_turn_prompts.insert(

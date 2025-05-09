@@ -120,7 +120,7 @@ class BaseHandler:
 
             memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
             test_entry["question"] = add_memory_instruction_system_prompt(
-                test_entry["question"], test_entry["scenario"], memory_instance
+                test_entry["question"], test_category, test_entry["scenario"], memory_instance
             )
 
         if not exclude_state_log:
@@ -413,7 +413,7 @@ class BaseHandler:
 
             memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
             test_entry["question"] = add_memory_instruction_system_prompt(
-                test_entry["question"], test_entry["scenario"], memory_instance
+                test_entry["question"], test_category, test_entry["scenario"], memory_instance
             )
 
         if not exclude_state_log:
