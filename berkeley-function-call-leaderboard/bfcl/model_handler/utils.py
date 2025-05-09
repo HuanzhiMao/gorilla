@@ -4,11 +4,13 @@ import copy
 import json
 import operator
 import re
+import inspect
 from functools import reduce
 from typing import Callable, List, Optional, Type, Union
 
 from bfcl.constants.default_prompts import OUTPUT_FORMAT_MAPPING, PROMPT_STYLE_MAPPING
 from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
+from bfcl.constants.category_mapping import VERSION_PREFIX
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.model_handler.parser.java_parser import parse_java_function_call
 from bfcl.model_handler.parser.js_parser import parse_javascript_function_call
@@ -933,7 +935,15 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
     return functions  # Fallback for unsupported formats
 
 def parse_prompt_variation_args(prompt_variation = []):
-    prompt_arg_names = ["prompt_format", "prompt_style", "return_format", "has_tool_call_flag", "has_available_tools_tag", "function_doc_format"]
+    # prompt_arg_names = ["prompt_format", "prompt_style", "return_format", "has_tool_call_tag", "has_available_tools_tag", "function_doc_format"]
+    sig = inspect.signature(formulate_default_system_prompt)
+    prompt_arg_defaults = {
+        name: param.default
+        for name, param in sig.parameters.items()
+        if param.default is not inspect.Parameter.empty
+    }
+    prompt_arg_names = list(prompt_arg_defaults.keys())
+    prompt_arg_names.remove("functions")
     prompt_args = {}
     prompt_variation_no_var_name = []
     for prompt_var in prompt_variation:
@@ -950,16 +960,71 @@ def parse_prompt_variation_args(prompt_variation = []):
             if prompt_arg_name not in prompt_args:
                 prompt_args[prompt_arg_name] = prompt_var
                 break
-    if "has_tool_call_flag" in prompt_args:
-        prompt_args["has_tool_call_flag"] = prompt_args["has_tool_call_flag"] == "True"
+    if "return_format" in prompt_args:
+        if prompt_args["return_format"].lower() == "python":
+            prompt_args["return_format"] = "Python"
+    if "has_tool_call_tag" in prompt_args:
+        prompt_args["has_tool_call_tag"] = prompt_args["has_tool_call_tag"] in ["True", "true"]
     if "has_available_tools_tag" in prompt_args:
-        prompt_args["has_available_tools_tag"] = prompt_args["has_available_tools_tag"] == "True"
+        prompt_args["has_available_tools_tag"] = prompt_args["has_available_tools_tag"] in ["True", "true"]
     return prompt_args
 
 def get_prompt_variation_filename_suffix(prompt_variation = []):
-    prompt_args = parse_prompt_variation_args(prompt_variation)
+    if prompt_variation == [] or prompt_variation == {}:
+        return ""
+    if isinstance(prompt_variation, list):
+        prompt_args = parse_prompt_variation_args(prompt_variation)
+    else:
+        prompt_args = copy.deepcopy(prompt_variation)
+    sig = inspect.signature(formulate_default_system_prompt)
+    prompt_arg_defaults = {
+        name: param.default
+        for name, param in sig.parameters.items()
+        if param.default is not inspect.Parameter.empty
+    }
+    if prompt_arg_defaults["return_format"].lower() == "python":
+        prompt_arg_defaults["return_format"] = "Python"
+    prompt_arg_names = list(prompt_arg_defaults.keys())
+    prompt_arg_names.remove("functions")
+    for prompt_arg in prompt_arg_names:
+        if prompt_arg not in prompt_args:
+            prompt_args[prompt_arg] = prompt_arg_defaults[prompt_arg]
+
     sorted_prompt_args = dict(sorted(prompt_args.items()))
     file_name = ""
     for prompt_arg in sorted_prompt_args:
         file_name += f"_{prompt_arg}_{sorted_prompt_args[prompt_arg]}"
     return file_name
+
+def parse_prompt_variation_filename(result_filename):
+    if result_filename.endswith(".json"):
+        result_filename = result_filename[:-5]
+    test_category = ""
+    prompt_args = {}
+    sig = inspect.signature(formulate_default_system_prompt)
+    prompt_arg_defaults = {
+        name: param.default
+        for name, param in sig.parameters.items()
+        if param.default is not inspect.Parameter.empty
+    }
+    if prompt_arg_defaults["return_format"].lower() == "python":
+        prompt_arg_defaults["return_format"] = "Python" 
+    prompt_arg_names = list(prompt_arg_defaults.keys())
+    prompt_arg_names.sort()
+    prompt_arg_names.insert(0, VERSION_PREFIX)
+    prompt_arg_names.remove("functions")
+    for i in range(0, len(prompt_arg_names)):
+        prompt_arg = prompt_arg_names[i]
+        nxt_arg = prompt_arg_names[i + 1] if i + 1 < len(prompt_arg_names) else ""
+        if prompt_arg not in result_filename:
+            raise Exception(f"prompt argument {prompt_arg} not in result filename, naming issue")
+        if i != len(prompt_arg_names) - 1:
+            prompt_arg_val = result_filename[result_filename.find(prompt_arg) + len(prompt_arg) + 1 : result_filename.find(nxt_arg) - 1]
+        else:
+            prompt_arg_val = result_filename[result_filename.find(prompt_arg) + len(prompt_arg) + 1 :]
+        prompt_args[prompt_arg] = prompt_arg_val
+    if "result" in prompt_args[VERSION_PREFIX]:
+        prompt_args[VERSION_PREFIX] = prompt_args[VERSION_PREFIX][:-7]
+    test_category = prompt_args[VERSION_PREFIX]
+    del prompt_args[VERSION_PREFIX]
+    return test_category, prompt_args

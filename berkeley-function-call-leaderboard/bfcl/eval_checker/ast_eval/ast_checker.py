@@ -416,7 +416,7 @@ def simple_function_checker(
                 else:
                     value = js_type_converter(value, expected_type_description)
 
-        elif language == "Python":
+        elif language in ["Python", "json", "verbose_xml", "concise_xml"]:
             expected_type_converted = PYTHON_TYPE_MAPPING[expected_type_description]
             if expected_type_description in PYTHON_NESTED_TYPE_CHECK_LIST:
                 nested_type = param_details[param]["items"]["type"]
