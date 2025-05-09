@@ -34,10 +34,10 @@ class OpenAIHandler(BaseHandler):
                 decoded_output.append({name: params})
             return decoded_output
         else:
-            # return default_decode_ast_prompting(result, language)
+            return default_decode_ast_prompting(result, language)
             # return default_decode_ast_prompting(result, "json") # VAR4
             # return default_decode_ast_prompting(result, "verbose_xml") # VAR5
-            return default_decode_ast_prompting(result, "concise_xml") # VAR6
+            # return default_decode_ast_prompting(result, "concise_xml") # VAR6
 
     def decode_execute(self, result):
         if "FC" in self.model_name or self.is_fc_model:

@@ -662,7 +662,10 @@ class BaseHandler:
     @final
     def write(self, result, result_dir, update_mode=False, prompt_variation=[]):
         model_name_dir = self.model_name.replace("/", "_")
-        model_result_dir = result_dir / model_name_dir / "prompt_variation"
+        if prompt_variation != []:
+            model_result_dir = result_dir / model_name_dir / "prompt_variation"
+        else:
+            model_result_dir = result_dir / model_name_dir
         model_result_dir.mkdir(parents=True, exist_ok=True)
 
         if isinstance(result, dict):

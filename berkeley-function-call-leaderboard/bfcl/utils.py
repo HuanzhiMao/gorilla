@@ -189,6 +189,8 @@ def parse_test_category_argument(test_category_args):
     test_filename_total = set()
 
     for test_category in test_category_args:
+        if test_category == "prompt-variation":
+            continue
         if test_category in TEST_COLLECTION_MAPPING:
             for test_name in TEST_COLLECTION_MAPPING[test_category]:
                 test_name_total.add(test_name)
@@ -199,5 +201,7 @@ def parse_test_category_argument(test_category_args):
         else:
             # Invalid test category name
             raise Exception(f"Invalid test category name provided: {test_category}")
-
+    
+    if "prompt-variation" in test_category_args:
+        test_name_total.add("prompt-variation")
     return sorted(list(test_filename_total)), sorted(list(test_name_total))
