@@ -3,73 +3,49 @@ import ast
 import json
 
 def parse_verbose_xml_function_call(input_str):
-    def auto_cast(value):
-        """Try to automatically cast value to boolean, int, float, list, or leave as string."""
-        val = value.strip()
-        if val.lower() in ("true", "false"):
-            return val.lower() == "true"
-        try:
-            # Try JSON decoding for arrays, dicts, numbers
-            return json.loads(val)
-        except Exception:
-            try:
-                return ast.literal_eval(val)
-            except Exception:
-                pass
-        # Fallback: leave as string
-        return val
+    root = ET.fromstring(input_str)
+    results = []
 
-    try:
-        root = ET.fromstring(input_str)
-        results = []
+    for func in root.findall('function'):
+        func_name = func.attrib['name']
+        param_dict = {}
 
-        for func_elem in root.findall("function"):
-            func_name = func_elem.attrib.get("name")
-            if not func_name:
-                continue
+        params_container = func.find('params')
+        if params_container is not None:
+            for param in params_container.findall('param'):
+                name = param.attrib.get('name')
+                raw_value = param.attrib.get('value', '')
 
-            params = {}
-            for param_elem in func_elem.findall("param"):
-                param_name = param_elem.attrib.get("name")
-                param_text = param_elem.text.strip() if param_elem.text else ""
+                try:
+                    parsed_value = ast.literal_eval(raw_value)
+                except (ValueError, SyntaxError):
+                    parsed_value = raw_value.strip()
 
-                if param_name:
-                    params[param_name] = auto_cast(param_text)
+                param_dict[name] = parsed_value
 
-            results.append({func_name: params})
-
-        return results
-    except Exception:
-        return []
+        results.append({func_name: param_dict})
+    return results
 
 def parse_concise_xml_function_call(input_str):
-    def auto_cast(value):
-        """Auto-cast string to bool, int, float, list, etc."""
-        val = value.strip()
-        if val.lower() == "true":
-            return True
-        if val.lower() == "false":
-            return False
-        try:
-            return json.loads(val)
-        except Exception:
+    root = ET.fromstring(input_str)
+    results = []
+
+    for func in root.findall('function'):
+        func_name = func.attrib['name']
+        param_dict = {}
+
+        for param in func.findall('param'):
+            name = param.attrib['name']
+            raw_value = param.text
+
+            # Handle string, int, float and empty string cases robustly
             try:
-                return ast.literal_eval(val)
-            except Exception:
-                return val  # fallback to string
+                parsed_value = ast.literal_eval(raw_value)
+            except (ValueError, SyntaxError):
+                parsed_value = raw_value.strip() if raw_value else ""
 
-    try:
-        root = ET.fromstring(input_str)
-        results = []
+            param_dict[name] = parsed_value
 
-        for func_elem in root:
-            func_name = func_elem.tag
-            params = {
-                k: auto_cast(v)
-                for k, v in func_elem.attrib.items()
-            }
-            results.append({func_name: params})
+        results.append({func_name: param_dict})
 
-        return results
-    except Exception:
-        return []
+    return results

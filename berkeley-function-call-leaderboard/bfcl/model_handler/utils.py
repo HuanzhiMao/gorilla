@@ -245,10 +245,10 @@ def ast_parse(input_str, language="Python"):
         return parse_javascript_function_call(input_str[1:-1])
     elif language == "verbose_xml":
         # Remove ```xml and anything before/after XML
-        match = re.search(r"```xml\s*(.*?)\s*```", input_str, re.DOTALL)
+        match = re.search(r"<functions>(.*?)</functions>", input_str, re.DOTALL)
         if not match:
             return []
-        return parse_verbose_xml_function_call(match.group(1).strip())
+        return parse_verbose_xml_function_call(match.group(0))
     elif language == "concise_xml":
         # Remove anything before/after <functions> and </functions>
         match = re.search(r"<functions>(.*?)</functions>", input_str, re.DOTALL)
@@ -836,7 +836,7 @@ def formulate_default_system_prompt(
     return_format: str = "python",         # 'python' | 'json' | 'verbose_xml' | 'concise_xml'
     has_tool_call_tag: bool = False,       # True | False # add <TOOLCALL> tags
     has_available_tools_tag: bool = False, # True | False # add <AVAILABLE_TOOLS> tags
-    function_doc_format: str = "python",  # 'python' | 'xml' | 'json'
+    function_doc_format: str = "python",   # 'python' | 'xml' | 'json'
     functions: str = ""
 ) -> str:
     """
@@ -900,7 +900,6 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
                 xml += f'  </params>\n'
                 xml += f'</function>\n'
                 xml_blocks.append(xml)
-
             return "\n".join(xml_blocks)
 
         xml_output = convert_functions_to_xml(functions)
