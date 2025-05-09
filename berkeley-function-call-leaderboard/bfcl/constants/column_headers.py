@@ -37,6 +37,24 @@ COLUMNS_MULTI_TURN = [
     "Long Context",
 ]
 
+COLUMNS_PROMPT_VAR = [
+    "Rank",
+    "Model",
+    "Prompt Variation (PV) Overall Acc",
+    "PV Non_Live Python Simple AST",
+    "PV Non_Live Multiple AST",
+    "PV Non_Live Parallel AST",
+    "PV Non_Live Parallel Multiple AST",
+    "PV Live Python Simple AST",
+    "PV Live Python Multiple AST",
+    "PV Live Python Parallel AST",
+    "PV Live Python Parallel Multiple AST",
+    "PV Multi Turn Base",
+    "PV Multi Turn Miss Func",
+    "PV Multi Turn Miss Param",
+    "PV Multi Turn Long Context",
+]
+
 
 COLUMNS_OVERALL = [
     "Rank",
