@@ -25,6 +25,7 @@ from bfcl.model_handler.utils import get_prompt_variation_filename_suffix, parse
 from bfcl.utils import *
 from dotenv import load_dotenv
 from tqdm import tqdm
+import copy
 
 
 def get_handler(model_name):
@@ -474,6 +475,26 @@ def evaluate_task(
         # Find the corresponding possible answer file
         possible_answer_file = find_file_with_suffix(POSSIBLE_ANSWER_PATH, test_category)
         possible_answer = load_file(possible_answer_file, sort_by_id=True)
+
+        print(model_result[0])
+        print(prompt[0])
+        print(possible_answer[0])
+
+        cleaned_prompt = []
+        cleaned_possible_answer = []
+
+        if prompt_args != {}:
+            test_ids = []
+            for model_output in model_result:
+                test_ids.append(model_output["id"])
+            for prompt_dp in prompt:
+                if prompt_dp["id"] in test_ids:
+                    cleaned_prompt.append(prompt_dp)
+            for possible_answer_dp in possible_answer:
+                if possible_answer_dp["id"] in test_ids:
+                    cleaned_possible_answer.append(possible_answer_dp)
+            prompt = copy.deepcopy(cleaned_prompt)
+            possible_answer = copy.deepcopy(cleaned_possible_answer)
 
         if is_multi_turn(test_category):
             accuracy, total_count = multi_turn_runner(
