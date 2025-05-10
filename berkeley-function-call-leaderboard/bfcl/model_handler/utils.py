@@ -234,6 +234,7 @@ def ast_parse(input_str, language="Python"):
         input_str = re.sub(r"```$", "", input_str)
     if language == "Python":
         cleaned_input = input_str.strip("[]'")
+        cleaned_input = ' '.join(input_str.strip().split())
         parsed = ast.parse(cleaned_input, mode="eval")
         extracted = []
         if isinstance(parsed.body, ast.Call):
