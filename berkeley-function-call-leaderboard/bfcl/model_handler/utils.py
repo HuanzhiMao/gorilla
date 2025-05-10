@@ -861,7 +861,7 @@ def formulate_default_system_prompt(
         task=PROMPT_STYLE_MAPPING[prompt_style]["task"],
         tool_call=PROMPT_STYLE_MAPPING[prompt_style][tool_call_key].format(output_format=OUTPUT_FORMAT_MAPPING[return_format]),
         multiturn=PROMPT_STYLE_MAPPING[prompt_style]["multiturn"],
-        available_tools=PROMPT_STYLE_MAPPING[prompt_style][available_tools_key].format(functions=format_function_doc(functions, function_doc_format, has_available_tools_tag))
+        available_tools=PROMPT_STYLE_MAPPING[prompt_style][available_tools_key].format(format=function_doc_format, functions=format_function_doc(functions, function_doc_format, has_available_tools_tag))
     )
 
     return default_prompt
