@@ -110,6 +110,7 @@ def agentic_runner(
                     "model_result": model_result_list,
                     "model_result_decoded": model_result_list_decoded,
                     "possible_answer": possible_answer_item,
+                    "inference_log": model_result[i].get("inference_log", ""),
                 }
             )
             continue
