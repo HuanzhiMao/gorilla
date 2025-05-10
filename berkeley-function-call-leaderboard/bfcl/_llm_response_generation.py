@@ -320,7 +320,7 @@ def main(args):
 
     for model_name in args.model:
         if "prompt-variation" in args.test_category:
-            all_prompt_variation_config = get_all_prompt_variation_configs()[:3]
+            all_prompt_variation_config = get_all_prompt_variation_configs()
             for prompt_variation_config in all_prompt_variation_config:
                 args.prompt_variation = prompt_variation_config
                 print(f"Testing prompt variation entries for variation config: {prompt_variation_config}")
