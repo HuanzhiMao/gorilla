@@ -46,5 +46,5 @@ def standardize_string(input_string: str):
     This is used to compare the model output with the possible answers
     We don't want to punish model for answer like April 1, 2024 vs April 1,2024, vs April 1 2024
     """
-    regex_string = r"[\,\.\/\-\_\*\^\(\)\s]"
+    regex_string = r"[\,\.\/\-\_\*\^\(\)]"
     return re.sub(regex_string, "", input_string).lower().replace("'", '"')
