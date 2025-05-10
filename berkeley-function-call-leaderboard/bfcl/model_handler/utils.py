@@ -226,6 +226,12 @@ def convert_value(value, type_str):
 
 
 def ast_parse(input_str, language="Python"):
+    match = re.search(r"<TOOLCALL>(.*?)</TOOLCALL>", input_str, re.DOTALL)
+    if match:
+        input_str = match.group(1).strip()
+    if input_str.startswith("```"):
+        input_str = re.sub(r"^```[a-zA-Z]*\n?", "", input_str)
+        input_str = re.sub(r"```$", "", input_str)
     if language == "Python":
         cleaned_input = input_str.strip("[]'")
         parsed = ast.parse(cleaned_input, mode="eval")
@@ -256,11 +262,10 @@ def ast_parse(input_str, language="Python"):
             return []
         return parse_concise_xml_function_call(match.group(0))
     elif language == "json":
-        # Remove ```json and anything before/after the JSON array
-        match = re.search(r"\[.*\]", input_str, re.DOTALL)
-        if not match:
-            return []
-        return parse_json_function_call(match.group(0))
+        json_match = re.search(r"\[.*\]", input_str, re.DOTALL)
+        if json_match:
+            input_str = json_match.group(0)
+        return parse_json_function_call(input_str)
     elif language == "Typescript":
         return parse_typescript_function_call(input_str)
     else:
@@ -702,10 +707,6 @@ def format_execution_results_prompting(
 
 def default_decode_ast_prompting(result, language="Python"):
     result = result.strip("`\n ")
-    match = re.search(r"<TOOLCALL>(.*?)</TOOLCALL>", result, re.DOTALL)
-    if match:
-        result = match.group(1).strip()
-
     if language != "json" and "xml" not in language:
         if not result.startswith("["):
             result = "[" + result
@@ -864,6 +865,7 @@ def formulate_default_system_prompt(
         available_tools=PROMPT_STYLE_MAPPING[prompt_style][available_tools_key].format(format=function_doc_format, functions=format_function_doc(functions, function_doc_format, has_available_tools_tag))
     )
 
+    print(f"Default system prompt:\n{default_prompt}")
     return default_prompt
 
 
