@@ -702,7 +702,10 @@ def format_execution_results_prompting(
 
 def default_decode_ast_prompting(result, language="Python"):
     result = result.strip("`\n ")
-    result = result.replace("<TOOLCALL>", "").replace("</TOOLCALL>", "") # added for tag mode
+    match = re.search(r"<TOOLCALL>(.*?)</TOOLCALL>", result, re.DOTALL)
+    if match:
+        result = match.group(1).strip()
+
     if language != "json" and "xml" not in language:
         if not result.startswith("["):
             result = "[" + result

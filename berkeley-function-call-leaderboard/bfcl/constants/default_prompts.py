@@ -35,16 +35,16 @@ PROMPT_STYLE_MAPPING = {
         "tool_call_no_tag": "You should only return the function calls in your response.\n\nIf you decide to invoke any of the function(s), you MUST put it in the format of {output_format}.You SHOULD NOT include any other text in the response.",
         "tool_call_with_tag": "You should only return the function calls in the <TOOLCALL> section. If you decide to invoke any of the function(s), you MUST put it in the format of <TOOLCALL>{output_format}</TOOLCALL>. You SHOULD NOT include any other text in the response.",
         "multiturn": "At each turn, you should try your best to complete the tasks requested by the user within the current turn. Continue to output functions to call until you have fulfilled the user's request to the best of your ability. Once you have no more functions to call, the system will consider the current turn complete and proceed to the next turn or task.",
-        "available_tools_no_tag": "Here is a list of functions in JSON format that you can invoke.\n{functions}\n",
-        "available_tools_with_tag": "Here is a list of functions in JSON format that you can invoke.{functions}\n"
+        "available_tools_no_tag": "Here is a list of functions in {format} format that you can invoke.\n{functions}\n",
+        "available_tools_with_tag": "Here is a list of functions in {format} format that you can invoke.{functions}\n"
     },
     "experimental": {
         "persona": "You are an experienced developer.",
         "task": "You need to make function/tool calls to solve the question given. If none of the functions can be used or the given question lacks the parameters, return an empty list then explain.",
-        "tool_call_no_tag": "If you decide to invoke any of the function(s), you MUST put it in the format of {output_format}. You SHOULD NOT include any other text in the response.",
-        "tool_call_with_tag": "You should only return the function calls in the <TOOLCALL> section. If you decide to invoke any of the function(s), you MUST put it in the format of <TOOLCALL>{output_format}</TOOLCALL>.",
+        "tool_call_no_tag": "You should only return the function calls in your response. If you decide to invoke any of the function(s), you MUST put it in the format of {output_format}. You SHOULD NOT include any other text in the response.",
+        "tool_call_with_tag": "You should only return the function calls in the <TOOLCALL> section. If you decide to invoke any of the function(s), you MUST put it in the format of <TOOLCALL>{output_format}</TOOLCALL>. You SHOULD NOT include any other text in the response.",
         "multiturn": "At each turn, you should try your best to complete the tasks requested by the user within the current turn. Continue to output functions to call until you have fulfilled the user's request to the best of your ability. Once you have no more functions to call, the system will consider the current turn complete and proceed to the next turn or task.",
-        "available_tools_no_tag": "Functions:\n{functions}\n",
-        "available_tools_with_tag": "{functions}"
+        "available_tools_no_tag": "Functions in {format} format:\n{functions}\n",
+        "available_tools_with_tag": "```{format}{functions}```"
     }
 }
