@@ -14,12 +14,13 @@ from bfcl.constants.eval_config import (
     PROMPT_PATH,
     RESULT_PATH,
     TEST_IDS_TO_GENERATE_PATH,
+    PROMPT_VARIATION_TEST_IDS_PATH,
 )
 from bfcl.eval_checker.eval_runner_helper import load_file
 from bfcl.constants.model_config import MODEL_CONFIG_MAPPING
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.model_handler.utils import get_prompt_variation_filename_suffix
-from bfcl.utils import is_multi_turn, parse_test_category_argument, sort_key
+from bfcl.utils import is_multi_turn, parse_test_category_argument, sort_key, get_all_prompt_variation_configs
 from tqdm import tqdm
 
 RETRY_LIMIT = 3
@@ -87,7 +88,22 @@ def get_involved_test_entries(test_category_args, run_ids):
             )
             all_test_categories.append(category)
             all_test_file_paths.append(test_file_path)
-
+    elif "prompt-variation" in test_category_args:
+        with open(PROMPT_VARIATION_TEST_IDS_PATH) as f:
+            test_ids_to_generate = json.load(f)
+        for category, test_ids in test_ids_to_generate.items():
+            if len(test_ids) == 0:
+                continue
+            test_file_path = TEST_FILE_MAPPING[category]
+            all_test_entries_involved.extend(
+                [
+                    entry
+                    for entry in load_file(PROMPT_PATH / test_file_path)
+                    if entry["id"] in test_ids
+                ]
+            )
+            all_test_categories.append(category)
+            all_test_file_paths.append(test_file_path)
     else:
         all_test_file_paths, all_test_categories = parse_test_category_argument(test_category_args)
         # Make a copy here since we are removing list elemenets inside the for loop
@@ -292,6 +308,8 @@ def main(args):
     print(f"Generating results for {args.model}")
     if args.run_ids:
         print("Running specific test cases. Ignoring `--test-category` argument.")
+    elif "prompt-variation" in all_test_categories:
+        print("Running specific test cases for prompt variation. Ignoring other test categories.")
     else:
         print(f"Running full test cases for categories: {all_test_categories}.")
 
@@ -301,17 +319,37 @@ def main(args):
         args.result_dir = RESULT_PATH
 
     for model_name in args.model:
-        test_cases_total = collect_test_cases(
-            args,
-            model_name,
-            all_test_categories,
-            all_test_file_paths,
-            all_test_entries_involved,
-        )
+        if "prompt-variation" in args.test_category:
+            all_prompt_variation_config = get_all_prompt_variation_configs()[:3]
+            for prompt_variation_config in all_prompt_variation_config:
+                args.prompt_variation = prompt_variation_config
+                print(f"Testing prompt variation entries for variation config: {prompt_variation_config}")
+                test_cases_total = collect_test_cases(
+                    args,
+                    model_name,
+                    all_test_categories,
+                    all_test_file_paths,
+                    all_test_entries_involved,
+                )
 
-        if len(test_cases_total) == 0:
-            print(
-                f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
-            )
+                if len(test_cases_total) == 0:
+                    print(
+                        f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
+                    )
+                else:
+                    generate_results(args, model_name, test_cases_total)
         else:
-            generate_results(args, model_name, test_cases_total)
+            test_cases_total = collect_test_cases(
+                args,
+                model_name,
+                all_test_categories,
+                all_test_file_paths,
+                all_test_entries_involved,
+            )
+
+            if len(test_cases_total) == 0:
+                print(
+                    f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
+                )
+            else:
+                generate_results(args, model_name, test_cases_total)
