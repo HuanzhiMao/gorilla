@@ -148,7 +148,7 @@ class WebSearchAPI:
                     {
                         "title": result["title"],
                         "href": result["link"],
-                        # "body": result["snippet"],
+                        "body": result["snippet"],
                     }
                 )
 
