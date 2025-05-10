@@ -4,14 +4,19 @@ import copy
 import json
 import operator
 import re
+import inspect
 from functools import reduce
 from typing import Callable, List, Optional, Type, Union
 
-from bfcl.constants.default_prompts import DEFAULT_SYSTEM_PROMPT
+from bfcl.constants.default_prompts import OUTPUT_FORMAT_MAPPING, PROMPT_STYLE_MAPPING
 from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
+from bfcl.constants.category_mapping import VERSION_PREFIX
 from bfcl.model_handler.model_style import ModelStyle
 from bfcl.model_handler.parser.java_parser import parse_java_function_call
 from bfcl.model_handler.parser.js_parser import parse_javascript_function_call
+from bfcl.model_handler.parser.xml_parser import parse_concise_xml_function_call, parse_verbose_xml_function_call
+from bfcl.model_handler.parser.json_parser import parse_json_function_call
+from bfcl.model_handler.parser.typescript_parser import parse_typescript_function_call
 from tenacity import (
     retry,
     retry_if_exception_message,
@@ -221,8 +226,15 @@ def convert_value(value, type_str):
 
 
 def ast_parse(input_str, language="Python"):
+    match = re.search(r"<TOOLCALL>(.*?)</TOOLCALL>", input_str, re.DOTALL)
+    if match:
+        input_str = match.group(1).strip()
+    if input_str.startswith("```"):
+        input_str = re.sub(r"^```[a-zA-Z]*\n?", "", input_str)
+        input_str = re.sub(r"```$", "", input_str)
     if language == "Python":
         cleaned_input = input_str.strip("[]'")
+        cleaned_input = ' '.join(input_str.strip().split())
         parsed = ast.parse(cleaned_input, mode="eval")
         extracted = []
         if isinstance(parsed.body, ast.Call):
@@ -238,6 +250,25 @@ def ast_parse(input_str, language="Python"):
         )  # Remove the [ and ] from the string
     elif language == "JavaScript":
         return parse_javascript_function_call(input_str[1:-1])
+    elif language == "verbose_xml":
+        # Remove ```xml and anything before/after XML
+        match = re.search(r"<functions>(.*?)</functions>", input_str, re.DOTALL)
+        if not match:
+            return []
+        return parse_verbose_xml_function_call(match.group(0))
+    elif language == "concise_xml":
+        # Remove anything before/after <functions> and </functions>
+        match = re.search(r"<functions>(.*?)</functions>", input_str, re.DOTALL)
+        if not match:
+            return []
+        return parse_concise_xml_function_call(match.group(0))
+    elif language == "json":
+        json_match = re.search(r"\[.*\]", input_str, re.DOTALL)
+        if json_match:
+            input_str = json_match.group(0)
+        return parse_json_function_call(input_str)
+    elif language == "Typescript":
+        return parse_typescript_function_call(input_str)
     else:
         raise NotImplementedError(f"Unsupported language: {language}")
 
@@ -305,16 +336,17 @@ def resolve_ast_by_type(value):
     return output
 
 
-def system_prompt_pre_processing_chat_model(prompts, function_docs, test_category):
+def system_prompt_pre_processing_chat_model(prompts, function_docs, test_category, prompt_variation = []):
     """
     Add a system prompt to the chat model to instruct the model on the available functions and the expected response format.
     If the prompts list already contains a system prompt, append the additional system prompt content to the existing system prompt.
     """
     assert type(prompts) == list
 
-    system_prompt_template = DEFAULT_SYSTEM_PROMPT
+    prompt_variation_args = parse_prompt_variation_args(prompt_variation)
+    prompt_variation_args["functions"] = function_docs
 
-    system_prompt = system_prompt_template.format(functions=function_docs)
+    system_prompt = formulate_default_system_prompt(**prompt_variation_args)
 
     # System prompt must be in the first position
     # If the question comes with a system prompt, append its content at the end of the chat template.
@@ -676,21 +708,22 @@ def format_execution_results_prompting(
 
 def default_decode_ast_prompting(result, language="Python"):
     result = result.strip("`\n ")
-    if not result.startswith("["):
-        result = "[" + result
-    if not result.endswith("]"):
-        result = result + "]"
+    if language != "json" and "xml" not in language:
+        if not result.startswith("["):
+            result = "[" + result
+        if not result.endswith("]"):
+            result = result + "]"
     decoded_output = ast_parse(result, language)
     return decoded_output
 
 
-def default_decode_execute_prompting(result):
+def default_decode_execute_prompting(result, language="Python"):
     result = result.strip("`\n ")
     if not result.startswith("["):
         result = "[" + result
     if not result.endswith("]"):
         result = result + "]"
-    decoded_output = ast_parse(result)
+    decoded_output = ast_parse(result, language)
     return decoded_output_to_execution_list(decoded_output)
 
 
@@ -801,3 +834,226 @@ def retry_with_backoff(
         return wrapped
 
     return decorator
+
+def formulate_default_system_prompt(
+    prompt_format: str = "plaintext",      # 'plaintext' | 'markdown'
+    prompt_style: str = "classic",         # 'classic' | 'experimental'
+    return_format: str = "python",         # 'python' | 'json' | 'verbose_xml' | 'concise_xml'
+    has_tool_call_tag: bool = False,       # True | False # add <TOOLCALL> tags
+    has_available_tools_tag: bool = False, # True | False # add <AVAILABLE_TOOLS> tags
+    function_doc_format: str = "python",   # 'python' | 'xml' | 'json'
+    functions: str = ""
+) -> str:
+    """
+    Formulate the default system prompt based on the provided parameters.
+    """
+    return_format = return_format.lower()
+    default_prompt = ""
+
+    if prompt_format == "plaintext":
+        default_prompt = "{persona}{task}\n\n{tool_call}\n\n{multiturn}\n\n{available_tools}"
+    elif prompt_format == "markdown":
+        default_prompt = "{persona}\n\n## Task\n{task}\n\n## Tool Call Format\n{tool_call}\n\n## Multi-turn Behavior\n{multiturn}\n\n## Available Tools\n{available_tools}"
+
+    tool_call_key = "tool_call_with_tag" if has_tool_call_tag else "tool_call_no_tag"
+    available_tools_key = "available_tools_with_tag" if has_tool_call_tag else "available_tools_no_tag"
+    
+    default_prompt = default_prompt.format(
+        persona=PROMPT_STYLE_MAPPING[prompt_style]["persona"],
+        task=PROMPT_STYLE_MAPPING[prompt_style]["task"],
+        tool_call=PROMPT_STYLE_MAPPING[prompt_style][tool_call_key].format(output_format=OUTPUT_FORMAT_MAPPING[return_format]),
+        multiturn=PROMPT_STYLE_MAPPING[prompt_style]["multiturn"],
+        available_tools=PROMPT_STYLE_MAPPING[prompt_style][available_tools_key].format(format=function_doc_format, functions=format_function_doc(functions, function_doc_format, has_available_tools_tag))
+    )
+
+    print(f"Default system prompt:\n{default_prompt}")
+    return default_prompt
+
+
+def format_function_doc(functions, function_doc_format, has_available_tools_tag):
+    """
+    Format the function documentation based on the specified format.
+    """
+    def format_param(name, info):
+        desc = info.get("description", "")
+        optional = info.get("optional", False)
+        typ = info.get("type", "unknown")
+        default_note = " (optional)" if optional else ""
+        return f"    {name} ({typ}){default_note}: {desc}"
+
+    if function_doc_format == "xml":
+        def convert_functions_to_xml(functions):
+            xml_blocks = []
+
+            for fn in functions:
+                name = fn["name"]
+                desc = fn.get("description", "").replace("Note that the provided function is in Python 3 syntax.", "").strip()
+                props = fn["parameters"]["properties"]
+                required = set(fn["parameters"].get("required", []))
+
+                xml = f'<function name="{name}">\n'
+                xml += f'  <desc>{desc}</desc>\n'
+                xml += f'  <params>\n'
+
+                for param_name, meta in props.items():
+                    param_type = meta.get("type", "string")
+                    param_desc = meta.get("description", "")
+                    is_required = "true" if param_name in required else "false"
+                    xml += f'    <param name="{param_name}" type="{param_type}" required="{is_required}">\n'
+                    xml += f'      <desc>{param_desc}</desc>\n'
+                    xml += f'    </param>\n'
+
+                xml += f'  </params>\n'
+                xml += f'</function>\n'
+                xml_blocks.append(xml)
+            return "\n".join(xml_blocks)
+
+        xml_output = convert_functions_to_xml(functions)
+        functions = xml_output
+
+    elif function_doc_format == "python":
+        docstrings_by_class = {}
+        top_level_docstrings = []
+
+        for entry in functions:
+            name = entry["name"]
+            desc = entry.get("description", "").strip().replace(
+                "Note that the provided function is in Python 3 syntax.", ""
+            )
+            params = entry["parameters"]["properties"]
+            required = entry["parameters"].get("required", [])
+
+            if "." in name:
+                class_name, func_name = name.split(".", 1)
+            else:
+                class_name = None
+                func_name = name
+
+            signature_params = []
+            for param_name in params:
+                if param_name in required:
+                    signature_params.append(param_name)
+                else:
+                    signature_params.append(f"{param_name}=''")
+
+            param_docs = "\n".join([f"    {format_param(p, params[p])}" for p in params])
+            param_docs = "        Args:\n" + param_docs
+            docstring_body = f"""        \"\"\"\n        {desc}\n\n{param_docs}\n        \"\"\""""
+            method_block = f"""    def {func_name}({', '.join(signature_params)}):\n{docstring_body}\n        pass"""
+
+            if class_name:
+                docstrings_by_class.setdefault(class_name, []).append(method_block)
+            else:
+                param_docs_top = "\n".join([f"{format_param(p, params[p])}" for p in params])
+                docstring_body_top = f"""    \"\"\"\n    {desc}\n\n    Args:\n{param_docs_top}\n    \"\"\""""
+                func_block = f"""def {func_name}({', '.join(signature_params)}):\n{docstring_body_top}\n    pass"""
+                top_level_docstrings.append(func_block)
+
+        grouped_docstrings = []
+        grouped_docstrings.extend(top_level_docstrings)
+
+        for class_name, methods in docstrings_by_class.items():
+            class_block = f"class {class_name}:\n" + "\n\n".join(methods)
+            grouped_docstrings.append(class_block)
+
+        functions = "\n\n".join(grouped_docstrings)
+    if has_available_tools_tag:
+        functions = f"<AVAILABLE_TOOLS>\n{functions}\n</AVAILABLE_TOOLS>"
+    else:
+        functions = f"```{function_doc_format}\n{functions}\n```"
+    return functions  # Fallback for unsupported formats
+
+def parse_prompt_variation_args(prompt_variation = []):
+    # prompt_arg_names = ["prompt_format", "prompt_style", "return_format", "has_tool_call_tag", "has_available_tools_tag", "function_doc_format"]
+    sig = inspect.signature(formulate_default_system_prompt)
+    prompt_arg_defaults = {
+        name: param.default
+        for name, param in sig.parameters.items()
+        if param.default is not inspect.Parameter.empty
+    }
+    prompt_arg_names = list(prompt_arg_defaults.keys())
+    prompt_arg_names.remove("functions")
+    prompt_args = {}
+    prompt_variation_no_var_name = []
+    for prompt_var in prompt_variation:
+        if '=' in prompt_var:
+            var_name = prompt_var.split('=')[0]
+            if var_name in prompt_arg_names:
+                if var_name not in prompt_args:
+                    prompt_args[var_name] = prompt_var.split('=')[-1]
+        else:
+            prompt_variation_no_var_name.append(prompt_var)
+    
+    for prompt_var in prompt_variation_no_var_name:
+        for prompt_arg_name in prompt_arg_names:
+            if prompt_arg_name not in prompt_args:
+                prompt_args[prompt_arg_name] = prompt_var
+                break
+    if "return_format" in prompt_args:
+        if prompt_args["return_format"].lower() == "python":
+            prompt_args["return_format"] = "Python"
+    if "has_tool_call_tag" in prompt_args:
+        prompt_args["has_tool_call_tag"] = prompt_args["has_tool_call_tag"] in ["True", "true"]
+    if "has_available_tools_tag" in prompt_args:
+        prompt_args["has_available_tools_tag"] = prompt_args["has_available_tools_tag"] in ["True", "true"]
+    return prompt_args
+
+def get_prompt_variation_filename_suffix(prompt_variation = []):
+    if prompt_variation == [] or prompt_variation == {}:
+        return ""
+    if isinstance(prompt_variation, list):
+        prompt_args = parse_prompt_variation_args(prompt_variation)
+    else:
+        prompt_args = copy.deepcopy(prompt_variation)
+    sig = inspect.signature(formulate_default_system_prompt)
+    prompt_arg_defaults = {
+        name: param.default
+        for name, param in sig.parameters.items()
+        if param.default is not inspect.Parameter.empty
+    }
+    if prompt_arg_defaults["return_format"].lower() == "python":
+        prompt_arg_defaults["return_format"] = "Python"
+    prompt_arg_names = list(prompt_arg_defaults.keys())
+    prompt_arg_names.remove("functions")
+    for prompt_arg in prompt_arg_names:
+        if prompt_arg not in prompt_args:
+            prompt_args[prompt_arg] = prompt_arg_defaults[prompt_arg]
+
+    sorted_prompt_args = dict(sorted(prompt_args.items()))
+    file_name = ""
+    for prompt_arg in sorted_prompt_args:
+        file_name += f"_{prompt_arg}_{sorted_prompt_args[prompt_arg]}"
+    return file_name
+
+def parse_prompt_variation_filename(result_filename):
+    if result_filename.endswith(".json"):
+        result_filename = result_filename[:-5]
+    test_category = ""
+    prompt_args = {}
+    sig = inspect.signature(formulate_default_system_prompt)
+    prompt_arg_defaults = {
+        name: param.default
+        for name, param in sig.parameters.items()
+        if param.default is not inspect.Parameter.empty
+    }
+    if prompt_arg_defaults["return_format"].lower() == "python":
+        prompt_arg_defaults["return_format"] = "Python" 
+    prompt_arg_names = list(prompt_arg_defaults.keys())
+    prompt_arg_names.sort()
+    prompt_arg_names.insert(0, VERSION_PREFIX)
+    prompt_arg_names.remove("functions")
+    for i in range(0, len(prompt_arg_names)):
+        prompt_arg = prompt_arg_names[i]
+        nxt_arg = prompt_arg_names[i + 1] if i + 1 < len(prompt_arg_names) else ""
+        if prompt_arg not in result_filename:
+            raise Exception(f"prompt argument {prompt_arg} not in result filename, naming issue")
+        if i != len(prompt_arg_names) - 1:
+            prompt_arg_val = result_filename[result_filename.find(prompt_arg) + len(prompt_arg) + 1 : result_filename.find(nxt_arg) - 1]
+        else:
+            prompt_arg_val = result_filename[result_filename.find(prompt_arg) + len(prompt_arg) + 1 :]
+        prompt_args[prompt_arg] = prompt_arg_val
+    if "result" in prompt_args[VERSION_PREFIX]:
+        prompt_args[VERSION_PREFIX] = prompt_args[VERSION_PREFIX][:-7]
+    test_category = prompt_args[VERSION_PREFIX]
+    del prompt_args[VERSION_PREFIX]
+    return test_category, prompt_args
