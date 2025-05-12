@@ -1,5 +1,7 @@
 import argparse
 import json
+import multiprocessing as mp
+import os
 import shutil
 import threading
 import time
@@ -27,7 +29,7 @@ def get_args():
     # Refer to model_choice for supported models.
     parser.add_argument("--model", type=str, default="gorilla-openfunctions-v2", nargs="+")
     # Refer to test_categories for supported categories.
-    parser.add_argument("--test-category", type=str, default="all", nargs="+")
+    parser.add_argument("--test-category", type=str, default=["memory_vector"], nargs="+")
 
     # Parameters for the model that you want to test.
     parser.add_argument("--temperature", type=float, default=0.001)
@@ -256,6 +258,16 @@ def generate_results(args, model_name, test_cases_total):
 
 def main(args):
 
+    # Note: The following environment variables are needed for the memory vector store implementation 
+    # Otherwise you get segfault or huggingface tokenizer warnings
+    # disable HuggingFace tokenizers’ thread pool
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    # limit all OpenMP/MKL threads to 1
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    # use spawn method for multiprocessing
+    mp.set_start_method("spawn", force=True)
+
     if type(args.model) is not list:
         args.model = [args.model]
     if type(args.test_category) is not list:
@@ -269,10 +281,10 @@ def main(args):
     for model_name in args.model:
         if model_name not in MODEL_CONFIG_MAPPING:
             raise ValueError(
-                        f"Unknown model_name '{model_name}'.\n"
-                        "• For officially supported models, please refer to `SUPPORTED_MODELS.md`.\n"
-                        "• For running new models, please refer to `README.md` and `CONTRIBUTING.md`."
-                    )
+                f"Unknown model_name '{model_name}'.\n"
+                "• For officially supported models, please refer to `SUPPORTED_MODELS.md`.\n"
+                "• For running new models, please refer to `README.md` and `CONTRIBUTING.md`."
+            )
     print(f"Generating results for {args.model}")
     if args.run_ids:
         print("Running specific test cases. Ignoring `--test-category` argument.")

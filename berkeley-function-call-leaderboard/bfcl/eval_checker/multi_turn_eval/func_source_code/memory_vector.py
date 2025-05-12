@@ -11,6 +11,7 @@ from bfcl.utils import extract_test_category_from_id, is_first_memory_prereq_ent
 # isort: off
 # Note: This import order is necessary to avoid segfault issue due to FAISS and PyTorch each load a different OpenMP runtime
 # See https://github.com/pytorch/pytorch/issues/149201#issuecomment-2725586827
+# TODO: Find a common OpenMP runtime to avoid this issue
 from sentence_transformers import SentenceTransformer
 import faiss
 
