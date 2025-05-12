@@ -17,10 +17,11 @@ def agentic_checker(model_response: str, possible_answer_list: list[str]) -> dic
     if type(model_response) is not str:
         model_response = str(model_response)
 
-    standardized_model_response = standardize_string(model_response)
+    answer = extract_answer(model_response)
+    answer = standardize_string(answer)
 
     for possible_answer in standardized_possible_answer_list:
-        if re.search(rf"\b{re.escape(possible_answer)}\b", standardized_model_response):
+        if re.search(rf"\b{re.escape(possible_answer)}\b", answer):
             return {"valid": True, "error": []}
 
     return {
@@ -46,5 +47,19 @@ def standardize_string(input_string: str):
     This is used to compare the model output with the possible answers
     We don't want to punish model for answer like April 1, 2024 vs April 1,2024, vs April 1 2024
     """
-    regex_string = r"[\,\.\/\-\_\*\^\(\)]"
+    if input_string is None:
+        return ""
+    if not isinstance(input_string, str):
+        return str(input_string)
+    regex_string = r"[\.\/\-\_\*\^\(\)]"
     return re.sub(regex_string, "", input_string).lower().replace("'", '"')
+
+def extract_answer(text: str) -> str | None:
+    text = text.replace("'", '"')
+    m = re.search(r'"answer"', text)
+    answer_index = m.start() if m else -1
+    m = re.search(r'"context"', text)
+    context_index = m.start() if m else -1
+    if answer_index == -1 or context_index == -1:
+        return None
+    return text[answer_index:context_index].strip()
