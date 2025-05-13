@@ -448,8 +448,7 @@ def evaluate_task(
         language = "JavaScript"
     if "return_format" in prompt_args:
         language = prompt_args["return_format"]
-    print(language)
-
+ 
     prompt_var_string = ""
     for prompt_arg in prompt_args:
         prompt_var_string += f"{prompt_arg}={prompt_args[prompt_arg]},"
@@ -476,9 +475,9 @@ def evaluate_task(
         possible_answer_file = find_file_with_suffix(POSSIBLE_ANSWER_PATH, test_category)
         possible_answer = load_file(possible_answer_file, sort_by_id=True)
 
-        print(model_result[0])
-        print(prompt[0])
-        print(possible_answer[0])
+        # print(model_result[0])
+        # print(prompt[0])
+        # print(possible_answer[0])
 
         cleaned_prompt = []
         cleaned_possible_answer = []

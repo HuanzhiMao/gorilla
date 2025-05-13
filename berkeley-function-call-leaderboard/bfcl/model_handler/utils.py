@@ -866,7 +866,7 @@ def formulate_default_system_prompt(
         available_tools=PROMPT_STYLE_MAPPING[prompt_style][available_tools_key].format(format=function_doc_format, functions=format_function_doc(functions, function_doc_format, has_available_tools_tag))
     )
 
-    print(f"Default system prompt:\n{default_prompt}")
+    # print(f"Default system prompt:\n{default_prompt}")
     return default_prompt
 
 
@@ -874,17 +874,29 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
     """
     Format the function documentation based on the specified format.
     """
-    def format_param(name, info):
-        desc = info.get("description", "")
-        optional = info.get("optional", False)
-        typ = info.get("type", "unknown")
-        default_note = " (optional)" if optional else ""
-        return f"    {name} ({typ}){default_note}: {desc}"
+    def format_param(name, info, required):
+        typemap = {
+            "string": "str",
+            "integer": "int",
+            "number": "float",
+            "boolean": "bool",
+            "array": "List",
+            "object": "Dict"
+        }
+        py_type = typemap.get(info.get("type", "string"), "Any")
+        is_required = name in required
+        default = info.get("default")
+        if not is_required:
+            if default is not None:
+                return f"{name}: {py_type} = {repr(default)}"
+            else:
+                return f"{name}: Optional[{py_type}] = None"
+        else:
+            return f"{name}: {py_type}"
 
     if function_doc_format == "xml":
         def convert_functions_to_xml(functions):
             xml_blocks = []
-
             for fn in functions:
                 name = fn["name"]
                 desc = fn.get("description", "").replace("Note that the provided function is in Python 3 syntax.", "").strip()
@@ -894,7 +906,6 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
                 xml = f'<function name="{name}">\n'
                 xml += f'  <desc>{desc}</desc>\n'
                 xml += f'  <params>\n'
-
                 for param_name, meta in props.items():
                     param_type = meta.get("type", "string")
                     param_desc = meta.get("description", "")
@@ -902,7 +913,6 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
                     xml += f'    <param name="{param_name}" type="{param_type}" required="{is_required}">\n'
                     xml += f'      <desc>{param_desc}</desc>\n'
                     xml += f'    </param>\n'
-
                 xml += f'  </params>\n'
                 xml += f'</function>\n'
                 xml_blocks.append(xml)
@@ -912,56 +922,40 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
         functions = xml_output
 
     elif function_doc_format == "python":
-        docstrings_by_class = {}
-        top_level_docstrings = []
+        docs = []
+        for fn in functions:
+            full_name = fn["name"]
+            short_name = full_name.split(".")[-1]
+            desc = fn.get("description", "").strip().replace("Note that the provided function is in Python 3 syntax.", "")
+            params = fn["parameters"]["properties"]
+            required = fn["parameters"].get("required", [])
 
-        for entry in functions:
-            name = entry["name"]
-            desc = entry.get("description", "").strip().replace(
-                "Note that the provided function is in Python 3 syntax.", ""
-            )
-            params = entry["parameters"]["properties"]
-            required = entry["parameters"].get("required", [])
+            sig_params = [format_param(name, meta, required) for name, meta in params.items()]
+            sig = ", ".join(sig_params)
 
-            if "." in name:
-                class_name, func_name = name.split(".", 1)
-            else:
-                class_name = None
-                func_name = name
+            doc = f"# Function: {full_name}\n"
+            doc += f"# Note: This function must be referenced using its full name: '{full_name}'\n\n"
+            doc += f"def {short_name}({sig}):\n"
+            doc += f"    \"\"\"\n    {desc}\n\n"
+            if params:
+                doc += f"    Args:\n"
+                for name, meta in params.items():
+                    typ = meta.get("type", "string")
+                    py_type = format_param(name, meta, required).split(":")[1].split("=")[0].strip()
+                    docstring_desc = meta.get("description", "").strip()
+                    default = meta.get("default")
+                    default_note = f", default={repr(default)}" if default is not None else ""
+                    doc += f"        {name} ({py_type}{default_note}): {docstring_desc}\n"
+            doc += f"    \"\"\"\n"
+            docs.append(doc)
 
-            signature_params = []
-            for param_name in params:
-                if param_name in required:
-                    signature_params.append(param_name)
-                else:
-                    signature_params.append(f"{param_name}=''")
+        functions = "\n\n".join(docs)
 
-            param_docs = "\n".join([f"    {format_param(p, params[p])}" for p in params])
-            param_docs = "        Args:\n" + param_docs
-            docstring_body = f"""        \"\"\"\n        {desc}\n\n{param_docs}\n        \"\"\""""
-            method_block = f"""    def {func_name}({', '.join(signature_params)}):\n{docstring_body}\n        pass"""
-
-            if class_name:
-                docstrings_by_class.setdefault(class_name, []).append(method_block)
-            else:
-                param_docs_top = "\n".join([f"{format_param(p, params[p])}" for p in params])
-                docstring_body_top = f"""    \"\"\"\n    {desc}\n\n    Args:\n{param_docs_top}\n    \"\"\""""
-                func_block = f"""def {func_name}({', '.join(signature_params)}):\n{docstring_body_top}\n    pass"""
-                top_level_docstrings.append(func_block)
-
-        grouped_docstrings = []
-        grouped_docstrings.extend(top_level_docstrings)
-
-        for class_name, methods in docstrings_by_class.items():
-            class_block = f"class {class_name}:\n" + "\n\n".join(methods)
-            grouped_docstrings.append(class_block)
-
-        functions = "\n\n".join(grouped_docstrings)
     if has_available_tools_tag:
         functions = f"<AVAILABLE_TOOLS>\n{functions}\n</AVAILABLE_TOOLS>"
     else:
         functions = f"```{function_doc_format}\n{functions}\n```"
-    return functions  # Fallback for unsupported formats
+    return functions
 
 def parse_prompt_variation_args(prompt_variation = []):
     # prompt_arg_names = ["prompt_format", "prompt_style", "return_format", "has_tool_call_tag", "has_available_tools_tag", "function_doc_format"]
