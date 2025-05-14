@@ -925,28 +925,33 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
         docs = []
         for fn in functions:
             full_name = fn["name"]
-            short_name = full_name.split(".")[-1]
-            desc = fn.get("description", "").strip().replace("Note that the provided function is in Python 3 syntax.", "")
+            desc = fn.get("description", "").strip().replace(
+                "Note that the provided function is in Python 3 syntax.", ""
+            )
             params = fn["parameters"]["properties"]
-            required = fn["parameters"].get("required", [])
-
-            sig_params = [format_param(name, meta, required) for name, meta in params.items()]
-            sig = ", ".join(sig_params)
 
             doc = f"# Function: {full_name}\n"
-            doc += f"# Note: This function must be referenced using its full name: '{full_name}'\n\n"
-            doc += f"def {short_name}({sig}):\n"
-            doc += f"    \"\"\"\n    {desc}\n\n"
+            doc += f'    """\n'
+            doc += f"    {desc}\n\n"
+
             if params:
                 doc += f"    Args:\n"
                 for name, meta in params.items():
                     typ = meta.get("type", "string")
-                    py_type = format_param(name, meta, required).split(":")[1].split("=")[0].strip()
+                    py_type = (
+                        typ.replace("string", "str")
+                            .replace("number", "float")
+                            .replace("integer", "int")
+                            .replace("object", "dict")
+                            .replace("array", "list")
+                            .replace("boolean", "bool")
+                    )
                     docstring_desc = meta.get("description", "").strip()
                     default = meta.get("default")
                     default_note = f", default={repr(default)}" if default is not None else ""
                     doc += f"        {name} ({py_type}{default_note}): {docstring_desc}\n"
-            doc += f"    \"\"\"\n"
+
+            doc += f'    """\n'
             docs.append(doc)
 
         functions = "\n\n".join(docs)
@@ -954,7 +959,7 @@ def format_function_doc(functions, function_doc_format, has_available_tools_tag)
     if has_available_tools_tag:
         functions = f"<AVAILABLE_TOOLS>\n{functions}\n</AVAILABLE_TOOLS>"
     else:
-        functions = f"```{function_doc_format}\n{functions}\n```"
+        functions = f"\n{functions}\n"
     return functions
 
 def parse_prompt_variation_args(prompt_variation = []):
