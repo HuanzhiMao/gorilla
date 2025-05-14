@@ -210,12 +210,13 @@ def parse_test_category_argument(test_category_args):
 
 
 def get_all_prompt_variation_configs():
-    prompt_format = ["prompt_format=plaintext", "prompt_format=markdown"]
-    prompt_style = ["prompt_style=classic", "prompt_style=experimental"]
+    # prompt_format = ["prompt_format=plaintext", "prompt_format=markdown"]
+    # prompt_style = ["prompt_style=classic", "prompt_style=experimental"]
     return_format = ["return_format=python", "return_format=json", "return_format=verbose_xml", "return_format=concise_xml"]
     has_tool_call_tag = ["has_tool_call_tag=True", "has_tool_call_tag=False"]
-    has_available_tools_tag = ["has_available_tools_tag=True", "has_available_tools_tag=False"]
+    # has_available_tools_tag = ["has_available_tools_tag=True", "has_available_tools_tag=False"]
     function_doc_format = ["function_doc_format=python", "function_doc_format=xml", "function_doc_format=json"]
-    all_config_itr = itertools.product(prompt_format, prompt_style, return_format, has_tool_call_tag, has_available_tools_tag, function_doc_format)
+    # all_config_itr = itertools.product(prompt_format, prompt_style, return_format, has_tool_call_tag, has_available_tools_tag, function_doc_format)
+    all_config_itr = itertools.product(return_format, has_tool_call_tag, function_doc_format)
     all_config_list = [list(config) for config in all_config_itr]
     return all_config_list
