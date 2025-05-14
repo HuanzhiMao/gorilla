@@ -1050,4 +1050,4 @@
 {"id": "live_multiple_1049-276-0", "result": "[Trains_1_FindTrains(_from='Anaheim, CA', to='Berkeley, CA', date_of_journey='04/10/2023')]", "input_token_count": 1925, "output_token_count": 36, "latency": 0.9078090190887451}
 {"id": "live_multiple_1050-277-0", "result": "[Weather_1_GetWeather(city='Atlanta, GA', date='2023-03-07')]", "input_token_count": 802, "output_token_count": 22, "latency": 0.9400122165679932}
 {"id": "live_multiple_1051-278-0", "result": "[set_alarm(alarm_time='2023-12-01 07:00:00', purpose='meeting')]", "input_token_count": 716, "output_token_count": 25, "latency": 0.7644038200378418}
-{"id": "live_multiple_1052-279-0", "result": "[set_volume(volume=50), play_song(query='With You by AP Dillon')]", "input_token_count": 504, "output_token_count": 18, "latency": 1.1412420272827148}
+{"id": "live_multiple_1052-79-0", "result": "[set_volume(volume=50), play_song(query='With You by AP Dillon')]", "input_token_count": 504, "output_token_count": 18, "latency": 1.1412420272827148}
