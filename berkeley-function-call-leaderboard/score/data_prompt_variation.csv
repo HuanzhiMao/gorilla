@@ -1,0 +1,7 @@
+Rank,Model,Prompt Variation (PV) Overall Acc,PV Non_Live Python Simple AST,PV Non_Live Multiple AST,PV Non_Live Parallel AST,PV Non_Live Parallel Multiple AST,PV Live Python Simple AST,PV Live Python Multiple AST,PV Live Python Parallel AST,PV Live Python Parallel Multiple AST,PV Multi Turn Base,PV Multi Turn Miss Func,PV Multi Turn Miss Param,PV Multi Turn Long Context
+1,mistral-large-2411 (Prompt),40.92%,88.24%,88.25%,83.38%,N/A,78.68%,71.23%,81.25%,N/A,N/A,N/A,N/A,N/A
+2,Grok-3-mini-beta (Prompt),37.88%,76.21%,77.97%,73.82%,N/A,73.03%,72.29%,81.25%,N/A,N/A,N/A,N/A,N/A
+3,GPT-4o-mini-2024-07-18 (Prompt),37.24%,78.08%,75.45%,73.34%,N/A,68.51%,68.65%,82.81%,N/A,N/A,N/A,N/A,N/A
+4,GPT-4o-2024-11-20 (Prompt),36.45%,76.38%,74.08%,72.75%,N/A,69.64%,64.31%,80.21%,N/A,N/A,N/A,N/A,N/A
+5,claude-3.5-haiku-20241022 (Prompt),32.85%,70.50%,66.46%,56.92%,N/A,68.18%,60.27%,71.88%,N/A,N/A,N/A,N/A,N/A
+6,Claude-3.7-Sonnet-20250219 (Prompt),32.63%,77.79%,75.00%,48.38%,N/A,74.16%,70.96%,45.31%,N/A,N/A,N/A,N/A,N/A
