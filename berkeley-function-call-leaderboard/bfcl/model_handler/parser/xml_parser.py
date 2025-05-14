@@ -14,7 +14,7 @@ def convert_value_by_type(raw_value, type_str):
     elif type_str == "null":
         return None
     elif type_str == "array" or type_str == "tuple" or type_str == "dict":
-        return ast.literal_eval(type_str)
+        return ast.literal_eval(raw_value)
     else:
         return raw_value  # fallback to raw string
 
