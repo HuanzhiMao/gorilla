@@ -28,12 +28,19 @@ OUTPUT_FORMAT_MAPPING = {
     "concise_xml": "<functions><function name=\"func_name1\"><param name=\"param1\" type=\"type1\">value1</param><param name=\"param2\" type=\"type2\">value2</param>...</function><function name=\"func_name2\"><param name=\"param3\" type=\"type3\">value</param></function></functions>",
 }
 
+PARAM_TYPE_MAPPING = {
+    "python": "",
+    "json": "",
+    "verbose_xml": "For the types of the parameters in your function calls, you should write them as string, integer, float, boolean, null, etc. (this is not an exhaustive list, but for the ones listed here, you should not write the types in other ways).",
+    "concise_xml": "For the types of the parameters in your function calls, you should write them as string, integer, float, boolean, null, etc. (this is not an exhaustive list, but for the ones listed here, you should not write the types in other ways).",
+}
+
 PROMPT_STYLE_MAPPING = {
     "classic": {
         "persona": "You are an expert in composing functions.",
         "task": "You are given a question and a set of possible functions. Based on the question, you will need to make one or more function/tool calls to achieve the purpose. If none of the functions can be used, point it out. If the given question lacks the parameters required by the function, also point it out.",
-        "tool_call_no_tag": "You should only return the function calls in your response.\n\nIf you decide to invoke any of the function(s), you MUST put it in the format of {output_format}.You SHOULD NOT include any other text in the response.",
-        "tool_call_with_tag": "You should only return the function calls in the <TOOLCALL> section. If you decide to invoke any of the function(s), you MUST put it in the format of <TOOLCALL>{output_format}</TOOLCALL>. You SHOULD NOT include any other text in the response.",
+        "tool_call_no_tag": "You should only return the function calls in your response.\n\nIf you decide to invoke any of the function(s), you MUST put it in the format of {output_format}. {param_types} You SHOULD NOT include any other text in the response.",
+        "tool_call_with_tag": "You should only return the function calls in the <TOOLCALL> section. If you decide to invoke any of the function(s), you MUST put it in the format of <TOOLCALL>{output_format}</TOOLCALL>. {param_types} You SHOULD NOT include any other text in the response.",
         "multiturn": "At each turn, you should try your best to complete the tasks requested by the user within the current turn. Continue to output functions to call until you have fulfilled the user's request to the best of your ability. Once you have no more functions to call, the system will consider the current turn complete and proceed to the next turn or task.",
         "available_tools_no_tag": "Here is a list of functions in {format} format that you can invoke.\n{functions}\n",
         "available_tools_with_tag": "Here is a list of functions in {format} format that you can invoke.{functions}\n"
@@ -41,8 +48,8 @@ PROMPT_STYLE_MAPPING = {
     "experimental": {
         "persona": "You are an experienced developer.",
         "task": "You need to make function/tool calls to solve the question given. If none of the functions can be used or the given question lacks the parameters, return an empty list then explain.",
-        "tool_call_no_tag": "You should only return the function calls in your response. If you decide to invoke any of the function(s), you MUST put it in the format of {output_format}. You SHOULD NOT include any other text in the response.",
-        "tool_call_with_tag": "You should only return the function calls in the <TOOLCALL> section. If you decide to invoke any of the function(s), you MUST put it in the format of <TOOLCALL>{output_format}</TOOLCALL>. You SHOULD NOT include any other text in the response.",
+        "tool_call_no_tag": "You should only return the function calls in your response. If you decide to invoke any of the function(s), you MUST put it in the format of {output_format}. {param_types} You SHOULD NOT include any other text in the response.",
+        "tool_call_with_tag": "You should only return the function calls in the <TOOLCALL> section. If you decide to invoke any of the function(s), you MUST put it in the format of <TOOLCALL>{output_format}</TOOLCALL>. {param_types} You SHOULD NOT include any other text in the response.",
         "multiturn": "At each turn, you should try your best to complete the tasks requested by the user within the current turn. Continue to output functions to call until you have fulfilled the user's request to the best of your ability. Once you have no more functions to call, the system will consider the current turn complete and proceed to the next turn or task.",
         "available_tools_no_tag": "Functions in {format} format:\n{functions}\n",
         "available_tools_with_tag": "```{format}{functions}```"
