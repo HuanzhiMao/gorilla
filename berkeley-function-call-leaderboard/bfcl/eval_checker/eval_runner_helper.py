@@ -10,7 +10,8 @@ from bfcl.constants.category_mapping import TEST_FILE_MAPPING
 from bfcl.constants.column_headers import *
 from bfcl.constants.eval_config import *
 from bfcl.constants.model_config import MODEL_CONFIG_MAPPING
-from bfcl.utils import extract_test_category, load_file
+from bfcl.utils import extract_test_category, load_file, get_all_prompt_variation_configs
+from bfcl.model_handler.utils import parse_prompt_variation_filename, get_prompt_variation_filename_suffix
 
 
 def calculate_weighted_accuracy(accuracy_dict_list, display_na_if_category_missing=True):
@@ -142,6 +143,15 @@ def get_category_score(score_dict: dict, test_category: str) -> dict:
         score["display_accuracy"] = score["accuracy"]
         return score
     else:
+        if "return_format" in test_category:
+            # is prompt var str
+            score = {"accuracy": 0, "total_count": 0, "display_accuracy": "N/A"}
+            all_prompt_var_configs = get_all_prompt_variation_configs()
+            for prompt_var_config in all_prompt_var_configs:
+                prompt_var_str = get_prompt_variation_filename_suffix(prompt_var_config)[1:]
+                if prompt_var_str in score_dict:
+                    score["total_count"] = score_dict[prompt_var_str]["total_count"]
+            return score
         if "promptvar" in test_category:
             test_category = test_category[:-len("_promptvar")]
         test_file_path = TEST_FILE_MAPPING[test_category]
@@ -330,58 +340,81 @@ def generate_leaderboard_csv(
         )
 
         # prompt variation score
-        python_simple_ast_non_live_promptvar = get_category_score(value, "simple_promptvar")
-        python_multiple_ast_non_live_promptvar = get_category_score(value, "multiple_promptvar")
-        python_parallel_ast_non_live_promptvar = get_category_score(value, "parallel_promptvar")
-        python_parallel_multiple_ast_non_live_promptvar = get_category_score(value, "parallel_multiple_promptvar")
+        # python_simple_ast_non_live_promptvar = get_category_score(value, "simple_promptvar")
+        # python_multiple_ast_non_live_promptvar = get_category_score(value, "multiple_promptvar")
+        # python_parallel_ast_non_live_promptvar = get_category_score(value, "parallel_promptvar")
+        # python_parallel_multiple_ast_non_live_promptvar = get_category_score(value, "parallel_multiple_promptvar")
 
-        python_simple_ast_live_promptvar = get_category_score(value, "live_simple_promptvar")
-        python_multiple_ast_live_promptvar = get_category_score(value, "live_multiple_promptvar")
-        python_parallel_ast_live_promptvar = get_category_score(value, "live_parallel_promptvar")
-        python_parallel_multiple_ast_live_promptvar = get_category_score(value, "live_parallel_multiple_promptvar")
+        # python_simple_ast_live_promptvar = get_category_score(value, "live_simple_promptvar")
+        # python_multiple_ast_live_promptvar = get_category_score(value, "live_multiple_promptvar")
+        # python_parallel_ast_live_promptvar = get_category_score(value, "live_parallel_promptvar")
+        # python_parallel_multiple_ast_live_promptvar = get_category_score(value, "live_parallel_multiple_promptvar")
 
-        multi_turn_base_promptvar = get_category_score(value, "multi_turn_base_promptvar")
-        multi_turn_miss_func_promptvar = get_category_score(value, "multi_turn_miss_func_promptvar")
-        multi_turn_miss_param_promptvar = get_category_score(value, "multi_turn_miss_param_promptvar")
-        multi_turn_long_context_promptvar = get_category_score(value, "multi_turn_long_context_promptvar")
+        # multi_turn_base_promptvar = get_category_score(value, "multi_turn_base_promptvar")
+        # multi_turn_miss_func_promptvar = get_category_score(value, "multi_turn_miss_func_promptvar")
+        # multi_turn_miss_param_promptvar = get_category_score(value, "multi_turn_miss_param_promptvar")
+        # multi_turn_long_context_promptvar = get_category_score(value, "multi_turn_long_context_promptvar")
 
-        overall_accuracy_promptvar = calculate_unweighted_accuracy(
-            [
-                python_simple_ast_non_live_promptvar,
-                python_multiple_ast_non_live_promptvar,
-                python_parallel_ast_non_live_promptvar,
-                python_parallel_multiple_ast_non_live_promptvar,
-                python_simple_ast_live_promptvar,
-                python_multiple_ast_live_promptvar,
-                python_parallel_ast_live_promptvar,
-                python_parallel_multiple_ast_live_promptvar,
-                multi_turn_base_promptvar,
-                multi_turn_miss_func_promptvar,
-                multi_turn_miss_param_promptvar,
-                multi_turn_long_context_promptvar,
-            ],
-            display_na_if_category_missing=False,
-        )
+        # overall_accuracy_promptvar = calculate_unweighted_accuracy(
+        #     [
+        #         python_simple_ast_non_live_promptvar,
+        #         python_multiple_ast_non_live_promptvar,
+        #         python_parallel_ast_non_live_promptvar,
+        #         python_parallel_multiple_ast_non_live_promptvar,
+        #         python_simple_ast_live_promptvar,
+        #         python_multiple_ast_live_promptvar,
+        #         python_parallel_ast_live_promptvar,
+        #         python_parallel_multiple_ast_live_promptvar,
+        #         multi_turn_base_promptvar,
+        #         multi_turn_miss_func_promptvar,
+        #         multi_turn_miss_param_promptvar,
+        #         multi_turn_long_context_promptvar,
+        #     ],
+        #     display_na_if_category_missing=False,
+        # )
 
+        # data_promptvar.append(
+        #     [
+        #         "N/A",
+        #         model_config.display_name,
+        #         overall_accuracy_promptvar["display_accuracy"],
+        #         python_simple_ast_non_live_promptvar["display_accuracy"],
+        #         python_multiple_ast_non_live_promptvar["display_accuracy"],
+        #         python_parallel_ast_non_live_promptvar["display_accuracy"],
+        #         python_parallel_multiple_ast_non_live_promptvar["display_accuracy"],
+        #         python_simple_ast_live_promptvar["display_accuracy"],
+        #         python_multiple_ast_live_promptvar["display_accuracy"],
+        #         python_parallel_ast_live_promptvar["display_accuracy"],
+        #         python_parallel_multiple_ast_live_promptvar["display_accuracy"],
+        #         multi_turn_base_promptvar["display_accuracy"],
+        #         multi_turn_miss_func_promptvar["display_accuracy"],
+        #         multi_turn_miss_param_promptvar["display_accuracy"],
+        #         multi_turn_long_context_promptvar["display_accuracy"],
+        #     ]
+        # )
+
+        # prompt variation new
+        prompt_var_categories = []
+        prompt_var_header = ["Rank", "Model", "Prompt Variation (PV) Overall Acc"]
+        all_prompt_var_configs = get_all_prompt_variation_configs()
+        for prompt_var_config in all_prompt_var_configs:
+            prompt_var_str = get_prompt_variation_filename_suffix(prompt_var_config)[1:]
+            prompt_var_header.append(prompt_var_str)
+            prompt_var_cat = get_category_score(value, prompt_var_str)
+            prompt_var_categories.append(prompt_var_cat)
+            # print(prompt_var_str)
+            # print(prompt_var_cat["display_accuracy"])
+        overall_accuracy_promptvar = calculate_unweighted_accuracy(prompt_var_categories, display_na_if_category_missing=False)
+        prompt_var_category_acc = [prompt_var_cat["display_accuracy"] for prompt_var_cat in prompt_var_categories]
         data_promptvar.append(
             [
                 "N/A",
                 model_config.display_name,
                 overall_accuracy_promptvar["display_accuracy"],
-                python_simple_ast_non_live_promptvar["display_accuracy"],
-                python_multiple_ast_non_live_promptvar["display_accuracy"],
-                python_parallel_ast_non_live_promptvar["display_accuracy"],
-                python_parallel_multiple_ast_non_live_promptvar["display_accuracy"],
-                python_simple_ast_live_promptvar["display_accuracy"],
-                python_multiple_ast_live_promptvar["display_accuracy"],
-                python_parallel_ast_live_promptvar["display_accuracy"],
-                python_parallel_multiple_ast_live_promptvar["display_accuracy"],
-                multi_turn_base_promptvar["display_accuracy"],
-                multi_turn_miss_func_promptvar["display_accuracy"],
-                multi_turn_miss_param_promptvar["display_accuracy"],
-                multi_turn_long_context_promptvar["display_accuracy"],
+                *prompt_var_category_acc,
             ]
         )
+        print("len of prompt var header: ", len(prompt_var_header))
 
         # Total Score
         single_turn_ast = calculate_unweighted_accuracy(
@@ -461,7 +494,8 @@ def generate_leaderboard_csv(
     write_score_csv_file(
         data=data_promptvar,
         file_path=output_path / "data_prompt_variation.csv",
-        header=COLUMNS_PROMPT_VAR,
+        # header=COLUMNS_PROMPT_VAR,
+        header=prompt_var_header,
         sort_column_index=2,
     )
 
@@ -549,6 +583,7 @@ def update_leaderboard_table_with_local_score_file(
     # Traverse each subdirectory
     for subdir in subdirs:
         model_name = subdir.relative_to(score_path).name
+        print(f"============== MODEL {model_name} ==============")
         # Find and process all JSON files in the subdirectory
         for model_score_json in subdir.glob("*.json"):
             metadata = load_file(model_score_json)[0]
@@ -562,29 +597,72 @@ def update_leaderboard_table_with_local_score_file(
                     "total_count": total_count,
                 }
         # Find and process all JSON files for prompt variation (including the original score not in prompt_variation)
+        # prompt_var_metadata = {}
+        # for model_score_json in subdir.glob("prompt_variation/*.json"):
+        #     metadata = load_file(model_score_json)[0]
+        #     accuracy, total_count = metadata["accuracy"], metadata["total_count"]
+        #     test_category = extract_test_category(model_score_json) + "_promptvar"
+        #     if model_name not in leaderboard_table:
+        #         leaderboard_table[model_name] = {}
+        #     if test_category not in prompt_var_metadata:
+        #         prompt_var_metadata[test_category] = {
+        #             "prompt_var_avg_acc": 0.0,
+        #             "prompt_var_avg_cnt": 0.0,
+        #             "prompt_var_score_file_cnt": 0,
+        #         }
+        #     prompt_var_metadata[test_category]["prompt_var_avg_acc"] += float(accuracy)
+        #     prompt_var_metadata[test_category]["prompt_var_avg_cnt"] += float(total_count)
+        #     prompt_var_metadata[test_category]["prompt_var_score_file_cnt"] += 1
+        # for test_category in prompt_var_metadata.keys():
+        #     org_test_category = test_category[:-len("_promptvar")]
+        #     if org_test_category in leaderboard_table[model_name]:
+        #         prompt_var_metadata[test_category]["prompt_var_avg_acc"] += float(leaderboard_table[model_name][org_test_category]["accuracy"])
+        #         prompt_var_metadata[test_category]["prompt_var_avg_cnt"] += float(leaderboard_table[model_name][org_test_category]["total_count"])
+        #         prompt_var_metadata[test_category]["prompt_var_score_file_cnt"] += 1
+        #     prompt_var_metadata[test_category]["prompt_var_avg_acc"] /= prompt_var_metadata[test_category]["prompt_var_score_file_cnt"]
+        #     prompt_var_metadata[test_category]["prompt_var_avg_cnt"] /= prompt_var_metadata[test_category]["prompt_var_score_file_cnt"]
+        #     leaderboard_table[model_name][test_category] = {
+        #         "accuracy": prompt_var_metadata[test_category]["prompt_var_avg_acc"],
+        #         "total_count": prompt_var_metadata[test_category]["prompt_var_avg_cnt"],
+        #     }
         prompt_var_metadata = {}
         for model_score_json in subdir.glob("prompt_variation/*.json"):
+            if model_name not in leaderboard_table:
+                leaderboard_table[model_name] = {}
             metadata = load_file(model_score_json)[0]
             accuracy, total_count = metadata["accuracy"], metadata["total_count"]
-            test_category = extract_test_category(model_score_json) + "_promptvar"
-            if test_category not in prompt_var_metadata:
-                prompt_var_metadata[test_category] = {
-                    "prompt_var_avg_acc": 0.0,
-                    "prompt_var_avg_cnt": 0.0,
-                    "prompt_var_score_file_cnt": 0,
-                }
-            prompt_var_metadata[test_category]["prompt_var_avg_acc"] += float(accuracy)
-            prompt_var_metadata[test_category]["prompt_var_avg_cnt"] += float(total_count)
-            prompt_var_metadata[test_category]["prompt_var_score_file_cnt"] += 1
-        for test_category in prompt_var_metadata.keys():
-            org_test_category = test_category[:-len("_promptvar")]
-            if org_test_category in leaderboard_table[model_name]:
-                prompt_var_metadata[test_category]["prompt_var_avg_acc"] += float(leaderboard_table[model_name][org_test_category]["accuracy"])
-                prompt_var_metadata[test_category]["prompt_var_avg_cnt"] += float(leaderboard_table[model_name][org_test_category]["total_count"])
-                prompt_var_metadata[test_category]["prompt_var_score_file_cnt"] += 1
-            prompt_var_metadata[test_category]["prompt_var_avg_acc"] /= prompt_var_metadata[test_category]["prompt_var_score_file_cnt"]
-            prompt_var_metadata[test_category]["prompt_var_avg_cnt"] /= prompt_var_metadata[test_category]["prompt_var_score_file_cnt"]
-            leaderboard_table[model_name][test_category] = {
-                "accuracy": prompt_var_metadata[test_category]["prompt_var_avg_acc"],
-                "total_count": prompt_var_metadata[test_category]["prompt_var_avg_cnt"],
+            org_test_category, prompt_args = parse_prompt_variation_filename(str(model_score_json))
+            prompt_arg_str = get_prompt_variation_filename_suffix(prompt_args)[1:]
+            if prompt_arg_str not in prompt_var_metadata:
+                # prompt_var_metadata[prompt_arg_str] = {
+                #     "accuracy": 0.0,
+                #     "total_count": 0,
+                #     "prompt_var_score_file_cnt": 0,
+                # }
+                prompt_var_metadata[prompt_arg_str] = []
+            prompt_var_metadata[prompt_arg_str].append({
+                "accuracy": float(accuracy),
+                "total_count": total_count,
+                "org_test_category": org_test_category,
+            })
+            # prompt_var_metadata[prompt_arg_str]["accuracy"] += float(accuracy)
+            # print(f"for model = {model_name}, prompt_arg_str = {prompt_arg_str}, added acc {float(accuracy)}, for file {str(model_score_json)}")
+            # prompt_var_metadata[prompt_arg_str]["total_count"] += total_count
+            # prompt_var_metadata[prompt_arg_str]["prompt_var_score_file_cnt"] += 1
+        for prompt_var_str in prompt_var_metadata.keys():
+            # prompt_var_metadata[prompt_var_str]["accuracy"] /= prompt_var_metadata[prompt_var_str]["prompt_var_score_file_cnt"]
+            # leaderboard_table[model_name][prompt_var_str] = {
+            #     "accuracy": prompt_var_metadata[prompt_arg_str]["accuracy"],
+            #     "total_count": prompt_var_metadata[prompt_arg_str]["total_count"]
+            # }
+            prompt_var_overall_acc = 0.0
+            prompt_var_overall_count = 0
+            for acc_item in prompt_var_metadata[prompt_var_str]:
+                prompt_var_overall_acc += float(acc_item["accuracy"] / len(prompt_var_metadata[prompt_var_str]))
+                prompt_var_overall_count += acc_item["total_count"]
+            leaderboard_table[model_name][prompt_var_str] = {
+                "accuracy": prompt_var_overall_acc,
+                "total_count": prompt_var_overall_count,
             }
+            print(f"Model = {model_name}, prompt_var = {prompt_var_str}, acc = {leaderboard_table[model_name][prompt_var_str]['accuracy']}")
+            
