@@ -7,7 +7,7 @@ model_threads = {
     "claude-3-5-haiku-20241022": 5,
     # "claude-3-7-sonnet-20250219": 5,
     "grok-3-mini-beta": 20,
-    "mistral-large-2411": 3
+    "mistral-large-2411": 2
 }
 
 test_categories = "simple,parallel,multiple,live_simple,live_parallel,live_multiple"
