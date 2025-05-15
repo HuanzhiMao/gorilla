@@ -1,7 +1,6 @@
 import subprocess
 from itertools import product
 
-# Models and their thread count
 model_threads = {
     "gpt-4o-mini-2024-07-18": 20,
     # "gpt-4o-2024-11-20": 20,
@@ -11,29 +10,27 @@ model_threads = {
     "mistral-large-2411": 3
 }
 
-# Categories to test
 test_categories = "simple,parallel,multiple,live_simple,live_parallel,live_multiple"
-
-# Prompt variations
 return_formats = ["json", "python", "verbose_xml", "concise_xml"]
 function_doc_formats = ["json", "python", "xml"]
+
 prompt_variations = [
-    f'return_format="{r}",function_doc_format="{f}"'
+    f'return_format={r},function_doc_format={f}'
     for r, f in product(return_formats, function_doc_formats)
 ]
 
-# Run all combinations
 for model, threads in model_threads.items():
     for variation in prompt_variations:
-        command = [
+        cmd = [
             "bfcl", "generate",
             "--model", model,
             "--test-category", test_categories,
             "--prompt-variation", variation,
             "--num-threads", str(threads)
         ]
-        print(f"Running: {' '.join(command)}")
+
+        print(f"\n🔹 Running: {' '.join(cmd)}\n")
         try:
-            subprocess.run(command, check=True)
+            subprocess.run(cmd, check=True)
         except subprocess.CalledProcessError as e:
             print(f"❌ Command failed: {e}")
