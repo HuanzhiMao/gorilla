@@ -31,8 +31,8 @@ OUTPUT_FORMAT_MAPPING = {
 PARAM_TYPE_MAPPING = {
     "python": "",
     "json": "",
-    "verbose_xml": "For the types of the parameters in your function calls, you should write them as string, integer, float, boolean, null, array, tuple, object, etc. (this is not an exhaustive list, but for the ones listed here, you should not write the types in other ways, for example, you should write integer, not int).",
-    "concise_xml": "For the types of the parameters in your function calls, you should write them as string, integer, float, boolean, null, array, tuple, object, etc. (this is not an exhaustive list, but for the ones listed here, you should not write the types in other ways, for example, you should write integer, not int).",
+    "verbose_xml": "The type fields of the parameters in your function calls must be one of: string, integer, float, boolean, array, dict, or tuple.",
+    "concise_xml": "The type fields of the parameters in your function calls must be one of: string, integer, float, boolean, array, dict, or tuple.",
 }
 
 PROMPT_STYLE_MAPPING = {
