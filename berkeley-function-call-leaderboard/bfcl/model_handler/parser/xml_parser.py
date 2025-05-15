@@ -13,7 +13,7 @@ def convert_value_by_type(raw_value, type_str):
         return raw_value.lower() == "true"
     elif type_str == "null":
         return None
-    elif type_str == "array" or type_str == "tuple" or type_str == "dict":
+    elif type_str == "array" or type_str == "tuple" or type_str == "object":
         return ast.literal_eval(raw_value)
     else:
         return raw_value  # fallback to raw string
