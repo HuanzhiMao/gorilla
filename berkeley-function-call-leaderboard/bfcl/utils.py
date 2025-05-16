@@ -208,7 +208,6 @@ def parse_test_category_argument(test_category_args):
         test_name_total.add("prompt-variation")
     return sorted(list(test_filename_total)), sorted(list(test_name_total))
 
-
 def get_all_prompt_variation_configs():
     # prompt_format = ["prompt_format=plaintext", "prompt_format=markdown"]
     # prompt_style = ["prompt_style=classic", "prompt_style=experimental"]
@@ -216,7 +215,16 @@ def get_all_prompt_variation_configs():
     has_tool_call_tag = ["has_tool_call_tag=True", "has_tool_call_tag=False"]
     # has_available_tools_tag = ["has_available_tools_tag=True", "has_available_tools_tag=False"]
     function_doc_format = ["function_doc_format=python", "function_doc_format=xml", "function_doc_format=json"]
-    # all_config_itr = itertools.product(prompt_format, prompt_style, return_format, has_tool_call_tag, has_available_tools_tag, function_doc_format)
-    all_config_itr = itertools.product(return_format, has_tool_call_tag, function_doc_format)
-    all_config_list = [list(config) for config in all_config_itr]
+    
+    # 4 × 2 × 3 = 24 combinations
+    base_configurations = list(itertools.product(return_format, has_tool_call_tag, function_doc_format))
+    # Add one config with markdown format
+    markdown_config = ["return_format=python", "has_tool_call_tag=True", "function_doc_format=json", "prompt_format=markdown"]
+    # Add one config with experimental prompt style
+    experimental_config = ["return_format=python", "has_tool_call_tag=True", "function_doc_format=json", "prompt_style=experimental"]
+
+    all_config_list = [list(config) for config in base_configurations]
+    all_config_list.append(markdown_config)
+    all_config_list.append(experimental_config)
+
     return all_config_list

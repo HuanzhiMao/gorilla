@@ -26,7 +26,12 @@ short_columns = [
     for out in ["python", "json", "verbose", "concise"] if out in col
     if 'prompt_format_plaintext' in col
 ]
+
+# Apply short column names
 df.columns = short_columns[:len(df.columns)]
+
+# Rename 'js+no_tool+python' to 'original'
+df = df.rename(columns={'js+no_tool+python': 'original'})
 
 # Convert to float (remove % signs if present)
 df = df.applymap(lambda x: float(str(x).replace('%', '')))

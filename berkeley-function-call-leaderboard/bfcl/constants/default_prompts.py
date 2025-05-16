@@ -46,12 +46,12 @@ PROMPT_STYLE_MAPPING = {
         "available_tools_with_tag": "Here is a list of functions in {format} format that you can invoke.{functions}\n"
     },
     "experimental": {
-        "persona": "You are an experienced developer.",
-        "task": "You need to make function/tool calls to solve the question given. If none of the functions can be used or the given question lacks the parameters, return an empty list then explain.",
-        "tool_call_no_tag": "You should only return the function calls in your response. If you decide to invoke any of the function(s), you MUST put it in the format of {output_format}. {param_types} You SHOULD NOT include any other text in the response.",
-        "tool_call_with_tag": "You should only return the function calls in the <TOOLCALL> section. If you decide to invoke any of the function(s), you MUST put it in the format of <TOOLCALL>{output_format}</TOOLCALL>. {param_types} You SHOULD NOT include any other text in the response.",
-        "multiturn": "At each turn, you should try your best to complete the tasks requested by the user within the current turn. Continue to output functions to call until you have fulfilled the user's request to the best of your ability. Once you have no more functions to call, the system will consider the current turn complete and proceed to the next turn or task.",
-        "available_tools_no_tag": "Functions in {format} format:\n{functions}\n",
-        "available_tools_with_tag": "```{format}{functions}```"
+        "persona": "You are an expert in generating structured function calls.",
+        "task": "You are given a user query and a set of available functions. Your task is to produce one or more function/tool calls to fulfill the user's request. If no suitable function exists, or required parameters are missing, clearly indicate this.",
+        "tool_call_no_tag": "Return only the function calls in your response.\nUse the following format: {output_format}. {param_types} Do not include any other text.",
+        "tool_call_with_tag": "Return only the function calls enclosed in <TOOLCALL> tags.\nUse the following format: <TOOLCALL>{output_format}</TOOLCALL>. {param_types} Do not include any other text.",
+        "multiturn": "In each turn, do your best to fully address the user's request. Continue generating function calls until all tasks are complete. Once no more calls are needed, the system will proceed to the next turn.",
+        "available_tools_no_tag": "Below is a list of functions in {format} format that you can use:\n{functions}\n",
+        "available_tools_with_tag": "```{format}\n{functions}\n```"
     }
 }
