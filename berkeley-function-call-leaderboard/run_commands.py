@@ -2,13 +2,13 @@ import subprocess
 from itertools import product
 
 model_threads = {
-    "gpt-4o-mini-2024-07-18": 20,
-    "gpt-4o-2024-11-20": 20,
-    "gemini-2.0-flash-001": 20,
-    "gemini-2.0-flash-lite-001": 20,
-    "claude-3-5-haiku-20241022": 5,
-    "claude-3-7-sonnet-20250219": 5,
-    "grok-3-mini-beta": 40,
+    # "gpt-4o-mini-2024-07-18": 20,
+    # "gpt-4o-2024-11-20": 20,
+    # "gemini-2.0-flash-001": 20,
+    # "gemini-2.0-flash-lite-001": 20,
+    # "claude-3-5-haiku-20241022": 5,
+    # "claude-3-7-sonnet-20250219": 5,
+    # "grok-3-mini-beta": 40,
     "mistral-large-2411": 2
 }
 
