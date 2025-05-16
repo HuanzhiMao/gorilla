@@ -9,6 +9,7 @@ from bfcl.model_handler.utils import (
     retry_with_backoff,
 )
 from openai import OpenAI, RateLimitError
+from typing import List
 from bfcl.model_handler.api_inference.openai import OpenAIHandler
 
 class MiningHandler(OpenAIHandler):
@@ -42,7 +43,7 @@ class MiningHandler(OpenAIHandler):
 
     #### Prompting methods ####
 
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+    def _pre_query_processing_prompting(self, test_entry: dict, prompt_variation: List[str]) -> dict:
         functions: list = test_entry["function"]
         test_category: str = test_entry["id"].rsplit("_", 1)[0]
 

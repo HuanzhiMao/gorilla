@@ -9,6 +9,7 @@ from bfcl.model_handler.utils import (
     system_prompt_pre_processing_chat_model,
 )
 from openai import OpenAI
+from typing import List
 
 
 class NvidiaHandler(OpenAIHandler):
@@ -58,14 +59,14 @@ class NvidiaHandler(OpenAIHandler):
 
     #### Prompting methods ####
 
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+    def _pre_query_processing_prompting(self, test_entry: dict, prompt_variation: List[str]) -> dict:
         functions: list = test_entry["function"]
         test_category: str = test_entry["id"].rsplit("_", 1)[0]
 
         functions = func_doc_language_specific_pre_processing(functions, test_category)
 
         test_entry["question"][0] = system_prompt_pre_processing_chat_model(
-            test_entry["question"][0], functions, test_category
+            test_entry["question"][0], functions, test_category, prompt_variation
         )
 
         for round_idx in range(len(test_entry["question"])):
