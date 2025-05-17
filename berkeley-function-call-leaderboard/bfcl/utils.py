@@ -58,7 +58,7 @@ def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = Fals
 def extract_memory_backend_type(test_category):
     """
     This function extracts the memory backend type from the test category.
-    The test category should be in the form of `memory_kv` or `memory_knowledge_graph`, etc.
+    The test category should be in the form of `memory_kv` or `memory_vector`, etc.
     """
     if not is_memory(test_category):
         raise ValueError(f"Test category {test_category} is not a memory category.")

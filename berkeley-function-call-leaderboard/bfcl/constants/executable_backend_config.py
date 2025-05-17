@@ -11,7 +11,6 @@ MULTI_TURN_FUNC_DOC_FILE_MAPPING = {
     "MemoryAPI_kv": "memory_kv.json",
     "MemoryAPI_vector": "memory_vector.json",
     "MemoryAPI_rec_sum": "memory_rec_sum.json",
-    "MemoryAPI_knowledge_graph": "memory_knowledge_graph.json",
 }
 
 BACKEND_PATH_PREFIX = "bfcl.eval_checker.multi_turn_eval.func_source_code"
@@ -30,7 +29,6 @@ CLASS_FILE_PATH_MAPPING = {
     "MemoryAPI_kv": f"{BACKEND_PATH_PREFIX}.memory_kv",
     "MemoryAPI_vector": f"{BACKEND_PATH_PREFIX}.memory_vector",
     "MemoryAPI_rec_sum": f"{BACKEND_PATH_PREFIX}.memory_rec_sum",
-    "MemoryAPI_knowledge_graph": f"{BACKEND_PATH_PREFIX}.memory_knowledge_graph",
 }
 
 # These classes are stateless and do not require any initial configuration
@@ -45,5 +43,4 @@ OMIT_STATE_INFO_CLASSES = [
     "MemoryAPI_kv",
     "MemoryAPI_vector",
     "MemoryAPI_rec_sum",
-    "MemoryAPI_knowledge_graph",
 ]

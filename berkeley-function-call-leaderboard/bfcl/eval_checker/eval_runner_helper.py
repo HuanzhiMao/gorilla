@@ -331,13 +331,11 @@ def generate_leaderboard_csv(
         memory_kv = get_category_score(value, "memory_kv")
         memory_vector = get_category_score(value, "memory_vector")
         memory_rec_sum = get_category_score(value, "memory_rec_sum")
-        memory_knowledge_graph = get_category_score(value, "memory_knowledge_graph")
         summary_memory = calculate_unweighted_accuracy(
             [
                 memory_kv,
                 memory_vector,
                 memory_rec_sum,
-                memory_knowledge_graph,
             ]
         )
         overall_accuracy_agentic = calculate_unweighted_accuracy(
@@ -358,7 +356,6 @@ def generate_leaderboard_csv(
                 memory_kv["display_accuracy"],
                 memory_vector["display_accuracy"],
                 memory_rec_sum["display_accuracy"],
-                memory_knowledge_graph["display_accuracy"],
             ]
         )       
 

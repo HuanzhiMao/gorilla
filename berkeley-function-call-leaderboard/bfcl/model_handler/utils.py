@@ -12,7 +12,6 @@ from bfcl.constants.default_prompts import (
     MEMORY_AGENT_SETTINGS,
     MEMORY_BACKEND_INSTRUCTION_CORE_ARCHIVAL,
     MEMORY_BACKEND_INSTRUCTION_UNIFIED,
-    MEMORY_BACKEND_INSTRUCTION_UNIFIED_WITHOUT_CONTENT,
 )
 from bfcl.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl.model_handler.model_style import ModelStyle
@@ -561,22 +560,17 @@ def add_memory_instruction_system_prompt(
     assert len(prompts) >= 1
 
     scenario_setting = MEMORY_AGENT_SETTINGS[scenario]
-    # We don't provide the content of the memory backend for knowledge graph implementation
-    if "knowledge_graph" in test_category:
-        system_prompt_template = MEMORY_BACKEND_INSTRUCTION_UNIFIED_WITHOUT_CONTENT
-        system_prompt = system_prompt_template.format(scenario_setting=scenario_setting)
 
+    memory_content = memory_backend_instance._dump_core_memory_to_context()
+
+    if "rec_sum" in test_category:
+        system_prompt_template = MEMORY_BACKEND_INSTRUCTION_UNIFIED
     else:
-        memory_content = memory_backend_instance._dump_core_memory_to_context()
+        system_prompt_template = MEMORY_BACKEND_INSTRUCTION_CORE_ARCHIVAL
 
-        if "rec_sum" in test_category:
-            system_prompt_template = MEMORY_BACKEND_INSTRUCTION_UNIFIED
-        else:
-            system_prompt_template = MEMORY_BACKEND_INSTRUCTION_CORE_ARCHIVAL
-
-        system_prompt = system_prompt_template.format(
-            scenario_setting=scenario_setting, memory_content=memory_content
-        )
+    system_prompt = system_prompt_template.format(
+        scenario_setting=scenario_setting, memory_content=memory_content
+    )
 
     # System prompt must be in the first position
     # If the question comes with a system prompt, append its content at the end of the chat template.

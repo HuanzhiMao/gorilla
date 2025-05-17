@@ -47,15 +47,11 @@ Here is the content of your Core Memory from previous interactions:
 {memory_content}
 """
 
-MEMORY_BACKEND_INSTRUCTION_UNIFIED_WITHOUT_CONTENT = """{scenario_setting}
+MEMORY_BACKEND_INSTRUCTION_UNIFIED = """{scenario_setting}
 
 You have access to an advanced memory system, which is persistent across multiple conversations with the user, and can be accessed in a later interactions. You should actively manage your memory data to keep track of important information, ensure that it is up-to-date and easy to retrieve to provide personalized responses to the user later.
-"""
 
-MEMORY_BACKEND_INSTRUCTION_UNIFIED = (
-    MEMORY_BACKEND_INSTRUCTION_UNIFIED_WITHOUT_CONTENT
-    + """
 Here is the content of your memory system from previous interactions:
 {memory_content}
 """
-)
+

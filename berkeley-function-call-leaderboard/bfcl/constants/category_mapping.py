@@ -5,7 +5,6 @@ ALL_AVAILABLE_MEMORY_BACKENDS = [
     "kv",
     "vector",
     "rec_sum",
-    "knowledge_graph",
 ]
 
 NON_LIVE_CATEGORY = [

@@ -47,7 +47,6 @@ COLUMNS_AGENTIC = [
     "Memory KV",
     "Memory Vector",
     "Memory Recursive Summarization",
-    "Memory Knowledge Graph",
 ]
 
 
