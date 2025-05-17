@@ -9,7 +9,7 @@ from bfcl.eval_checker.multi_turn_eval.multi_turn_utils import (
     execute_multi_turn_func_call,
 )
 
-_, test_filename_total = parse_test_category_argument(["multi_turn"])
+test_filename_total, _ = parse_test_category_argument(["multi_turn"])
 
 for file_path in test_filename_total:
     ground_truth_data = load_file(POSSIBLE_ANSWER_PATH / file_path)

@@ -14,7 +14,7 @@ SCORE_PATH = "./score/"
 DOTENV_PATH = "./.env"
 UTILS_PATH = "./utils/"
 TEST_IDS_TO_GENERATE_PATH = "./test_case_ids_to_generate.json"
-
+MEMORY_PREREQ_CONVERSATION_PATH = "./data/memory_prereq_conversation/"
 
 
 RED_FONT = "\033[91m"
@@ -32,6 +32,7 @@ SCORE_PATH = (PROJECT_ROOT / SCORE_PATH).resolve()
 DOTENV_PATH = (PROJECT_ROOT / DOTENV_PATH).resolve()
 UTILS_PATH = (PROJECT_ROOT / UTILS_PATH).resolve()
 TEST_IDS_TO_GENERATE_PATH = (PROJECT_ROOT / TEST_IDS_TO_GENERATE_PATH).resolve()
+MEMORY_PREREQ_CONVERSATION_PATH = (PROJECT_ROOT / MEMORY_PREREQ_CONVERSATION_PATH).resolve()
 
 RESULT_PATH.mkdir(parents=True, exist_ok=True)
 SCORE_PATH.mkdir(parents=True, exist_ok=True)

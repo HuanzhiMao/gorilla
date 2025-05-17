@@ -93,6 +93,7 @@ SUPPORTED_MODELS = [
     "Salesforce/xLAM-2-3b-fc-r",
     "Salesforce/xLAM-2-1b-fc-r",
     "mistralai/Ministral-8B-Instruct-2410",
+    "pi-4-reasoning"
     "microsoft/phi-4",
     "microsoft/Phi-4-mini-instruct",
     "microsoft/Phi-4-mini-instruct-FC",
