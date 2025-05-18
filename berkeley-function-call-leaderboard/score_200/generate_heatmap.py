@@ -26,7 +26,43 @@ short_columns = [
     for out in ["python", "json", "verbose", "concise"] if out in col
     if 'prompt_format_plaintext' in col
 ]
+
+short_columns = []
+for i in range(0, len(df.columns)):
+    func_doc_format = ""
+    return_format = ""
+    tool_tag = ""
+    if "function_doc_format_python" in df.columns[i]:
+        func_doc_format = "py"
+    elif "function_doc_format_json" in df.columns[i]:
+        func_doc_format = "js"
+    elif "function_doc_format_xml" in df.columns[i]:
+        func_doc_format = "xml"
+    else:
+        print(f"function doc format invalid")
+    
+    if "return_format_python" in df.columns[i] or "return_format_Python" in df.columns[i]:
+        return_format = "py"
+    elif "return_format_json" in df.columns[i]:
+        return_format = "js"
+    elif "return_format_verbose_xml" in df.columns[i]:
+        return_format = "verbose"
+    elif "return_format_concise_xml" in df.columns[i]:
+        return_format = "concise"
+    else:
+        print(f"return format invalid")
+
+    if "has_tool_call_tag_True" in df.columns[i]:
+        tool_tag = "tool"
+    elif "has_tool_call_tag_False" in df.columns[i]:
+        tool_tag = "no_tool"
+    else:
+        print(f"tool tag invalid")
+    short_columns.append(f"{{{func_doc_format}}}->{{{return_format}}},{tool_tag}")
+
 df.columns = short_columns[:len(df.columns)]
+
+df = df.rename(columns={'{js}->{python},no_tool': 'original'})
 
 # Convert to float (remove % signs if present)
 df = df.applymap(lambda x: float(str(x).replace('%', '')))
