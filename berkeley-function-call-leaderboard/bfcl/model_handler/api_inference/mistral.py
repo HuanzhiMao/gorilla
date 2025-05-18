@@ -35,6 +35,7 @@ class MistralHandler(BaseHandler):
         else:
             func = result
             func = func.replace("\\_", "_")
+            func = func.strip("`\n ")
             if not func.startswith("["):
                 func = "[" + func
             if not func.endswith("]"):

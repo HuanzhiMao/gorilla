@@ -1,9 +1,9 @@
 Rank,Model,Multi Turn Overall Acc,Base,Miss Func,Miss Param,Long Context
-1,Grok-3-mini-beta (Prompt),0.00%,N/A,N/A,N/A,N/A
-2,Gemini-2.0-Flash-001 (Prompt),0.00%,N/A,N/A,N/A,N/A
-3,mistral-large-2411 (Prompt),0.00%,N/A,N/A,N/A,N/A
-4,claude-3.5-haiku-20241022 (Prompt),0.00%,N/A,N/A,N/A,N/A
-5,Claude-3.7-Sonnet-20250219 (Prompt),0.00%,N/A,N/A,N/A,N/A
+1,mistral-large-2411 (Prompt),0.00%,N/A,N/A,N/A,N/A
+2,Gemini-2.0-Flash-Lite-001 (Prompt),0.00%,N/A,N/A,N/A,N/A
+3,Gemini-2.0-Flash-001 (Prompt),0.00%,N/A,N/A,N/A,N/A
+4,Grok-3-mini-beta (Prompt),0.00%,N/A,N/A,N/A,N/A
+5,claude-3.5-haiku-20241022 (Prompt),0.00%,N/A,N/A,N/A,N/A
 6,GPT-4o-2024-11-20 (Prompt),0.00%,N/A,N/A,N/A,N/A
-7,GPT-4o-mini-2024-07-18 (Prompt),0.00%,N/A,N/A,N/A,N/A
-8,Gemini-2.0-Flash-Lite-001 (Prompt),0.00%,N/A,N/A,N/A,N/A
+7,Claude-3.7-Sonnet-20250219 (Prompt),0.00%,N/A,N/A,N/A,N/A
+8,GPT-4o-mini-2024-07-18 (Prompt),0.00%,N/A,N/A,N/A,N/A
