@@ -55,7 +55,7 @@ SUPPORTED_MODELS = [
     "gemini-2.0-flash-lite-001",
     "gemini-2.0-flash-001-FC",
     "gemini-2.0-flash-001",
-    "gemini-2.5-pro-exp-03-25-FC",
+    "gemini-2.5-pro-preview-05-06-FC",
     "gemini-2.5-pro-exp-03-25",
     "gemini-2.0-flash-thinking-exp-01-21",
     "meetkai/functionary-small-v3.1-FC",

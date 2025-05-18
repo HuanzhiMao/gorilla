@@ -598,9 +598,9 @@ api_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "gemini-2.5-pro-exp-03-25-FC": ModelConfig(
-        model_name="gemini-2.5-pro-exp-03-25-FC",
-        display_name="Gemini-2.5-Pro-Exp-03-25 (FC)",
+    "gemini-2.5-pro-preview-05-06-FC": ModelConfig(
+        model_name="gemini-2.5-pro-preview-05-06-FC",
+        display_name="Gemini-2.5-Pro-Preview-05-06 (FC)",
         url="https://deepmind.google/technologies/gemini/pro/",
         org="Google",
         license="Proprietary",
@@ -610,9 +610,9 @@ api_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
     ),
-    "gemini-2.5-pro-exp-03-25": ModelConfig(
-        model_name="gemini-2.5-pro-exp-03-25",
-        display_name="Gemini-2.5-Pro-Exp-03-25 (Prompt)",
+    "gemini-2.5-pro-preview-05-06": ModelConfig(
+        model_name="gemini-2.5-pro-preview-05-06",
+        display_name="Gemini-2.5-Pro-Preview-05-06 (Prompt)",
         url="https://deepmind.google/technologies/gemini/pro/",
         org="Google",
         license="Proprietary",
@@ -1558,7 +1558,8 @@ third_party_inference_model_map = {
     # Novita AI
     "meta-llama/llama-4-maverick-17b-128e-instruct-fp8-novita": ModelConfig(
         model_name="meta-llama/llama-4-maverick-17b-128e-instruct-fp8-novita",
-        display_name="Llama-4-Maverick-17B-128E-Instruct-FP8 (Prompt) (Novita)",
+        # FIXME, REVERT TO PROMPT
+        display_name="Llama-4-Maverick-17B-128E-Instruct-FP8 (FC) (Novita)",
         url="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
         org="Meta",
         license="Meta Llama 4 Community",

@@ -148,7 +148,7 @@ class WebSearchAPI:
                     {
                         "title": result["title"],
                         "href": result["link"],
-                        "body": result["snippet"],
+                        # "body": result["snippet"],
                     }
                 )
 
@@ -205,7 +205,7 @@ class WebSearchAPI:
             response.raise_for_status()
 
             # Flip a coin to simulate a random error
-            if self._random.random() < 0.5:
+            if self._random.random() < 0.95:
                 return {"error": self._fake_requests_get_error_msg(url)}
 
             # Process the response based on the mode
