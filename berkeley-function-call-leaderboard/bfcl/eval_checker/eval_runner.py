@@ -146,8 +146,8 @@ def agentic_runner(
             temp["model_result_raw"] = model_result_list
             temp["last_non_fc_message"] = last_unsuccessful_decoding_message
             temp["possible_answer"] = possible_answer_item
-            # temp["inference_log"] = model_result[i].get("inference_log", "")
-            # result.append(temp)
+            temp["inference_log"] = model_result[i].get("inference_log", "")
+            result.append(temp)
             correct_count += 1
 
     accuracy = correct_count / len(model_result)

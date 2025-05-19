@@ -30,7 +30,7 @@ def get_args():
     parser.add_argument("--model", type=str, default="gorilla-openfunctions-v2", nargs="+")
     # Refer to test_categories for supported categories.
     # "memory_vector", "memory_kv", "memory_rec_sum"
-    parser.add_argument("--test-category", type=str, default=["web_search"], nargs="+")
+    parser.add_argument("--test-category", type=str, default=["memory_vector", "memory_kv", "memory_rec_sum"], nargs="+")
 
     # Parameters for the model that you want to test.
     parser.add_argument("--temperature", type=float, default=0.001)
