@@ -13,6 +13,7 @@
 # -----------------------------------------------------------------------------
 
 SUPPORTED_MODELS = [
+    # API models
     "gorilla-openfunctions-v2",
     "DeepSeek-R1",
     "DeepSeek-V3-FC",
@@ -72,7 +73,9 @@ SUPPORTED_MODELS = [
     "grok-3-beta",
     "grok-3-mini-beta-FC",
     "grok-3-mini-beta",
+    "QwQ-32B",
     "xiaoming-14B",
+    # Local models
     "deepseek-ai/DeepSeek-R1",
     "google/gemma-3-1b-it",
     "google/gemma-3-4b-it",
