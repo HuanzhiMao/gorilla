@@ -192,10 +192,8 @@ def multi_threaded_inference(
                 print(f"❗️❗️ Test case ID: {test_case['id']}, Error: {str(e)}")
                 print("-" * 100)
 
-                return {
-                    "id": test_case["id"],
-                    "result": f"Error during inference: {str(e)}",
-                }
+                result = f"Error during inference: {str(e)}"
+                metadata = {}
 
     # Signal that the current task is complete
     events[test_case["id"]].set()
