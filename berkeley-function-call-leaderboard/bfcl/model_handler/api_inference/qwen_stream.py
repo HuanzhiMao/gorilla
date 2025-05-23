@@ -72,22 +72,34 @@ class QwenStreamAPIHandler(OpenAIHandler):
         tool_call_ids = []
         for item in tool_info:
             tool_call_ids.append(item["id"])
+            
+        if len(tool_info) > 0:
+            
 
-        model_responses_message_for_chat_history = api_response.choices[0].message
-
-        response_data = {
-            "model_responses": tool_info if len(tool_info) > 0 else answer_content,
-            "model_responses_message_for_chat_history": {
+            model_response = [{item["name"]: item["arguments"]} for item in tool_info]
+            model_response_message_for_chat_history = {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": tool_info,
+            }
+        else:
+            model_response = answer_content
+            model_response_message_for_chat_history = {
                 "role": "assistant",
                 "content": answer_content,
-            },
+            }
+        
+        response_data = {
+            "model_responses": model_response,
+            "model_responses_message_for_chat_history": model_response_message_for_chat_history,
             "reasoning_content": reasoning_content,
             "tool_call_ids": tool_call_ids,
             # chunk is the last chunk of the stream response
             "input_token": chunk.usage.prompt_tokens,
             "output_token": chunk.usage.completion_tokens,
         }
-
+        import json
+        print(json.dumps(response_data, indent=4, ensure_ascii=False))
         return response_data
 
 
@@ -141,51 +153,3 @@ class QwenStreamAPIHandler(OpenAIHandler):
         return response_data
 
 
-
-reasoning_content = ""  # 定义完整思考过程
-answer_content = ""     # 定义完整回复
-tool_info = []          # 存储工具调用信息
-is_answering = False   # 判断是否结束思考过程并开始回复
-print("="*20+"思考过程"+"="*20)
-for chunk in completion:
-    if not chunk.choices:
-        # 处理用量统计信息
-        print("\n"+"="*20+"Usage"+"="*20)
-        print(chunk.usage)
-    else:
-        delta = chunk.choices[0].delta
-        # 处理AI的思考过程（链式推理）
-        if hasattr(delta, 'reasoning_content') and delta.reasoning_content is not None:
-            reasoning_content += delta.reasoning_content
-            print(delta.reasoning_content,end="",flush=True)  # 实时输出思考过程
-            
-        # 处理最终回复内容
-        else:
-            if not is_answering:  # 首次进入回复阶段时打印标题
-                is_answering = True
-                print("\n"+"="*20+"回复内容"+"="*20)
-            if delta.content is not None:
-                answer_content += delta.content
-                print(delta.content,end="",flush=True)  # 流式输出回复内容
-            
-            # 处理工具调用信息（支持并行工具调用）
-            if delta.tool_calls is not None:
-                for tool_call in delta.tool_calls:
-                    index = tool_call.index  # 工具调用索引，用于并行调用
-                    
-                    # 动态扩展工具信息存储列表
-                    while len(tool_info) <= index:
-                        tool_info.append({})
-                    
-                    # 收集工具调用ID（用于后续函数调用）
-                    if tool_call.id:
-                        tool_info[index]['id'] = tool_info[index].get('id', '') + tool_call.id
-                    
-                    # 收集函数名称（用于后续路由到具体函数）
-                    if tool_call.function and tool_call.function.name:
-                        tool_info[index]['name'] = tool_info[index].get('name', '') + tool_call.function.name
-                    
-                    # 收集函数参数（JSON字符串格式，需要后续解析）
-                    if tool_call.function and tool_call.function.arguments:
-                        tool_info[index]['arguments'] = tool_info[index].get('arguments', '') + tool_call.function.arguments
-            
