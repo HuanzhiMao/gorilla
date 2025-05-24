@@ -1582,7 +1582,8 @@ third_party_inference_model_map = {
     # Novita AI
     "meta-llama/llama-4-maverick-17b-128e-instruct-fp8-novita": ModelConfig(
         model_name="meta-llama/llama-4-maverick-17b-128e-instruct-fp8-novita",
-        display_name="Llama-4-Maverick-17B-128E-Instruct-FP8 (Prompt) (Novita)",
+        # FIXME, REVERT TO PROMPT
+        display_name="Llama-4-Maverick-17B-128E-Instruct-FP8 (FC) (Novita)",
         url="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
         org="Meta",
         license="Meta Llama 4 Community",

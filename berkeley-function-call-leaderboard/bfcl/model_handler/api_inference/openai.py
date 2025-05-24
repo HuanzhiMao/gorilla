@@ -56,34 +56,19 @@ class OpenAIHandler(BaseHandler):
         tools = inference_data["tools"]
         inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
 
+        kwargs = {
+            "messages": message,
+            "model": self.model_name.replace("-FC", ""),
+        }
+
         if len(tools) > 0:
+            kwargs["tools"] = tools
+        if not ("o1" in self.model_name or "o3-mini" in self.model_name):
             # Reasoning models don't support temperature parameter
             # Beta limitation: https://platform.openai.com/docs/guides/reasoning/beta-limitations
-            if "o1" in self.model_name or "o3-mini" in self.model_name:
-                return self.generate_with_backoff(
-                    messages=message,
-                    model=self.model_name.replace("-FC", ""),
-                    tools=tools,
-                )
-            else:
-                return self.generate_with_backoff(
-                    messages=message,
-                    model=self.model_name.replace("-FC", ""),
-                    temperature=self.temperature,
-                    tools=tools,
-                )
-        else:
-            if "o1" in self.model_name or "o3-mini" in self.model_name:
-                return self.generate_with_backoff(
-                    messages=message,
-                    model=self.model_name.replace("-FC", ""),
-                )
-            else:
-                return self.generate_with_backoff(
-                    messages=message,
-                    model=self.model_name.replace("-FC", ""),
-                    temperature=self.temperature,
-                )
+            kwargs["temperature"] = self.temperature
+
+        return self.generate_with_backoff(**kwargs)
 
     def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
         inference_data["message"] = []
@@ -93,7 +78,6 @@ class OpenAIHandler(BaseHandler):
         functions: list = test_entry["function"]
         test_category: str = test_entry["id"].rsplit("_", 1)[0]
 
-        functions = func_doc_language_specific_pre_processing(functions, test_category)
         tools = convert_to_tool(functions, GORILLA_TO_OPENAPI, self.model_style)
 
         inference_data["tools"] = tools
@@ -166,26 +150,23 @@ class OpenAIHandler(BaseHandler):
 
     def _query_prompting(self, inference_data: dict):
         inference_data["inference_input_log"] = {"message": repr(inference_data["message"])}
+        
+        kwargs = {
+            "messages": inference_data["message"],
+            "model": self.model_name,
+        }
 
-        # OpenAI reasoning models don't support temperature parameter
-        # Beta limitation: https://platform.openai.com/docs/guides/reasoning/beta-limitations
-        if "o1" in self.model_name or "o3-mini" in self.model_name:
-            return self.generate_with_backoff(
-                messages=inference_data["message"],
-                model=self.model_name,
-            )
-        else:
-            return self.generate_with_backoff(
-                messages=inference_data["message"],
-                model=self.model_name,
-                temperature=self.temperature,
-            )
+        if not ("o1" in self.model_name or "o3-mini" in self.model_name):
+            # Reasoning models don't support temperature parameter
+            # Beta limitation: https://platform.openai.com/docs/guides/reasoning/beta-limitations
+            kwargs["temperature"] = self.temperature
+
+        return self.generate_with_backoff(**kwargs)
+
 
     def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
         functions: list = test_entry["function"]
         test_category: str = test_entry["id"].rsplit("_", 1)[0]
-
-        functions = func_doc_language_specific_pre_processing(functions, test_category)
 
         test_entry["question"][0] = system_prompt_pre_processing_chat_model(
             test_entry["question"][0], functions, test_category
