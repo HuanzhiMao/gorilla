@@ -3,6 +3,7 @@ import json
 from bfcl.model_handler.local_inference.base_oss_handler import OSSHandler
 from bfcl.model_handler.utils import func_doc_language_specific_pre_processing
 from overrides import override
+from typing import List
 
 
 class LlamaHandler_3_1(OSSHandler):
@@ -230,7 +231,7 @@ class LlamaHandler_3_1(OSSHandler):
         return execution_list
 
     @override
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+    def _pre_query_processing_prompting(self, test_entry: dict, prompt_variation: List[str]) -> dict:
         functions: list = test_entry["function"]
         test_category: str = test_entry["id"].rsplit("_", 1)[0]
 

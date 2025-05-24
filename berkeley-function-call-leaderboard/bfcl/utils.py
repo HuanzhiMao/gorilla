@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import itertools
 from pathlib import Path
 from typing import Union
 
@@ -9,7 +10,8 @@ from bfcl.constants.category_mapping import TEST_COLLECTION_MAPPING, TEST_FILE_M
 
 def extract_test_category(input_string: Union[str, Path]) -> str:
     input_string = str(input_string)
-    pattern = rf".*{VERSION_PREFIX}_(\w+?)(?:_unused)?(?:_score|_result)?\.json"
+    # pattern = rf".*{VERSION_PREFIX}_(\w+?)(?:_unused)?(?:_score|_result)?\.json"
+    pattern = rf".*{VERSION_PREFIX}_(\w+?)(?=_unused|_score|_result|\.json|$)"
     match = re.search(pattern, input_string)
 
     # Check if there's a match and extract the captured group
@@ -189,6 +191,8 @@ def parse_test_category_argument(test_category_args):
     test_filename_total = set()
 
     for test_category in test_category_args:
+        if test_category == "prompt-variation":
+            continue
         if test_category in TEST_COLLECTION_MAPPING:
             for test_name in TEST_COLLECTION_MAPPING[test_category]:
                 test_name_total.add(test_name)
@@ -199,5 +203,28 @@ def parse_test_category_argument(test_category_args):
         else:
             # Invalid test category name
             raise Exception(f"Invalid test category name provided: {test_category}")
-
+    
+    if "prompt-variation" in test_category_args:
+        test_name_total.add("prompt-variation")
     return sorted(list(test_filename_total)), sorted(list(test_name_total))
+
+def get_all_prompt_variation_configs():
+    # prompt_format = ["prompt_format=plaintext", "prompt_format=markdown"]
+    # prompt_style = ["prompt_style=classic", "prompt_style=experimental"]
+    return_format = ["return_format=python", "return_format=json", "return_format=verbose_xml", "return_format=concise_xml"]
+    has_tool_call_tag = ["has_tool_call_tag=True", "has_tool_call_tag=False"]
+    # has_available_tools_tag = ["has_available_tools_tag=True", "has_available_tools_tag=False"]
+    function_doc_format = ["function_doc_format=python", "function_doc_format=xml", "function_doc_format=json"]
+    
+    # 4 × 2 × 3 = 24 combinations
+    base_configurations = list(itertools.product(return_format, has_tool_call_tag, function_doc_format))
+    # Add one config with markdown format
+    markdown_config = ["return_format=python", "has_tool_call_tag=True", "function_doc_format=json", "prompt_format=markdown"]
+    # Add one config with experimental prompt style
+    experimental_config = ["return_format=python", "has_tool_call_tag=True", "function_doc_format=json", "prompt_style=experimental"]
+
+    all_config_list = [list(config) for config in base_configurations]
+    all_config_list.append(markdown_config)
+    all_config_list.append(experimental_config)
+
+    return all_config_list

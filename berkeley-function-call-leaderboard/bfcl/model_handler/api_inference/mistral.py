@@ -14,6 +14,7 @@ from bfcl.model_handler.utils import (
     system_prompt_pre_processing_chat_model,
 )
 from mistralai import Mistral
+from typing import List
 
 
 class MistralHandler(BaseHandler):
@@ -34,6 +35,7 @@ class MistralHandler(BaseHandler):
         else:
             func = result
             func = func.replace("\\_", "_")
+            func = func.strip("`\n ")
             if not func.startswith("["):
                 func = "[" + func
             if not func.endswith("]"):
@@ -173,14 +175,14 @@ class MistralHandler(BaseHandler):
 
         return api_response, end_time - start_time
 
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
+    def _pre_query_processing_prompting(self, test_entry: dict, prompt_variation: List[str]) -> dict:
         functions: list = test_entry["function"]
         test_category: str = test_entry["id"].rsplit("_", 1)[0]
 
         functions = func_doc_language_specific_pre_processing(functions, test_category)
 
         test_entry["question"][0] = system_prompt_pre_processing_chat_model(
-            test_entry["question"][0], functions, test_category
+            test_entry["question"][0], functions, test_category, prompt_variation
         )
 
         return {"message": []}

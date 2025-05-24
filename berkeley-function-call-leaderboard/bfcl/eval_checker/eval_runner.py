@@ -21,9 +21,11 @@ from bfcl.eval_checker.multi_turn_eval.multi_turn_checker import (
 )
 from bfcl.eval_checker.multi_turn_eval.multi_turn_utils import is_empty_execute_response
 from bfcl.constants.model_config import MODEL_CONFIG_MAPPING
+from bfcl.model_handler.utils import get_prompt_variation_filename_suffix, parse_prompt_variation_filename
 from bfcl.utils import *
 from dotenv import load_dotenv
 from tqdm import tqdm
+import copy
 
 
 def get_handler(model_name):
@@ -249,6 +251,7 @@ def ast_file_runner(
     test_category,
     model_name,
     score_dir,
+    prompt_args = {},
 ):
     assert (
         len(model_result) == len(prompt) == len(possible_answer)
@@ -335,8 +338,11 @@ def ast_file_runner(
             "total_count": len(model_result),
         },
     )
-    output_file_name = f"{VERSION_PREFIX}_{test_category}_score.json"
-    output_file_dir = score_dir / model_name
+    output_file_name = f"{VERSION_PREFIX}_{test_category}_score{get_prompt_variation_filename_suffix(prompt_args)}.json"
+    if prompt_args == {}:
+        output_file_dir = score_dir / model_name
+    else:
+        output_file_dir = score_dir / model_name / "prompt_variation"
     write_list_of_dicts_to_file(output_file_name, result, output_file_dir)
 
     return accuracy, len(model_result)
@@ -369,6 +375,26 @@ def runner(model_names, test_categories, result_dir, score_dir):
         model_name_escaped = model_name.replace("_", "/")
 
         print(f"🦍 Model: {model_name}")
+
+        # Find and process all JSON files in the prompt_variation subdirectory (if in test-categories)
+        if "prompt-variation" in test_categories:
+            for model_result_json in subdir.glob("prompt_variation/*.json"):
+                handler = get_handler(model_name_escaped)
+
+                model_result = load_file(model_result_json, sort_by_id=True)
+
+                org_test_category, prompt_args = parse_prompt_variation_filename(model_result_json.name)
+
+                state = evaluate_task(
+                    org_test_category,
+                    result_dir,
+                    score_dir,
+                    model_result,
+                    model_name,
+                    handler,
+                    state,
+                    prompt_args,
+                )
 
         # Find and process all JSON files in the subdirectory
         for model_result_json in subdir.glob("*.json"):
@@ -412,6 +438,7 @@ def evaluate_task(
     model_name,
     handler,
     state,
+    prompt_args = {},
 ):
 
     language = "Python"
@@ -419,8 +446,18 @@ def evaluate_task(
         language = "Java"
     if is_js(test_category):
         language = "JavaScript"
-
-    print(f"🔍 Running test: {test_category}")
+    if "return_format" in prompt_args:
+        language = prompt_args["return_format"]
+ 
+    prompt_var_string = ""
+    for prompt_arg in prompt_args:
+        prompt_var_string += f"{prompt_arg}={prompt_args[prompt_arg]},"
+    if len(prompt_var_string) > 0:
+        prompt_var_string = prompt_var_string[:-1] if prompt_var_string[-1] == ',' else prompt_var_string
+    if prompt_args == {}:
+        print(f"🔍 Running test: {test_category}")
+    else:
+        print(f"🔍 Running test: {test_category} for prompt variation {prompt_var_string}")
 
     record_cost_latency(state["leaderboard_table"], model_name, model_result)
 
@@ -437,6 +474,26 @@ def evaluate_task(
         # Find the corresponding possible answer file
         possible_answer_file = find_file_with_suffix(POSSIBLE_ANSWER_PATH, test_category)
         possible_answer = load_file(possible_answer_file, sort_by_id=True)
+
+        # print(model_result[0])
+        # print(prompt[0])
+        # print(possible_answer[0])
+
+        cleaned_prompt = []
+        cleaned_possible_answer = []
+
+        if prompt_args != {}:
+            test_ids = []
+            for model_output in model_result:
+                test_ids.append(model_output["id"])
+            for prompt_dp in prompt:
+                if prompt_dp["id"] in test_ids:
+                    cleaned_prompt.append(prompt_dp)
+            for possible_answer_dp in possible_answer:
+                if possible_answer_dp["id"] in test_ids:
+                    cleaned_possible_answer.append(possible_answer_dp)
+            prompt = copy.deepcopy(cleaned_prompt)
+            possible_answer = copy.deepcopy(cleaned_possible_answer)
 
         if is_multi_turn(test_category):
             accuracy, total_count = multi_turn_runner(
@@ -460,10 +517,18 @@ def evaluate_task(
                 test_category,
                 model_name,
                 score_dir,
+                prompt_args,
             )
 
-    record_result(state, model_name, test_category, accuracy, total_count)
-    print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy}")
+    if prompt_args == {}:
+        record_result(state, model_name, test_category, accuracy, total_count)
+    else:
+        record_test_category = test_category + "_" + prompt_var_string
+        record_result(state, model_name, record_test_category, accuracy, total_count)
+    if prompt_args == {}:
+        print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy}")
+    else:
+        print(f"✅ Test completed: {test_category}, prompt variation: {prompt_var_string}. 🎯 Accuracy: {accuracy}")
 
     return state
 

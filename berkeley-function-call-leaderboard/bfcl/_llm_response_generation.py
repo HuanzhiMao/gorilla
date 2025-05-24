@@ -14,11 +14,13 @@ from bfcl.constants.eval_config import (
     PROMPT_PATH,
     RESULT_PATH,
     TEST_IDS_TO_GENERATE_PATH,
+    PROMPT_VARIATION_TEST_IDS_PATH,
 )
 from bfcl.eval_checker.eval_runner_helper import load_file
 from bfcl.constants.model_config import MODEL_CONFIG_MAPPING
 from bfcl.model_handler.model_style import ModelStyle
-from bfcl.utils import is_multi_turn, parse_test_category_argument, sort_key
+from bfcl.model_handler.utils import get_prompt_variation_filename_suffix
+from bfcl.utils import is_multi_turn, parse_test_category_argument, sort_key, get_all_prompt_variation_configs
 from tqdm import tqdm
 
 RETRY_LIMIT = 3
@@ -86,7 +88,22 @@ def get_involved_test_entries(test_category_args, run_ids):
             )
             all_test_categories.append(category)
             all_test_file_paths.append(test_file_path)
-
+    elif "prompt-variation" in test_category_args:
+        with open(PROMPT_VARIATION_TEST_IDS_PATH) as f:
+            test_ids_to_generate = json.load(f)
+        for category, test_ids in test_ids_to_generate.items():
+            if len(test_ids) == 0:
+                continue
+            test_file_path = TEST_FILE_MAPPING[category]
+            all_test_entries_involved.extend(
+                [
+                    entry
+                    for entry in load_file(PROMPT_PATH / test_file_path)
+                    if entry["id"] in test_ids
+                ]
+            )
+            all_test_categories.append(category)
+            all_test_file_paths.append(test_file_path)
     else:
         all_test_file_paths, all_test_categories = parse_test_category_argument(test_category_args)
         # Make a copy here since we are removing list elemenets inside the for loop
@@ -110,8 +127,11 @@ def collect_test_cases(
 
     existing_result = []
     for test_category, file_to_open in zip(all_test_categories, all_test_file_paths):
-
-        result_file_path = model_result_dir / file_to_open.replace(".json", "_result.json")
+        
+        prompt_variation_suffix = get_prompt_variation_filename_suffix(args.prompt_variation)
+        result_file_path = model_result_dir / file_to_open
+        if (args.prompt_variation is not None and args.prompt_variation != []):
+            result_file_path = model_result_dir / "prompt_variation" / f"BFCL_v3_{test_category}_result{prompt_variation_suffix}.json"
         if result_file_path.exists():
             # Not allowing overwrite, we will load the existing results
             if not args.allow_overwrite:
@@ -167,7 +187,7 @@ def process_multi_turn_test_case(test_cases):
     return test_cases
 
 
-def multi_threaded_inference(handler, test_case, include_input_log, exclude_state_log):
+def multi_threaded_inference(handler, test_case, include_input_log, exclude_state_log, prompt_variation):
 
     assert type(test_case["function"]) is list
 
@@ -176,7 +196,7 @@ def multi_threaded_inference(handler, test_case, include_input_log, exclude_stat
     while True:
         try:
             result, metadata = handler.inference(
-                deepcopy(test_case), include_input_log, exclude_state_log
+                deepcopy(test_case), include_input_log, exclude_state_log, prompt_variation
             )
             break  # Success, exit the loop
         except Exception as e:
@@ -235,6 +255,7 @@ def generate_results(args, model_name, test_cases_total):
             exclude_state_log=args.exclude_state_log,
             result_dir=args.result_dir,
             update_mode=update_mode,
+            prompt_variation=args.prompt_variation,
         )
 
     else:
@@ -251,6 +272,7 @@ def generate_results(args, model_name, test_cases_total):
                         test_case,
                         args.include_input_log,
                         args.exclude_state_log,
+                        args.prompt_variation,
                     )
                     futures.append(future)
 
@@ -258,7 +280,7 @@ def generate_results(args, model_name, test_cases_total):
                     # This will wait for the task to complete, so that we are always writing in order
                     result = future.result()
                     handler.write(
-                        result, result_dir=args.result_dir, update_mode=args.run_ids
+                        result, result_dir=args.result_dir, update_mode=args.run_ids, prompt_variation=args.prompt_variation
                     )  # Only when we run specific test ids, we will need update_mode=True to keep entries in the same order
                     pbar.update()
 
@@ -286,6 +308,8 @@ def main(args):
     print(f"Generating results for {args.model}")
     if args.run_ids:
         print("Running specific test cases. Ignoring `--test-category` argument.")
+    elif "prompt-variation" in all_test_categories:
+        print("Running specific test cases for prompt variation. Ignoring other test categories.")
     else:
         print(f"Running full test cases for categories: {all_test_categories}.")
 
@@ -295,17 +319,37 @@ def main(args):
         args.result_dir = RESULT_PATH
 
     for model_name in args.model:
-        test_cases_total = collect_test_cases(
-            args,
-            model_name,
-            all_test_categories,
-            all_test_file_paths,
-            all_test_entries_involved,
-        )
+        if "prompt-variation" in args.test_category:
+            all_prompt_variation_config = get_all_prompt_variation_configs()
+            for prompt_variation_config in all_prompt_variation_config:
+                args.prompt_variation = prompt_variation_config
+                print(f"Testing prompt variation entries for variation config: {prompt_variation_config}")
+                test_cases_total = collect_test_cases(
+                    args,
+                    model_name,
+                    all_test_categories,
+                    all_test_file_paths,
+                    all_test_entries_involved,
+                )
 
-        if len(test_cases_total) == 0:
-            print(
-                f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
-            )
+                if len(test_cases_total) == 0:
+                    print(
+                        f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
+                    )
+                else:
+                    generate_results(args, model_name, test_cases_total)
         else:
-            generate_results(args, model_name, test_cases_total)
+            test_cases_total = collect_test_cases(
+                args,
+                model_name,
+                all_test_categories,
+                all_test_file_paths,
+                all_test_entries_involved,
+            )
+
+            if len(test_cases_total) == 0:
+                print(
+                    f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
+                )
+            else:
+                generate_results(args, model_name, test_cases_total)
