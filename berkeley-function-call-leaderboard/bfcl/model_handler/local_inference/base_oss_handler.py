@@ -4,6 +4,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Optional, List
+from copy import deepcopy
 
 import requests
 from bfcl.constants.eval_config import RESULT_PATH, VLLM_PORT
@@ -270,6 +271,8 @@ class OSSHandler(BaseHandler, EnforceOverrides):
         This is a wrapper function to make sure that, if an error occurs during inference, the process does not stop.
         """
         assert type(test_case["function"]) is list
+
+        test_case = deepcopy(test_case)
 
         try:
             if "multi_turn" in test_case["id"]:
