@@ -9,6 +9,7 @@
     - [Basic Installation](#basic-installation)
     - [Extra Dependencies for Self-Hosted Models](#extra-dependencies-for-self-hosted-models)
     - [Setting up Environment Variables](#setting-up-environment-variables)
+    - [Initializing a Project](#initializing-a-project)
   - [Running Evaluations](#running-evaluations)
     - [Generating LLM Responses](#generating-llm-responses)
       - [Selecting Models and Test Categories](#selecting-models-and-test-categories)
@@ -51,14 +52,8 @@ We introduce the Berkeley Function Calling Leaderboard (BFCL), the **first compr
 conda create -n BFCL python=3.10
 conda activate BFCL
 
-# Clone the Gorilla repository
-git clone https://github.com/ShishirPatil/gorilla.git
-
-# Change directory to the `berkeley-function-call-leaderboard`
-cd gorilla/berkeley-function-call-leaderboard
-
-# Install the package in editable mode
-pip install -e .
+# Install from PyPI
+pip install bfcl-eval
 ```
 
 ### Extra Dependencies for Self-Hosted Models
@@ -70,19 +65,19 @@ If you are using an older GPU (T4/V100), you should use `vllm` instead as it sup
 
 **Using `vllm`:**
 ```bash
-pip install -e .[oss_eval_vllm]
+pip install bfcl-eval[oss_eval_vllm]
 ```
 
 **Using `sglang`:**
 ```bash
-pip install -e .[oss_eval_sglang]
+pip install bfcl-eval[oss_eval_sglang]
 ```
 
 *Optional:* If using `sglang`, we recommend installing `flashinfer` for speedups. Find instructions [here](https://docs.flashinfer.ai/installation.html).
 
 ### Setting up Environment Variables
 
-We store environment variables in a `.env` file. We have provided a example `.env.example` file in the `gorilla/berkeley-function-call-leaderboard` directory. You should make a copy of this file, and fill in the necessary values.
+We store environment variables in a `.env` file. A sample `.env.example` file is distributed with the package. Copy it to your working directory and fill in the necessary values.
 
 ```bash
 cp .env.example .env
@@ -90,6 +85,23 @@ cp .env.example .env
 ```
 
 If you are running any proprietary models, make sure the model API keys are included in your `.env` file. Models like GPT, Claude, Mistral, Gemini, Nova, will require them.
+
+The library looks for the `.env` file in the current directory by default. You can override this by setting `BFCL_DOTENV_PATH` or `BFCL_PROJECT_ROOT`.
+
+### Initializing a Project
+
+Use the `bfcl init` command to set up a working directory. This command creates
+`result/` and `score/` folders, copies `.env.example` to the desired
+location, and appends the environment variables to your shell profile so you can
+run BFCL from anywhere.
+
+```bash
+bfcl init --project-root /path/to/dir --env-path /path/to/dir/.env
+```
+
+`bfcl init` will update your `~/.bashrc` or `~/.zshrc` with the required
+`BFCL_PROJECT_ROOT` and `BFCL_DOTENV_PATH` exports. Restart your shell or run the
+appropriate `source` command to activate them.
 
 ---
 
@@ -110,8 +122,8 @@ bfcl generate --model claude-3-5-sonnet-20241022-FC,gpt-4o-2024-11-20-FC --test-
 
 #### Output and Logging
 
-- All generated model responses are stored in `./result/` folder, organized by model and test category: `result/MODEL_NAME/BFCL_v3_TEST_CATEGORY_result.json`
-- To use a custom directory for the result file, specify using `--result-dir`; path should be relative to the `berkeley-function-call-leaderboard` root folder,
+- By default, generated model responses are stored in a `result/` folder under the current working directory: `result/MODEL_NAME/BFCL_v3_TEST_CATEGORY_result.json`.
+- You can customise the location by setting the `BFCL_PROJECT_ROOT` environment variable or passing the `--result-dir` option.
 
 An inference log is included with the model responses to help analyze/debug the model's performance, and to better understand the model behavior. For more verbose logging, use the `--include-input-log` flag. Refer to [LOG_GUIDE.md](./LOG_GUIDE.md) for details on how to interpret the inference logs.
 
@@ -160,8 +172,7 @@ VLLM_PORT=1053
 For those who prefer using script execution instead of the CLI, you can run the following command:
 
 ```bash
-# Make sure you are inside the `berkeley-function-call-leaderboard` directory
-python openfunctions_evaluation.py --model MODEL_NAME --test-category TEST_CATEGORY
+python -m bfcl.openfunctions_evaluation --model MODEL_NAME --test-category TEST_CATEGORY
 ```
 
 When specifying multiple models or test categories, separate them with **spaces**, not commas. All other flags mentioned earlier are compatible with the script execution method as well.
@@ -178,16 +189,16 @@ bfcl evaluate --model MODEL_NAME --test-category TEST_CATEGORY
 
 The `MODEL_NAME` and `TEST_CATEGORY` options are the same as those used in the [Generating LLM Responses](#generating-llm-responses) section. For details, refer to [SUPPORTED_MODELS.md](./SUPPORTED_MODELS.md) and [TEST_CATEGORIES.md](./TEST_CATEGORIES.md).
 
-If in the previous step you stored the model responses in a custom directory, you should specify it using the `--result-dir` flag; path should be relative to the `berkeley-function-call-leaderboard` root folder.
+If in the previous step you stored the model responses in a custom directory, specify it using the `--result-dir` flag or set `BFCL_PROJECT_ROOT` so the evaluator can locate the files.
 
 > Note: For unevaluated test categories, they will be marked as `N/A` in the evaluation result csv files.
 > For summary columns (e.g., `Overall Acc`, `Non_Live Overall Acc`, `Live Overall Acc`, and `Multi Turn Overall Acc`), the score reported will treat all unevaluated categories as 0 during calculation.
 
 #### Output Structure
 
-Evaluation scores are stored in `./score/`, mirroring the structure of `./result/`: `score/MODEL_NAME/BFCL_v3_TEST_CATEGORY_score.json`
+Evaluation scores are stored in a `score/` directory under the current working directory, mirroring the structure of `result/`: `score/MODEL_NAME/BFCL_v3_TEST_CATEGORY_score.json`.
 
-- To use a custom directory for the score file, specify using `--score-dir`; path should be relative to the `berkeley-function-call-leaderboard` root folder.
+- To use a custom directory for the score file, set the `BFCL_PROJECT_ROOT` environment variable or specify `--score-dir`.
 
 Additionally, four CSV files are generated in `./score/`:
 
@@ -211,9 +222,7 @@ Mkae sure you also set `WANDB_BFCL_PROJECT=ENTITY:PROJECT` in `.env`.
 For those who prefer using script execution instead of the CLI, you can run the following command:
 
 ```bash
-# Make sure you are inside the `berkeley-function-call-leaderboard/bfcl/eval_checker` directory
-cd bfcl/eval_checker
-python eval_runner.py --model MODEL_NAME --test-category TEST_CATEGORY
+python -m bfcl.eval_checker.eval_runner --model MODEL_NAME --test-category TEST_CATEGORY
 ```
 
 When specifying multiple models or test categories, separate them with **spaces**, not commas. All other flags mentioned earlier are compatible with the script execution method as well.

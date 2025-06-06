@@ -1,8 +1,11 @@
 import csv
-from datetime import datetime
 import os
+import shutil
+from datetime import datetime
+from importlib import resources
 from types import SimpleNamespace
 from typing import List, Optional
+from pathlib import Path
 
 import typer
 from bfcl._llm_response_generation import main as generation_main
@@ -22,6 +25,7 @@ from tabulate import tabulate
 class ExecutionOrderGroup(typer.core.TyperGroup):
     def list_commands(self, ctx):
         return [
+            "init",
             "models",
             "test-categories",
             "generate",
@@ -54,6 +58,55 @@ def handle_multiple_input(input_str):
         return []
 
     return [item.strip() for item in ",".join(input_str).split(",") if item.strip()]
+
+
+@cli.command()
+def init(
+    project_root: str = typer.Option(
+        ".",
+        "--project-root",
+        help="Directory to store result and score folders.",
+    ),
+    env_path: str = typer.Option(
+        None,
+        "--env-path",
+        help="Path to the .env file. Defaults to PROJECT_ROOT/.env",
+    ),
+):
+    """Initialise a BFCL project directory."""
+
+    project_dir = Path(project_root).resolve()
+    env_file = Path(env_path) if env_path else project_dir / ".env"
+
+    # Create result/ and score/ directories
+    (project_dir / "result").mkdir(parents=True, exist_ok=True)
+    (project_dir / "score").mkdir(parents=True, exist_ok=True)
+
+    env_example = resources.files("bfcl").joinpath(".env.example")
+    if not env_file.exists():
+        shutil.copy(env_example, env_file)
+        msg = f"Copied {env_example.name} to {env_file}"
+    else:
+        msg = f"{env_file} already exists"
+
+    # Try to append env vars to the user's shell profile
+    shell = os.environ.get("SHELL", "")
+    profile = Path.home() / (".zshrc" if shell.endswith("zsh") else ".bashrc")
+    try:
+        with open(profile, "a") as f:
+            f.write(
+                f"\n# Added by bfcl init\nexport BFCL_PROJECT_ROOT=\"{project_dir}\"\nexport BFCL_DOTENV_PATH=\"{env_file}\"\n"
+            )
+        env_msg = f"Environment variables appended to {profile}. Restart your shell or run 'source {profile}' to apply."
+    except Exception as e:  # pragma: no cover - best effort only
+        env_msg = (
+            f"Failed to update shell profile {profile}: {e}.\n"
+            "Please set BFCL_PROJECT_ROOT and BFCL_DOTENV_PATH manually."
+        )
+
+    print(
+        f"Initialised BFCL project at {project_dir}\n{msg}\n" + env_msg
+    )
 
 
 @cli.command()
