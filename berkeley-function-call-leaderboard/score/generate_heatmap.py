@@ -19,13 +19,13 @@ df.columns = df.columns.str.replace("Prompt Variation \(PV\) Overall Acc", "Over
 df = df.drop(columns=["Rank", "Overall_Acc"]).set_index("Model")
 
 # Clean up column names for readability
-short_columns = [
-    f"{fmt[:2]}+{'tool' if 'has_tool_call_tag_True' in col else 'no_tool'}+{out.split('_')[-1]}"
-    for col in df.columns
-    for fmt in ["py", "xml", "json"] if fmt in col
-    for out in ["python", "json", "verbose", "concise"] if out in col
-    if 'prompt_format_plaintext' in col
-]
+# short_columns = [
+#     f"{fmt[:2]}+{'tool' if 'has_tool_call_tag_True' in col else 'no_tool'}+{out.split('_')[-1]}"
+#     for col in df.columns
+#     for fmt in ["py", "xml", "json"] if fmt in col
+#     for out in ["python", "json", "verbose", "concise"] if out in col
+#     if 'prompt_format_plaintext' in col
+# ]
 
 short_columns = []
 for i in range(0, len(df.columns)):
@@ -58,7 +58,15 @@ for i in range(0, len(df.columns)):
         tool_tag = "no_tool"
     else:
         print(f"tool tag invalid")
-    short_columns.append(f"{{{func_doc_format}}}->{{{return_format}}},{tool_tag}")
+    
+    short_col_name = f"{{{func_doc_format}}}->{{{return_format}}},{tool_tag}"
+    
+    if "prompt_format_markdown" in df.columns[i]:
+        short_col_name += ",md"
+    
+    if "prompt_style_experimental" in df.columns[i]:
+        short_col_name += ",exp"
+    short_columns.append(short_col_name)
 
 df.columns = short_columns[:len(df.columns)]
 
