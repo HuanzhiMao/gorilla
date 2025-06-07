@@ -115,13 +115,16 @@ class OpenAIHandler(BaseHandler):
 
         model_responses_message_for_chat_history = api_response.choices[0].message
 
-        return {
+        x = {
             "model_responses": model_responses,
             "model_responses_message_for_chat_history": model_responses_message_for_chat_history,
             "tool_call_ids": tool_call_ids,
             "input_token": api_response.usage.prompt_tokens,
             "output_token": api_response.usage.completion_tokens,
         }
+        import json
+        print(x)
+        return x
 
     def add_first_turn_message_FC(
         self, inference_data: dict, first_turn_message: list[dict]

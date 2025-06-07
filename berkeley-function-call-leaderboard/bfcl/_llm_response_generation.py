@@ -180,6 +180,7 @@ def multi_threaded_inference(handler, test_case, include_input_log, exclude_stat
             )
             break  # Success, exit the loop
         except Exception as e:
+            raise e
             # TODO: It might be better to handle the exception in the handler itself rather than a universal catch block here, as each handler use different ways to call the endpoint.
             # OpenAI has openai.RateLimitError while Anthropic has anthropic.RateLimitError. It would be more robust in the long run.
             if retry_count < RETRY_LIMIT and (
@@ -308,4 +309,4 @@ def main(args):
                 f"All selected test cases have been previously generated for {model_name}. No new test cases to generate."
             )
         else:
-            generate_results(args, model_name, test_cases_total)
+            generate_results(args, model_name, test_cases_total[:1])
