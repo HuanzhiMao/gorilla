@@ -7,6 +7,7 @@
   - [Introduction](#introduction)
   - [Installation \& Setup](#installation--setup)
     - [Basic Installation](#basic-installation)
+    - [Installing from PyPI](#installing-from-pypi)
     - [Extra Dependencies for Self-Hosted Models](#extra-dependencies-for-self-hosted-models)
     - [Setting up Environment Variables](#setting-up-environment-variables)
     - [Initializing a Project](#initializing-a-project)
@@ -52,7 +53,23 @@ We introduce the Berkeley Function Calling Leaderboard (BFCL), the **first compr
 conda create -n BFCL python=3.10
 conda activate BFCL
 
-# Install from PyPI
+# Clone the Gorilla repository
+git clone https://github.com/ShishirPatil/gorilla.git
+
+# Change directory to the `berkeley-function-call-leaderboard`
+cd gorilla/berkeley-function-call-leaderboard
+
+# Install the package in editable mode
+pip install -e .
+```
+
+### Installing from PyPI
+
+If you simply want to run the evaluation without making code changes, you can
+install the prebuilt wheel instead. **Be careful not to confuse our package with
+the unrelated `bfcl` project on PyPI—make sure you install `bfcl-eval`:**
+
+```bash
 pip install bfcl-eval
 ```
 
