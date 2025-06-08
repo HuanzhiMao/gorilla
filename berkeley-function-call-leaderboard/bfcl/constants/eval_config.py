@@ -6,10 +6,11 @@ VLLM_PORT = 1053
 # Directory of the installed package
 PACKAGE_ROOT = Path(__file__).resolve().parents[2]
 
-# By default, results and other generated files are stored in the current
-# working directory. You can override this by setting the ``BFCL_PROJECT_ROOT``
+# By default, results and other generated files are stored alongside the
+# package itself so that editable installs behave the same as a regular
+# installation. You can override this by setting the ``BFCL_PROJECT_ROOT``
 # environment variable.
-PROJECT_ROOT = Path(os.getenv("BFCL_PROJECT_ROOT", Path.cwd()))
+PROJECT_ROOT = Path(os.getenv("BFCL_PROJECT_ROOT", PACKAGE_ROOT))
 
 # NOTE: These paths are relative to the PROJECT_ROOT directory.
 RESULT_PATH = PROJECT_ROOT / "result"

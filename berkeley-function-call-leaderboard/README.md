@@ -86,14 +86,14 @@ cp .env.example .env
 
 If you are running any proprietary models, make sure the model API keys are included in your `.env` file. Models like GPT, Claude, Mistral, Gemini, Nova, will require them.
 
-The library looks for the `.env` file in the current directory by default. You can override this by setting `BFCL_DOTENV_PATH` or `BFCL_PROJECT_ROOT`.
+The library looks for the `.env` file in the project root, which defaults to the installed package directory. You can override this by setting `BFCL_DOTENV_PATH` or `BFCL_PROJECT_ROOT`.
 
 ### Initializing a Project
 
-Use the `bfcl init` command to set up a working directory. This command creates
-`result/` and `score/` folders, copies `.env.example` to the desired
-location, and appends the environment variables to your shell profile so you can
-run BFCL from anywhere.
+Use the `bfcl init` command to set up a custom working directory. This command
+is optional—it creates `result/` and `score/` folders, copies `.env.example` to
+the desired location, and appends the environment variables to your shell
+profile so you can run BFCL from anywhere.
 
 ```bash
 bfcl init --project-root /path/to/dir --env-path /path/to/dir/.env
@@ -122,7 +122,7 @@ bfcl generate --model claude-3-5-sonnet-20241022-FC,gpt-4o-2024-11-20-FC --test-
 
 #### Output and Logging
 
-- By default, generated model responses are stored in a `result/` folder under the current working directory: `result/MODEL_NAME/BFCL_v3_TEST_CATEGORY_result.json`.
+- By default, generated model responses are stored in a `result/` folder under the project root (which defaults to the package directory): `result/MODEL_NAME/BFCL_v3_TEST_CATEGORY_result.json`.
 - You can customise the location by setting the `BFCL_PROJECT_ROOT` environment variable or passing the `--result-dir` option.
 
 An inference log is included with the model responses to help analyze/debug the model's performance, and to better understand the model behavior. For more verbose logging, use the `--include-input-log` flag. Refer to [LOG_GUIDE.md](./LOG_GUIDE.md) for details on how to interpret the inference logs.
@@ -196,7 +196,7 @@ If in the previous step you stored the model responses in a custom directory, sp
 
 #### Output Structure
 
-Evaluation scores are stored in a `score/` directory under the current working directory, mirroring the structure of `result/`: `score/MODEL_NAME/BFCL_v3_TEST_CATEGORY_score.json`.
+Evaluation scores are stored in a `score/` directory under the project root (defaults to the package directory), mirroring the structure of `result/`: `score/MODEL_NAME/BFCL_v3_TEST_CATEGORY_score.json`.
 
 - To use a custom directory for the score file, set the `BFCL_PROJECT_ROOT` environment variable or specify `--score-dir`.
 
