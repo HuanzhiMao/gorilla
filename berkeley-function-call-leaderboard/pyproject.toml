@@ -42,22 +42,36 @@ dependencies = [
 ]
 
 [project.scripts]
-bfcl = "bfcl.__main__:cli"
+bfcl = "bfcl_eval.__main__:cli"
 
 [tool.setuptools]
 include-package-data = true
+packages = [
+    "bfcl_eval",
+    "bfcl_eval.constants",
+    "bfcl_eval.eval_checker",
+    "bfcl_eval.model_handler",
+    "bfcl_eval.model_handler.parser",
+    "bfcl_eval.model_handler.local_inference",
+    "bfcl_eval.model_handler.api_inference",
+    "bfcl_eval.eval_checker.ast_eval",
+    "bfcl_eval.eval_checker.ast_eval.type_convertor",
+    "bfcl_eval.eval_checker.multi_turn_eval",
+    "bfcl_eval.eval_checker.multi_turn_eval.func_source_code",
+]
 
-[tool.setuptools.packages.find]
-include = ["bfcl*"]
+[tool.setuptools.package-dir]
+bfcl_eval = "."
+
 
 [tool.setuptools.package-data]
-"bfcl" = [
-    "../data/**/*",
-    "../utils/*.py",
-    "../test_case_ids_to_generate.json",
-    "../.env.example",
-    "../*.md",
-    "../architecture_diagram.png",
+"bfcl_eval" = [
+    "data/**/*",
+    "scripts/*.py",
+    "test_case_ids_to_generate.json",
+    ".env.example",
+    "*.md",
+    "architecture_diagram.png",
 ]
 
 [project.urls]

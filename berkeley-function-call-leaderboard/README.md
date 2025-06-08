@@ -126,7 +126,7 @@ cp .env.example .env
 **For PyPI installations (using `pip install bfcl-eval`):**
 
 ```bash
-cp $(python -c "import bfcl; print(bfcl.__path__[0])")/.env.example $BFCL_PROJECT_ROOT/.env
+cp $(python -c "import bfcl_eval; print(bfcl_eval.__path__[0])")/.env.example $BFCL_PROJECT_ROOT/.env
 # Fill in necessary values in `.env`
 ```
 
@@ -203,7 +203,7 @@ VLLM_PORT=1053
 For those who prefer using script execution instead of the CLI, you can run the following command:
 
 ```bash
-python -m bfcl.openfunctions_evaluation --model MODEL_NAME --test-category TEST_CATEGORY
+python -m bfcl_eval.openfunctions_evaluation --model MODEL_NAME --test-category TEST_CATEGORY
 ```
 
 When specifying multiple models or test categories, separate them with **spaces**, not commas. All other flags mentioned earlier are compatible with the script execution method as well.
@@ -253,7 +253,7 @@ Mkae sure you also set `WANDB_BFCL_PROJECT=ENTITY:PROJECT` in `.env`.
 For those who prefer using script execution instead of the CLI, you can run the following command:
 
 ```bash
-python -m bfcl.eval_checker.eval_runner --model MODEL_NAME --test-category TEST_CATEGORY
+python -m bfcl_eval.eval_checker.eval_runner --model MODEL_NAME --test-category TEST_CATEGORY
 ```
 
 When specifying multiple models or test categories, separate them with **spaces**, not commas. All other flags mentioned earlier are compatible with the script execution method as well.

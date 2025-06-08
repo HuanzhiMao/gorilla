@@ -39,7 +39,7 @@ berkeley-function-call-leaderboard/
 ├── data/                         # Datasets
 ├── result/                       # Model responses
 ├── score/                        # Evaluation results
-├── utils/                        # Helper scripts
+├── scripts/                      # Helper scripts
 ```
 
 To add a new model, focus primarily on the `model_handler` directory. You do not need to modify the parsing utilities in `model_handler/parser` or any other directories.
