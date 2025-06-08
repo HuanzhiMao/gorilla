@@ -8,6 +8,7 @@ from typing import List, Optional
 from pathlib import Path
 
 import typer
+from importlib.metadata import version as _version
 from bfcl._llm_response_generation import main as generation_main
 from bfcl.constants.category_mapping import TEST_COLLECTION_MAPPING
 from bfcl.constants.eval_config import (
@@ -32,6 +33,7 @@ class ExecutionOrderGroup(typer.core.TyperGroup):
             "results",
             "evaluate",
             "scores",
+            "version",
         ]
 
 
@@ -59,6 +61,12 @@ def handle_multiple_input(input_str):
 
     return [item.strip() for item in ",".join(input_str).split(",") if item.strip()]
 
+@cli.command()
+def version():
+    """
+    Show the bfcl version. PyPI versions are in development, please rely on the commit hash for reproducibility.
+    """
+    print(f"bfcl version: {_version('bfcl')} \nNote: pypi versions are in development, please rely on the commit hash for reproducibility.")
 
 @cli.command()
 def init(
