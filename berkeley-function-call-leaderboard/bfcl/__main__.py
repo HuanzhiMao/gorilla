@@ -65,7 +65,7 @@ def init(
     project_root: str = typer.Option(
         ".",
         "--project-root",
-        help="Directory to store result and score folders.",
+        help="Directory to store result and score folders. Defaults to the current directory.",
     ),
     env_path: str = typer.Option(
         None,

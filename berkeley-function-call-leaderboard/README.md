@@ -10,7 +10,7 @@
     - [Installing from PyPI](#installing-from-pypi)
     - [Extra Dependencies for Self-Hosted Models](#extra-dependencies-for-self-hosted-models)
     - [Setting up Environment Variables](#setting-up-environment-variables)
-    - [Initializing a Project](#initializing-a-project)
+    - [(Optional) Initializing Project Path](#optional-initializing-project-path)
   - [Running Evaluations](#running-evaluations)
     - [Generating LLM Responses](#generating-llm-responses)
       - [Selecting Models and Test Categories](#selecting-models-and-test-categories)
@@ -67,10 +67,10 @@ pip install -e .
 
 If you simply want to run the evaluation without making code changes, you can
 install the prebuilt wheel instead. **Be careful not to confuse our package with
-the unrelated `bfcl` project on PyPI—make sure you install `bfcl-eval`:**
+the *unrelated* `bfcl` project on PyPI—make sure you install `bfcl-eval`:**
 
 ```bash
-pip install bfcl-eval
+pip install bfcl-eval  # Be careful not to confuse with the unrelated `bfcl` project on PyPI!
 ```
 
 ### Extra Dependencies for Self-Hosted Models
@@ -82,12 +82,12 @@ If you are using an older GPU (T4/V100), you should use `vllm` instead as it sup
 
 **Using `vllm`:**
 ```bash
-pip install bfcl-eval[oss_eval_vllm]
+pip install -e .[oss_eval_vllm]
 ```
 
 **Using `sglang`:**
 ```bash
-pip install bfcl-eval[oss_eval_sglang]
+pip install -e .[oss_eval_sglang]
 ```
 
 *Optional:* If using `sglang`, we recommend installing `flashinfer` for speedups. Find instructions [here](https://docs.flashinfer.ai/installation.html).
@@ -105,10 +105,10 @@ If you are running any proprietary models, make sure the model API keys are incl
 
 The library looks for the `.env` file in the project root, which defaults to the installed package directory. You can override this by setting `BFCL_DOTENV_PATH` or `BFCL_PROJECT_ROOT`.
 
-### Initializing a Project
+### (Optional) Initializing Project Path
 
 Use the `bfcl init` command to set up a custom working directory. This command
-is optional—it creates `result/` and `score/` folders, copies `.env.example` to
+creates `result/` and `score/` folders, copies `.env.example` to
 the desired location, and appends the environment variables to your shell
 profile so you can run BFCL from anywhere.
 
@@ -116,9 +116,7 @@ profile so you can run BFCL from anywhere.
 bfcl init --project-root /path/to/dir --env-path /path/to/dir/.env
 ```
 
-`bfcl init` will update your `~/.bashrc` or `~/.zshrc` with the required
-`BFCL_PROJECT_ROOT` and `BFCL_DOTENV_PATH` exports. Restart your shell or run the
-appropriate `source` command to activate them.
+`bfcl init` will update your `~/.bashrc` or `~/.zshrc` with the required `BFCL_PROJECT_ROOT` and `BFCL_DOTENV_PATH` exports. Restart your shell or run the appropriate `source` command to activate them.
 
 ---
 

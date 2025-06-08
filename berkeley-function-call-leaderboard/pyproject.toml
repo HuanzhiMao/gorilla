@@ -46,12 +46,12 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 "bfcl" = [
-    "../data/*.json",
-    "../data/multi_turn_func_doc/*.json",
-    "../data/possible_answer/*.json",
+    "../data/**/*",
     "../utils/*.py",
     "../test_case_ids_to_generate.json",
     "../.env.example",
+    "../*.md",
+    "../architecture_diagram.png",
 ]
 
 [project.urls]
