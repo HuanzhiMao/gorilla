@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bfcl_eval"
-version = "1.0.0"
+version = "3.0.0"
 description = "Berkeley Function Calling Leaderboard (BFCL)"
 authors = [
     { name = "Huanzhi Mao", email = "huanzhimao@cs.berkeley.edu" },
@@ -44,9 +44,11 @@ dependencies = [
 [project.scripts]
 bfcl = "bfcl.__main__:cli"
 
+[tool.setuptools]
+include-package-data = true
+
 [tool.setuptools.packages.find]
 include = ["bfcl*"]
-include-package-data = true
 
 [tool.setuptools.package-data]
 "bfcl" = [
