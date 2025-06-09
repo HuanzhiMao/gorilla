@@ -54,8 +54,8 @@ include = ["bfcl*"]
 "bfcl" = [
     "../data/**/*",
     "../utils/*.py",
-    "../test_case_ids_to_generate.json",
-    "../.env.example",
+    "bfcl_eval/test_case_ids_to_generate.json",
+    "bfcl_eval/.env.example",
     "../*.md",
     "../architecture_diagram.png",
 ]

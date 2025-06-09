@@ -119,7 +119,7 @@ We store API keys and other configuration variables (separate from the `BFCL_PRO
 **For editable installations:**
 
 ```bash
-cp .env.example .env
+cp bfcl_eval/.env.example .env
 # Fill in necessary values in `.env`
 ```
 
