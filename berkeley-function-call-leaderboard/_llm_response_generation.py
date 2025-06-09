@@ -18,7 +18,7 @@ from bfcl_eval.constants.eval_config import (
 from bfcl_eval.eval_checker.eval_runner_helper import load_file
 from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING
 from bfcl_eval.model_handler.model_style import ModelStyle
-from bfcl_eval.bfcl_utils import is_multi_turn, parse_test_category_argument, sort_key
+from bfcl_eval.utils import is_multi_turn, parse_test_category_argument, sort_key
 from tqdm import tqdm
 
 RETRY_LIMIT = 3

@@ -19,7 +19,7 @@ from bfcl_eval.model_handler.utils import (
     retry_with_backoff,
     system_prompt_pre_processing_chat_model,
 )
-from bfcl_eval.bfcl_utils import is_multi_turn
+from bfcl_eval.utils import is_multi_turn
 
 
 class ClaudeHandler(BaseHandler):

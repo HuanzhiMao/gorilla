@@ -15,7 +15,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     is_empty_execute_response,
 )
 from bfcl_eval.model_handler.model_style import ModelStyle
-from bfcl_eval.bfcl_utils import load_file, make_json_serializable, sort_key
+from bfcl_eval.utils import load_file, make_json_serializable, sort_key
 from overrides import final
 
 

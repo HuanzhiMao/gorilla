@@ -9,7 +9,7 @@ from bfcl_eval.constants.category_mapping import TEST_FILE_MAPPING
 from bfcl_eval.constants.column_headers import *
 from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING
-from bfcl_eval.bfcl_utils import extract_test_category, load_file
+from bfcl_eval.utils import extract_test_category, load_file
 
 
 def calculate_weighted_accuracy(accuracy_dict_list, display_na_if_category_missing=True):
