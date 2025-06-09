@@ -42,18 +42,18 @@ dependencies = [
 ]
 
 [project.scripts]
-bfcl = "bfcl.__main__:cli"
+bfcl = "bfcl_eval.__main__:cli"
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.packages.find]
-include = ["bfcl*"]
+include = ["bfcl_eval*"]
 
 [tool.setuptools.package-data]
-"bfcl" = [
-    "../data/**/*",
-    "../utils/*.py",
+"bfcl_eval" = [
+    "data/**/*",
+    "scripts/*.py",
     "../test_case_ids_to_generate.json",
     "../.env.example",
     "../*.md",
