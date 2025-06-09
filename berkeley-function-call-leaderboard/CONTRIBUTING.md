@@ -36,10 +36,10 @@ berkeley-function-call-leaderboard/
 │   │   │   ├── ...
 │   │   ├── parser/                # Parsing utilities for Java/JavaScript
 │   │   ├── base_handler.py        # Base handler blueprint
-├── data/                         # Datasets
+│   ├── data/                  # Datasets
+│   ├── scripts/               # Helper scripts
 ├── result/                       # Model responses
 ├── score/                        # Evaluation results
-├── scripts/                      # Helper scripts
 ```
 
 To add a new model, focus primarily on the `model_handler` directory. You do not need to modify the parsing utilities in `model_handler/parser` or any other directories.
