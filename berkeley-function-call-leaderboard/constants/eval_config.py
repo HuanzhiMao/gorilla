@@ -19,7 +19,7 @@ MULTI_TURN_FUNC_DOC_PATH = PROMPT_PATH / "multi_turn_func_doc"
 POSSIBLE_ANSWER_PATH = PROMPT_PATH / "possible_answer"
 SCORE_PATH = PROJECT_ROOT / "score"
 DOTENV_PATH = PROJECT_ROOT / ".env"
-UTILS_PATH = PACKAGE_ROOT / "scripts"
+SCRIPTS_PATH = PACKAGE_ROOT / "scripts"
 TEST_IDS_TO_GENERATE_PATH = PACKAGE_ROOT / "test_case_ids_to_generate.json"
 
 

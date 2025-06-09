@@ -2,7 +2,7 @@ import json
 from copy import deepcopy
 
 from bfcl_eval._llm_response_generation import parse_test_category_argument
-from bfcl_eval.constants.eval_config import POSSIBLE_ANSWER_PATH, PROMPT_PATH, UTILS_PATH
+from bfcl_eval.constants.eval_config import POSSIBLE_ANSWER_PATH, PROMPT_PATH, SCRIPTS_PATH
 from bfcl_eval.eval_checker.eval_runner_helper import load_file, write_list_of_dicts_to_file
 from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     STATELESS_CLASSES,
@@ -127,4 +127,4 @@ for file_path in test_filename_total:
                 )
             all_inference_log.append(state_log)
 
-    write_list_of_dicts_to_file(file_path, result, UTILS_PATH / "ground_truth_conversation")
+    write_list_of_dicts_to_file(file_path, result, SCRIPTS_PATH / "ground_truth_conversation")
