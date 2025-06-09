@@ -17,37 +17,36 @@ The repository is organized as follows:
 
 ```plaintext
 berkeley-function-call-leaderboard/
-├── bfcl/
-|   ├── constants/                # Global constants and configuration values
-│   ├── eval_checker/             # Evaluation modules
-│   │   ├── ast_eval/             # AST-based evaluation
-│   │   ├── multi_turn_eval/      # Multi-turn evaluation
-│   ├── model_handler/            # All model-specific handlers
-│   │   ├── local_inference/            # Handlers for locally-hosted models
-│   │   │   ├── base_oss_handler.py       # Base handler for OSS models
-│   │   │   ├── gemma.py                  # Example: Gemma models
-│   │   │   ├── qwen.py                   # Example: Qwen models (Prompt mode)
-│   │   │   ├── qwen_fc.py                # Example: Qwen models (FC mode)
-│   │   │   ├── deepseek_reasoning.py     # Example: DeepSeek reasoning models (with reasoning trace)
-│   │   │   ├── ...
-│   │   ├── api_inference/    # Handlers for API-based models
-│   │   │   ├── openai.py             # Example: OpenAI models
-│   │   │   ├── claude.py             # Example: Claude models
-│   │   │   ├── ...
-│   │   ├── parser/                # Parsing utilities for Java/JavaScript
-│   │   ├── base_handler.py        # Base handler blueprint
-├── data/                         # Datasets
-├── result/                       # Model responses
-├── score/                        # Evaluation results
-├── scripts/                      # Helper scripts
+├── constants/                # Global constants and configuration values
+├── data/                     # Datasets
+├── eval_checker/             # Evaluation modules
+│   ├── ast_eval/             # AST-based evaluation
+│   ├── multi_turn_eval/      # Multi-turn evaluation
+├── model_handler/            # All model-specific handlers
+│   ├── local_inference/      # Handlers for locally-hosted models
+│   │   ├── base_oss_handler.py       # Base handler for OSS models
+│   │   ├── gemma.py                  # Example: Gemma models
+│   │   ├── qwen.py                   # Example: Qwen models (Prompt mode)
+│   │   ├── qwen_fc.py                # Example: Qwen models (FC mode)
+│   │   ├── deepseek_reasoning.py     # Example: DeepSeek reasoning models (with reasoning trace)
+│   │   ├── ...
+│   ├── api_inference/        # Handlers for API-based models
+│   │   ├── openai.py                 # Example: OpenAI models
+│   │   ├── claude.py                 # Example: Claude models
+│   │   ├── ...
+│   ├── parser/               # Parsing utilities for Java/JavaScript
+│   ├── base_handler.py       # Base handler blueprint
+├── result/                   # Model responses
+├── score/                    # Evaluation results
+├── scripts/                  # Helper scripts
 ```
 
 To add a new model, focus primarily on the `model_handler` directory. You do not need to modify the parsing utilities in `model_handler/parser` or any other directories.
 
 ## Where to Begin
 
-- **Base Handler:** Start by reviewing `bfcl/model_handler/base_handler.py`. All model handlers inherit from this base class. The `inference_single_turn` and `inference_multi_turn` methods defined there are helpful for understanding the model response generation pipeline. The `base_handler.py` contains many useful details in the docstrings of each abstract method, so be sure to review them.
-  - If your model is hosted locally, you should also look at `bfcl/model_handler/local_inference/base_oss_handler.py`.
+- **Base Handler:** Start by reviewing `model_handler/base_handler.py`. All model handlers inherit from this base class. The `inference_single_turn` and `inference_multi_turn` methods defined there are helpful for understanding the model response generation pipeline. The `base_handler.py` contains many useful details in the docstrings of each abstract method, so be sure to review them.
+  - If your model is hosted locally, you should also look at `model_handler/local_inference/base_oss_handler.py`.
 - **Reference Handlers:** Checkout some of the existing model handlers (such as `openai.py`, `claude.py`, etc); you can likely reuse some of the existing code if your new model outputs in a similar format.
   - If your model is OpenAI-compatible, the `openai.py` handler will be helpful (and you might be able to just use it as is).
   - If your model is locally hosted, the `llama_fc.py` handler or the `deepseek_coder.py` handler can be good starting points.
@@ -87,7 +86,7 @@ Regardless of mode or model type, you should implement the following methods to 
    [{"func1": {"param1": "val1", "param2": "val2"}}, {"func2": {"param1": "val1"}}]
    ```
 
-   This helps the evaluation pipeline understand the model’s intended function calls.
+   This helps the evaluation pipeline understand the model's intended function calls.
 
 2. **`decode_execute`**  
    Converts the raw model response into a list of strings representing callable functions:
@@ -98,7 +97,7 @@ Regardless of mode or model type, you should implement the following methods to 
 
 ## Updating Model Config Mapping
 
-1. **Add a new entry in `bfcl/constants/model_config.py`**
+1. **Add a new entry in `constants/model_config.py`**
 
    Populate every field in the `ModelConfig` dataclass:
 
@@ -106,9 +105,9 @@ Regardless of mode or model type, you should implement the following methods to 
    | ------------------- | --------------------------------------------------------------------------------- |
    | **`model_name`**    | Model name as used in the API or on Hugging Face.                                 |
    | **`display_name`**  | Model name as it should appear on the leaderboard.                                |
-   | **`url`**           | Link to the model’s documentation, homepage, or repo.                             |
+   | **`url`**           | Link to the model's documentation, homepage, or repo.                             |
    | **`org`**           | Company or organization that developed the model.                                 |
-   | **`license`**       | License under which the model is released. `Proprietary` if it’s not open-source. |
+   | **`license`**       | License under which the model is released. `Proprietary` if it's not open-source. |
    | **`model_handler`** | Name of the handler class (e.g., `OpenAIHandler`, `GeminiHandler`).               |
 
 2. **(Optional) Add pricing**
@@ -132,7 +131,7 @@ Regardless of mode or model type, you should implement the following methods to 
 4. **Update Supported Models**
 
    1. Add your model to the list of supported models in `SUPPORTED_MODELS.md`. Include the model name and type (FC or Prompt) in the table.
-   2. Add a new entry in `bfcl/constants/supported_models.py` as well.
+   2. Add a new entry in `constants/supported_models.py` as well.
 
 ## Submitting Your Pull Request
 
@@ -143,7 +142,7 @@ Regardless of mode or model type, you should implement the following methods to 
 ## Join Our Community
 
 - Have questions or need help? Join the [Gorilla Discord](https://discord.gg/grXXvj9Whz) and visit the `#leaderboard` channel.
-- Feel free to reach out if you have any questions, concerns, or would like guidance while adding your new model. We’re happy to assist!
+- Feel free to reach out if you have any questions, concerns, or would like guidance while adding your new model. We're happy to assist!
 
 ---
 

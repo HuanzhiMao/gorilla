@@ -262,9 +262,9 @@ When specifying multiple models or test categories, separate them with **spaces*
 
 We welcome contributions! To add a new model:
 
-1. Review `bfcl/model_handler/base_handler.py` and/or `bfcl/model_handler/local_inference/base_oss_handler.py` (if your model is hosted locally).
+1. Review `model_handler/base_handler.py` and/or `model_handler/local_inference/base_oss_handler.py` (if your model is hosted locally).
 2. Implement a new handler class for your model.
-3. Update `bfcl/constants/model_config.py`.
+3. Update `constants/model_config.py`.
 4. Submit a Pull Request.
 
 For detailed steps, please see the [Contributing Guide](./CONTRIBUTING.md).
