@@ -14,6 +14,7 @@
   - [Running Evaluations](#running-evaluations)
     - [Generating LLM Responses](#generating-llm-responses)
       - [Selecting Models and Test Categories](#selecting-models-and-test-categories)
+      - [Selecting Specific Test Cases with `--run-ids`](#selecting-specific-test-cases-with---run-ids)
       - [Output and Logging](#output-and-logging)
       - [For API-based Models](#for-api-based-models)
       - [For Locally-hosted OSS Models](#for-locally-hosted-oss-models)
@@ -40,7 +41,7 @@ We introduce the Berkeley Function Calling Leaderboard (BFCL), the **first compr
 
 🦍 See the live leaderboard at [Berkeley Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html#leaderboard)
 
-![Architecture Diagram](./architecture_diagram.png)
+![Architecture Diagram](https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/architecture_diagram.png)
 
 ---
 
@@ -151,6 +152,44 @@ You can provide multiple models or test categories by separating them with comma
 bfcl generate --model claude-3-5-sonnet-20241022-FC,gpt-4o-2024-11-20-FC --test-category simple,parallel,multiple,multi_turn
 ```
 
+#### Selecting Specific Test Cases with `--run-ids`
+
+Sometimes you may only need to regenerate a handful of test entries—for instance when iterating on a new model or after fixing an inference bug. Passing the `--run-ids` flag lets you target **exact test IDs** rather than an entire category:
+
+```bash
+bfcl generate --model MODEL_NAME --run-ids   # --test-category will be ignored
+```
+
+When this flag is set the generation pipeline reads a JSON file named
+`test_case_ids_to_generate.json` located in the *project root* (the same
+place where `.env` lives). The file should map each test category to a list of
+IDs to run:
+
+```json
+{
+  "simple": ["simple_101", "simple_202"],
+  "multi_turn_base": ["multi_turn_base_14"]
+}
+```
+
+> Note: When using `--run-ids`, the `--test-category` flag is ignored.
+
+A sample file is provided at `bfcl_eval/test_case_ids_to_generate.json`; **copy it to your project root** so the CLI can pick it up regardless of your working directory:
+
+**For editable installations:**
+
+```bash
+cp bfcl_eval/test_case_ids_to_generate.json ./test_case_ids_to_generate.json
+```
+
+**For PyPI installations:**
+
+```bash
+cp $(python -c "import bfcl_eval, pathlib; print(pathlib.Path(bfcl_eval.__path__[0]) / 'test_case_ids_to_generate.json')") $BFCL_PROJECT_ROOT/test_case_ids_to_generate.json
+```
+
+Once `--run-ids` is provided only the IDs listed in the JSON will be evaluated.
+
 #### Output and Logging
 
 - By default, generated model responses are stored in a `result/` folder under the project root (which defaults to the package directory): `result/MODEL_NAME/BFCL_v3_TEST_CATEGORY_result.json`.
@@ -165,7 +204,7 @@ bfcl generate --model MODEL_NAME --test-category TEST_CATEGORY --num-threads 1
 ```
 
 - Use `--num-threads` to control the level of parallel inference. The default (`1`) means no parallelization.
-- The maximum allowable threads depends on your API’s rate limits.
+- The maximum allowable threads depends on your API's rate limits.
 
 #### For Locally-hosted OSS Models
 
@@ -181,7 +220,7 @@ bfcl generate \
 
 - Choose your backend using `--backend vllm` or `--backend sglang`. The default backend is `vllm`.
 - Control GPU usage by adjusting `--num-gpus` (default `1`, relevant for multi-GPU tensor parallelism) and `--gpu-memory-utilization` (default `0.9`), which can help avoid out-of-memory errors.
-- `--local-model-path` (optional): Point this flag at a directory that already contains the model’s files (`config.json`, tokenizer, weights, etc.). Use it only when you’ve pre‑downloaded the model and the weights live somewhere other than the default `$HF_HOME` cache.
+- `--local-model-path` (optional): Point this flag at a directory that already contains the model's files (`config.json`, tokenizer, weights, etc.). Use it only when you've pre‑downloaded the model and the weights live somewhere other than the default `$HF_HOME` cache.
 
 ##### For Pre-existing OpenAI-compatible Endpoints
 
