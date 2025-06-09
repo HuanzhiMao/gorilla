@@ -5,7 +5,6 @@ VLLM_PORT = 1053
 
 # Directory of the installed package
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-print(Path(__file__))
 
 # By default, results and other generated files are stored alongside the
 # package itself so that editable installs behave the same as a regular
