@@ -1476,6 +1476,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "Qwen/Qwen3-30B-A3B-FC": ModelConfig(
         model_name="Qwen/Qwen3-30B-A3B-FC",
@@ -1488,6 +1489,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Qwen/Qwen3-30B-A3B": ModelConfig(
         model_name="Qwen/Qwen3-30B-A3B",
@@ -1500,6 +1502,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        use_default_system_prompt=True,
     ),
     "Qwen/Qwen3-235B-A22B-FC": ModelConfig(
         model_name="Qwen/Qwen3-235B-A22B-FC",
@@ -1512,6 +1515,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        use_default_system_prompt=False,
     ),
     "Qwen/Qwen3-235B-A22B": ModelConfig(
         model_name="Qwen/Qwen3-235B-A22B",
