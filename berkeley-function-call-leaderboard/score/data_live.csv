@@ -1,15 +1,17 @@
 Rank,Model,Live Overall Acc,AST Summary,Python Simple AST,Python Multiple AST,Python Parallel AST,Python Parallel Multiple AST,Irrelevance Detection,Relevance Detection
-1,microsoft_phi-4,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-2,mistral-large-2411 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+1,Qwen_Qwen3-32B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+2,Claude-3.7-Sonnet-20250219 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
 3,Qwen_QwQ-32B-Preview,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-4,watt-ai_watt-tool-70B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-5,Claude-3.7-Sonnet-20250219 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-6,Gemini-2.0-Flash-001 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-7,Grok-3-mini-beta (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-8,meta-llama_Llama-3.1-70B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+4,claude-3.5-haiku-20241022 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+5,Gemini-2.0-Flash-001 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+6,GPT-4o-2024-11-20 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+7,watt-ai_watt-tool-70B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+8,meta-llama_Llama-3.1-8B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
 9,GPT-4o-mini-2024-07-18 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-10,claude-3.5-haiku-20241022 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-11,meta-llama_Llama-3.1-8B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-12,GPT-4o-2024-11-20 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-13,Gemini-2.0-Flash-Lite-001 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-14,Qwen_Qwen2.5-32B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+10,Grok-3-mini-beta (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+11,mistral-large-2411 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+12,Qwen_Qwen2.5-32B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+13,microsoft_phi-4,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+14,meta-llama_Llama-3.1-70B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+15,Gemini-2.0-Flash-Lite-001 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+16,google_gemma-3-27b-it,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A

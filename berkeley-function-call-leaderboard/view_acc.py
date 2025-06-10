@@ -5,17 +5,17 @@ from bfcl.eval_checker.eval_runner import get_handler
 from bfcl.utils import get_all_prompt_variation_configs
 from openai import OpenAI
 
-client = OpenAI()
+# client = OpenAI()
 
-response = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "What is the capital of France?"}
-    ]
-)
+# response = client.chat.completions.create(
+#     model="gpt-4o-mini",
+#     messages=[
+#         {"role": "system", "content": "You are a helpful assistant."},
+#         {"role": "user", "content": "What is the capital of France?"}
+#     ]
+# )
 
-print(response.choices[0].message.content)
+# print(response.choices[0].message.content)
 
 
 # model_name = "meta-llama_Llama-3.1-70B-Instruct"
@@ -43,9 +43,15 @@ print(response.choices[0].message.content)
 
 # s = "<functions><function name=\"entropy_change.calculate\"><params><param name=\"substance\" value=\"A\" type=\"string\"/><param name=\"mass\" value=\"2\" type=\"integer\"/><param name=\"initial_temperature\" value=\"25\" type=\"integer\"/><param name=\"final_temperature\" value=\"75\" type=\"integer\"/><param name=\"pressure\" value=\"1\" type=\"integer\"/></params></function><function name=\"entropy_change.calculate\">\n    <params>\n      <param name=\"substance\" value=\"A\" type=\"string\"/>\n      <param name=\"mass\" value=\"2\" type=\"integer\"/>\n      <param name=\"initial_temperature\" value=\"10\" type=\"integer\"/>\n      <param name=\"final_temperature\" value=\"50\" type=\"integer\"/>\n      <param name=\"pressure\" value=\"1\" type=\"integer\"/>\n    </params>\n  </function>\n</functions>"
 
-# handler = get_handler("microsoft/phi-4")
-# decoded = handler.decode_ast(s, "concise_xml")
-# print(decoded)
+# s = "<TOOLCALL><functions><function name=\"update_user_info\"><params><param name=\"user_id\" value=\"43523\" type=\"int\"/><param name=\"update_info\" value=\"{\\"name\\": \\"John Doe\\", \\"email\\": \\"johndoe@email.com\\"}\" type=\"dict\"/></params></function></functions></TOOLCALL>"
+
+s = "update(val=\"[\\\"a\\\"]\")"
+s = "<functions><function name=\"update\"><params><param name=\"arg1\" type=\"dict\" value=\"['a']\"></params></function></functions>"
+
+# 'name': 'John Doe', 'email': 'johndoe@email.com'
+handler = get_handler("watt-ai/watt-tool-70B")
+decoded = handler.decode_ast(s, "verbose_xml")
+print(decoded)
 
 # print(get_all_prompt_variation_configs())
 '''
@@ -64,5 +70,25 @@ print(response.choices[0].message.content)
         <param name=\"unit\" type=\"string\">miles</param>
     </function>
 </functions>
+
+'''
+
+
+
+
+'''
+"model_result_decoded": 
+[
+    {"find_nearby": {"location": "Berlin", "date": "next Friday", "genre": "classical", "amenities": ["Parking"]}},
+    {"find_nearby": {"location": "Paris", "date": "next Friday", "genre": "classical", "amenities": ["Parking"]}}
+]
+
+"possible_answer": 
+[
+    {"concert.find_nearby": {"location": ["Berlin"], "date": ["next Friday"], "genre": ["Classical", "classical"], "amenities": [["Parking"], ""]}},
+    {"concert.find_nearby": {"location": ["Paris"], "date": ["next Friday"], "genre": ["Classical", "classical"], "amenities": [["Parking"], ""]}}
+]
+
+
 
 '''

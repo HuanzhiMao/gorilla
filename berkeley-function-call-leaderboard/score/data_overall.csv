@@ -1,15 +1,17 @@
 Rank,Overall Acc,Model,Model Link,Cost ($ Per 1k Function Calls),Latency Mean (s),Latency Standard Deviation (s),Latency 95th Percentile (s),Non-Live AST Acc,Non-Live Simple AST,Non-Live Multiple AST,Non-Live Parallel AST,Non-Live Parallel Multiple AST,Live Acc,Live Simple AST,Live Multiple AST,Live Parallel AST,Live Parallel Multiple AST,Multi Turn Acc,Multi Turn Base,Multi Turn Miss Func,Multi Turn Miss Param,Multi Turn Long Context,Relevance Detection,Irrelevance Detection,Organization,License
-1,0.00%,microsoft_phi-4,,N/A,10.68,7.25,20.51,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
-2,0.00%,mistral-large-2411 (Prompt),https://docs.mistral.ai/guides/model-selection/,3.56,3.3,9.69,5.43,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Mistral AI,Proprietary
-3,0.00%,Qwen_QwQ-32B-Preview,,N/A,30.38,22.29,75.98,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
-4,0.00%,watt-ai_watt-tool-70B,,N/A,7.93,4.95,16.11,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
-5,0.00%,Claude-3.7-Sonnet-20250219 (Prompt),https://www.anthropic.com/news/claude-3-7-sonnet,4.16,3.3,2.28,7.63,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
-6,0.00%,Gemini-2.0-Flash-001 (Prompt),https://deepmind.google/technologies/gemini/flash/,0.18,0.67,0.51,1.1,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Google,Proprietary
-7,0.00%,Grok-3-mini-beta (Prompt),https://docs.x.ai/docs/models,0.29,7.4,3.45,14.42,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,xAI,Proprietary
-8,0.00%,meta-llama_Llama-3.1-70B-Instruct,,N/A,8.61,5.07,17.24,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
-9,0.00%,GPT-4o-mini-2024-07-18 (Prompt),https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/,0.17,1.45,1.23,2.97,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,OpenAI,Proprietary
-10,0.00%,claude-3.5-haiku-20241022 (Prompt),https://www.anthropic.com/news/3-5-models-and-computer-use,1.39,3.46,3.66,13.41,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
-11,0.00%,meta-llama_Llama-3.1-8B-Instruct,,N/A,2.37,1.63,4.52,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
-12,0.00%,GPT-4o-2024-11-20 (Prompt),https://openai.com/index/hello-gpt-4o/,2.78,1.0,0.98,1.84,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,OpenAI,Proprietary
-13,0.00%,Gemini-2.0-Flash-Lite-001 (Prompt),https://deepmind.google/technologies/gemini/flash-lite/,0.09,0.75,0.53,1.24,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Google,Proprietary
-14,0.00%,Qwen_Qwen2.5-32B-Instruct,,N/A,5.24,2.91,10.37,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
+1,0.00%,Qwen_Qwen3-32B,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
+2,0.00%,Claude-3.7-Sonnet-20250219 (Prompt),https://www.anthropic.com/news/claude-3-7-sonnet,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
+3,0.00%,Qwen_QwQ-32B-Preview,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
+4,0.00%,claude-3.5-haiku-20241022 (Prompt),https://www.anthropic.com/news/3-5-models-and-computer-use,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
+5,0.00%,Gemini-2.0-Flash-001 (Prompt),https://deepmind.google/technologies/gemini/flash/,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Google,Proprietary
+6,0.00%,GPT-4o-2024-11-20 (Prompt),https://openai.com/index/hello-gpt-4o/,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,OpenAI,Proprietary
+7,0.00%,watt-ai_watt-tool-70B,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
+8,0.00%,meta-llama_Llama-3.1-8B-Instruct,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
+9,0.00%,GPT-4o-mini-2024-07-18 (Prompt),https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,OpenAI,Proprietary
+10,0.00%,Grok-3-mini-beta (Prompt),https://docs.x.ai/docs/models,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,xAI,Proprietary
+11,0.00%,mistral-large-2411 (Prompt),https://docs.mistral.ai/guides/model-selection/,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Mistral AI,Proprietary
+12,0.00%,Qwen_Qwen2.5-32B-Instruct,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
+13,0.00%,microsoft_phi-4,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
+14,0.00%,meta-llama_Llama-3.1-70B-Instruct,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
+15,0.00%,Gemini-2.0-Flash-Lite-001 (Prompt),https://deepmind.google/technologies/gemini/flash-lite/,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Google,Proprietary
+16,0.00%,google_gemma-3-27b-it,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
