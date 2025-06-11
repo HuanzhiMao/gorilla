@@ -1,5 +1,5 @@
 Rank,Overall Acc,Model,Model Link,Cost ($ Per 1k Function Calls),Latency Mean (s),Latency Standard Deviation (s),Latency 95th Percentile (s),Non-Live AST Acc,Non-Live Simple AST,Non-Live Multiple AST,Non-Live Parallel AST,Non-Live Parallel Multiple AST,Live Acc,Live Simple AST,Live Multiple AST,Live Parallel AST,Live Parallel Multiple AST,Multi Turn Acc,Multi Turn Base,Multi Turn Miss Func,Multi Turn Miss Param,Multi Turn Long Context,Relevance Detection,Irrelevance Detection,Organization,License
-1,0.00%,DeepSeek-R1 (Prompt),https://api-docs.deepseek.com/news/news1226,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,DeepSeek,MIT
+1,0.00%,Gemini-2.5-Pro-Preview-05-06 (Prompt),https://deepmind.google/technologies/gemini/pro/,0.0,8.31,18.15,40.2,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Google,Proprietary
 2,0.00%,Claude-3.7-Sonnet-20250219 (Prompt),https://www.anthropic.com/news/claude-3-7-sonnet,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
 3,0.00%,Qwen_QwQ-32B-Preview,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
 4,0.00%,claude-3.5-haiku-20241022 (Prompt),https://www.anthropic.com/news/3-5-models-and-computer-use,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
@@ -16,3 +16,4 @@ Rank,Overall Acc,Model,Model Link,Cost ($ Per 1k Function Calls),Latency Mean (s
 15,0.00%,meta-llama_Llama-3.1-70B-Instruct,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
 16,0.00%,Gemini-2.0-Flash-Lite-001 (Prompt),https://deepmind.google/technologies/gemini/flash-lite/,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Google,Proprietary
 17,0.00%,google_gemma-3-27b-it,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
+18,0.00%,DeepSeek-R1 (Prompt),https://api-docs.deepseek.com/news/news1226,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,DeepSeek,MIT

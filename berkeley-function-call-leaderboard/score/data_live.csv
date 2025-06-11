@@ -1,5 +1,5 @@
 Rank,Model,Live Overall Acc,AST Summary,Python Simple AST,Python Multiple AST,Python Parallel AST,Python Parallel Multiple AST,Irrelevance Detection,Relevance Detection
-1,DeepSeek-R1 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+1,Gemini-2.5-Pro-Preview-05-06 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
 2,Claude-3.7-Sonnet-20250219 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
 3,Qwen_QwQ-32B-Preview,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
 4,claude-3.5-haiku-20241022 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
@@ -16,3 +16,4 @@ Rank,Model,Live Overall Acc,AST Summary,Python Simple AST,Python Multiple AST,Py
 15,meta-llama_Llama-3.1-70B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
 16,Gemini-2.0-Flash-Lite-001 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
 17,google_gemma-3-27b-it,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+18,DeepSeek-R1 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A
