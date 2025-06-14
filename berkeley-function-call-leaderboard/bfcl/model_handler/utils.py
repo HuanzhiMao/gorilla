@@ -841,7 +841,7 @@ def formulate_default_system_prompt(
     return_format: str = "python",         # 'python' | 'json' | 'verbose_xml' | 'concise_xml'
     has_tool_call_tag: bool = False,       # True | False # add <TOOLCALL> tags
     has_available_tools_tag: bool = False, # True | False # add <AVAILABLE_TOOLS> tags
-    function_doc_format: str = "python",   # 'python' | 'xml' | 'json'
+    function_doc_format: str = "json",   # 'python' | 'xml' | 'json'
     functions: str = ""
 ) -> str:
     """
