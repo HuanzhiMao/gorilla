@@ -60,7 +60,7 @@ class OpenAIHandler(BaseHandler):
         if len(tools) > 0:
             # Reasoning models don't support temperature parameter
             # Beta limitation: https://platform.openai.com/docs/guides/reasoning/beta-limitations
-            if "o1" in self.model_name or "o3-mini" in self.model_name:
+            if "o1" in self.model_name or "o3" in self.model_name or "o4" in self.model_name:
                 return self.generate_with_backoff(
                     messages=message,
                     model=self.model_name.replace("-FC", ""),
@@ -74,7 +74,7 @@ class OpenAIHandler(BaseHandler):
                     tools=tools,
                 )
         else:
-            if "o1" in self.model_name or "o3-mini" in self.model_name:
+            if "o1" in self.model_name or "o3" in self.model_name or "o4" in self.model_name:
                 return self.generate_with_backoff(
                     messages=message,
                     model=self.model_name.replace("-FC", ""),
@@ -170,7 +170,7 @@ class OpenAIHandler(BaseHandler):
 
         # OpenAI reasoning models don't support temperature parameter
         # Beta limitation: https://platform.openai.com/docs/guides/reasoning/beta-limitations
-        if "o1" in self.model_name or "o3-mini" in self.model_name:
+        if "o1" in self.model_name or "o3" in self.model_name or "o4" in self.model_name:
             return self.generate_with_backoff(
                 messages=inference_data["message"],
                 model=self.model_name,
