@@ -254,9 +254,9 @@ api_inference_model_map = {
         underscore_to_dot=True,
         use_default_system_prompt=False,
     ),
-    "o1-2024-12-17": ModelConfig(
-        model_name="o1-2024-12-17",
-        display_name="o1-2024-12-17 (Prompt)",
+    "o3-2025-04-16": ModelConfig(
+        model_name="o3-2025-04-16",
+        display_name="o3-2025-04-16 (Prompt)",
         url="https://openai.com/o1/",
         org="OpenAI",
         license="Proprietary",
@@ -280,9 +280,9 @@ api_inference_model_map = {
         underscore_to_dot=True,
         use_default_system_prompt=False,
     ),
-    "o3-mini-2025-01-31": ModelConfig(
-        model_name="o3-mini-2025-01-31",
-        display_name="o3-mini-2025-01-31 (Prompt)",
+    "o4-mini-2025-04-16": ModelConfig(
+        model_name="o4-mini-2025-04-16",
+        display_name="o4-mini-2025-04-16 (Prompt)",
         url="https://openai.com/index/openai-o3-mini/",
         org="OpenAI",
         license="Proprietary",
