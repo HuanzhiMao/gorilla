@@ -1,15 +1,15 @@
-{"id": "multiple_4", "result": "[kinematics.calculate_displacement(initial_speed=20, acceleration=10, time=5)]", "input_token_count": 661, "output_token_count": 20, "latency": 6.971415758132935}
-{"id": "multiple_25", "result": "[video_games.store_price(game_title='Assassins Creed Valhalla', platform='PlayStation', region='United States')]", "input_token_count": 687, "output_token_count": 27, "latency": 8.01867389678955}
-{"id": "multiple_31", "result": "[geometry_rectangle.calculate(width=7, length=10)]", "input_token_count": 492, "output_token_count": 13, "latency": 6.186836242675781}
-{"id": "multiple_36", "result": "[kinematics.calculate_speed_from_rest(distance=20, time=4, initial_speed=0)]", "input_token_count": 582, "output_token_count": 21, "latency": 7.216130256652832}
-{"id": "multiple_42", "result": "[calculate_final_temperature(quantity1=2, temperature1=300, quantity2=3, temperature2=400)]", "input_token_count": 541, "output_token_count": 25, "latency": 7.472038507461548}
-{"id": "multiple_46", "result": "[sort_list(elements=['Sam', 'Alice', 'Jack'], order='asc')]", "input_token_count": 527, "output_token_count": 18, "latency": 6.323906660079956}
-{"id": "multiple_51", "result": "[dice_roll_probability(desired_sum=7, n_rolls=2, sides_per_die=6)]", "input_token_count": 613, "output_token_count": 23, "latency": 7.008429288864136}
-{"id": "multiple_54", "result": "[corporate_finance.dividend_data(company=\"Apple Inc\", years=5)]", "input_token_count": 502, "output_token_count": 18, "latency": 6.245370864868164}
-{"id": "multiple_71", "result": "[get_population(year=1954, category=\"veterans\")]", "input_token_count": 567, "output_token_count": 15, "latency": 5.8324198722839355}
-{"id": "multiple_75", "result": "[paint_color.trends(room=\"Living room\")]", "input_token_count": 573, "output_token_count": 11, "latency": 5.4272778034210205}
-{"id": "multiple_102", "result": "[calculate_displacement(initial_velocity=10, time=5, acceleration=9.8)]", "input_token_count": 659, "output_token_count": 20, "latency": 6.5818727016448975}
-{"id": "multiple_132", "result": "[finance.calculate_future_value(initial_investment=20000, rate_of_return=0.08, years=5)]", "input_token_count": 702, "output_token_count": 25, "latency": 7.1799187660217285}
-{"id": "multiple_159", "result": "[calculate_paint_needed(coverage_rate=400, length=30, height=12)]", "input_token_count": 662, "output_token_count": 19, "latency": 6.2086021900177}
-{"id": "multiple_161", "result": "[find_exhibition(location=\"New York, NY\", art_form=\"sculpture\", month=\"upcoming\", user_ratings=\"high\")]", "input_token_count": 743, "output_token_count": 29, "latency": 7.761372804641724}
-{"id": "multiple_191", "result": "[book_hotel(hotel_name=\"Hotel Paradise\", location=\"Las Vegas\", room_type=\"luxury\", start_date=\"05-12-2022\", stay_duration=3, view=\"city view\")]", "input_token_count": 858, "output_token_count": 43, "latency": 8.337645769119263}
+{"id": "multiple_4", "result": "[kinematics.calculate_displacement(initial_speed=20, acceleration=10, time=5)]", "input_token_count": 661, "output_token_count": 20, "latency": 0.39565181732177734}
+{"id": "multiple_25", "result": "[video_games.store_price(game_title='Assassins Creed Valhalla', platform='PlayStation', region='United States')]", "input_token_count": 687, "output_token_count": 27, "latency": 0.5140948295593262}
+{"id": "multiple_31", "result": "[geometry_rectangle.calculate(width=7, length=10)]", "input_token_count": 492, "output_token_count": 13, "latency": 0.2692999839782715}
+{"id": "multiple_36", "result": "[kinematics.calculate_speed_from_rest(distance=20, time=4, initial_speed=0)]", "input_token_count": 582, "output_token_count": 21, "latency": 0.4348134994506836}
+{"id": "multiple_42", "result": "[calculate_final_temperature(quantity1=2, temperature1=300, quantity2=3, temperature2=400)]", "input_token_count": 541, "output_token_count": 25, "latency": 0.48068714141845703}
+{"id": "multiple_46", "result": "[sort_list(elements=['Sam', 'Alice', 'Jack'], order='asc')]", "input_token_count": 527, "output_token_count": 18, "latency": 0.404587984085083}
+{"id": "multiple_51", "result": "[dice_roll_probability(desired_sum=7, n_rolls=2, sides_per_die=6)]", "input_token_count": 613, "output_token_count": 23, "latency": 0.44849061965942383}
+{"id": "multiple_54", "result": "[corporate_finance.dividend_data(company=\"Apple Inc\", years=5)]", "input_token_count": 502, "output_token_count": 18, "latency": 0.33063769340515137}
+{"id": "multiple_71", "result": "[get_population(year=1954, category=\"veterans\")]", "input_token_count": 567, "output_token_count": 15, "latency": 0.3072385787963867}
+{"id": "multiple_75", "result": "[paint_color.trends(room=\"Living room\")]", "input_token_count": 573, "output_token_count": 11, "latency": 0.2123432159423828}
+{"id": "multiple_102", "result": "[calculate_displacement(initial_velocity=10, time=5, acceleration=9.8)]", "input_token_count": 659, "output_token_count": 20, "latency": 0.3790090084075928}
+{"id": "multiple_132", "result": "[finance.calculate_future_value(initial_investment=20000, rate_of_return=0.08, years=5)]", "input_token_count": 702, "output_token_count": 25, "latency": 0.450014591217041}
+{"id": "multiple_159", "result": "[calculate_paint_needed(coverage_rate=400, length=30, height=12)]", "input_token_count": 662, "output_token_count": 19, "latency": 0.36723756790161133}
+{"id": "multiple_161", "result": "[find_exhibition(location=\"New York, NY\", art_form=\"sculpture\", month=\"upcoming\", user_ratings=\"high\")]", "input_token_count": 743, "output_token_count": 29, "latency": 0.4958984851837158}
+{"id": "multiple_191", "result": "[book_hotel(hotel_name=\"Hotel Paradise\", location=\"Las Vegas\", room_type=\"luxury\", start_date=\"05-12-2022\", stay_duration=3, view=\"city view\")]", "input_token_count": 858, "output_token_count": 43, "latency": 0.6563091278076172}
