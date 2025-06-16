@@ -1,0 +1,15 @@
+{"id": "multiple_4", "result": "[kinematics.calculate_displacement(initial_speed=20, acceleration=10, time=5)]", "input_token_count": 684, "output_token_count": 20, "latency": 0.5574285984039307}
+{"id": "multiple_25", "result": "[video_games.store_price(game_title=\"Assassins Creed Valhalla\", platform=\"PlayStation\", region=\"United States\")]", "input_token_count": 715, "output_token_count": 27, "latency": 0.46710920333862305}
+{"id": "multiple_31", "result": "[geometry_rectangle.calculate(width=7, length=10)]", "input_token_count": 548, "output_token_count": 13, "latency": 0.15695595741271973}
+{"id": "multiple_36", "result": "[kinematics.calculate_speed_from_rest(distance=20, time=4)]", "input_token_count": 608, "output_token_count": 16, "latency": 0.48888659477233887}
+{"id": "multiple_42", "result": "[calculate_final_temperature(quantity1=2, temperature1=300, quantity2=3, temperature2=400)]", "input_token_count": 574, "output_token_count": 25, "latency": 0.5490825176239014}
+{"id": "multiple_46", "result": "[sort_list(elements=['Sam', 'Alice', 'Jack'], order='asc')]", "input_token_count": 604, "output_token_count": 18, "latency": 0.5114889144897461}
+{"id": "multiple_51", "result": "[dice_roll_probability(desired_sum=7, sides_per_die=6)]", "input_token_count": 654, "output_token_count": 17, "latency": 0.6115272045135498}
+{"id": "multiple_54", "result": "[corporate_finance.dividend_data(company=\"Apple Inc\", years=5)]", "input_token_count": 542, "output_token_count": 18, "latency": 0.43506503105163574}
+{"id": "multiple_71", "result": "[get_population(year=1954, category=\"veterans\")]", "input_token_count": 606, "output_token_count": 15, "latency": 0.5068528652191162}
+{"id": "multiple_75", "result": "[paint_color.trends(room=\"Living room\")]", "input_token_count": 641, "output_token_count": 11, "latency": 0.14681196212768555}
+{"id": "multiple_102", "result": "[calculate_displacement(initial_velocity=10, time=5, acceleration=9.8)]", "input_token_count": 699, "output_token_count": 20, "latency": 0.42592883110046387}
+{"id": "multiple_132", "result": "[finance.calculate_future_value(initial_investment=20000, rate_of_return=0.08, years=5)]", "input_token_count": 732, "output_token_count": 25, "latency": 0.4415152072906494}
+{"id": "multiple_159", "result": "[calculate_paint_needed(coverage_rate=400, length=30, height=12)]", "input_token_count": 691, "output_token_count": 19, "latency": 0.38423657417297363}
+{"id": "multiple_161", "result": "[find_exhibition(location=\"New York\", art_form=\"modern sculpture\", month=\"upcoming\", user_ratings=\"high\")]", "input_token_count": 761, "output_token_count": 26, "latency": 0.4692232608795166}
+{"id": "multiple_191", "result": "[book_hotel(hotel_name=\"Hotel Paradise\", location=\"Las Vegas\", room_type=\"luxury\", start_date=\"05-12-2022\", stay_duration=3, view=\"city\")]", "input_token_count": 891, "output_token_count": 42, "latency": 0.6001873016357422}

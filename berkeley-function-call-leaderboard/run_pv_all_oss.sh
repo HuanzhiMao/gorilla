@@ -1,15 +1,16 @@
 #!/bin/bash
+
 # MODEL_NAME="Qwen/Qwen3-32B"
 # MODEL_NAME="google/gemma-3-27b-it"
 # MODEL_NAME="microsoft/phi-4"
 # MODEL_NAME="meta-llama/Llama-3.1-70B-Instruct"
-MODEL_NAME="meta-llama/Llama-3.1-8B-Instruct"
+# MODEL_NAME="meta-llama/Llama-3.1-8B-Instruct"
 # MODEL_NAME="mistralai/Ministral-8B-Instruct-2410"
 # MODEL_NAME="Team-ACE/ToolACE-2-8B"
 # MODEL_NAME="watt-ai/watt-tool-70B"
 # MODEL_NAME="watt-ai/watt-tool-8B"
 # MODEL_NAME="uiuc-convai/CoALM-405B"
-# MODEL_NAME="uiuc-convai/CoALM-70B"
+MODEL_NAME="uiuc-convai/CoALM-70B"
 # MODEL_NAME="uiuc-convai/CoALM-8B"
 
 bfcl generate --model "$MODEL_NAME" --skip-server-setup -o --result-dir /fsx/home/huanzhi.mao/gorilla/berkeley-function-call-leaderboard/result_all --test-category simple,parallel,multiple,parallel_multiple,live_simple,live_multiple,live_parallel,live_parallel_multiple --prompt-variation function_doc_format=python,has_tool_call_tag=True,return_format=python
