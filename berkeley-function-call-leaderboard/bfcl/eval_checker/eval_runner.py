@@ -266,6 +266,8 @@ def ast_file_runner(
         possible_answer_item = possible_answer[i]["ground_truth"]
 
         try:
+            if len(model_result_item) > 1000:
+                model_result_item = model_result_item[:1000]
             model_result_item_raw = model_result_item
             model_result_item = handler.decode_ast(model_result_item, language)
         except Exception as e:

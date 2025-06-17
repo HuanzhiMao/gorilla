@@ -1,23 +1,28 @@
 Rank,Model,Multi Turn Overall Acc,Base,Miss Func,Miss Param,Long Context
-1,o3-2025-04-16 (Prompt),0.00%,N/A,N/A,N/A,N/A
-2,o4-mini-2025-04-16 (Prompt),0.00%,N/A,N/A,N/A,N/A
-3,Claude-3.7-Sonnet-20250219 (Prompt),0.00%,N/A,N/A,N/A,N/A
-4,Qwen_QwQ-32B-Preview,0.00%,N/A,N/A,N/A,N/A
-5,claude-3.5-haiku-20241022 (Prompt),0.00%,N/A,N/A,N/A,N/A
-6,Gemini-2.0-Flash-001 (Prompt),0.00%,N/A,N/A,N/A,N/A
-7,GPT-4o-2024-11-20 (Prompt),0.00%,N/A,N/A,N/A,N/A
-8,watt-ai_watt-tool-70B,0.00%,N/A,N/A,N/A,N/A
-9,Qwen_Qwen3-32B,0.00%,N/A,N/A,N/A,N/A
-10,meta-llama_Llama-3.1-8B-Instruct,0.00%,N/A,N/A,N/A,N/A
-11,Qwen_Qwen3-8B,0.00%,N/A,N/A,N/A,N/A
-12,GPT-4o-mini-2024-07-18 (Prompt),0.00%,N/A,N/A,N/A,N/A
-13,Grok-3-mini-beta (Prompt),0.00%,N/A,N/A,N/A,N/A
-14,mistral-large-2411 (Prompt),0.00%,N/A,N/A,N/A,N/A
-15,BitAgent_BitAgent-8B,0.00%,N/A,N/A,N/A,N/A
-16,Qwen_Qwen2.5-32B-Instruct,0.00%,N/A,N/A,N/A,N/A
-17,Gemini-2.5-Pro-Preview-05-06 (Prompt),0.00%,N/A,N/A,N/A,N/A
-18,microsoft_phi-4,0.00%,N/A,N/A,N/A,N/A
-19,meta-llama_Llama-3.1-70B-Instruct,0.00%,N/A,N/A,N/A,N/A
-20,Gemini-2.0-Flash-Lite-001 (Prompt),0.00%,N/A,N/A,N/A,N/A
-21,google_gemma-3-27b-it,0.00%,N/A,N/A,N/A,N/A
+1,watt-ai_watt-tool-70B,0.00%,N/A,N/A,N/A,N/A
+2,Grok-3-mini-beta (Prompt),0.00%,N/A,N/A,N/A,N/A
+3,Gemini-2.5-Pro-Preview-05-06 (Prompt),0.00%,N/A,N/A,N/A,N/A
+4,GPT-4o-2024-11-20 (Prompt),0.00%,N/A,N/A,N/A,N/A
+5,uiuc-convai_CoALM-8B,0.00%,N/A,N/A,N/A,N/A
+6,o3-2025-04-16 (Prompt),0.00%,N/A,N/A,N/A,N/A
+7,uiuc-convai_CoALM-405B,0.00%,N/A,N/A,N/A,N/A
+8,Qwen_Qwen3-8B,0.00%,N/A,N/A,N/A,N/A
+9,meta-llama_Llama-3.1-8B-Instruct,0.00%,N/A,N/A,N/A,N/A
+10,mistral-large-2411 (Prompt),0.00%,N/A,N/A,N/A,N/A
+11,Team-ACE_ToolACE-2-8B,0.00%,N/A,N/A,N/A,N/A
+12,Claude-3.7-Sonnet-20250219 (Prompt),0.00%,N/A,N/A,N/A,N/A
+13,BitAgent_BitAgent-8B,0.00%,N/A,N/A,N/A,N/A
+14,watt-ai_watt-tool-8B,0.00%,N/A,N/A,N/A,N/A
+15,claude-3.5-haiku-20241022 (Prompt),0.00%,N/A,N/A,N/A,N/A
+16,mistralai_Ministral-8B-Instruct-2410,0.00%,N/A,N/A,N/A,N/A
+17,uiuc-convai_CoALM-70B,0.00%,N/A,N/A,N/A,N/A
+18,GPT-4o-mini-2024-07-18 (Prompt),0.00%,N/A,N/A,N/A,N/A
+19,Gemini-2.0-Flash-Lite-001 (Prompt),0.00%,N/A,N/A,N/A,N/A
+20,google_gemma-3-27b-it,0.00%,N/A,N/A,N/A,N/A
+21,o4-mini-2025-04-16 (Prompt),0.00%,N/A,N/A,N/A,N/A
 22,DeepSeek-R1 (Prompt),0.00%,N/A,N/A,N/A,N/A
+23,microsoft_phi-4,0.00%,N/A,N/A,N/A,N/A
+24,Qwen_Qwen2.5-32B-Instruct,0.00%,N/A,N/A,N/A,N/A
+25,Gemini-2.0-Flash-001 (Prompt),0.00%,N/A,N/A,N/A,N/A
+26,Qwen_Qwen3-32B,0.00%,N/A,N/A,N/A,N/A
+27,meta-llama_Llama-3.1-70B-Instruct,0.00%,N/A,N/A,N/A,N/A

@@ -23,6 +23,7 @@ for i in range(0, len(data_list)):
     for j in range(0, len(data_list_all)):
         model_name_all = data_list_all[j][1]
         if model_name == model_name_all:
+            print(model_name)
             for k in range(3, len(data_list_all[j])):
                 # if isinstance(data_list[i][k], str) and isinstance(data_list_all[j][k], str):
                 #     x.append(data_list[i][k])
