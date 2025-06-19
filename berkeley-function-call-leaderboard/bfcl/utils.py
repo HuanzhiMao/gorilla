@@ -219,9 +219,9 @@ def get_all_prompt_variation_configs():
     # 4 × 2 × 3 = 24 combinations
     base_configurations = list(itertools.product(return_format, has_tool_call_tag, function_doc_format))
     # Add one config with markdown format
-    markdown_config = ["return_format=python", "has_tool_call_tag=True", "function_doc_format=json", "prompt_format=markdown"]
+    markdown_config = ["return_format=python", "has_tool_call_tag=False", "function_doc_format=json", "prompt_format=markdown"]
     # Add one config with experimental prompt style
-    experimental_config = ["return_format=python", "has_tool_call_tag=True", "function_doc_format=json", "prompt_style=experimental"]
+    experimental_config = ["return_format=python", "has_tool_call_tag=False", "function_doc_format=json", "prompt_style=experimental"]
 
     all_config_list = [list(config) for config in base_configurations]
     all_config_list.append(markdown_config)
