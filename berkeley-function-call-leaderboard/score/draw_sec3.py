@@ -51,15 +51,17 @@ plt.scatter(x_values, y_values,
             alpha=0.7,
             edgecolor='black')
 
-plt.title("X-Y Relationship Plot", fontsize=14)
-plt.xlabel("X Values (%)", fontsize=12)
-plt.ylabel("Y Values (%)", fontsize=12)
+# plt.title("title", fontsize=14)
+plt.xlabel("Acc on selected entries (%)", fontsize=12)
+plt.ylabel("Acc on all entries (%)", fontsize=12)
 plt.grid(True, linestyle='--', alpha=0.3)
 
 import numpy as np
 z = np.polyfit(x_values, y_values, 1)
 p = np.poly1d(z)
-plt.plot(x_values, p(x_values), "b--", linewidth=1, label=f'Trend: y={z[0]:.2f}x + {z[1]:.2f}')
+line_x_values = np.arange(0, 85.5, 0.5).tolist()
+plt.plot(line_x_values, p(line_x_values), "b--", linewidth=1, label=None, solid_capstyle='butt', dash_capstyle='butt')
 
-plt.legend()
-plt.savefig(os.path.join(script_dir, "sec3.png"), dpi=300)
+
+# plt.legend()
+plt.savefig(os.path.join(script_dir, "sec3.png"), dpi=600)
