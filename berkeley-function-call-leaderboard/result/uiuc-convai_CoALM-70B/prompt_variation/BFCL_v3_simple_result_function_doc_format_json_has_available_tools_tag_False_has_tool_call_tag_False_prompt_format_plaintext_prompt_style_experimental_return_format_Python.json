@@ -1,0 +1,30 @@
+{"id": "simple_19", "result": "[math.gcd(num1=40, num2=50)]", "input_token_count": 283, "output_token_count": 15, "latency": 0.802680253982544}
+{"id": "simple_25", "result": "[calculate_final_velocity(height=150)]", "input_token_count": 358, "output_token_count": 9, "latency": 0.5875668525695801}
+{"id": "simple_58", "result": "[cell_biology.function_lookup(molecule=\"ATP synthase\", organelle=\"mitochondria\", specific_function=True)]", "input_token_count": 340, "output_token_count": 26, "latency": 0.968599796295166}
+{"id": "simple_94", "result": "[update_user_info(user_id=43523, update_info={\"name\": \"John Doe\", \"email\": \"johndoe@email.com\"})]", "input_token_count": 377, "output_token_count": 32, "latency": 0.8383893966674805}
+{"id": "simple_96", "result": "[database.query(table=\"user\", conditions=[{\"field\": \"age\", \"operation\": \">\", \"value\": \"25\"}, {\"field\": \"job\", \"operation\": \"=\", \"value\": \"engineer\"}])]", "input_token_count": 390, "output_token_count": 45, "latency": 0.9984381198883057}
+{"id": "simple_105", "result": "[math.power(base=3, exponent=4)]", "input_token_count": 313, "output_token_count": 12, "latency": 0.5691819190979004}
+{"id": "simple_113", "result": "[probability.dice_roll(desired_number=6, number_of_rolls=2)]", "input_token_count": 350, "output_token_count": 19, "latency": 0.6660041809082031}
+{"id": "simple_134", "result": "[investment.predictProfit(investment_amount=5000, annual_return=0.07, years=5)]", "input_token_count": 335, "output_token_count": 23, "latency": 0.7278039455413818}
+{"id": "simple_155", "result": "[calculate_future_value(initial_investment=1000, interest_rate=0.05, duration=2)]", "input_token_count": 371, "output_token_count": 23, "latency": 0.7188875675201416}
+{"id": "simple_165", "result": "[civil_cases.retrieve(year=2020, crime_type=\"theft\", location=\"Los Angeles\")]", "input_token_count": 319, "output_token_count": 21, "latency": 0.684931755065918}
+{"id": "simple_168", "result": "[lawsuit_search(company=\"Google\", start_date=\"01-01-2021\", location=\"California\")]", "input_token_count": 390, "output_token_count": 23, "latency": 0.7226414680480957}
+{"id": "simple_174", "result": "[get_top_cases(field_of_law=\"constitutional law\", top_number=10, country=\"China\")]", "input_token_count": 344, "output_token_count": 22, "latency": 0.6511950492858887}
+{"id": "simple_179", "result": "[find_latest_court_case(company1=\"Apple\", company2=\"Samsung\", country=\"USA\")]", "input_token_count": 321, "output_token_count": 21, "latency": 0.5727133750915527}
+{"id": "simple_181", "result": "[get_lawsuit_details(case_number=\"123456-ABC\", court_location=\"Los Angeles\", with_verdict=True)]", "input_token_count": 335, "output_token_count": 26, "latency": 0.6352474689483643}
+{"id": "simple_208", "result": "[map_service.get_directions(start=\"New York\", end=\"Los Angeles\", avoid=[\"highways\", \"tolls\"])]", "input_token_count": 351, "output_token_count": 27, "latency": 0.6285982131958008}
+{"id": "simple_213", "result": "[flight.book(departure_location=\"San Francisco\", destination_location=\"London\", date=\"2022-04-27\", time=\"afternoon\", direct_flight=True)]", "input_token_count": 397, "output_token_count": 35, "latency": 0.728996753692627}
+{"id": "simple_226", "result": "[get_zodiac_compatibility(sign1=\"Aries\", sign2=\"Gemini\", scale=\"percentage\")]", "input_token_count": 327, "output_token_count": 23, "latency": 0.5754168033599854}
+{"id": "simple_244", "result": "[publication_year.find(author=\"Isaac Newton\", work_title=\"law of universal gravitation\")]", "input_token_count": 318, "output_token_count": 20, "latency": 0.5456986427307129}
+{"id": "simple_254", "result": "[get_religion_history(religion=\"Christianity\", start_year=300, end_year=400)]", "input_token_count": 376, "output_token_count": 23, "latency": 0.5487539768218994}
+{"id": "simple_281", "result": "[get_instrument_info(name=\"Violin\", maker=\"Stradivarius\", year=1721)]", "input_token_count": 337, "output_token_count": 23, "latency": 0.5536737442016602}
+{"id": "simple_284", "result": "[concert_info.get(location=\"New York\", date=\"2023-11-01\", genre=\"Pop\")]", "input_token_count": 338, "output_token_count": 23, "latency": 0.5484268665313721}
+{"id": "simple_295", "result": "[get_song_lyrics(song_title=\"Bohemian Rhapsody\", artist_name=\"Queen\")]", "input_token_count": 345, "output_token_count": 21, "latency": 0.44048500061035156}
+{"id": "simple_297", "result": "[music.theory.chordProgression(progression=[\"I\", \"V\", \"vi\", \"IV\"])]", "input_token_count": 399, "output_token_count": 24, "latency": 0.4615941047668457}
+{"id": "simple_327", "result": "[sports_team.get_schedule(team_name=\"Manchester United\", num_of_games=6, league=\"Premier League\")]", "input_token_count": 392, "output_token_count": 24, "latency": 0.46721816062927246}
+{"id": "simple_328", "result": "[boardgame.get_info(name=\"Ticket to Ride\", parameters=[\"rating\", \"player count\"])]", "input_token_count": 341, "output_token_count": 21, "latency": 0.4192371368408203}
+{"id": "simple_335", "result": "[find_card_in_deck(rank=\"Queen\", suit=\"Hearts\")]", "input_token_count": 377, "output_token_count": 15, "latency": 0.33784008026123047}
+{"id": "simple_360", "result": "[find_recipe(recipeName=\"pasta carbonara\", maxCalories=500)]", "input_token_count": 295, "output_token_count": 18, "latency": 0.3784334659576416}
+{"id": "simple_380", "result": "[hotel_booking(location=\"Manhattan, New York\", room_type=\"single\", duration=3, start_date=\"2023-03-10\", preferences=[\"pet_friendly\"])]", "input_token_count": 448, "output_token_count": 38, "latency": 0.6012587547302246}
+{"id": "simple_390", "result": "[currency_conversion.convert(amount=150, from_currency=\"EUR\", to_currency=\"CAD\")]", "input_token_count": 305, "output_token_count": 19, "latency": 0.3640022277832031}
+{"id": "simple_393", "result": "[convert_currency(base_currency=\"JPY\", target_currency=\"USD\", amount=20000)]", "input_token_count": 322, "output_token_count": 20, "latency": 0.37720632553100586}
