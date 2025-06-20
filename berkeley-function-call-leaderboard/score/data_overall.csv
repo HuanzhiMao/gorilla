@@ -13,7 +13,7 @@ Rank,Overall Acc,Model,Model Link,Cost ($ Per 1k Function Calls),Latency Mean (s
 12,0.00%,Claude-3.7-Sonnet-20250219 (Prompt),https://www.anthropic.com/news/claude-3-7-sonnet,4.13,3.22,2.23,7.14,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
 13,0.00%,BitAgent_BitAgent-8B,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
 14,0.00%,watt-ai_watt-tool-8B,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
-15,0.00%,claude-3.5-haiku-20241022 (Prompt),https://www.anthropic.com/news/3-5-models-and-computer-use,1.39,3.46,3.66,13.41,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
+15,0.00%,claude-3.5-haiku-20241022 (Prompt),https://www.anthropic.com/news/3-5-models-and-computer-use,1.38,3.34,3.56,13.11,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
 16,0.00%,mistralai_Ministral-8B-Instruct-2410,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
 17,0.00%,uiuc-convai_CoALM-70B,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
 18,0.00%,GPT-4o-mini-2024-07-18 (Prompt),https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/,0.16,1.41,1.2,2.92,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,OpenAI,Proprietary

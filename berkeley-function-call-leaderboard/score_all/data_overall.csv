@@ -6,16 +6,16 @@ Rank,Overall Acc,Model,Model Link,Cost ($ Per 1k Function Calls),Latency Mean (s
 5,0.00%,google_gemma-3-27b-it,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
 6,0.00%,uiuc-convai_CoALM-405B,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
 7,0.00%,uiuc-convai_CoALM-8B,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
-8,0.00%,Gemini-2.0-Flash-Lite-001 (Prompt),https://deepmind.google/technologies/gemini/flash-lite/,0.08,0.76,0.45,1.4,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Google,Proprietary
-9,0.00%,Grok-3-mini-beta (Prompt),https://docs.x.ai/docs/models,0.26,7.34,3.69,14.31,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,xAI,Proprietary
-10,0.00%,claude-3.5-haiku-20241022 (Prompt),https://www.anthropic.com/news/3-5-models-and-computer-use,1.25,1.93,0.85,3.54,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
-11,0.00%,Claude-3.7-Sonnet-20250219 (Prompt),https://www.anthropic.com/news/claude-3-7-sonnet,3.73,2.71,1.63,5.21,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
+8,0.00%,Gemini-2.0-Flash-Lite-001 (Prompt),https://deepmind.google/technologies/gemini/flash-lite/,0.08,0.75,0.44,1.37,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Google,Proprietary
+9,0.00%,Grok-3-mini-beta (Prompt),https://docs.x.ai/docs/models,0.26,7.06,3.73,14.02,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,xAI,Proprietary
+10,0.00%,claude-3.5-haiku-20241022 (Prompt),https://www.anthropic.com/news/3-5-models-and-computer-use,1.24,1.93,0.85,3.56,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
+11,0.00%,Claude-3.7-Sonnet-20250219 (Prompt),https://www.anthropic.com/news/claude-3-7-sonnet,3.71,2.69,1.67,5.15,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Anthropic,Proprietary
 12,0.00%,Team-ACE_ToolACE-2-8B,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
-13,0.00%,Gemini-2.0-Flash-001 (Prompt),https://deepmind.google/technologies/gemini/flash/,0.16,0.77,0.48,1.39,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Google,Proprietary
+13,0.00%,Gemini-2.0-Flash-001 (Prompt),https://deepmind.google/technologies/gemini/flash/,0.16,0.75,0.47,1.36,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Google,Proprietary
 14,0.00%,Qwen_Qwen3-32B,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
-15,0.00%,GPT-4o-mini-2024-07-18 (Prompt),https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/,0.15,1.27,0.79,2.67,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,OpenAI,Proprietary
+15,0.00%,GPT-4o-mini-2024-07-18 (Prompt),https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/,0.15,1.24,0.78,2.63,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,OpenAI,Proprietary
 16,0.00%,meta-llama_Llama-3.1-8B-Instruct,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
-17,0.00%,mistral-large-2411 (Prompt),https://docs.mistral.ai/guides/model-selection/,2.13,3.39,10.21,7.37,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Mistral AI,Proprietary
+17,0.00%,mistral-large-2411 (Prompt),https://docs.mistral.ai/guides/model-selection/,2.12,3.27,9.89,6.97,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,Mistral AI,Proprietary
 18,0.00%,watt-ai_watt-tool-70B,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
-19,0.00%,GPT-4o-2024-11-20 (Prompt),https://openai.com/index/hello-gpt-4o/,2.58,1.02,0.68,1.97,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,OpenAI,Proprietary
+19,0.00%,GPT-4o-2024-11-20 (Prompt),https://openai.com/index/hello-gpt-4o/,2.56,0.99,0.66,1.93,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,OpenAI,Proprietary
 20,0.00%,meta-llama_Llama-3.1-70B-Instruct,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,,
