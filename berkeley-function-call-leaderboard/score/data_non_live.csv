@@ -1,29 +1,32 @@
 Rank,Model,Non_Live Overall Acc,AST Summary,Simple AST,Python Simple AST,Java Simple AST,JavaScript Simple AST,Multiple AST,Parallel AST,Parallel Multiple AST,Irrelevance Detection
-1,GPT-4.1-2025-04-14 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-2,uiuc-convai_CoALM-405B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-3,Claude-3.7-Sonnet-20250219 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-4,o4-mini-2025-04-16 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-5,claude-3.5-haiku-20241022 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-6,Team-ACE_ToolACE-2-8B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-7,Gemini-2.0-Flash-001 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-8,GPT-4o-2024-11-20 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-9,watt-ai_watt-tool-70B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-10,Qwen_Qwen3-32B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-11,meta-llama_Llama-3.1-8B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-12,Qwen_Qwen3-8B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-13,GPT-4o-mini-2024-07-18 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-14,Grok-3-mini-beta (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-15,o3-2025-04-16 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-16,mistral-large-2411 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-17,BitAgent_BitAgent-8B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-18,watt-ai_watt-tool-8B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-19,Qwen_Qwen2.5-32B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-20,Gemini-2.5-Pro-Preview-05-06 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-21,microsoft_phi-4,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-22,meta-llama_Llama-3.1-70B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-23,Gemini-2.0-Flash-Lite-001 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-24,uiuc-convai_CoALM-70B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-25,mistralai_Ministral-8B-Instruct-2410,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-26,google_gemma-3-27b-it,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-27,DeepSeek-R1 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
-28,uiuc-convai_CoALM-8B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+1,Claude-4-Sonnet-20250514 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+2,meta-llama_llama-4-scout-17b-16e-instruct-novita,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+3,meta-llama_llama-4-maverick-17b-128e-instruct-fp8-novita,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+4,uiuc-convai_CoALM-405B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+5,Claude-3.7-Sonnet-20250219 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+6,o4-mini-2025-04-16 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+7,claude-3.5-haiku-20241022 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+8,Team-ACE_ToolACE-2-8B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+9,Gemini-2.0-Flash-001 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+10,GPT-4o-2024-11-20 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+11,GPT-4.1-2025-04-14 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+12,watt-ai_watt-tool-70B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+13,Qwen_Qwen3-32B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+14,meta-llama_Llama-3.1-8B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+15,Qwen_Qwen3-8B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+16,GPT-4o-mini-2024-07-18 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+17,Grok-3-mini-beta (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+18,o3-2025-04-16 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+19,mistral-large-2411 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+20,BitAgent_BitAgent-8B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+21,watt-ai_watt-tool-8B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+22,Qwen_Qwen2.5-32B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+23,Gemini-2.5-Pro-Preview-05-06 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+24,microsoft_phi-4,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+25,meta-llama_Llama-3.1-70B-Instruct,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+26,Gemini-2.0-Flash-Lite-001 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+27,uiuc-convai_CoALM-70B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+28,mistralai_Ministral-8B-Instruct-2410,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+29,google_gemma-3-27b-it,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+30,DeepSeek-R1 (Prompt),0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+31,uiuc-convai_CoALM-8B,0.00%,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
