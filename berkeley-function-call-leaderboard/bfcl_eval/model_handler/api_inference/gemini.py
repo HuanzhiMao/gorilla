@@ -1,7 +1,9 @@
 import os
 import time
 
-import vertexai
+from google import genai
+from google.genai import types
+from google.genai import errors as genai_errors
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.model_style import ModelStyle
@@ -15,27 +17,18 @@ from bfcl_eval.model_handler.utils import (
     retry_with_backoff,
     system_prompt_pre_processing_chat_model,
 )
-from google.api_core.exceptions import ResourceExhausted, TooManyRequests
-from vertexai.generative_models import (
-    Content,
-    FunctionDeclaration,
-    GenerationConfig,
-    GenerativeModel,
-    Part,
-    Tool,
-)
 
 
 class GeminiHandler(BaseHandler):
     def __init__(self, model_name, temperature) -> None:
         super().__init__(model_name, temperature)
         self.model_style = ModelStyle.Google
-        # Initialize Vertex AI
-        vertexai.init(
-            project=os.getenv("VERTEX_AI_PROJECT_ID"),
-            location=os.getenv("VERTEX_AI_LOCATION"),
-        )
-        self.client = GenerativeModel(self.model_name.replace("-FC", ""))
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            raise ValueError(
+                "GOOGLE_API_KEY environment variable must be set for Gemini models"
+            )
+        self.client = genai.Client(api_key=api_key)
 
     @staticmethod
     def _substitute_prompt_role(prompts: list[dict]) -> list[dict]:
@@ -72,10 +65,10 @@ class GeminiHandler(BaseHandler):
                     )
             return func_call_list
 
-    @retry_with_backoff(error_type=[ResourceExhausted, TooManyRequests])
-    def generate_with_backoff(self, client, **kwargs):
+    @retry_with_backoff(error_type=genai_errors.APIError)
+    def generate_with_backoff(self, **kwargs):
         start_time = time.time()
-        api_response = client.generate_content(**kwargs)
+        api_response = self.client.models.generate_content(**kwargs)
         end_time = time.time()
 
         return api_response, end_time - start_time
@@ -83,12 +76,11 @@ class GeminiHandler(BaseHandler):
     #### FC methods ####
 
     def _query_FC(self, inference_data: dict):
-        # Gemini models needs to first conver the function doc to FunctionDeclaration and Tools objects.
-        # We do it here to avoid json serialization issues.
+        # Gemini models need the function docs converted to FunctionDeclaration and Tool objects
         func_declarations = []
         for function in inference_data["tools"]:
             func_declarations.append(
-                FunctionDeclaration(
+                types.FunctionDeclaration(
                     name=function["name"],
                     description=function["description"],
                     parameters=function["parameters"],
@@ -96,7 +88,7 @@ class GeminiHandler(BaseHandler):
             )
 
         if func_declarations:
-            tools = [Tool(function_declarations=func_declarations)]
+            tools = [types.Tool(function_declarations=func_declarations)]
         else:
             tools = None
 
@@ -106,24 +98,16 @@ class GeminiHandler(BaseHandler):
             "system_prompt": inference_data.get("system_prompt", None),
         }
 
-        # messages are already converted to Content object
-        if "system_prompt" in inference_data:
-            # We re-instantiate the GenerativeModel object with the system prompt
-            # We cannot reassign the self.client object as it will affect other entries
-            client = GenerativeModel(
-                self.model_name.replace("-FC", ""),
-                system_instruction=inference_data["system_prompt"],
-            )
-        else:
-            client = self.client
+        config = types.GenerateContentConfig(
+            temperature=self.temperature,
+            tools=tools,
+            system_instruction=inference_data.get("system_prompt"),
+        )
 
         return self.generate_with_backoff(
-            client=client,
+            model=self.model_name.replace("-FC", ""),
             contents=inference_data["message"],
-            generation_config=GenerationConfig(
-                temperature=self.temperature,
-            ),
-            tools=tools,
+            config=config,
         )
 
     def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
@@ -175,10 +159,10 @@ class GeminiHandler(BaseHandler):
                 else:
                     text_parts.append(part.text)
         else:
-            response_function_call_content = Content(
+            response_function_call_content = types.Content(
                 role="model",
                 parts=[
-                    Part.from_text("The model did not return any response."),
+                    types.Part.from_text(text="The model did not return any response."),
                 ],
             )
 
@@ -189,7 +173,7 @@ class GeminiHandler(BaseHandler):
             "model_responses_message_for_chat_history": response_function_call_content,
             "tool_call_func_names": tool_call_func_names,
             "input_token": api_response.usage_metadata.prompt_token_count,
-            "output_token": api_response.usage_metadata.candidates_token_count,
+            "output_token": api_response.usage_metadata.response_token_count,
         }
 
     def add_first_turn_message_FC(
@@ -197,10 +181,10 @@ class GeminiHandler(BaseHandler):
     ) -> dict:
         for message in first_turn_message:
             inference_data["message"].append(
-                Content(
+                types.Content(
                     role=message["role"],
                     parts=[
-                        Part.from_text(message["content"]),
+                        types.Part.from_text(text=message["content"]),
                     ],
                 )
             )
@@ -232,7 +216,7 @@ class GeminiHandler(BaseHandler):
             execution_results, model_response_data["tool_call_func_names"]
         ):
             tool_response_parts.append(
-                Part.from_function_response(
+                types.Part.from_function_response(
                     name=tool_call_func_name,
                     response={
                         "content": execution_result,
@@ -240,7 +224,7 @@ class GeminiHandler(BaseHandler):
                 )
             )
 
-        tool_response_content = Content(parts=tool_response_parts)
+        tool_response_content = types.Content(parts=tool_response_parts)
         inference_data["message"].append(tool_response_content)
 
         return inference_data
@@ -253,20 +237,14 @@ class GeminiHandler(BaseHandler):
             "system_prompt": inference_data.get("system_prompt", None),
         }
 
-        # messages are already converted to Content object
-        if "system_prompt" in inference_data:
-            client = GenerativeModel(
-                self.model_name.replace("-FC", ""),
-                system_instruction=inference_data["system_prompt"],
-            )
-        else:
-            client = self.client
+        config = types.GenerateContentConfig(
+            temperature=self.temperature,
+            system_instruction=inference_data.get("system_prompt"),
+        )
         api_response = self.generate_with_backoff(
-            client=client,
+            model=self.model_name.replace("-FC", ""),
             contents=inference_data["message"],
-            generation_config=GenerationConfig(
-                temperature=self.temperature,
-            ),
+            config=config,
         )
         return api_response
 
@@ -303,7 +281,7 @@ class GeminiHandler(BaseHandler):
         return {
             "model_responses": model_responses,
             "input_token": api_response.usage_metadata.prompt_token_count,
-            "output_token": api_response.usage_metadata.candidates_token_count,
+            "output_token": api_response.usage_metadata.response_token_count,
         }
 
     def add_first_turn_message_prompting(
@@ -311,10 +289,10 @@ class GeminiHandler(BaseHandler):
     ) -> dict:
         for message in first_turn_message:
             inference_data["message"].append(
-                Content(
+                types.Content(
                     role=message["role"],
                     parts=[
-                        Part.from_text(message["content"]),
+                        types.Part.from_text(text=message["content"]),
                     ],
                 )
             )
@@ -329,10 +307,10 @@ class GeminiHandler(BaseHandler):
         self, inference_data: dict, model_response_data: dict
     ) -> dict:
         inference_data["message"].append(
-            Content(
+            types.Content(
                 role="model",
                 parts=[
-                    Part.from_text(model_response_data["model_responses"]),
+                    types.Part.from_text(text=model_response_data["model_responses"]),
                 ],
             )
         )
@@ -344,10 +322,10 @@ class GeminiHandler(BaseHandler):
         formatted_results_message = format_execution_results_prompting(
             inference_data, execution_results, model_response_data
         )
-        tool_message = Content(
+        tool_message = types.Content(
             role="user",
             parts=[
-                Part.from_text(formatted_results_message),
+                types.Part.from_text(text=formatted_results_message),
             ],
         )
         inference_data["message"].append(tool_message)
