@@ -12,6 +12,7 @@ from bfcl_eval.model_handler.api_inference.gemini import GeminiHandler
 from bfcl_eval.model_handler.api_inference.gogoagent import GoGoAgentHandler
 from bfcl_eval.model_handler.api_inference.gorilla import GorillaHandler
 from bfcl_eval.model_handler.api_inference.grok import GrokHandler
+from bfcl_eval.model_handler.api_inference.ling import LingAPIHandler
 from bfcl_eval.model_handler.api_inference.mining import MiningHandler
 from bfcl_eval.model_handler.api_inference.mistral import MistralHandler
 from bfcl_eval.model_handler.api_inference.nemotron import NemotronHandler
@@ -19,14 +20,18 @@ from bfcl_eval.model_handler.api_inference.nexus import NexusHandler
 from bfcl_eval.model_handler.api_inference.nova import NovaHandler
 from bfcl_eval.model_handler.api_inference.novita import NovitaHandler
 from bfcl_eval.model_handler.api_inference.nvidia import NvidiaHandler
-from bfcl_eval.model_handler.api_inference.openai import OpenAIHandler
+from bfcl_eval.model_handler.api_inference.openai_completion import (
+    OpenAICompletionsHandler,
+)
+from bfcl_eval.model_handler.api_inference.openai_response import OpenAIResponsesHandler
 from bfcl_eval.model_handler.api_inference.qwen import (
-    QwenAPIHandler,
-    QwenAgentThinkHandler,
     QwenAgentNoThinkHandler,
+    QwenAgentThinkHandler,
+    QwenAPIHandler,
 )
 from bfcl_eval.model_handler.api_inference.writer import WriterHandler
 from bfcl_eval.model_handler.api_inference.yi import YiHandler
+from bfcl_eval.model_handler.local_inference.arch import ArchHandler
 from bfcl_eval.model_handler.local_inference.bielik import BielikHandler
 from bfcl_eval.model_handler.local_inference.deepseek import DeepseekHandler
 from bfcl_eval.model_handler.local_inference.deepseek_coder import DeepseekCoderHandler
@@ -37,7 +42,10 @@ from bfcl_eval.model_handler.local_inference.falcon_fc import Falcon3FCHandler
 from bfcl_eval.model_handler.local_inference.gemma import GemmaHandler
 from bfcl_eval.model_handler.local_inference.glaive import GlaiveHandler
 from bfcl_eval.model_handler.local_inference.glm import GLMHandler
-from bfcl_eval.model_handler.local_inference.granite import GraniteHandler
+from bfcl_eval.model_handler.local_inference.granite import (
+    GraniteFunctionCallingHandler,
+)
+from bfcl_eval.model_handler.local_inference.granite_3 import Granite3FCHandler
 from bfcl_eval.model_handler.local_inference.hammer import HammerHandler
 from bfcl_eval.model_handler.local_inference.hermes import HermesHandler
 from bfcl_eval.model_handler.local_inference.llama import LlamaHandler
@@ -47,13 +55,18 @@ from bfcl_eval.model_handler.local_inference.minicpm_fc import MiniCPMFCHandler
 from bfcl_eval.model_handler.local_inference.mistral_fc import MistralFCHandler
 from bfcl_eval.model_handler.local_inference.phi import PhiHandler
 from bfcl_eval.model_handler.local_inference.phi_fc import PhiFCHandler
-from bfcl_eval.model_handler.local_inference.quick_testing_oss import QuickTestingOSSHandler
+from bfcl_eval.model_handler.local_inference.quick_testing_oss import (
+    QuickTestingOSSHandler,
+)
 from bfcl_eval.model_handler.local_inference.qwen import QwenHandler
 from bfcl_eval.model_handler.local_inference.qwen_fc import QwenFCHandler
-from bfcl_eval.model_handler.local_inference.salesforce_llama import SalesforceLlamaHandler
-from bfcl_eval.model_handler.local_inference.salesforce_qwen import SalesforceQwenHandler
+from bfcl_eval.model_handler.local_inference.salesforce_llama import (
+    SalesforceLlamaHandler,
+)
+from bfcl_eval.model_handler.local_inference.salesforce_qwen import (
+    SalesforceQwenHandler,
+)
 from bfcl_eval.model_handler.local_inference.think_agent import ThinkAgentHandler
-from bfcl_eval.model_handler.api_inference.ling import LingAPIHandler
 
 # -----------------------------------------------------------------------------
 # A mapping of model identifiers to their respective model configurations.
@@ -157,7 +170,7 @@ api_inference_model_map = {
         url="https://openai.com/index/introducing-gpt-4-5/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=75,
         output_price=150,
         is_fc_model=False,
@@ -169,7 +182,7 @@ api_inference_model_map = {
         url="https://openai.com/index/introducing-gpt-4-5/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=75,
         output_price=150,
         is_fc_model=True,
@@ -181,7 +194,7 @@ api_inference_model_map = {
         url="https://openai.com/index/gpt-4-1/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=2,
         output_price=8,
         is_fc_model=True,
@@ -193,7 +206,7 @@ api_inference_model_map = {
         url="https://openai.com/index/gpt-4-1/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=2,
         output_price=8,
         is_fc_model=False,
@@ -205,7 +218,7 @@ api_inference_model_map = {
         url="https://openai.com/index/gpt-4-1/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=0.4,
         output_price=1.6,
         is_fc_model=True,
@@ -217,7 +230,7 @@ api_inference_model_map = {
         url="https://openai.com/index/gpt-4-1/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=0.4,
         output_price=1.6,
         is_fc_model=False,
@@ -229,7 +242,7 @@ api_inference_model_map = {
         url="https://openai.com/index/gpt-4-1/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=0.1,
         output_price=0.4,
         is_fc_model=True,
@@ -241,57 +254,9 @@ api_inference_model_map = {
         url="https://openai.com/index/gpt-4-1/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=0.1,
         output_price=0.4,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "o1-2024-12-17-FC": ModelConfig(
-        model_name="o1-2024-12-17-FC",
-        display_name="o1-2024-12-17 (FC)",
-        url="https://openai.com/o1/",
-        org="OpenAI",
-        license="Proprietary",
-        model_handler=OpenAIHandler,
-        input_price=15,
-        output_price=60,
-        is_fc_model=True,
-        underscore_to_dot=True,
-    ),
-    "o1-2024-12-17": ModelConfig(
-        model_name="o1-2024-12-17",
-        display_name="o1-2024-12-17 (Prompt)",
-        url="https://openai.com/o1/",
-        org="OpenAI",
-        license="Proprietary",
-        model_handler=OpenAIHandler,
-        input_price=15,
-        output_price=60,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "o3-mini-2025-01-31-FC": ModelConfig(
-        model_name="o3-mini-2025-01-31-FC",
-        display_name="o3-mini-2025-01-31 (FC)",
-        url="https://openai.com/index/openai-o3-mini/",
-        org="OpenAI",
-        license="Proprietary",
-        model_handler=OpenAIHandler,
-        input_price=1.1,
-        output_price=4,
-        is_fc_model=True,
-        underscore_to_dot=True,
-    ),
-    "o3-mini-2025-01-31": ModelConfig(
-        model_name="o3-mini-2025-01-31",
-        display_name="o3-mini-2025-01-31 (Prompt)",
-        url="https://openai.com/index/openai-o3-mini/",
-        org="OpenAI",
-        license="Proprietary",
-        model_handler=OpenAIHandler,
-        input_price=1.1,
-        output_price=4,
         is_fc_model=False,
         underscore_to_dot=False,
     ),
@@ -301,7 +266,7 @@ api_inference_model_map = {
         url="https://openai.com/index/hello-gpt-4o/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=2.5,
         output_price=10,
         is_fc_model=False,
@@ -313,7 +278,7 @@ api_inference_model_map = {
         url="https://openai.com/index/hello-gpt-4o/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=2.5,
         output_price=10,
         is_fc_model=True,
@@ -325,7 +290,7 @@ api_inference_model_map = {
         url="https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=0.15,
         output_price=0.6,
         is_fc_model=False,
@@ -337,9 +302,57 @@ api_inference_model_map = {
         url="https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/",
         org="OpenAI",
         license="Proprietary",
-        model_handler=OpenAIHandler,
+        model_handler=OpenAIResponsesHandler,
         input_price=0.15,
         output_price=0.6,
+        is_fc_model=True,
+        underscore_to_dot=True,
+    ),
+    "o3-2025-04-16": ModelConfig(
+        model_name="o3-2025-04-16",
+        display_name="o3-2025-04-16 (Prompt)",
+        url="https://openai.com/index/introducing-o3-and-o4-mini/",
+        org="OpenAI",
+        license="Proprietary",
+        model_handler=OpenAIResponsesHandler,
+        input_price=2,
+        output_price=8,
+        is_fc_model=False,
+        underscore_to_dot=False,
+    ),
+    "o3-2025-04-16-FC": ModelConfig(
+        model_name="o3-2025-04-16-FC",
+        display_name="o3-2025-04-16 (FC)",
+        url="https://openai.com/index/introducing-o3-and-o4-mini/",
+        org="OpenAI",
+        license="Proprietary",
+        model_handler=OpenAIResponsesHandler,
+        input_price=2,
+        output_price=8,
+        is_fc_model=True,
+        underscore_to_dot=True,
+    ),
+    "o4-mini-2025-04-16": ModelConfig(
+        model_name="o4-mini-2025-04-16",
+        display_name="o4-mini-2025-04-16 (Prompt)",
+        url="https://openai.com/index/introducing-o3-and-o4-mini/",
+        org="OpenAI",
+        license="Proprietary",
+        model_handler=OpenAIResponsesHandler,
+        input_price=1.10,
+        output_price=4.40,
+        is_fc_model=False,
+        underscore_to_dot=False,
+    ),
+    "o4-mini-2025-04-16-FC": ModelConfig(
+        model_name="o4-mini-2025-04-16-FC",
+        display_name="o4-mini-2025-04-16 (FC)",
+        url="https://openai.com/index/introducing-o3-and-o4-mini/",
+        org="OpenAI",
+        license="Proprietary",
+        model_handler=OpenAIResponsesHandler,
+        input_price=1.10,
+        output_price=4.40,
         is_fc_model=True,
         underscore_to_dot=True,
     ),
@@ -1379,13 +1392,37 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
+    "ibm-granite/granite-3.2-8b-instruct": ModelConfig(
+        model_name="ibm-granite/granite-3.2-8b-instruct",
+        display_name="Granite-3.2-8B-Instruct (FC)",
+        url="https://huggingface.co/ibm-granite/granite-3.2-8b-instruct",
+        org="IBM",
+        license="Apache-2.0",
+        model_handler=Granite3FCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    "ibm-granite/granite-3.1-8b-instruct": ModelConfig(
+        model_name="ibm-granite/granite-3.1-8b-instruct",
+        display_name="Granite-3.1-8B-Instruct (FC)",
+        url="https://huggingface.co/ibm-granite/granite-3.1-8b-instruct",
+        org="IBM",
+        license="Apache-2.0",
+        model_handler=Granite3FCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
     "ibm-granite/granite-20b-functioncalling": ModelConfig(
         model_name="ibm-granite/granite-20b-functioncalling",
         display_name="Granite-20b-FunctionCalling (FC)",
         url="https://huggingface.co/ibm-granite/granite-20b-functioncalling",
         org="IBM",
         license="Apache-2.0",
-        model_handler=GraniteHandler,
+        model_handler=GraniteFunctionCallingHandler,
         input_price=None,
         output_price=None,
         is_fc_model=False,
@@ -1947,6 +1984,54 @@ third_party_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
+    ),
+    "katanemo/Arch-Agent-1.5B": ModelConfig(
+        model_name="katanemo/Arch-Agent-1.5B",
+        display_name="Arch-Agent-1.5B",
+        url="https://huggingface.co/katanemo/Arch-Agent-1.5B",
+        org="katanemo",
+        license="katanemo-research",
+        model_handler=ArchHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    "katanemo/Arch-Agent-3B": ModelConfig(
+        model_name="katanemo/Arch-Agent-3B",
+        display_name="Arch-Agent-3B",
+        url="https://huggingface.co/katanemo/Arch-Agent-3B",
+        org="katanemo",
+        license="katanemo-research",
+        model_handler=ArchHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    "katanemo/Arch-Agent-7B": ModelConfig(
+        model_name="katanemo/Arch-Agent-7B",
+        display_name="Arch-Agent-7B",
+        url="https://huggingface.co/katanemo/Arch-Agent-7B",
+        org="katanemo",
+        license="katanemo-research",
+        model_handler=ArchHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    "katanemo/Arch-Agent-32B": ModelConfig(
+        model_name="katanemo/Arch-Agent-32B",
+        display_name="Arch-Agent-32B",
+        url="https://huggingface.co/katanemo/Arch-Agent-32B",
+        org="katanemo",
+        license="katanemo-research",
+        model_handler=ArchHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
     ),
 }
 
