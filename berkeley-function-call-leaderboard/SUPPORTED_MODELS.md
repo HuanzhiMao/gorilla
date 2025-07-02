@@ -65,6 +65,7 @@ For model names containing `{...}`, multiple versions are available. For example
 | GPT-4o-mini-2024-07-18                 | Function Calling | OpenAI         | gpt-4o-mini-2024-07-18-FC                                   |
 | GPT-4o-mini-2024-07-18                 | Prompt           | OpenAI         | gpt-4o-mini-2024-07-18                                      |
 | Granite-20b-FunctionCalling            | Function Calling | Self-hosted 💻 | ibm-granite/granite-20b-functioncalling                     |
+| Granite-3.1-8B-Instruct                | Function Calling | Self-hosted 💻 | ibm-granite/granite-3.1-8b-instruct                         |
 | Grok-3-beta                            | Function Calling | xAI            | grok-3-beta-FC                                              |
 | Grok-3-beta                            | Prompt           | xAI            | grok-3-beta                                                 |
 | Grok-3-mini-beta                       | Function Calling | xAI            | grok-3-mini-beta-FC                                         |
@@ -134,7 +135,7 @@ For model names containing `{...}`, multiple versions are available. For example
 ## Additional Requirements for Certain Models
 
 - **Gemini Models:**
-  For `Gemini` models, we use the Google Vertex AI endpoint for inference. Ensure you have set the `VERTEX_AI_PROJECT_ID` and `VERTEX_AI_LOCATION` in your `.env` file.
+  For `Gemini` models, we use the Google AI Studio API for inference. Ensure you have set the `GOOGLE_API_KEY` in your `.env` file.
 
 - **Databricks Models:**
   For `databrick-dbrx-instruct`, you must create an Azure Databricks workspace and set up a dedicated inference endpoint. Provide the endpoint URL via `DATABRICKS_AZURE_ENDPOINT_URL` in `.env`.
