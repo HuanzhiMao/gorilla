@@ -1,0 +1,15 @@
+{"id": "multiple_4", "result": "kinematics.calculate_displacement(initial_speed=20, acceleration=10, time=5)", "input_token_count": 674, "output_token_count": 25, "latency": 0.6584408283233643}
+{"id": "multiple_25", "result": "video_games.store_price{'game_title': 'Assassins Creed Valhalla', 'platform': 'PlayStation', 'region': 'United States', 'price': 29.99}", "input_token_count": 713, "output_token_count": 45, "latency": 0.8549790382385254}
+{"id": "multiple_31", "result": "geometry_rectangle.calculate(width=7, length=10)", "input_token_count": 535, "output_token_count": 16, "latency": 0.5149064064025879}
+{"id": "multiple_36", "result": "kinematics.calculate_speed_from_rest(distance=20, time=4)\n", "input_token_count": 601, "output_token_count": 23, "latency": 0.6403796672821045}
+{"id": "multiple_42", "result": "calculate_final_temperature(quantity1=2, temperature1=300, quantity2=3, temperature2=400)", "input_token_count": 559, "output_token_count": 31, "latency": 0.7366628646850586}
+{"id": "multiple_46", "result": "sort_list(elements=['Sam', 'Alice', 'Jack'])", "input_token_count": 587, "output_token_count": 15, "latency": 0.4911973476409912}
+{"id": "multiple_51", "result": "dice_roll_probability(desired_sum=7, n_rolls=2, sides_per_die=6)", "input_token_count": 647, "output_token_count": 27, "latency": 0.693110466003418}
+{"id": "multiple_54", "result": "[corporate_finance.dividend_data(company='Apple Inc.', years=5, frequency='quarterly')]", "input_token_count": 524, "output_token_count": 24, "latency": 0.6452603340148926}
+{"id": "multiple_71", "result": "get_population(year=1954, category='veterans')", "input_token_count": 592, "output_token_count": 17, "latency": 0.5212886333465576}
+{"id": "multiple_75", "result": "paint_color_trends(room='Living room', period='Daily')", "input_token_count": 623, "output_token_count": 16, "latency": 0.4956173896789551}
+{"id": "multiple_102", "result": "calculate_displacement(initial_velocity=10, acceleration=9.8, time=5)", "input_token_count": 685, "output_token_count": 22, "latency": 0.621842622756958}
+{"id": "multiple_132", "result": "finance.calculate_future_value(initial_investment=20000, rate_of_return=0.08, years=5)", "input_token_count": 726, "output_token_count": 34, "latency": 0.7541871070861816}
+{"id": "multiple_159", "result": "calculate_paint_needed(coverage_rate=400, length=30, height=12)", "input_token_count": 678, "output_token_count": 25, "latency": 0.6402430534362793}
+{"id": "multiple_161", "result": "find_exhibition(location='New York', art_form='sculpture', month='upcoming', user_ratings='high')", "input_token_count": 757, "output_token_count": 29, "latency": 0.7005050182342529}
+{"id": "multiple_191", "result": "get_personality_traits(type='luxury', traits=['strengths', 'weaknesses'])", "input_token_count": 886, "output_token_count": 20, "latency": 0.5637311935424805}

@@ -1,0 +1,15 @@
+{"id": "multiple_4", "result": "kinematics.calculate_displacement(initial_speed=20, acceleration=10, time=5)", "input_token_count": 740, "output_token_count": 25, "latency": 0.4961702823638916}
+{"id": "multiple_25", "result": "video_games.store_price[game_title=\"Assassins Creed Valhalla\"]\n", "input_token_count": 777, "output_token_count": 21, "latency": 0.432941198348999}
+{"id": "multiple_31", "result": "geometry_rectangle.calculate(width=7, length=10)", "input_token_count": 557, "output_token_count": 16, "latency": 0.3303389549255371}
+{"id": "multiple_36", "result": "<toolcall>[kinematics.calculate_speed_from_rest(distance=20, time=4, initial_speed=0)]</toolcall>", "input_token_count": 658, "output_token_count": 36, "latency": 0.6616535186767578}
+{"id": "multiple_42", "result": "<TOOLCALL>[calculate_final_temperature(quantity1=2, temperature1=300, quantity2=3, temperature2=400)]</TOOLCALL>", "input_token_count": 606, "output_token_count": 39, "latency": 0.6856799125671387}
+{"id": "multiple_46", "result": "<function name=\"sort_list\">\n  <params>\n    <param name=\"elements\" type=\"array\" required=\"true\">['Sam', 'Alice', 'Jack']</param>\n    <param name=\"order\" type=\"string\" required=\"false\">asc</param>\n  </params>\n</function>", "input_token_count": 593, "output_token_count": 71, "latency": 0.925518274307251}
+{"id": "multiple_51", "result": "<toolcall>[dice_roll_probability](desired_sum=7, n_rolls=2, sides_per_die=6)</toolcall>", "input_token_count": 689, "output_token_count": 34, "latency": 0.6365194320678711}
+{"id": "multiple_54", "result": "<toolcall>corporate_finance.dividend_data(company=\"Apple Inc.\", years=5, frequency=\"yearly\")</toolcall>", "input_token_count": 559, "output_token_count": 30, "latency": 0.5570731163024902}
+{"id": "multiple_71", "result": "get_population[year=1954, category=\"veterans\"]", "input_token_count": 642, "output_token_count": 17, "latency": 0.37744855880737305}
+{"id": "multiple_75", "result": "paint_color.trends(room=\"Living room\", period=\"Daily\")", "input_token_count": 643, "output_token_count": 16, "latency": 0.3556938171386719}
+{"id": "multiple_102", "result": "calculate_displacement[10(5)=11.9, 9.8]", "input_token_count": 739, "output_token_count": 20, "latency": 0.4005436897277832}
+{"id": "multiple_132", "result": "<toolcall>[finance.calculate_future_value(initial_investment=20000, rate_of_return=0.08, years=5, contribution=0)]</toolcall>", "input_token_count": 792, "output_token_count": 46, "latency": 0.7070200443267822}
+{"id": "multiple_159", "result": "prob_dist.binomial[1](trials=30, successes=10, p=0.4)", "input_token_count": 741, "output_token_count": 25, "latency": 0.47205424308776855}
+{"id": "multiple_161", "result": "find_exhibition[1]=\"card_game_probability.calculate\", 1]", "input_token_count": 836, "output_token_count": 19, "latency": 0.3720357418060303}
+{"id": "multiple_191", "result": "get_personality_traits(type=\"leadership\", traits=[\"strategic\", \"ambitious\"])", "input_token_count": 966, "output_token_count": 19, "latency": 0.3675212860107422}
