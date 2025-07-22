@@ -43,6 +43,12 @@ def get_args():
     parser.add_argument("--result-dir", default=None, type=str)
     parser.add_argument("--run-ids", action="store_true", default=False)
     parser.add_argument("--allow-overwrite", "-o", action="store_true", default=False)
+    parser.add_argument(
+        "--use-audio-input",
+        action="store_true",
+        default=False,
+        help="Use audio input for the model. This is only supported for models that support native audio input.",
+    )
     # Add the new skip_vllm argument
     parser.add_argument(
         "--skip-server-setup",
@@ -67,6 +73,7 @@ def build_handler(model_name, temperature):
     handler = config.model_handler(model_name, temperature)
     # Propagate config flags to the handler instance
     handler.is_fc_model = config.is_fc_model
+    handler.supports_audio_input = config.supports_audio_input
     return handler
 
 
@@ -292,6 +299,14 @@ def main(args):
                 "• For officially supported models, please refer to `SUPPORTED_MODELS.md`.\n"
                 "• For running new models, please refer to `README.md` and `CONTRIBUTING.md`."
             )
+        if (
+            args.use_audio_input
+            and not MODEL_CONFIG_MAPPING[model_name].supports_audio_input
+        ):
+            raise ValueError(
+                f"Model {model_name} does not support native audio input."
+            )
+
     print(f"Generating results for {args.model}")
     if args.run_ids:
         print("Running specific test cases. Ignoring `--test-category` argument.")

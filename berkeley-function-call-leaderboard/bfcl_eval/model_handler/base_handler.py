@@ -43,6 +43,7 @@ class BaseHandler:
         self.model_name_dir = model_name.replace("/", "_")
         self.temperature = temperature
         self.is_fc_model = False  # Whether the model is a function calling model
+        self.supports_audio_input = False  # Whether the model supports audio input and output
 
     def inference(
         self,

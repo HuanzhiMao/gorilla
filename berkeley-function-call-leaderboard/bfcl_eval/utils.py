@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import re
@@ -16,12 +17,14 @@ from bfcl_eval.constants.default_prompts import (
 )
 from bfcl_eval.constants.eval_config import (
     MEMORY_PREREQ_CONVERSATION_PATH,
+    AUDIO_FILE_PATH,
     MULTI_TURN_FUNC_DOC_PATH,
-    PROMPT_PATH,
     POSSIBLE_ANSWER_PATH,
+    PROMPT_PATH,
 )
-from bfcl_eval.constants.executable_backend_config import MULTI_TURN_FUNC_DOC_FILE_MAPPING
-
+from bfcl_eval.constants.executable_backend_config import (
+    MULTI_TURN_FUNC_DOC_FILE_MAPPING,
+)
 
 #### Helper functions to extract/parse/complete test category from different formats ####
 
@@ -196,6 +199,10 @@ def is_sql(test_category):
     return "sql" in test_category
 
 
+def is_audio(test_category):
+    return "audio" in test_category
+
+
 def contain_multi_turn_interaction(test_category):
     return is_multi_turn(test_category) or is_agentic(test_category)
 
@@ -219,27 +226,31 @@ def load_dataset_entry(
     test_category: str,
     include_prereq: bool = True,
     include_language_specific_hint: bool = True,
+    use_audio_input: bool = False,
 ) -> list[dict]:
     """
     This function retrieves the dataset entry for a given test category.
     The input should not be a test category goup, but a specific test category.
     If `contain_prereq` is True, it will include the pre-requisite entries for the memory test categories.
     If `include_language_specific_hint` is True, it will include the language-specific hint for the function description (for Java, JavaScript, and Python).
+    If `use_audio_input` is True, the test entry will carry the audio query in the user message, instead of the text.
     """
-    if not is_memory(test_category) and not is_web_search(test_category):
-        file_name = f"{VERSION_PREFIX}_{test_category}.json"
-        all_entries = load_file(PROMPT_PATH / file_name)
-    elif is_web_search(test_category):
+    if is_web_search(test_category):
         file_name = f"{VERSION_PREFIX}_web_search.json"
         all_entries = load_file(PROMPT_PATH / file_name)
         all_entries = process_web_search_test_case(all_entries, test_category)
-    else:
-        # Memory categories
+    elif is_memory(test_category):
         all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_memory.json")
         for scenario in MEMORY_SCENARIO_NAME:
             all_entries = process_memory_test_case(
                 all_entries, test_category, scenario, include_prereq=include_prereq
             )
+    elif is_audio(test_category):
+        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{test_category}.json")
+        all_entries = process_audio_test_case(all_entries, test_category, use_audio_input)
+    else:
+        file_name = f"{VERSION_PREFIX}_{test_category}.json"
+        all_entries = load_file(PROMPT_PATH / file_name)
 
     all_entries = process_agentic_test_case(all_entries)
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
@@ -642,3 +653,108 @@ def populate_initial_settings_for_web_search_test_cases(
             }
             entry["initial_config"] = init_config
     return test_cases
+
+
+#### Audio helper methods ####
+
+
+def load_audio(path: str) -> bytes:
+    """Load audio file from disk."""
+    assert path.endswith(".wav"), "Audio file should be in wav format"
+
+    with open(AUDIO_FILE_PATH / path, "rb") as f:
+        return f.read()
+
+
+def audio_to_base64(data: bytes) -> str:
+    return base64.b64encode(data).decode("utf-8")
+
+
+# def transcribe_audio(path: str) -> str:
+#     """Transcribe audio to text using SpeechRecognition as a fallback."""
+#     try:
+#         import speech_recognition as sr
+
+#         r = sr.Recognizer()
+#         with sr.AudioFile(path) as source:
+#             audio_data = r.record(source)
+#         return r.recognize_google(audio_data)
+#     except Exception:
+#         raise RuntimeError("Audio transcription failed")
+
+# def text_to_speech(text: str, output_path: str) -> str:
+#     """Convert text to speech using gTTS."""
+#     try:
+#         from gtts import gTTS
+
+#         tts = gTTS(text)
+#         tts.save(output_path)
+#         return output_path
+#     except Exception:
+#         raise RuntimeError("TTS conversion failed")
+
+# def process_audio_messages(test_entry: dict) -> None:
+#     """Load and possibly transcribe audio messages in place."""
+#     for turn in test_entry.get("question", []):
+#         for msg in turn:
+#             if msg.get("role") != "user" or "audio_path" not in msg:
+#                 continue
+#             audio_bytes = load_audio(msg["audio_path"])
+#             if supports_audio_input:
+#                 msg["audio"] = audio_to_base64(audio_bytes)
+#             else:
+#                 msg["content"] = transcribe_audio(msg["audio_path"])
+
+# def maybe_add_audio_response(text: str, entry_id: str) -> str:
+#     """If the model doesn't support audio, synthesize the text to audio and return path."""
+#     if supports_audio_input:
+#         return ""
+#     file_name = f"{entry_id}_response.mp3"
+#     output_path = str(RESULT_PATH / file_name)
+#     try:
+#         text_to_speech(text, output_path)
+#         return output_path
+#     except Exception:
+#         return ""
+
+
+def process_audio_test_case(
+    test_cases: list[dict], test_category: str, use_audio_input: bool = False
+) -> list[dict]:
+    """
+    This function loads the audio query content from the path specified in the test entry.
+    """
+    for entry in test_cases:
+        for turn in entry["question"]:
+            for msg in turn:
+                if msg["role"] != "user":
+                    continue
+
+                assert (
+                    "audio_path" in msg
+                ), "Audio path should be specified in the test entry"
+
+                if use_audio_input:
+                    msg["audio_content"] = load_audio(msg["audio_path"])
+                    # msg["audio_format"] = "wav"
+                else:
+                    msg["content"] = msg["transcript"]
+
+                del msg["transcript"]
+                del msg["audio_path"]
+
+    return test_cases
+
+
+def contain_audio_input(message: dict) -> bool:
+    """Return True iff the message is a user message that carries raw audio."""
+
+    assert type(message) == dict, "Message should be a dict"
+
+    contains_audio = "audio_content" in message
+
+    # If audio is present, it must come from the user.
+    if contains_audio and message.get("role") != "user":
+        raise ValueError("Audio input should only appear in user messages")
+
+    return contains_audio

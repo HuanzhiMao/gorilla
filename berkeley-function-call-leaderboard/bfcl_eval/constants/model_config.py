@@ -88,6 +88,7 @@ class ModelConfig:
         output_price (Optional[float]): USD per million output tokens (None for open source models).
         is_fc_model (bool): True if this model is used in Function-Calling mode, otherwise False for Prompt-based mode.
         underscore_to_dot (bool): True if model does not support '.' in function names, in which case we will replace '.' with '_'. Currently this only matters for checker.  TODO: We should let the tool compilation step also take this into account.
+        supports_audio_input (bool): True if the model supports native audio input.
 
     """
 
@@ -108,6 +109,9 @@ class ModelConfig:
 
     # True if this model does not allow '.' in function names
     underscore_to_dot: bool = False
+
+    # True if the model supports native audio input.
+    supports_audio_input: bool = False
 
 
 # Inference through API calls
@@ -2008,6 +2012,35 @@ third_party_inference_model_map = {
     ),
 }
 
+
+audio_input_model_map = {
+    "gpt-4o-audio-preview-2025-06-03-FC": ModelConfig(
+        model_name="gpt-4o-audio-preview-2025-06-03",
+        display_name="GPT-4o-audio-preview-2025-06-03 (FC)",
+        url="https://openai.com/index/gpt-4-1/",
+        org="OpenAI",
+        license="Proprietary",
+        model_handler=OpenAICompletionsHandler,
+        input_price=2,
+        output_price=8,
+        is_fc_model=True,
+        underscore_to_dot=True,
+        supports_audio_input=True,
+    ),
+    "gpt-4o-audio-preview-2025-06-03": ModelConfig(
+        model_name="gpt-4o-audio-preview-2025-06-03",
+        display_name="GPT-4o-audio-preview-2025-06-03 (Prompt)",
+        url="https://openai.com/index/gpt-4-1/",
+        org="OpenAI",
+        license="Proprietary",
+        model_handler=OpenAICompletionsHandler,
+        input_price=2,
+        output_price=8,
+        is_fc_model=False,
+        underscore_to_dot=False,
+        supports_audio_input=True,
+    ),
+}
 
 MODEL_CONFIG_MAPPING = {
     **api_inference_model_map,

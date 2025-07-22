@@ -15,14 +15,26 @@ from bfcl_eval.model_handler.utils import (
     retry_with_backoff,
     system_prompt_pre_processing_chat_model,
 )
+from bfcl_eval.utils import contain_audio_input, is_audio
 from openai import OpenAI, RateLimitError
+import base64
 
 
 class OpenAICompletionsHandler(BaseHandler):
+    """
+    This class can handle the audio input for FC models.
+    """
+
     def __init__(self, model_name, temperature) -> None:
         super().__init__(model_name, temperature)
         self.model_style = ModelStyle.OpenAI_Completions
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+    # @staticmethod
+    # def _save_audio_response(message: dict, audio_path: str):
+    #     wav_bytes = base64.b64decode(message.audio.data)
+    #     with open(audio_path, "wb") as f:
+    #         f.write(wav_bytes)
 
     def decode_ast(self, result, language="Python"):
         if "FC" in self.model_name or self.is_fc_model:
@@ -66,10 +78,19 @@ class OpenAICompletionsHandler(BaseHandler):
         if len(tools) > 0:
             kwargs["tools"] = tools
 
+        if inference_data["audio_input"]:
+            kwargs["modalities"] = ["text", "audio"]
+            # TODO: Choose which voice to use
+            kwargs["audio"] = {"voice": "alloy", "format": "wav"}
+
         return self.generate_with_backoff(**kwargs)
 
     def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
-        inference_data["message"] = []
+        if is_audio(test_entry["id"]) and self.supports_audio_input:
+            inference_data["audio_input"] = True
+        else:
+            inference_data["audio_input"] = False
+
         return inference_data
 
     def _compile_tools(self, inference_data: dict, test_entry: dict) -> dict:
@@ -82,7 +103,12 @@ class OpenAICompletionsHandler(BaseHandler):
         return inference_data
 
     def _parse_query_response_FC(self, api_response: Any) -> dict:
-        try:
+        message = api_response.choices[0].message
+        model_responses = []
+        tool_call_ids = []
+
+        if message.tool_calls:
+            # Handle tool calls
             model_responses = [
                 {func_call.function.name: func_call.function.arguments}
                 for func_call in api_response.choices[0].message.tool_calls
@@ -90,9 +116,16 @@ class OpenAICompletionsHandler(BaseHandler):
             tool_call_ids = [
                 func_call.id for func_call in api_response.choices[0].message.tool_calls
             ]
-        except:
-            model_responses = api_response.choices[0].message.content
-            tool_call_ids = []
+        elif message.content:
+            # Handle normal text response
+            model_responses = message.content
+        elif message.audio:
+            # Handle audio response
+            model_responses = message.audio.transcript
+            # TODO: Save audio response to a file with meaningful name
+            # self._save_audio_response(message, "audio_response.wav")
+        else:
+            raise ValueError("Unexpected message type")
 
         model_responses_message_for_chat_history = api_response.choices[0].message
 
@@ -107,14 +140,31 @@ class OpenAICompletionsHandler(BaseHandler):
     def add_first_turn_message_FC(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
-        inference_data["message"].extend(first_turn_message)
+        for message in first_turn_message:
+            if contain_audio_input(message):
+                inference_data["message"].append(
+                    {
+                        "role": message["role"],
+                        "content": [
+                            {
+                                "type": "input_audio",
+                                "input_audio": {
+                                    "data": message["audio_content"],
+                                    "format": "wav",
+                                },
+                            }
+                        ],
+                    }
+                )
+            else:
+                inference_data["message"].append(message)
         return inference_data
 
     def _add_next_turn_user_message_FC(
         self, inference_data: dict, user_message: list[dict]
     ) -> dict:
-        inference_data["message"].extend(user_message)
-        return inference_data
+        # Same handling logic as add_first_turn_message_FC
+        return self.add_first_turn_message_FC(inference_data, user_message)
 
     def _add_assistant_message_FC(
         self, inference_data: dict, model_response_data: dict

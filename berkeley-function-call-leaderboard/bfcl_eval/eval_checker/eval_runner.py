@@ -29,6 +29,7 @@ def get_handler(model_name):
         model_name, temperature=0
     )  # Temperature doesn't matter for evaluation
     handler.is_fc_model = config.is_fc_model
+    handler.supports_audio_input = config.supports_audio_input
     return handler
 
 
