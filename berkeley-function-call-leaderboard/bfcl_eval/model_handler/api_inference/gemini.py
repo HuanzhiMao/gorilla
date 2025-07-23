@@ -14,6 +14,7 @@ from bfcl_eval.model_handler.utils import (
     retry_with_backoff,
     system_prompt_pre_processing_chat_model,
 )
+from bfcl_eval.utils import contain_audio_input
 from google import genai
 from google.genai import errors as genai_errors
 from google.genai.types import (
@@ -183,14 +184,27 @@ class GeminiHandler(BaseHandler):
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
         for message in first_turn_message:
-            inference_data["message"].append(
-                Content(
-                    role=message["role"],
-                    parts=[
-                        Part(text=message["content"]),
-                    ],
+            if contain_audio_input(message):
+                inference_data["message"].append(
+                    Content(
+                        role="user",
+                        parts=[
+                            Part.from_bytes(
+                                data=message["audio_content"],
+                                mime_type="audio/wav",
+                            ),
+                        ],
+                    )
                 )
-            )
+            else:
+                inference_data["message"].append(
+                    Content(
+                        role=message["role"],
+                        parts=[
+                            Part(text=message["content"]),
+                        ],
+                    )
+                )
         return inference_data
 
     def _add_next_turn_user_message_FC(
