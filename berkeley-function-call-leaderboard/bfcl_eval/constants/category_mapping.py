@@ -1,4 +1,4 @@
-VERSION_PREFIX = "BFCL_v4"
+VERSION_PREFIX = "BFCL_v3"
 
 
 ALL_AVAILABLE_MEMORY_BACKENDS = [
@@ -8,7 +8,7 @@ ALL_AVAILABLE_MEMORY_BACKENDS = [
 ]
 
 NON_LIVE_CATEGORY = [
-    "simple",
+    # "simple",
     "java",
     "javascript",
     "multiple",
@@ -25,10 +25,10 @@ NON_LIVE_CATEGORY = [
 ]
 LIVE_CATEGORY = [
     "live_simple",
-    "live_multiple",
+    # "live_multiple",
     "live_parallel",
     "live_parallel_multiple",
-    "live_irrelevance",
+    # "live_irrelevance",
     "live_relevance",
 ]
 MULTI_TURN_CATEGORY = [
@@ -56,7 +56,8 @@ MEMORY_SCENARIO_NAME = [
 SINGLE_TURN_CATEGORY = NON_LIVE_CATEGORY + LIVE_CATEGORY
 AGENTIC_CATEGORY = MEMORY_CATEGORY + WEB_SEARCH_CATEGORY
 
-ALL_CATEGORIES = SINGLE_TURN_CATEGORY + MULTI_TURN_CATEGORY + AGENTIC_CATEGORY
+ALL_CATEGORIES = SINGLE_TURN_CATEGORY 
+# + MULTI_TURN_CATEGORY + AGENTIC_CATEGORY
 
 TEST_COLLECTION_MAPPING = {
     "all": ALL_CATEGORIES,

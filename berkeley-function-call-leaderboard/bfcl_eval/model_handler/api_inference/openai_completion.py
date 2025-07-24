@@ -86,6 +86,7 @@ class OpenAICompletionsHandler(BaseHandler):
         return self.generate_with_backoff(**kwargs)
 
     def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
+        inference_data["message"] = []
         if is_audio(test_entry["id"]) and self.supports_audio_input:
             inference_data["audio_input"] = True
         else:
