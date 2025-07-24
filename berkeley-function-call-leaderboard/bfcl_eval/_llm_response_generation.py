@@ -77,7 +77,7 @@ def build_handler(model_name, temperature):
     return handler
 
 
-def get_involved_test_entries(test_category_args, run_ids):
+def get_involved_test_entries(test_category_args, run_ids, use_audio_input):
     all_test_categories, all_test_entries_involved = [], []
     if run_ids:
         with open(TEST_IDS_TO_GENERATE_PATH) as f:
@@ -86,14 +86,14 @@ def get_involved_test_entries(test_category_args, run_ids):
             if len(test_ids) == 0:
                 continue
             all_test_entries_involved.extend(
-                [entry for entry in load_dataset_entry(category) if entry["id"] in test_ids]
+                [entry for entry in load_dataset_entry(category, use_audio_input=use_audio_input) if entry["id"] in test_ids]
             )
             all_test_categories.append(category)
 
     else:
         all_test_categories = parse_test_category_argument(test_category_args)
         for test_category in all_test_categories:
-            all_test_entries_involved.extend(load_dataset_entry(test_category))
+            all_test_entries_involved.extend(load_dataset_entry(test_category, use_audio_input=use_audio_input))
 
     return (
         all_test_categories,
@@ -290,7 +290,7 @@ def main(args):
     (
         all_test_categories,
         all_test_entries_involved,
-    ) = get_involved_test_entries(args.test_category, args.run_ids)
+    ) = get_involved_test_entries(args.test_category, args.run_ids, args.use_audio_input)
 
     for model_name in args.model:
         if model_name not in MODEL_CONFIG_MAPPING:

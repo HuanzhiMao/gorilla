@@ -15,7 +15,7 @@ from bfcl_eval.model_handler.utils import (
     retry_with_backoff,
     system_prompt_pre_processing_chat_model,
 )
-from bfcl_eval.utils import contain_audio_input, is_audio
+from bfcl_eval.utils import contain_audio_input, is_audio, audio_to_base64
 from openai import OpenAI, RateLimitError
 import base64
 
@@ -65,8 +65,9 @@ class OpenAICompletionsHandler(BaseHandler):
 
     def _query_FC(self, inference_data: dict):
         message: list[dict] = inference_data["message"]
+        # print(message)
         tools = inference_data["tools"]
-        inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
+        inference_data["inference_input_log"] = {"message": "not shown due to json size limit", "tools": tools}
 
         kwargs = {
             "messages": message,
@@ -150,7 +151,7 @@ class OpenAICompletionsHandler(BaseHandler):
                             {
                                 "type": "input_audio",
                                 "input_audio": {
-                                    "data": message["audio_content"],
+                                    "data": audio_to_base64(message["audio_content"]),
                                     "format": "wav",
                                 },
                             }
