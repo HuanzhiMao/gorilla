@@ -103,7 +103,7 @@ class GeminiHandler(BaseHandler):
             config.tools = [Tool(function_declarations=inference_data["tools"])]
 
         return self.generate_with_backoff(
-            model=self.model_name.replace("-FC", ""),
+            model=self.model_name.replace("-FC", "").replace("-Audio", ""),
             contents=inference_data["message"],
             config=config,
         )
