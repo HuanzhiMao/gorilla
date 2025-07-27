@@ -56,7 +56,12 @@ class OpenAICompletionsHandler(BaseHandler):
     @retry_with_backoff(error_type=RateLimitError)
     def generate_with_backoff(self, **kwargs):
         start_time = time.time()
-        api_response = self.client.chat.completions.create(**kwargs)
+        try:
+            api_response = self.client.chat.completions.create(**kwargs)
+        except Exception as e:
+            # print(e)
+            print(kwargs)
+            raise e
         end_time = time.time()
 
         return api_response, end_time - start_time
@@ -67,7 +72,10 @@ class OpenAICompletionsHandler(BaseHandler):
         message: list[dict] = inference_data["message"]
         # print(message)
         tools = inference_data["tools"]
-        inference_data["inference_input_log"] = {"message": "not shown due to json size limit", "tools": tools}
+        inference_data["inference_input_log"] = {
+            "message": "not shown due to json size limit",
+            "tools": tools,
+        }
 
         kwargs = {
             "messages": message,
@@ -124,12 +132,19 @@ class OpenAICompletionsHandler(BaseHandler):
         elif message.audio:
             # Handle audio response
             model_responses = message.audio.transcript
+
             # TODO: Save audio response to a file with meaningful name
             # self._save_audio_response(message, "audio_response.wav")
         else:
             raise ValueError("Unexpected message type")
 
-        model_responses_message_for_chat_history = api_response.choices[0].message
+        # These fields are not supported in the chat history, so we must remove them before adding to the chat history
+        if message.audio:
+            del message.audio.data
+            del message.audio.transcript
+            del message.audio.expires_at
+
+        model_responses_message_for_chat_history = message
 
         return {
             "model_responses": model_responses,
