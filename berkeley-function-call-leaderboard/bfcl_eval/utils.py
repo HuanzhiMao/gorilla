@@ -1,3 +1,4 @@
+import itertools
 import base64
 import json
 import os
@@ -6,22 +7,11 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Union
 
-from bfcl_eval.constants.category_mapping import (
-    ALL_CATEGORIES,
-    MEMORY_SCENARIO_NAME,
-    TEST_COLLECTION_MAPPING,
-    VERSION_PREFIX,
-)
+from bfcl_eval.constants.category_mapping import *
 from bfcl_eval.constants.default_prompts import (
     ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
 )
-from bfcl_eval.constants.eval_config import (
-    MEMORY_PREREQ_CONVERSATION_PATH,
-    AUDIO_FILE_PATH,
-    MULTI_TURN_FUNC_DOC_PATH,
-    POSSIBLE_ANSWER_PATH,
-    PROMPT_PATH,
-)
+from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.executable_backend_config import (
     MULTI_TURN_FUNC_DOC_FILE_MAPPING,
 )
@@ -29,9 +19,9 @@ from bfcl_eval.constants.executable_backend_config import (
 #### Helper functions to extract/parse/complete test category from different formats ####
 
 
-def extract_test_category(input_string: Union[str, Path]) -> str:
+def extract_test_category(input_string: Union[str, Path], raise_error: bool = True) -> str:
     """
-    Extract the test category from a given file name.
+    Extract the test category from a given file name. If category cannot be extracted, and the flag is not set, then raise an error.
     """
     input_string = str(input_string)
     pattern = rf".*{VERSION_PREFIX}_(\w+?)(?:_score|_result)?\.json"
@@ -40,10 +30,12 @@ def extract_test_category(input_string: Union[str, Path]) -> str:
     # Check if there's a match and extract the captured group
     if match:
         return match.group(1)  # the first captured group (\w+)
-    else:
+    elif raise_error:
         raise ValueError(
             f"Could not extract the test category from the input string: {input_string}"
         )
+    else:
+        return None
 
 
 def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = False) -> str:
@@ -55,6 +47,10 @@ def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = Fals
     """
     if remove_prereq:
         test_entry_id = test_entry_id.replace("_prereq", "")
+    # For format sensitivity test cases, the test entry id is in the form of "format_sensitivity_0:live_simple_23-5-1", where the second part is the original test entry id
+    if ":" in test_entry_id:
+        test_entry_id = test_entry_id.split(":")[0]
+
     return test_entry_id.rsplit("_", 1)[0]
 
 
@@ -91,8 +87,8 @@ def find_file_by_category(
     else:
         suffix = ".json"
 
-    for json_file in folder_path.glob(f"*{suffix}"):
-        if extract_test_category(json_file) == test_category:
+    for json_file in folder_path.rglob(f"*{suffix}"):
+        if extract_test_category(json_file, raise_error=False) == test_category:
             return json_file
     raise FileNotFoundError(f"No JSON file found with category: {test_category}")
 
@@ -136,7 +132,31 @@ def parse_test_category_argument(test_category_args: list[str]) -> list[str]:
     return sorted(list(test_name_total))
 
 
+def load_test_entries_from_id_file(id_file_path: Path) -> tuple[list[str], list[dict]]:
+    """
+    Helper function to load the test entries from the id file (e.g. `test_case_ids_to_generate.json.example`)
+    """
+    with open(id_file_path) as f:
+        test_ids_to_generate = json.load(f)
+
+    categories: list[str] = []
+    entries: list[dict] = []
+    for category, test_ids in test_ids_to_generate.items():
+        # Skip categories that have an empty ID list
+        if not test_ids:
+            continue
+        # Extend the entries list with only those whose id is present in the ID list
+        entries.extend(
+            [entry for entry in load_dataset_entry(category) if entry["id"] in test_ids]
+        )
+        categories.append(category)
+
+    return categories, entries
+
+
 #### Predicate functions to check the test category ####
+def is_format_sensitivity(test_category: str) -> bool:
+    return "format_sensitivity" in test_category
 
 
 def is_web_search(test_category):
@@ -161,6 +181,22 @@ def is_agentic(test_category):
 
 def is_multi_turn(test_category):
     return "multi_turn" in test_category
+
+
+def is_live(test_category):
+    return "live" in test_category
+
+
+def is_non_live(test_category: str) -> bool:
+    # “Non-live” ⇔ it is NOT in any of the other three groups
+    return not any(
+        (
+            is_live(test_category),
+            is_multi_turn(test_category),
+            is_agentic(test_category),
+            is_format_sensitivity(test_category),
+        )
+    )
 
 
 def is_sql(test_category):
@@ -209,6 +245,31 @@ def contain_multi_turn_interaction(test_category):
     return is_multi_turn(test_category) or is_agentic(test_category)
 
 
+def get_general_category(test_category: str) -> str:
+    """
+    Map a specific test category (e.g. "simple", "live_simple", "multi_turn_base")
+    to one of the 5 high-level groups used for organizing result / score files:
+
+    • non_live: categories in NON_LIVE_CATEGORY
+    • live: categories in LIVE_CATEGORY
+    • multi_turn: categories in MULTI_TURN_CATEGORY
+    • agentic: categories in AGENTIC_CATEGORY
+    • format_sensitivity: the format sensitivity test categories
+    """
+    if is_non_live(test_category):
+        return "non_live"
+    elif is_live(test_category):
+        return "live"
+    elif is_multi_turn(test_category):
+        return "multi_turn"
+    elif is_agentic(test_category):
+        return "agentic"
+    elif is_format_sensitivity(test_category):
+        return "format_sensitivity"
+    else:
+        raise ValueError(f"Invalid test category: {test_category}")
+
+
 #### Helper functions to load/write the dataset files ####
 
 
@@ -224,6 +285,29 @@ def load_file(file_path, sort_by_id=False):
     return result
 
 
+def sort_file_content_by_id(file_path: Path) -> None:
+    """
+    Sort the content of a file by the id of the entries. The file is only rewritten
+    when the ordering actually changes to avoid unnecessary disk writes.
+    """
+    # Load the current content preserving original order (and potential duplicates)
+    original_entries = load_file(file_path)
+
+    # Desired final ordering (sorted, unique)
+    sorted_entries = sorted(original_entries, key=sort_key)
+
+    assert len(original_entries) == len(
+        sorted_entries
+    ), "There should be no duplicates in the file"
+
+    # Check if the write is necessary by comparing id sequences
+    original_ids = [entry["id"] for entry in original_entries]
+    sorted_ids = [entry["id"] for entry in sorted_entries]
+
+    if original_ids != sorted_ids:
+        write_list_of_dicts_to_file(file_path, sorted_entries)
+
+
 def load_dataset_entry(
     test_category: str,
     include_prereq: bool = True,
@@ -237,20 +321,30 @@ def load_dataset_entry(
     If `include_language_specific_hint` is True, it will include the language-specific hint for the function description (for Java, JavaScript, and Python).
     If `use_audio_input` is True, the test entry will carry the audio query in the user message, instead of the text.
     """
-    if is_web_search(test_category):
+    if is_format_sensitivity(test_category):
+        # Format sensitivity categories
+        all_entries = load_format_sensitivity_test_cases()
+
+    elif is_web_search(test_category):
+        # Web search categories
         file_name = f"{VERSION_PREFIX}_web_search.json"
         all_entries = load_file(PROMPT_PATH / file_name)
         all_entries = process_web_search_test_case(all_entries, test_category)
+
     elif is_memory(test_category):
+        # Memory categories
         all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_memory.json")
         for scenario in MEMORY_SCENARIO_NAME:
             all_entries = process_memory_test_case(
                 all_entries, test_category, scenario, include_prereq=include_prereq
             )
+    # FIXME: @HuanzhiMao
     elif is_audio(test_category):
         all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{test_category}.json")
         all_entries = process_audio_test_case(all_entries, test_category, use_audio_input)
+
     else:
+        # All other categories, we don't need any special handling
         file_name = f"{VERSION_PREFIX}_{test_category}.json"
         all_entries = load_file(PROMPT_PATH / file_name)
 
@@ -258,7 +352,7 @@ def load_dataset_entry(
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
 
     if include_language_specific_hint:
-        all_entries = process_func_doc(all_entries)
+        all_entries = add_language_specific_hint_to_function_doc(all_entries)
 
     return all_entries
 
@@ -268,24 +362,31 @@ def load_ground_truth_entry(test_category: str) -> list[dict]:
     This function retrieves the ground truth entry for a given test category.
     The input should not be a test category goup, but a specific test category.
     """
-    if not is_memory(test_category) and not is_web_search(test_category):
-        file_name = f"{VERSION_PREFIX}_{test_category}.json"
-    elif is_web_search(test_category):
-        file_name = f"{VERSION_PREFIX}_web_search.json"
-    else:
-        # Memory categories
-        file_name = f"{VERSION_PREFIX}_memory.json"
+    if is_format_sensitivity(test_category):
+        return load_format_sensitivity_ground_truth_entry()
 
-    return load_file(POSSIBLE_ANSWER_PATH / file_name)
+    elif is_memory(test_category):
+        return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_memory.json")
+
+    elif is_web_search(test_category):
+        return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_web_search.json")
+
+    else:
+        return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_{test_category}.json")
 
 
 def write_list_of_dicts_to_file(filename, data, subdir=None):
     if subdir:
-        # Ensure the subdirectory exists
+        # Determine the general category subfolder based on the filename, if possible
+        test_category = extract_test_category(filename)
+        group_dir_name = get_general_category(test_category)
+        subdir = os.path.join(subdir, group_dir_name)
+
+        # Ensure the (possibly nested) subdirectory exists
         os.makedirs(subdir, exist_ok=True)
 
         # Construct the full path to the file
-        filename = os.path.join(subdir, filename)
+        filename = os.path.join(subdir, os.path.basename(filename))
 
     # Write the list of dictionaries to the file in JSON format
     with open(filename, "w", encoding="utf-8") as f:
@@ -328,7 +429,8 @@ def sort_key(entry):
 
     In either case, the universal index is enough to sort the entries.
     """
-    parts = entry["id"].rsplit("_", 1)
+    entry_id = entry["id"].split(":")[0]
+    parts = entry_id.rsplit("_", 1)
     test_category, index = parts[0], parts[1]
     # This handles the case where the index is in the form TestCategory_Index-FuncDocSubIndex-PromptSubIndex
     if "-" in index:
@@ -336,23 +438,38 @@ def sort_key(entry):
         index = index.split("-")[0]
 
     # Make sure the memory prereq entries are inferenced first to avoid the memory entries being blocked due to dependencies.
-    # Single-turn happen first
-    if not is_multi_turn(test_category) and not is_agentic(test_category):
+
+    # Memory prereq happen first
+    if is_memory_prereq(test_category):
         priority = 0
-    # Multi-turn happen second
-    elif is_multi_turn(test_category):
+    # Web search happen second
+    elif is_web_search(test_category):
         priority = 1
-    # Prereq happen third
-    elif is_memory_prereq(test_category):
+    # Single-turn happen third
+    elif not contain_multi_turn_interaction(test_category):
         priority = 2
-    # Agentic (web search) happen third
-    elif is_agentic(test_category) and not is_memory(test_category):
+    # Multi-turn happen fourth
+    elif is_multi_turn(test_category):
         priority = 3
     # Memory happen last
+    # Hopefully the prereq entries are done by now
     elif is_memory(test_category):
         priority = 4
 
     return (priority, test_category, int(index))
+
+
+def filter_entries_by_id(
+    reference_entries: list[dict],
+    candidate_entries: list[dict],
+) -> list[dict]:
+    """
+    Return all entries in `candidate_entries` whose ``"id"`` *matches*
+    at least one entry in `reference_entries`.
+    """
+
+    reference_ids = {entry["id"] for entry in reference_entries}
+    return [entry for entry in candidate_entries if entry["id"] in reference_ids]
 
 
 #### Helper functions to check the output format ####
@@ -479,7 +596,7 @@ def _func_doc_language_specific_pre_processing(
     return function
 
 
-def process_func_doc(test_cases: list[dict]) -> list[dict]:
+def add_language_specific_hint_to_function_doc(test_cases: list[dict]) -> list[dict]:
     """
     This function adds language-specific hints to the function description and processes the parameters accordingly.
     """
@@ -760,3 +877,82 @@ def contain_audio_input(message: dict) -> bool:
         raise ValueError("Audio input should only appear in user messages")
 
     return contains_audio
+
+
+#### Utils for Format Sensitivity ####
+
+
+def load_format_sensitivity_test_cases() -> list[dict]:
+    """
+    Loads all the format sensitivity test cases. 26 configs x 200 test cases = 5200 test cases.
+    """
+    _, all_test_entries_involved = load_test_entries_from_id_file(
+        FORMAT_SENSITIVITY_IDS_PATH
+    )
+    all_configs = get_all_format_sensitivity_configs()
+
+    all_format_sensitivity_test_cases = []
+    index = 0
+    for entry in all_test_entries_involved:
+        for config in all_configs:
+            entry_copy = deepcopy(entry)
+            entry_copy["id"] = f"format_sensitivity_{index}:{config}:{entry_copy['id']}"
+
+            all_format_sensitivity_test_cases.append(entry_copy)
+            index += 1
+
+    return all_format_sensitivity_test_cases
+
+
+def load_format_sensitivity_ground_truth_entry() -> list[dict]:
+    all_categories, all_test_entries_involved = load_test_entries_from_id_file(
+        FORMAT_SENSITIVITY_IDS_PATH
+    )
+    all_ground_truth_entries = []
+    for category in all_categories:
+        all_ground_truth_entries.extend(load_ground_truth_entry(category))
+
+    return filter_entries_by_id(
+        reference_entries=all_test_entries_involved,
+        candidate_entries=all_ground_truth_entries,
+    )
+
+
+def get_all_format_sensitivity_configs() -> list[str]:
+    """
+    Get all the format sensitivity configs.
+    The format sensitivity configs are used to generate the default system prompt for prompting models.
+    """
+
+    RETURN_FORMAT = [
+        "python",
+        "json",
+        "verbose_xml",
+        "concise_xml",
+    ]
+    HAS_TOOL_CALL_TAG = ["True", "False"]
+    FUNCTION_DOC_FORMAT = [
+        "python",
+        "xml",
+        "json",
+    ]
+
+    all_configs = []
+    # 4 × 2 × 3 = 24 base combinations
+    for return_format in RETURN_FORMAT:
+        for has_tool_call_tag in HAS_TOOL_CALL_TAG:
+            for function_doc_format in FUNCTION_DOC_FORMAT:
+                all_configs.append(
+                    f"ret_fmt={return_format}&tool_call_tag={has_tool_call_tag}&func_doc_fmt={function_doc_format}&prompt_fmt=plaintext&style=classic"
+                )
+
+    # Add one config with markdown format
+    all_configs.append(
+        f"ret_fmt=python&tool_call_tag=False&func_doc_fmt=json&prompt_fmt=markdown&style=classic"
+    )
+    # Add one config with experimental prompt style
+    all_configs.append(
+        f"ret_fmt=python&tool_call_tag=False&func_doc_fmt=json&prompt_fmt=plaintext&style=experimental"
+    )
+
+    return all_configs

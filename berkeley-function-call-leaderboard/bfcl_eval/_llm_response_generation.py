@@ -1,13 +1,11 @@
 import argparse
-import json
 import multiprocessing as mp
 import os
 import shutil
-import threading
-import time
-from concurrent.futures import ThreadPoolExecutor
-from copy import deepcopy
 import traceback
+from collections import defaultdict, deque
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait, Future
+from copy import deepcopy
 
 from bfcl_eval.constants.eval_config import (
     PROJECT_ROOT,
@@ -19,10 +17,6 @@ from bfcl_eval.eval_checker.eval_runner_helper import load_file
 from bfcl_eval.model_handler.model_style import ModelStyle
 from bfcl_eval.utils import *
 from tqdm import tqdm
-
-RETRY_LIMIT = 3
-# 60s for the timer to complete. But often we find that even with 60 there is a conflict. So 65 is a safe no.
-RETRY_DELAY = 65  # Delay in seconds
 
 
 def get_args():
@@ -80,15 +74,9 @@ def build_handler(model_name, temperature):
 def get_involved_test_entries(test_category_args, run_ids, use_audio_input):
     all_test_categories, all_test_entries_involved = [], []
     if run_ids:
-        with open(TEST_IDS_TO_GENERATE_PATH) as f:
-            test_ids_to_generate = json.load(f)
-        for category, test_ids in test_ids_to_generate.items():
-            if len(test_ids) == 0:
-                continue
-            all_test_entries_involved.extend(
-                [entry for entry in load_dataset_entry(category, use_audio_input=use_audio_input) if entry["id"] in test_ids]
-            )
-            all_test_categories.append(category)
+        all_test_categories, all_test_entries_involved = load_test_entries_from_id_file(
+            TEST_IDS_TO_GENERATE_PATH
+        )
 
     else:
         all_test_categories = parse_test_category_argument(test_category_args)
@@ -110,12 +98,15 @@ def collect_test_cases(args, model_name, all_test_categories, all_test_entries_i
 
         # TODO: Simplify the handling of memory prerequisite entries/categories
         result_file_paths = [
-            model_result_dir / get_file_name_by_category(test_category, is_result_file=True)
+            model_result_dir
+            / get_general_category(test_category)
+            / get_file_name_by_category(test_category, is_result_file=True)
         ]
         if is_memory(test_category):
             # Memory test cases have the pre-requisite entries in a separate file
             result_file_paths.append(
                 model_result_dir
+                / get_general_category(test_category)
                 / get_file_name_by_category(f"{test_category}_prereq", is_result_file=True)
             )
 
@@ -164,61 +155,36 @@ def collect_test_cases(args, model_name, all_test_categories, all_test_entries_i
     return sorted(test_cases_to_generate, key=sort_key)
 
 
-def multi_threaded_inference(
-    handler, test_case, events, include_input_log, exclude_state_log
-):
+def multi_threaded_inference(handler, test_case, include_input_log, exclude_state_log):
 
     assert type(test_case["function"]) is list
 
-    # Wait for all dependencies to complete
-    for dependency_id in test_case.get("depends_on", []):
-        # TODO: Improve the dependency handling, when prereq doesn't need to be re-run
-        if dependency_id in events:
-            events[dependency_id].wait()  # Wait until the dependent task sets its event
+    try:
+        result, metadata = handler.inference(
+            deepcopy(test_case), include_input_log, exclude_state_log
+        )
+    except Exception as e:
+        # This is usually the case when the model getting stuck on one particular test case.
+        # For example, timeout error or FC model returning invalid JSON response.
+        # Since temperature is already set to 0.001, retrying the same test case will not help.
+        # So we continue the generation process and record the error message as the model response
+        error_block = (
+            "-" * 100
+            + "\n❗️❗️ Error occurred during inference. Continuing to next test case.\n"
+            + f"❗️❗️ Test case ID: {test_case['id']}, Error: {str(e)}\n"
+            + traceback.format_exc(limit=10)
+            + "-" * 100
+        )
+        print(error_block)
 
-    retry_count = 0
-
-    while True:
-        try:
-            result, metadata = handler.inference(
-                deepcopy(test_case), include_input_log, exclude_state_log
-            )
-            break  # Success, exit the loop
-        except Exception as e:
-            if retry_count < RETRY_LIMIT and (
-                "rate limit reached" in str(e).lower()
-                or (hasattr(e, "status_code") and (e.status_code in {429, 503, 500}))
-            ):
-                print(
-                    f"Rate limit reached. Sleeping for 65 seconds. Retry {retry_count + 1}/{RETRY_LIMIT}"
-                )
-                time.sleep(RETRY_DELAY)
-                retry_count += 1
-            else:
-                # This is usually the case when the model getting stuck on one particular test case.
-                # For example, timeout error or FC model returning invalid JSON response.
-                # Since temperature is already set to 0.001, retrying the same test case will not help.
-                # So we continue the generation process and record the error message as the model response
-                print("-" * 100)
-                print(
-                    "❗️❗️ Error occurred during inference. Maximum reties reached for rate limit or other error. Continuing to next test case."
-                )
-                print(f"❗️❗️ Test case ID: {test_case['id']}, Error: {str(e)}")
-                traceback.print_exc(limit=10)
-                print("-" * 100)
-
-                result = f"Error during inference: {str(e)}"
-                metadata = {"traceback": traceback.format_exc()}
-
-    # Signal that the current task is complete
-    events[test_case["id"]].set()
+        result = f"Error during inference: {str(e)}"
+        metadata = {"traceback": traceback.format_exc()}
 
     result_to_write = {
         "id": test_case["id"],
         "result": result,
+        **metadata,
     }
-
-    result_to_write.update(metadata)
 
     return result_to_write
 
@@ -241,33 +207,77 @@ def generate_results(args, model_name, test_cases_total):
             result_dir=args.result_dir,
             update_mode=update_mode,
         )
+        return
 
-    else:
-        futures = []
-        events = {test_case["id"]: threading.Event() for test_case in test_cases_total}
-        with ThreadPoolExecutor(max_workers=args.num_threads) as executor:
-            with tqdm(
-                total=len(test_cases_total), desc=f"Generating results for {model_name}"
-            ) as pbar:
+    # ───── dependency bookkeeping ──────────────────────────────
+    dependencies = {
+        test_case["id"]: set(test_case.get("depends_on", []))
+        for test_case in test_cases_total
+    }
+    children_of = defaultdict(list)
+    for test_case in test_cases_total:
+        for dependency_id in test_case.get("depends_on", []):
+            children_of[dependency_id].append(test_case["id"])
 
-                for test_case in test_cases_total:
-                    future = executor.submit(
-                        multi_threaded_inference,
-                        handler,
-                        test_case,
-                        events,
-                        args.include_input_log,
-                        args.exclude_state_log,
-                    )
-                    futures.append(future)
+    id_to_test_case = {test_case["id"]: test_case for test_case in test_cases_total}
 
-                for future in futures:
-                    # This will wait for the task to complete, so that we are always writing in order
-                    result = future.result()
-                    handler.write(
-                        result, result_dir=args.result_dir, update_mode=args.run_ids
-                    )  # Only when we run specific test ids, we will need update_mode=True to keep entries in the same order
-                    pbar.update()
+    ready_queue = deque(
+        [
+            test_case_id
+            for test_case_id, dependency_ids in dependencies.items()
+            if not dependency_ids
+        ]
+    )
+    in_flight: dict[Future, str] = {}  # future -> test_case_id
+    completed = set()
+
+    with ThreadPoolExecutor(max_workers=args.num_threads) as pool, tqdm(
+        total=len(test_cases_total), desc=f"Generating results for {model_name}"
+    ) as pbar:
+
+        # seed initial ready tasks
+        while ready_queue and len(in_flight) < args.num_threads:
+            test_case_id = ready_queue.popleft()
+            test_case = id_to_test_case[test_case_id]
+            future = pool.submit(
+                multi_threaded_inference,
+                handler,
+                test_case,
+                args.include_input_log,
+                args.exclude_state_log,
+            )
+            in_flight[future] = test_case_id
+
+        # main scheduler loop
+        while in_flight:
+            done, _ = wait(in_flight, return_when=FIRST_COMPLETED)
+            for future in done:
+                test_case_id = in_flight.pop(future)
+                result_dict = future.result()
+                handler.write(
+                    result_dict, result_dir=args.result_dir, update_mode=args.run_ids
+                )
+                pbar.update()
+                completed.add(test_case_id)
+
+                # unlock children
+                for child_id in children_of[test_case_id]:
+                    dependencies[child_id].discard(test_case_id)
+                    if not dependencies[child_id]:
+                        ready_queue.append(child_id)
+
+            # refill the pool up to max_workers
+            while ready_queue and len(in_flight) < args.num_threads:
+                test_case_id = ready_queue.popleft()
+                test_case = id_to_test_case[test_case_id]
+                future = pool.submit(
+                    multi_threaded_inference,
+                    handler,
+                    test_case,
+                    args.include_input_log,
+                    args.exclude_state_log,
+                )
+                in_flight[future] = test_case_id
 
 
 def main(args):
@@ -332,3 +342,4 @@ def main(args):
             )
         else:
             generate_results(args, model_name, test_cases_total)
+            # FIXME: Sort the result files by id at the end

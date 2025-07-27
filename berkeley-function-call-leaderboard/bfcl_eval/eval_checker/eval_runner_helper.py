@@ -5,10 +5,11 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from bfcl_eval.constants.category_mapping import VERSION_PREFIX
 from bfcl_eval.constants.column_headers import *
 from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING
-from bfcl_eval.utils import extract_test_category, load_file, load_dataset_entry
+from bfcl_eval.utils import *
 
 
 def calculate_weighted_accuracy(accuracy_dict_list, display_na_if_category_missing=True):
@@ -160,6 +161,29 @@ def record_cost_latency(leaderboard_table, model_name, model_output_data):
     leaderboard_table[model_name]["latency"]["data"].extend(latency)
 
 
+def save_eval_results(
+    result, correct_count, model_result, test_category, model_name, score_dir
+) -> tuple[float, int]:
+    """
+    Compute accuracy, finalize evaluation results and write them to disk.
+    Return the accuracy and the total number of test cases.
+    """
+    accuracy = correct_count / len(model_result)
+    result.insert(
+        0,
+        {
+            "accuracy": accuracy,
+            "correct_count": correct_count,
+            "total_count": len(model_result),
+        },
+    )
+    output_file_name = f"{VERSION_PREFIX}_{test_category}_score.json"
+    output_file_dir = score_dir / model_name / get_general_category(test_category)
+    write_list_of_dicts_to_file(output_file_name, result, output_file_dir)
+
+    return accuracy, len(model_result)
+
+
 def get_cost_latency_info(model_name, cost_data, latency_data):
     cost, mean_latency, std_latency, percentile_95_latency = "N/A", "N/A", "N/A", "N/A"
     model_config = MODEL_CONFIG_MAPPING[model_name]
@@ -265,14 +289,14 @@ def generate_leaderboard_csv(
         )
 
         # Non-Live Score
-        python_simple_ast_non_live = get_category_score(value, "simple")
+        python_simple_ast_non_live = get_category_score(value, "simple_python")
         python_multiple_ast_non_live = get_category_score(value, "multiple")
         python_parallel_ast_non_live = get_category_score(value, "parallel")
         python_parallel_multiple_ast_non_live = get_category_score(
             value, "parallel_multiple"
         )
-        java_simple_ast_non_live = get_category_score(value, "java")
-        javascript_simple_ast_non_live = get_category_score(value, "javascript")
+        java_simple_ast_non_live = get_category_score(value, "simple_java")
+        javascript_simple_ast_non_live = get_category_score(value, "simple_javascript")
         irrelevance_non_live = get_category_score(value, "irrelevance")
 
         simple_ast_non_live = calculate_unweighted_accuracy(
@@ -443,10 +467,12 @@ def generate_leaderboard_csv(
             [
                 overall_accuracy_non_live,
                 overall_accuracy_live,
+                total_irrelevance,
+                total_relevance,
                 overall_accuracy_multi_turn,
                 overall_accuracy_agentic,
             ],
-            [10, 10, 30, 50],
+            [10, 10, 5, 5, 30, 40],
             display_na_if_category_missing=False,
         )
 
@@ -597,8 +623,9 @@ def update_leaderboard_table_with_local_score_file(
     # Traverse each subdirectory
     for subdir in subdirs:
         model_name = subdir.relative_to(score_path).name
-        # Find and process all JSON files in the subdirectory
-        for model_score_json in subdir.glob("*.json"):
+        # Find and process all score JSON files recursively in the subdirectory
+        pattern = f"{VERSION_PREFIX}_*_score.json"
+        for model_score_json in subdir.rglob(pattern):
             metadata = load_file(model_score_json)[0]
             accuracy, total_count = metadata["accuracy"], metadata["total_count"]
             test_category = extract_test_category(model_score_json)

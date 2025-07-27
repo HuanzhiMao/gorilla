@@ -29,6 +29,8 @@ MEMORY_PREREQ_CONVERSATION_PATH = PROMPT_PATH / "memory_prereq_conversation"
 UTILS_PATH = PACKAGE_ROOT / "scripts"
 PROMPT_PATH = PACKAGE_ROOT / "audio_data"
 AUDIO_FILE_PATH = PROMPT_PATH / "audio"
+FORMAT_SENSITIVITY_IDS_PATH = PROMPT_PATH / "BFCL_v4_format_sensitivity.json"
+
 
 RED_FONT = "\033[91m"
 RESET = "\033[0m"
