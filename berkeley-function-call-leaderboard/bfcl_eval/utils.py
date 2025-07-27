@@ -849,6 +849,7 @@ def process_audio_test_case(
                 if msg["role"] != "user":
                     continue
 
+ 
                 assert (
                     "audio_path" in msg
                 ), "Audio path should be specified in the test entry"
