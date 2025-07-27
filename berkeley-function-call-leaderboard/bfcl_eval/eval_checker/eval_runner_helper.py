@@ -324,6 +324,7 @@ def generate_leaderboard_csv(
                 multiple_ast_non_live,
                 parallel_ast_non_live,
                 parallel_multiple_ast_non_live,
+                irrelevance_non_live,
             ],
             display_na_if_category_missing=False,
         )
@@ -369,6 +370,8 @@ def generate_leaderboard_csv(
                 python_multiple_ast_live,
                 python_parallel_ast_live,
                 python_parallel_multiple_ast_live,
+                irrelevance_live,
+                relevance_live,
             ],
             display_na_if_category_missing=False,
         )
@@ -415,64 +418,21 @@ def generate_leaderboard_csv(
             ]
         )
 
-        # Agentic Score
-        web_search_base = get_category_score(value, "web_search_base")
-        web_search_no_snippet = get_category_score(value, "web_search_no_snippet")
-        summary_web_search = calculate_unweighted_accuracy(
-            [
-                web_search_base,
-                web_search_no_snippet,
-            ]
-        )
-        memory_kv = get_category_score(value, "memory_kv")
-        memory_vector = get_category_score(value, "memory_vector")
-        memory_rec_sum = get_category_score(value, "memory_rec_sum")
-        summary_memory = calculate_unweighted_accuracy(
-            [
-                memory_kv,
-                memory_vector,
-                memory_rec_sum,
-            ]
-        )
-        overall_accuracy_agentic = calculate_unweighted_accuracy(
-            [
-                summary_web_search,
-                summary_memory,
-            ],
-            display_na_if_category_missing=False,
-        )
-
-        data_agentic.append(
-            [
-                "N/A",
-                model_config.display_name,
-                overall_accuracy_agentic["display_accuracy"],
-                summary_web_search["display_accuracy"],
-                web_search_base["display_accuracy"],
-                web_search_no_snippet["display_accuracy"],
-                summary_memory["display_accuracy"],
-                memory_kv["display_accuracy"],
-                memory_vector["display_accuracy"],
-                memory_rec_sum["display_accuracy"],
-            ]
-        )
-
         # Total Score
+        single_turn_ast = calculate_unweighted_accuracy(
+            [overall_accuracy_live, overall_accuracy_non_live]
+        )
         total_irrelevance = calculate_unweighted_accuracy(
             [irrelevance_non_live, irrelevance_live]
         )
         total_relevance = relevance_live
 
-        total_overall_accuracy = calculate_percentage_weighted_accuracy(
+        total_overall_accuracy = calculate_unweighted_accuracy(
             [
-                overall_accuracy_non_live,
                 overall_accuracy_live,
-                total_irrelevance,
-                total_relevance,
+                overall_accuracy_non_live,
                 overall_accuracy_multi_turn,
-                overall_accuracy_agentic,
             ],
-            [10, 10, 5, 5, 30, 40],
             display_na_if_category_missing=False,
         )
 
@@ -501,13 +461,6 @@ def generate_leaderboard_csv(
                 multi_turn_miss_func["display_accuracy"],
                 multi_turn_miss_param["display_accuracy"],
                 multi_turn_long_context["display_accuracy"],
-                summary_web_search["display_accuracy"],
-                web_search_base["display_accuracy"],
-                web_search_no_snippet["display_accuracy"],
-                summary_memory["display_accuracy"],
-                memory_kv["display_accuracy"],
-                memory_vector["display_accuracy"],
-                memory_rec_sum["display_accuracy"],
                 total_relevance["display_accuracy"],
                 total_irrelevance["display_accuracy"],
                 model_config.org,
@@ -536,14 +489,6 @@ def generate_leaderboard_csv(
         data=data_multi_turn,
         file_path=output_path / "data_multi_turn.csv",
         header=COLUMNS_MULTI_TURN,
-        sort_column_index=2,
-    )
-
-    # Write Agentic Score File
-    write_score_csv_file(
-        data=data_agentic,
-        file_path=output_path / "data_agentic.csv",
-        header=COLUMNS_AGENTIC,
         sort_column_index=2,
     )
 

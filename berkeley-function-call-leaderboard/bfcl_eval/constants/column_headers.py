@@ -38,20 +38,6 @@ COLUMNS_MULTI_TURN = [
 ]
 
 
-COLUMNS_AGENTIC = [
-    "Rank",
-    "Model",
-    "Agentic Overall Acc",
-    "Web Search Summary",
-    "Web Search Base",
-    "Web Search No Snippet",
-    "Memory Summary",
-    "Memory KV",
-    "Memory Vector",
-    "Memory Recursive Summarization",
-]
-
-
 COLUMNS_OVERALL = [
     "Rank",
     "Overall Acc",
@@ -76,13 +62,6 @@ COLUMNS_OVERALL = [
     "Multi Turn Miss Func",
     "Multi Turn Miss Param",
     "Multi Turn Long Context",
-    "Web Search Acc",
-    "Web Search Base",
-    "Web Search No Snippet",
-    "Memory Acc",
-    "Memory KV",
-    "Memory Vector",
-    "Memory Recursive Summarization",
     "Relevance Detection",
     "Irrelevance Detection",
     "Organization",
