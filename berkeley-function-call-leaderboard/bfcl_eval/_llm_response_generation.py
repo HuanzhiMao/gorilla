@@ -81,7 +81,9 @@ def get_involved_test_entries(test_category_args, run_ids, use_audio_input):
     else:
         all_test_categories = parse_test_category_argument(test_category_args)
         for test_category in all_test_categories:
-            all_test_entries_involved.extend(load_dataset_entry(test_category, use_audio_input=use_audio_input))
+            all_test_entries_involved.extend(
+                load_dataset_entry(test_category, use_audio_input=use_audio_input)
+            )
 
     return (
         all_test_categories,
@@ -313,8 +315,11 @@ def main(args):
             args.use_audio_input
             and not MODEL_CONFIG_MAPPING[model_name].supports_audio_input
         ):
+            raise ValueError(f"Model {model_name} does not support native audio input.")
+
+        if args.use_audio_input and not model_name.startswith("audio:"):
             raise ValueError(
-                f"Model {model_name} does not support native audio input."
+                f"Model {model_name} should not be used with the --use-audio-input flag. Please use the `audio:` prefix for models that support native audio input. For example, use `audio:gemini-2.5-pro-Audio-FC` instead of `gemini-2.5-pro-Audio-FC`."
             )
 
     print(f"Generating results for {args.model}")
