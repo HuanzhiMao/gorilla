@@ -1,3 +1,4 @@
+import itertools
 import json
 import os
 import re
@@ -338,7 +339,7 @@ def load_dataset_entry(
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
 
     if include_language_specific_hint:
-        all_entries = process_func_doc(all_entries)
+        all_entries = add_language_specific_hint_to_function_doc(all_entries)
 
     return all_entries
 
@@ -443,6 +444,19 @@ def sort_key(entry):
         priority = 4
 
     return (priority, test_category, int(index))
+
+
+def filter_entries_by_id(
+    reference_entries: list[dict],
+    candidate_entries: list[dict],
+) -> list[dict]:
+    """
+    Return all entries in `candidate_entries` whose ``"id"`` *matches*
+    at least one entry in `reference_entries`.
+    """
+
+    reference_ids = {entry["id"] for entry in reference_entries}
+    return [entry for entry in candidate_entries if entry["id"] in reference_ids]
 
 
 #### Helper functions to check the output format ####
@@ -569,7 +583,7 @@ def _func_doc_language_specific_pre_processing(
     return function
 
 
-def process_func_doc(test_cases: list[dict]) -> list[dict]:
+def add_language_specific_hint_to_function_doc(test_cases: list[dict]) -> list[dict]:
     """
     This function adds language-specific hints to the function description and processes the parameters accordingly.
     """
@@ -747,25 +761,80 @@ def populate_initial_settings_for_web_search_test_cases(
     return test_cases
 
 
-# Utils for Format Sensitivity
+#### Utils for Format Sensitivity ####
 
 
 def load_format_sensitivity_test_cases() -> list[dict]:
+    """
+    Loads all the format sensitivity test cases. 26 configs x 200 test cases = 5200 test cases.
+    """
     _, all_test_entries_involved = load_test_entries_from_id_file(
         FORMAT_SENSITIVITY_IDS_PATH
     )
-    for entry, index in enumerate(all_test_entries_involved):
-        entry["id"] = f"format_sensitivity_{index}:{entry['id']}"
+    all_configs = get_all_format_sensitivity_configs()
 
-    return all_test_entries_involved
+    all_format_sensitivity_test_cases = []
+    index = 0
+    for entry in all_test_entries_involved:
+        for config in all_configs:
+            entry_copy = deepcopy(entry)
+            entry_copy["id"] = f"format_sensitivity_{index}:{config}:{entry_copy['id']}"
+
+            all_format_sensitivity_test_cases.append(entry_copy)
+            index += 1
+
+    return all_format_sensitivity_test_cases
 
 
 def load_format_sensitivity_ground_truth_entry() -> list[dict]:
     all_categories, all_test_entries_involved = load_test_entries_from_id_file(
         FORMAT_SENSITIVITY_IDS_PATH
     )
-    for category, test_entries in all_categories.items():
-        for test_entry in test_entries:
-            test_entry["id"] = test_entry["id"].split(":")[1]
+    all_ground_truth_entries = []
+    for category in all_categories:
+        all_ground_truth_entries.extend(load_ground_truth_entry(category))
 
-    return all_test_entries_involved
+    return filter_entries_by_id(
+        reference_entries=all_test_entries_involved,
+        candidate_entries=all_ground_truth_entries,
+    )
+
+
+def get_all_format_sensitivity_configs() -> list[str]:
+    """
+    Get all the format sensitivity configs.
+    The format sensitivity configs are used to generate the default system prompt for prompting models.
+    """
+
+    RETURN_FORMAT = [
+        "python",
+        "json",
+        "verbose_xml",
+        "concise_xml",
+    ]
+    HAS_TOOL_CALL_TAG = ["True", "False"]
+    FUNCTION_DOC_FORMAT = [
+        "python",
+        "xml",
+        "json",
+    ]
+
+    all_configs = []
+    # 4 × 2 × 3 = 24 base combinations
+    for return_format in RETURN_FORMAT:
+        for has_tool_call_tag in HAS_TOOL_CALL_TAG:
+            for function_doc_format in FUNCTION_DOC_FORMAT:
+                all_configs.append(
+                    f"ret_fmt={return_format}&tool_call_tag={has_tool_call_tag}&func_doc_fmt={function_doc_format}&prompt_fmt=plaintext&style=classic"
+                )
+
+    # Add one config with markdown format
+    all_configs.append(
+        f"ret_fmt=python&tool_call_tag=False&func_doc_fmt=json&prompt_fmt=markdown&style=classic"
+    )
+    # Add one config with experimental prompt style
+    all_configs.append(
+        f"ret_fmt=python&tool_call_tag=False&func_doc_fmt=json&prompt_fmt=plaintext&style=experimental"
+    )
+
+    return all_configs
