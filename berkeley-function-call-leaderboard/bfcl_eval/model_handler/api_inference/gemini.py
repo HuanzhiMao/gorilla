@@ -191,7 +191,7 @@ class GeminiHandler(BaseHandler):
                         parts=[
                             Part.from_bytes(
                                 data=message["audio_content"],
-                                mime_type="audio/wav",
+                                mime_type="audio/mp3",
                             ),
                         ],
                     )

@@ -82,7 +82,7 @@ class OpenAICompletionsHandler(BaseHandler):
         if inference_data["audio_input"]:
             kwargs["modalities"] = ["text", "audio"]
             # TODO: Choose which voice to use
-            kwargs["audio"] = {"voice": "alloy", "format": "wav"}
+            kwargs["audio"] = {"voice": "alloy", "format": "mp3"}
 
         return self.generate_with_backoff(**kwargs)
 
@@ -152,7 +152,7 @@ class OpenAICompletionsHandler(BaseHandler):
                                 "type": "input_audio",
                                 "input_audio": {
                                     "data": audio_to_base64(message["audio_content"]),
-                                    "format": "wav",
+                                    "format": "mp3",
                                 },
                             }
                         ],

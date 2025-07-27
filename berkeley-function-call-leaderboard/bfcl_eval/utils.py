@@ -779,7 +779,7 @@ def populate_initial_settings_for_web_search_test_cases(
 
 def load_audio(path: str) -> bytes:
     """Load audio file from disk."""
-    # assert path.endswith(".wav"), "Audio file should be in wav format"
+    # assert path.endswith(".mp3"), "Audio file should be in mp3 format"
 
     with open(AUDIO_FILE_PATH / path, "rb") as f:
         return f.read()
@@ -852,15 +852,20 @@ def process_audio_test_case(
                 assert (
                     "audio_path" in msg
                 ), "Audio path should be specified in the test entry"
+                
+                
                 del msg["content"]
                 if use_audio_input:
                     msg["audio_content"] = load_audio(msg["audio_path"])
                     # msg["audio_format"] = "wav"
                 else:
-                    msg["content"] = msg["transcript"]
+                    # FIXME: uncomment this to determine which text to use
+                    # msg["content"] = msg["transcript"]
+                    msg["content"] = msg["asr_output"]
 
                 del msg["transcript"]
                 del msg["audio_path"]
+                del msg["asr_output"]
 
     return test_cases
 
