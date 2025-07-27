@@ -56,12 +56,9 @@ class OpenAICompletionsHandler(BaseHandler):
     @retry_with_backoff(error_type=RateLimitError)
     def generate_with_backoff(self, **kwargs):
         start_time = time.time()
-        try:
-            api_response = self.client.chat.completions.create(**kwargs)
-        except Exception as e:
-            # print(e)
-            print(kwargs)
-            raise e
+
+        api_response = self.client.chat.completions.create(**kwargs)
+
         end_time = time.time()
 
         return api_response, end_time - start_time
