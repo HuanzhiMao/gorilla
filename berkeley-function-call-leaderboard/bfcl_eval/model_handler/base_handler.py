@@ -79,7 +79,7 @@ class BaseHandler:
         exclude_state_log: bool,
     ) -> tuple[list[list], dict]:
         initial_config: dict = test_entry.get("initial_config", {})
-        involved_classes: list = test_entry["involved_classes"]
+        involved_classes: list = test_entry.get("involved_classes", [])
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
 
@@ -152,6 +152,9 @@ class BaseHandler:
         all_multi_turn_messages: list[list[dict]] = test_entry["question"]
         for turn_idx, current_turn_message in enumerate(all_multi_turn_messages):
             current_turn_message: list[dict]
+            # FIXME: This is a hack to get the allowed clarifications for the current turn, assume the last message is the user message
+            # Use a better way to get the allowed clarifications
+            allowed_clarifications = current_turn_message[-1].pop("clarifications", {})
 
             if str(turn_idx) in holdout_function:
                 test_entry["function"].extend(holdout_function[str(turn_idx)])

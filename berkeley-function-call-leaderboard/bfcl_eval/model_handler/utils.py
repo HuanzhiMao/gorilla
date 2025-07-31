@@ -775,3 +775,6 @@ def parse_prompt_variation_params(input_str: str) -> tuple[str, bool, str, str, 
         prompt_format,
         prompt_style,
     )
+
+
+def 
