@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from bfcl_eval.constants.category_mapping import VERSION_PREFIX
 
 VLLM_PORT = 1053
 
@@ -25,8 +26,11 @@ TEST_IDS_TO_GENERATE_PATH = PROJECT_ROOT / "test_case_ids_to_generate.json"
 PROMPT_PATH = PACKAGE_ROOT / "data"
 MULTI_TURN_FUNC_DOC_PATH = PROMPT_PATH / "multi_turn_func_doc"
 POSSIBLE_ANSWER_PATH = PROMPT_PATH / "possible_answer"
+MEMORY_PREREQ_CONVERSATION_PATH = PROMPT_PATH / "memory_prereq_conversation"
 UTILS_PATH = PACKAGE_ROOT / "scripts"
+FORMAT_SENSITIVITY_IDS_PATH = PROMPT_PATH / f"{VERSION_PREFIX}_format_sensitivity.json"
 
+RESULT_FILE_PATTERN = f"{VERSION_PREFIX}_*_result.json"
 
 RED_FONT = "\033[91m"
 RESET = "\033[0m"

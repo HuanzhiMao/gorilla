@@ -3,7 +3,6 @@ from typing import Optional
 
 from bfcl_eval.model_handler.api_inference.claude import ClaudeHandler
 from bfcl_eval.model_handler.api_inference.cohere import CohereHandler
-from bfcl_eval.model_handler.api_inference.databricks import DatabricksHandler
 from bfcl_eval.model_handler.api_inference.deepseek import DeepSeekAPIHandler
 from bfcl_eval.model_handler.api_inference.dm_cito import DMCitoHandler
 from bfcl_eval.model_handler.api_inference.fireworks import FireworksHandler
@@ -16,7 +15,6 @@ from bfcl_eval.model_handler.api_inference.ling import LingAPIHandler
 from bfcl_eval.model_handler.api_inference.mining import MiningHandler
 from bfcl_eval.model_handler.api_inference.mistral import MistralHandler
 from bfcl_eval.model_handler.api_inference.nemotron import NemotronHandler
-from bfcl_eval.model_handler.api_inference.nexus import NexusHandler
 from bfcl_eval.model_handler.api_inference.nova import NovaHandler
 from bfcl_eval.model_handler.api_inference.novita import NovitaHandler
 from bfcl_eval.model_handler.api_inference.nvidia import NvidiaHandler
@@ -30,25 +28,20 @@ from bfcl_eval.model_handler.api_inference.qwen import (
     QwenAPIHandler,
 )
 from bfcl_eval.model_handler.api_inference.writer import WriterHandler
-from bfcl_eval.model_handler.api_inference.yi import YiHandler
 from bfcl_eval.model_handler.local_inference.arch import ArchHandler
 from bfcl_eval.model_handler.local_inference.bielik import BielikHandler
 from bfcl_eval.model_handler.local_inference.bitagent import BitAgentHandler
-from bfcl_eval.model_handler.local_inference.deepseek import DeepseekHandler
-from bfcl_eval.model_handler.local_inference.deepseek_coder import DeepseekCoderHandler
 from bfcl_eval.model_handler.local_inference.deepseek_reasoning import (
     DeepseekReasoningHandler,
 )
 from bfcl_eval.model_handler.local_inference.falcon_fc import Falcon3FCHandler
 from bfcl_eval.model_handler.local_inference.gemma import GemmaHandler
-from bfcl_eval.model_handler.local_inference.glaive import GlaiveHandler
 from bfcl_eval.model_handler.local_inference.glm import GLMHandler
 from bfcl_eval.model_handler.local_inference.granite import (
     GraniteFunctionCallingHandler,
 )
 from bfcl_eval.model_handler.local_inference.granite_3 import Granite3FCHandler
 from bfcl_eval.model_handler.local_inference.hammer import HammerHandler
-from bfcl_eval.model_handler.local_inference.hermes import HermesHandler
 from bfcl_eval.model_handler.local_inference.llama import LlamaHandler
 from bfcl_eval.model_handler.local_inference.llama_3_1 import LlamaHandler_3_1
 from bfcl_eval.model_handler.local_inference.minicpm import MiniCPMHandler
@@ -162,30 +155,6 @@ api_inference_model_map = {
         model_handler=DeepSeekAPIHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=True,
-    ),
-    "gpt-4.5-preview-2025-02-27": ModelConfig(
-        model_name="gpt-4.5-preview-2025-02-27",
-        display_name="GPT-4.5-Preview-2025-02-27 (Prompt)",
-        url="https://openai.com/index/introducing-gpt-4-5/",
-        org="OpenAI",
-        license="Proprietary",
-        model_handler=OpenAIResponsesHandler,
-        input_price=75,
-        output_price=150,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "gpt-4.5-preview-2025-02-27-FC": ModelConfig(
-        model_name="gpt-4.5-preview-2025-02-27-FC",
-        display_name="GPT-4.5-Preview-2025-02-27 (FC)",
-        url="https://openai.com/index/introducing-gpt-4-5/",
-        org="OpenAI",
-        license="Proprietary",
-        model_handler=OpenAIResponsesHandler,
-        input_price=75,
-        output_price=150,
         is_fc_model=True,
         underscore_to_dot=True,
     ),
@@ -573,18 +542,6 @@ api_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "Nexusflow-Raven-v2": ModelConfig(
-        model_name="Nexusflow-Raven-v2",
-        display_name="Nexusflow-Raven-v2 (FC)",
-        url="https://huggingface.co/Nexusflow/NexusRaven-V2-13B",
-        org="Nexusflow",
-        license="Apache 2.0",
-        model_handler=NexusHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
     "gemini-2.5-flash-lite-preview-06-17-FC": ModelConfig(
         model_name="gemini-2.5-flash-lite-preview-06-17-FC",
         display_name="Gemini-2.5-Flash-Lite-Preview-06-17 (FC)",
@@ -681,18 +638,6 @@ api_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
     ),
-    "databricks-dbrx-instruct": ModelConfig(
-        model_name="databricks-dbrx-instruct",
-        display_name="DBRX-Instruct (Prompt)",
-        url="https://www.databricks.com/blog/introducing-dbrx-new-state-art-open-llm",
-        org="Databricks",
-        license="Databricks Open Model",
-        model_handler=DatabricksHandler,
-        input_price=2.25,
-        output_price=6.75,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
     "command-r-plus-FC": ModelConfig(
         model_name="command-r-plus-FC",
         display_name="Command-R-Plus (FC)",
@@ -728,18 +673,6 @@ api_inference_model_map = {
         output_price=10,
         is_fc_model=True,
         underscore_to_dot=True,
-    ),
-    "snowflake/arctic": ModelConfig(
-        model_name="snowflake/arctic",
-        display_name="Snowflake/snowflake-arctic-instruct (Prompt)",
-        url="https://huggingface.co/Snowflake/snowflake-arctic-instruct",
-        org="Snowflake",
-        license="apache-2.0",
-        model_handler=NvidiaHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=False,
-        underscore_to_dot=False,
     ),
     "nvidia/llama-3.1-nemotron-ultra-253b-v1": ModelConfig(
         model_name="nvidia/llama-3.1-nemotron-ultra-253b-v1",
@@ -848,18 +781,6 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
-    ),
-    "phronetic-ai/RZN-T": ModelConfig(
-        model_name="phronetic-ai/RZN-T",
-        display_name="RZN-T (Prompt)",
-        url="https://huggingface.co/phronetic-ai/RZN-T",
-        org="Phronetic AI",
-        license="apache-2.0",
-        model_handler=QwenHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=False,
-        underscore_to_dot=False,
     ),
     "qwen3-0.6b": ModelConfig(
         model_name="qwen3-0.6b",
@@ -1414,7 +1335,7 @@ local_inference_model_map = {
         model_handler=GraniteFunctionCallingHandler,
         input_price=None,
         output_price=None,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=True,
     ),
     "MadeAgents/Hammer2.1-7b": ModelConfig(
@@ -1849,6 +1770,54 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
+    "katanemo/Arch-Agent-1.5B": ModelConfig(
+        model_name="katanemo/Arch-Agent-1.5B",
+        display_name="Arch-Agent-1.5B",
+        url="https://huggingface.co/katanemo/Arch-Agent-1.5B",
+        org="katanemo",
+        license="katanemo-research",
+        model_handler=ArchHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    "katanemo/Arch-Agent-3B": ModelConfig(
+        model_name="katanemo/Arch-Agent-3B",
+        display_name="Arch-Agent-3B",
+        url="https://huggingface.co/katanemo/Arch-Agent-3B",
+        org="katanemo",
+        license="katanemo-research",
+        model_handler=ArchHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    "katanemo/Arch-Agent-7B": ModelConfig(
+        model_name="katanemo/Arch-Agent-7B",
+        display_name="Arch-Agent-7B",
+        url="https://huggingface.co/katanemo/Arch-Agent-7B",
+        org="katanemo",
+        license="katanemo-research",
+        model_handler=ArchHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    "katanemo/Arch-Agent-32B": ModelConfig(
+        model_name="katanemo/Arch-Agent-32B",
+        display_name="Arch-Agent-32B",
+        url="https://huggingface.co/katanemo/Arch-Agent-32B",
+        org="katanemo",
+        license="katanemo-research",
+        model_handler=ArchHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
     "BitAgent/BitAgent-8B": ModelConfig(
         model_name="BitAgent/BitAgent-8B",
         display_name="BitAgent-8B",
@@ -1885,11 +1854,23 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
+    "phronetic-ai/RZN-T": ModelConfig(
+        model_name="phronetic-ai/RZN-T",
+        display_name="RZN-T (Prompt)",
+        url="https://huggingface.co/phronetic-ai/RZN-T",
+        org="Phronetic AI",
+        license="apache-2.0",
+        model_handler=QwenHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=False,
+        underscore_to_dot=False,
+    ),
 }
 
 # Inference through third-party inference platforms for open-source models
 third_party_inference_model_map = {
-    # Novita AI
+    # Via Novita AI Endpoint
     "meta-llama/llama-4-maverick-17b-128e-instruct-fp8-novita": ModelConfig(
         model_name="meta-llama/llama-4-maverick-17b-128e-instruct-fp8-novita",
         display_name="Llama-4-Maverick-17B-128E-Instruct-FP8 (Prompt) (Novita)",
@@ -1962,6 +1943,7 @@ third_party_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
+    # Via Qwen Agent Framework
     "qwen3-4b-think-FC": ModelConfig(
         model_name="qwen3-4b-think-FC",
         display_name="Qwen3-4B-Think (FC)",
@@ -1985,54 +1967,6 @@ third_party_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
-    ),
-    "katanemo/Arch-Agent-1.5B": ModelConfig(
-        model_name="katanemo/Arch-Agent-1.5B",
-        display_name="Arch-Agent-1.5B",
-        url="https://huggingface.co/katanemo/Arch-Agent-1.5B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "katanemo/Arch-Agent-3B": ModelConfig(
-        model_name="katanemo/Arch-Agent-3B",
-        display_name="Arch-Agent-3B",
-        url="https://huggingface.co/katanemo/Arch-Agent-3B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "katanemo/Arch-Agent-7B": ModelConfig(
-        model_name="katanemo/Arch-Agent-7B",
-        display_name="Arch-Agent-7B",
-        url="https://huggingface.co/katanemo/Arch-Agent-7B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "katanemo/Arch-Agent-32B": ModelConfig(
-        model_name="katanemo/Arch-Agent-32B",
-        display_name="Arch-Agent-32B",
-        url="https://huggingface.co/katanemo/Arch-Agent-32B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
     ),
 }
 
