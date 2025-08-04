@@ -640,14 +640,13 @@ def formulate_default_system_prompt(
         multiturn=PROMPT_STYLE_MAPPING[prompt_style]["multiturn"],
         available_tools=PROMPT_STYLE_MAPPING[prompt_style]["available_tools"].format(
             format=function_doc_format,
-            functions=format_function_doc(
-                functions, function_doc_format
-            ),
+            functions=format_function_doc(functions, function_doc_format),
         ),
     )
 
     # print(f"Default system prompt:\n{default_prompt}")
     return default_prompt
+
 
 # FIXME: unfinished  @HuanzhiMao
 def format_function_doc(functions, function_doc_format):
@@ -777,4 +776,142 @@ def parse_prompt_variation_params(input_str: str) -> tuple[str, bool, str, str, 
     )
 
 
-def 
+from openai import OpenAI
+import os
+import json
+
+
+def check_for_clarification(
+    model_response: str,
+    allowed_clarifications: dict[str, str],
+) -> tuple[bool, str]:
+    """Determine whether *model_response* contains an **allowed** clarifying question.
+
+    The heavy-lifting (detecting the clarification and crafting the reply) is delegated
+    to another LLM.  It receives the assistant message together with the list of
+    *allowed_clarifications* and must respond **only** with a JSON object of the form::
+
+        {
+            "allowed": bool,          # True if every clarification topic is allowed
+            "message": "..."         # Simulated user message answering the question(s)
+        }
+
+    A clarifying question is considered *allowed* when *all* requested topics are
+    contained in the provided mapping.  If no clarification is present or an
+    un-approved topic is requested, ``allowed`` must be ``false`` and ``message`` can
+    be empty.
+
+    Args:
+        model_response: Raw text from the assistant.
+        allowed_clarifications: Mapping of *topic* → *answer* that the user is willing
+            to disclose.
+        model: The name of the OpenAI chat model used for judging.  Defaults to
+            ``"gpt-4o-mini"``.
+
+    Returns:
+        Tuple ``(is_allowed, simulated_user_message)``.
+    """
+
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+    system_prompt = (
+        "You are an evaluator **in an audio agent setting** where the assistant's "
+        "spoken output may be mis-heard. Your task is to decide whether the assistant's "
+        "message is asking clarifying questions that are **only about spelling "
+        "confirmation** – i.e. verifying the correct spelling of words, names, or values "
+        "that may have been misunderstood. If **all** clarifying questions are limited "
+        "to spelling confirmation of topics that appear *only* in *allowed_clarifications*, "
+        "you should output a JSON object with `allowed=true` and provide a concise "
+        "simulated user answer (in the `message` field) that supplies the requested "
+        "values. If there is no clarifying question or any requested topic is outside "
+        "these spelling confirmations or is disallowed, output `allowed=false` and an "
+        "empty message. Always respond with only the JSON object and nothing else."
+    )
+
+    # print(f"model_response: {model_response}")
+    if not type(model_response) == str:
+        model_response = str(model_response)
+
+    user_prompt = (
+        "assistant_message:\n"
+        + model_response
+        + "\n\n"
+        + "allowed_clarifications (topic -> answer):\n"
+        + json.dumps(allowed_clarifications, indent=4)
+    )
+
+    response = client.chat.completions.create(
+        # model="o4-mini-2025-04-16",
+        model="o3-2025-04-16",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        # temperature=0.001,
+    )
+
+    content = response.choices[0].message.content.strip()
+
+    try:
+        payload = json.loads(content)
+        is_allowed = bool(payload.get("allowed", False))
+        simulated_message = payload.get("message", "")
+    except:
+        # If the assistant returns malformed output, treat as not allowed.
+        is_allowed = False
+        simulated_message = ""
+
+    if not is_allowed:
+        print(f"model_response: {model_response}")
+        print(f"allowed_clarifications: {allowed_clarifications}")
+        print(f"is_allowed: {is_allowed}")
+        print(f"simulated_message: {simulated_message}")
+
+    return is_allowed, simulated_message
+
+
+def simulate_clarification(
+    model_response: str,
+    allowed_clarifications: dict[str, str],
+) -> str:
+    """Generate a simulated *user* reply that answers the assistant’s clarifying
+    questions *assuming every topic is permitted*.
+
+    Args:
+        model_response: The assistant message containing the clarifying questions.
+        allowed_clarifications: Mapping from topic → answer with the data the user is
+            willing to share.
+        model: OpenAI chat model to use (defaults to ``"gpt-4o-mini"``).
+
+    Returns:
+        The **plain text** user message answering the clarification.
+    """
+
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+    system_prompt = (
+        "You are the user. Craft a concise reply that directly answers the assistant's "
+        "clarifying question(s) using only the information supplied in "
+        "*allowed_clarifications*. Do NOT reveal any additional data or mention the "
+        "topics list itself. Provide a single natural-language message—no JSON, no "
+        "formatting instructions—just the reply text. Answer only the question that the assistant is asking for. You should not supply everything in the allowed_clarifications, if the assistant did not ask for it."
+    )
+
+    user_prompt = (
+        "assistant_message:\n"
+        + model_response
+        + "\n\n"
+        + "allowed_clarifications (topic -> answer):\n"
+        + json.dumps(allowed_clarifications, indent=2)
+    )
+
+    response = client.chat.completions.create(
+        model="o4-mini-2025-04-16",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        # temperature=0.001,
+    )
+
+    return response.choices[0].message.content.strip()

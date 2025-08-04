@@ -10,6 +10,7 @@ from typing import Union
 from bfcl_eval.constants.category_mapping import *
 from bfcl_eval.constants.default_prompts import (
     ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
+    SYSTEM_PROMPT_FOR_AUDIO_AGENT,
 )
 from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.executable_backend_config import (
@@ -849,12 +850,10 @@ def process_audio_test_case(
                 if msg["role"] != "user":
                     continue
 
- 
                 assert (
                     "audio_path" in msg
-                ), "Audio path should be specified in the test entry"
-                
-                
+                ), f"Audio path should be specified in the test entry: {entry['id']}"
+
                 del msg["content"]
                 if use_audio_input:
                     msg["audio_content"] = load_audio(msg["audio_path"])
@@ -871,6 +870,29 @@ def process_audio_test_case(
                 del msg["asr_output_openai"]
                 del msg["asr_output_elevenlabs"]
                 del msg["asr_output_deepgram"]
+        # Merge any existing system prompts with the default audio agent prompt.
+        combined_prompts: list[str] = [SYSTEM_PROMPT_FOR_AUDIO_AGENT]
+
+        # Collect contents of all existing system messages across all turns and remove them.
+        for turn in entry["question"]:
+            for idx in reversed(range(len(turn))):
+                if turn[idx].get("role") == "system":
+                    content = turn[idx].get("content", "")
+                    if content not in combined_prompts:  # avoid duplicate if same as default
+                        combined_prompts.append(content)
+                    del turn[idx]
+
+        merged_system_prompt = "\n\n".join(combined_prompts)
+
+        # Insert the merged system prompt at the very beginning of the conversation.
+        entry["question"][0].insert(
+            0,
+            {
+                "role": "system",
+                "content": merged_system_prompt,
+            },
+        )
+    
 
     return test_cases
 

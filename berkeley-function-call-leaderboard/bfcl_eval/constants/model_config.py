@@ -63,6 +63,7 @@ from bfcl_eval.model_handler.local_inference.salesforce_qwen import (
     SalesforceQwenHandler,
 )
 from bfcl_eval.model_handler.local_inference.think_agent import ThinkAgentHandler
+from bfcl_eval.model_handler.local_inference.qwen25_fc import Qwen25FCHandler
 
 # -----------------------------------------------------------------------------
 # A mapping of model identifiers to their respective model configurations.
@@ -413,7 +414,7 @@ api_inference_model_map = {
         model_handler=NovaHandler,
         input_price=0.8,
         output_price=3.2,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=True,
     ),
     "nova-lite-v1.0": ModelConfig(
@@ -2079,6 +2080,32 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
         supports_audio_input=True,
+    ),
+    
+    "Qwen/Qwen2.5-7B-Instruct-FC": ModelConfig(
+        model_name="Qwen/Qwen2.5-7B-Instruct-FC",
+        display_name="Qwen2.5-7B-Instruct (FC)",
+        url="https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
+        org="Qwen",
+        license="apache-2.0",
+        model_handler=Qwen25FCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    
+    "Qwen/Qwen2.5-14B-Instruct-FC": ModelConfig(
+        model_name="Qwen/Qwen2.5-14B-Instruct-FC",
+        display_name="Qwen2.5-14B-Instruct (FC)",
+        url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
+        org="Qwen",
+        license="apache-2.0",
+        model_handler=Qwen25FCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
     ),
 }
 

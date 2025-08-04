@@ -278,14 +278,19 @@ class OSSHandler(BaseHandler, EnforceOverrides):
             events[dependency_id].wait()  # Wait until the dependent task sets its event
 
         try:
-            if is_multi_turn(test_case["id"]) or is_agentic(test_case["id"]):
-                model_responses, metadata = self.inference_multi_turn_prompting(
-                    test_case, include_input_log, exclude_state_log
-                )
-            else:
-                model_responses, metadata = self.inference_single_turn_prompting(
-                    test_case, include_input_log
-                )
+            # FIXME @HuanzhiMao
+            assert "FC" in self.model_name or self.is_fc_model, "Model is not a FC model"
+            self.inference_multi_turn_prompting(
+                test_case, include_input_log, exclude_state_log
+            )
+            # if is_multi_turn(test_case["id"]) or is_agentic(test_case["id"]):
+            #     model_responses, metadata = self.inference_multi_turn_prompting(
+            #         test_case, include_input_log, exclude_state_log
+            #     )
+            # else:
+            #     model_responses, metadata = self.inference_single_turn_prompting(
+            #         test_case, include_input_log
+            #     )
         except Exception as e:
             error_block = (
                 "-" * 100

@@ -18,7 +18,10 @@ from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     is_empty_execute_response,
 )
 from bfcl_eval.model_handler.model_style import ModelStyle
-from bfcl_eval.model_handler.utils import add_memory_instruction_system_prompt
+from bfcl_eval.model_handler.utils import (
+    add_memory_instruction_system_prompt,
+    check_for_clarification,
+)
 from bfcl_eval.utils import *
 from overrides import final
 
@@ -43,7 +46,9 @@ class BaseHandler:
         self.model_name_dir = model_name.replace("/", "_")
         self.temperature = temperature
         self.is_fc_model = False  # Whether the model is a function calling model
-        self.supports_audio_input = False  # Whether the model supports audio input and output
+        self.supports_audio_input = (
+            False  # Whether the model supports audio input and output
+        )
 
     def inference(
         self,
@@ -51,25 +56,28 @@ class BaseHandler:
         include_input_log: bool,
         exclude_state_log: bool,
     ):
-        # This method is used to retrive model response for each model.
-
-        # FC model
-        # TODO: Let all models have the is_fc_model attribute and remove the "FC" check
-        if "FC" in self.model_name or self.is_fc_model:
-            if contain_multi_turn_interaction(test_entry["id"]):
-                return self.inference_multi_turn_FC(
-                    test_entry, include_input_log, exclude_state_log
-                )
-            else:
-                return self.inference_single_turn_FC(test_entry, include_input_log)
-        # Prompting model
-        else:
-            if contain_multi_turn_interaction(test_entry["id"]):
-                return self.inference_multi_turn_prompting(
-                    test_entry, include_input_log, exclude_state_log
-                )
-            else:
-                return self.inference_single_turn_prompting(test_entry, include_input_log)
+        # FIXME @HuanzhiMao
+        assert "FC" in self.model_name or self.is_fc_model, "Model is not a FC model"
+        return self.inference_multi_turn_FC(
+            test_entry, include_input_log, exclude_state_log
+        )
+        # # FC model
+        # # TODO: Let all models have the is_fc_model attribute and remove the "FC" check
+        # if "FC" in self.model_name or self.is_fc_model:
+        #     if contain_multi_turn_interaction(test_entry["id"]):
+        #         return self.inference_multi_turn_FC(
+        #             test_entry, include_input_log, exclude_state_log
+        #         )
+        #     else:
+        #         return self.inference_single_turn_FC(test_entry, include_input_log)
+        # # Prompting model
+        # else:
+        #     if contain_multi_turn_interaction(test_entry["id"]):
+        #         return self.inference_multi_turn_prompting(
+        #             test_entry, include_input_log, exclude_state_log
+        #         )
+        #     else:
+        #         return self.inference_single_turn_prompting(test_entry, include_input_log)
 
     @final
     def inference_multi_turn_FC(
@@ -131,17 +139,17 @@ class BaseHandler:
                     continue
                 # Avoid modification in future turns
                 class_instance = deepcopy(class_instance)
-                state_log.append(
-                    {
-                        "role": "state_info",
-                        "class_name": class_name,
-                        "content": {
-                            key: value
-                            for key, value in vars(class_instance).items()
-                            if not key.startswith("_")
-                        },
-                    }
-                )
+                # state_log.append(
+                #     {
+                #         "role": "state_info",
+                #         "class_name": class_name,
+                #         "content": {
+                #             key: value
+                #             for key, value in vars(class_instance).items()
+                #             if not key.startswith("_")
+                #         },
+                #     }
+                # )
             if len(state_log) > 0:
                 all_inference_log.append(state_log)
 
@@ -152,9 +160,9 @@ class BaseHandler:
         all_multi_turn_messages: list[list[dict]] = test_entry["question"]
         for turn_idx, current_turn_message in enumerate(all_multi_turn_messages):
             current_turn_message: list[dict]
-            # FIXME: This is a hack to get the allowed clarifications for the current turn, assume the last message is the user message
-            # Use a better way to get the allowed clarifications
-            allowed_clarifications = current_turn_message[-1].pop("clarifications", {})
+            # if allowed_clarifications:
+            #     print(f"Allowed clarifications are not empty for turn {turn_idx}")
+            #     print(f"Allowed clarifications: {allowed_clarifications}")
 
             if str(turn_idx) in holdout_function:
                 test_entry["function"].extend(holdout_function[str(turn_idx)])
@@ -171,6 +179,9 @@ class BaseHandler:
                         "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
                     }
                 ]
+            # FIXME: This is a hack to get the allowed clarifications for the current turn, assume the last message is the user message
+            # Use a better way to get the allowed clarifications
+            allowed_clarifications = current_turn_message[-1].pop("clarifications", {})
 
             if turn_idx == 0:
                 inference_data = self.add_first_turn_message_FC(
@@ -196,6 +207,10 @@ class BaseHandler:
                 print(
                     f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {count}"
                 )
+                should_break = False
+                can_have_clarification = False
+                is_allowed_clarification = False
+
                 current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
                 current_turn_inference_log[f"step_{count}"] = current_step_inference_log
@@ -250,27 +265,75 @@ class BaseHandler:
                             "model_response_decoded": decoded_model_responses,
                         }
                     )
+                    model_responses = decoded_model_responses
 
                     if is_empty_execute_response(decoded_model_responses):
-                        print("Empty response from the model. Proceed to next turn.")
+                        # print("Empty response from the model. Proceed to next turn.")
                         current_step_inference_log.append(
                             {
                                 "role": "handler_log",
-                                "content": f"Empty response from the model. Proceed to next turn.",
+                                "content": f"Empty response from the model.",
                                 "model_response_decoded": decoded_model_responses,
                             }
                         )
-                        break
+                        should_break = True
+                        can_have_clarification = True
+                        # break
 
                 except Exception as e:
-                    print("Failed to decode the model response. Proceed to next turn.")
+                    # print("Failed to decode the model response. Proceed to next turn.")
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",
-                            "content": f"Error decoding the model response. Proceed to next turn.",
+                            "content": f"Error decoding the model response.",
+                            "model_response": model_responses,
                             "error": str(e),
                         }
                     )
+                    should_break = True
+                    can_have_clarification = True
+                    # break
+                if can_have_clarification:
+                    is_allowed_clarification, clarification_content = (
+                        check_for_clarification(
+                            model_response=model_responses,
+                            allowed_clarifications=allowed_clarifications,
+                        )
+                    )
+
+                    if is_allowed_clarification:
+                        clarification_message = [
+                            {"role": "user", "content": clarification_content}
+                        ]
+                        inference_data = self._add_next_turn_user_message_FC(
+                            inference_data, clarification_message
+                        )
+                        current_step_inference_log.append(
+                            {
+                                "role": "handler_log:clarification",
+                                "content": "The assistant is asking for clarification.",
+                                "model_response": model_responses,
+                                "clarification_message": clarification_content,
+                            }
+                        )
+                        continue
+
+                    else:
+                        current_step_inference_log.append(
+                            {
+                                "role": "handler_log:no_clarification",
+                                "content": "The assistant is not asking for allowed topics. Proceed to next turn.",
+                                "model_response": model_responses,
+                            }
+                        )
+
+                if should_break:
+                    print("break")
+                    print(model_responses)
+                    break
+
+                if not contain_multi_turn_interaction(test_entry_id):
+                    print(f"test_entry_id: {test_entry_id} not contain multi turn interaction")
                     break
 
                 # Obtain the execution results
@@ -330,17 +393,17 @@ class BaseHandler:
                         continue
                     # Avoid modification in future turns
                     class_instance = deepcopy(class_instance)
-                    state_log.append(
-                        {
-                            "role": "state_info",
-                            "class_name": class_name,
-                            "content": {
-                                key: value
-                                for key, value in vars(class_instance).items()
-                                if not key.startswith("_")
-                            },
-                        }
-                    )
+                    # state_log.append(
+                    #     {
+                    #         "role": "state_info",
+                    #         "class_name": class_name,
+                    #         "content": {
+                    #             key: value
+                    #             for key, value in vars(class_instance).items()
+                    #             if not key.startswith("_")
+                    #         },
+                    #     }
+                    # )
                 if len(state_log) > 0:
                     all_inference_log.append(state_log)
 
@@ -429,17 +492,17 @@ class BaseHandler:
                     continue
                 # Avoid modification in future turns
                 class_instance = deepcopy(class_instance)
-                state_log.append(
-                    {
-                        "role": "state_info",
-                        "class_name": class_name,
-                        "content": {
-                            key: value
-                            for key, value in vars(class_instance).items()
-                            if not key.startswith("_")
-                        },
-                    }
-                )
+                # state_log.append(
+                #     {
+                #         "role": "state_info",
+                #         "class_name": class_name,
+                #         "content": {
+                #             key: value
+                #             for key, value in vars(class_instance).items()
+                #             if not key.startswith("_")
+                #         },
+                #     }
+                # )
             if len(state_log) > 0:
                 all_inference_log.append(state_log)
 
@@ -619,17 +682,17 @@ class BaseHandler:
                         continue
                     # Avoid modification in future turns
                     class_instance = deepcopy(class_instance)
-                    state_log.append(
-                        {
-                            "role": "state_info",
-                            "class_name": class_name,
-                            "content": {
-                                key: value
-                                for key, value in vars(class_instance).items()
-                                if not key.startswith("_")
-                            },
-                        }
-                    )
+                    # state_log.append(
+                    #     {
+                    #         "role": "state_info",
+                    #         "class_name": class_name,
+                    #         "content": {
+                    #             key: value
+                    #             for key, value in vars(class_instance).items()
+                    #             if not key.startswith("_")
+                    #         },
+                    #     }
+                    # )
                 if len(state_log) > 0:
                     all_inference_log.append(state_log)
 

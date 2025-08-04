@@ -99,6 +99,7 @@ class GeminiHandler(BaseHandler):
         if "system_prompt" in inference_data:
             config.system_instruction = inference_data["system_prompt"]
 
+        print(f"len tools: {len(inference_data['tools'])}")
         if len(inference_data["tools"]) > 0:
             config.tools = [Tool(function_declarations=inference_data["tools"])]
 
@@ -169,7 +170,11 @@ class GeminiHandler(BaseHandler):
                 ],
             )
 
-        model_responses = fc_parts if fc_parts else text_parts
+        # model_responses = fc_parts if fc_parts else text_parts
+        if fc_parts:
+            model_responses = fc_parts
+        else:
+            model_responses = "\n".join(text_parts)
 
         return {
             "model_responses": model_responses,

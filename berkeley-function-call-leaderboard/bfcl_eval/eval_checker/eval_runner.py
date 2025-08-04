@@ -276,6 +276,9 @@ def relevance_file_runner(
     for i in range(len(model_result)):
         index: str = model_result[i]["id"]
         model_result_item = model_result[i]["result"]
+        assert len(model_result_item) == 1 or "Error during inference" in model_result_item, f"model_result_item: {model_result_item}"
+        model_result_item = model_result_item[0][0]
+        
         contain_func_call = False
         decoded_result = None
         decode_error = None
@@ -345,6 +348,10 @@ def ast_file_runner(
     for i in range(len(model_result)):
         index: str = model_result[i]["id"]
         model_result_item = model_result[i]["result"]
+        assert len(model_result_item) == 1 or "Error during inference" in model_result_item, f"model_result_item: {model_result_item}"
+        
+        model_result_item = model_result_item[0][0]
+
         prompt_item = prompt[i]["function"]
         possible_answer_item = possible_answer[i]["ground_truth"]
 
