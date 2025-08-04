@@ -524,6 +524,7 @@ class BaseHandler:
                         ),
                     }
                 ]
+            allowed_clarifications = current_turn_message[-1].pop("clarifications", {})
 
             if turn_idx == 0:
                 inference_data = self.add_first_turn_message_prompting(
@@ -545,6 +546,9 @@ class BaseHandler:
 
             count = 0
             while True:
+                should_break = False
+                can_have_clarification = False
+                is_allowed_clarification = False
                 print("-" * 100)
                 print(
                     f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {count}"
@@ -613,7 +617,9 @@ class BaseHandler:
                                 "model_response_decoded": decoded_model_responses,
                             }
                         )
-                        break
+                        should_break = True
+                        can_have_clarification = True
+                        # break
 
                 except Exception as e:
                     print("Failed to decode the model response. Proceed to next turn.")
@@ -624,8 +630,52 @@ class BaseHandler:
                             "error": str(e),
                         }
                     )
+                    should_break = True
+                    can_have_clarification = True
+                    # break
+                
+                if can_have_clarification:
+                    is_allowed_clarification, clarification_content = (
+                        check_for_clarification(
+                            model_response=model_responses,
+                            allowed_clarifications=allowed_clarifications,
+                        )
+                    )
+
+                    if is_allowed_clarification:
+                        clarification_message = [
+                            {"role": "user", "content": clarification_content}
+                        ]
+                        inference_data = self._add_next_turn_user_message_FC(
+                            inference_data, clarification_message
+                        )
+                        current_step_inference_log.append(
+                            {
+                                "role": "handler_log:clarification",
+                                "content": "The assistant is asking for clarification.",
+                                "model_response": model_responses,
+                                "clarification_message": clarification_content,
+                            }
+                        )
+                        continue
+
+                    else:
+                        current_step_inference_log.append(
+                            {
+                                "role": "handler_log:no_clarification",
+                                "content": "The assistant is not asking for allowed topics. Proceed to next turn.",
+                                "model_response": model_responses,
+                            }
+                        )
+
+                if should_break:
+                    print("break")
+                    print(model_responses)
                     break
 
+                if not contain_multi_turn_interaction(test_entry_id):
+                    print(f"test_entry_id: {test_entry_id} not contain multi turn interaction")
+                    break
                 # Obtain the execution results
                 execution_results, involved_instances = execute_multi_turn_func_call(
                     decoded_model_responses,

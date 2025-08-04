@@ -79,6 +79,7 @@ class OpenAICompletionsHandler(BaseHandler):
             "model": self.model_name.replace("-FC", "").replace("audio:", ""),
             "temperature": self.temperature,
             "store": False,
+            "timeout": 120,
         }
 
         if len(tools) > 0:

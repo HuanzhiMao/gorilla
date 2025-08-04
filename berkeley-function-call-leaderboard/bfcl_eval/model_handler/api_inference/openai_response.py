@@ -78,6 +78,7 @@ class OpenAIResponsesHandler(BaseHandler):
             "include": ["reasoning.encrypted_content"],
             "reasoning": {"summary": "auto"},
             "temperature": self.temperature,
+            "timeout": 120,
         }
 
         # OpenAI reasoning models don't support temperature parameter

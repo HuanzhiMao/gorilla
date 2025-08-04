@@ -861,8 +861,8 @@ def process_audio_test_case(
                 else:
                     # FIXME: uncomment this to determine which text to use
                     # msg["content"] = msg["transcript"]
-                    msg["content"] = msg["asr_output_openai"]
-                    msg["content"] = msg["asr_output_elevenlabs"]
+                    # msg["content"] = msg["asr_output_openai"]
+                    # msg["content"] = msg["asr_output_elevenlabs"]
                     msg["content"] = msg["asr_output_deepgram"]
 
                 del msg["transcript"]
