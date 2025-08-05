@@ -101,9 +101,9 @@ class ClaudeHandler(BaseHandler):
         messages = inference_data["message"]
 
         if inference_data["caching_enabled"]:
-            if "system_prompt" in inference_data:
-                # Cache the system prompt
-                inference_data["system_prompt"][0]["cache_control"] = {"type": "ephemeral"}
+            # if "system_prompt" in inference_data:
+            #     # Cache the system prompt
+            #     inference_data["system_prompt"][0]["cache_control"] = {"type": "ephemeral"}
             # Only add cache control to the last two user messages
             # Remove previously set cache control flags from all user messages except the last two
             count = 0
