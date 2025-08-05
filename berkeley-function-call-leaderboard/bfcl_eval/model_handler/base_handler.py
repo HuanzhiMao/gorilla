@@ -313,6 +313,7 @@ class BaseHandler:
                                 "role": "handler_log:clarification",
                                 "content": "The assistant is asking for clarification.",
                                 "model_response": model_responses,
+                                "allowed_clarifications": allowed_clarifications,
                                 "clarification_message": clarification_content,
                             }
                         )
@@ -324,6 +325,7 @@ class BaseHandler:
                                 "role": "handler_log:no_clarification",
                                 "content": "The assistant is not asking for allowed topics. Proceed to next turn.",
                                 "model_response": model_responses,
+                                "allowed_clarifications": allowed_clarifications,
                             }
                         )
 
@@ -654,6 +656,7 @@ class BaseHandler:
                                 "role": "handler_log:clarification",
                                 "content": "The assistant is asking for clarification.",
                                 "model_response": model_responses,
+                                "allowed_clarifications": allowed_clarifications,
                                 "clarification_message": clarification_content,
                             }
                         )
@@ -665,6 +668,7 @@ class BaseHandler:
                                 "role": "handler_log:no_clarification",
                                 "content": "The assistant is not asking for allowed topics. Proceed to next turn.",
                                 "model_response": model_responses,
+                                "allowed_clarifications": allowed_clarifications,
                             }
                         )
 

@@ -1,14 +1,786 @@
-{"id": "live_parallel_1-0-1", "question": [[{"role": "user", "content": "Could you tell me the current weather conditions for Boston, MA and also for San Francisco?", "transcript": "Hey, whats the weather like in Boston and San Francisco right now?", "audio_path": "BFCL_v3_live_parallel/live_parallel_1-0-1_openai.mp3", "asr_output_openai": "Hey, what's the weather like in Boston and San Francisco right now?", "asr_output_elevenlabs": "Hey, what's the weather like in Boston and San Francisco right now?", "asr_output_deepgram": "Hey. What's the weather like in Boston and San Francisco right now?", "clarifications": {}}]], "function": [{"name": "get_current_weather", "description": "Retrieves the current weather conditions for a specified city and state.", "parameters": {"type": "dict", "required": ["location"], "properties": {"location": {"type": "string", "description": "The location for which to get the weather, in the format of 'City, State', such as 'San Francisco, CA' if State for the city exists. 'City, Country' if State for the city doesn't exist. Use short form for state."}, "unit": {"type": "string", "description": "The unit of temperature for the weather report.", "enum": ["celsius", "fahrenheit"], "default": "fahrenheit"}}}}]}
-{"id": "live_parallel_2-0-2", "question": [[{"role": "user", "content": "<<question>> What\\'s the weather like in the two cities of Boston and San Francisco?", "transcript": "Um, whats the weather in Boston and, uh, San Francisco?", "audio_path": "BFCL_v3_live_parallel/live_parallel_2-0-2_openai.mp3", "asr_output_openai": "Um, what's the weather in Boston and, uh, San Francisco?", "asr_output_elevenlabs": "Um, what's the weather in Boston and San Francisco?", "asr_output_deepgram": "What's the weather in Boston and, San Francisco?", "clarifications": {}}]], "function": [{"name": "get_current_weather", "description": "Retrieves the current weather conditions for a specified city and state.", "parameters": {"type": "dict", "required": ["location"], "properties": {"location": {"type": "string", "description": "The location for which to get the weather, in the format of 'City, State', such as 'San Francisco, CA' if State for the city exists. 'City, Country' if State for the city doesn't exist. Use short form for the state"}, "unit": {"type": "string", "description": "The unit of temperature for the weather report.", "enum": ["celsius", "fahrenheit"], "default": "fahrenheit"}}}}]}
-{"id": "live_parallel_3-0-3", "question": [[{"role": "system", "content": "Eres un asistente IA. Has sido capacitado con una superinteligencia, formidable para comunicar con usuarios en espa\u00f1ol, interpretar sus necesidades y actuar a travez de ellos."}, {"role": "user", "content": "\u00bfPodr\u00edas decirme las condiciones actuales del clima en Canc\u00fan, QR, Playa del Carmen, QR y Tulum, QR?", "transcript": "Hey, could you tell me current weather in Cancun, Playa del Carmen, and Tulum?", "audio_path": "BFCL_v3_live_parallel/live_parallel_3-0-3_openai.mp3", "asr_output_openai": "Hey, could you tell me current weather in Cancun, Playa del Carmen, and Tulum?", "asr_output_elevenlabs": "Hey, could you tell me current weather in Cancun, Playa del Carmen and Tulum?", "asr_output_deepgram": "Hey. Could you tell me current weather in Cancun, Playa del Carmen, and Tulum?", "clarifications": {}}]], "function": [{"name": "get_current_weather", "description": "Retrieves the current weather conditions for a specified city and state.", "parameters": {"type": "dict", "required": ["location"], "properties": {"location": {"type": "string", "description": "The location for which to get the weather, in the format of 'City, State', such as 'San Francisco, CA' if State for the city exists. 'City, Country' if State for the city doesn't exist. Use short form if using state name"}, "unit": {"type": "string", "description": "The unit of temperature for the weather report.", "enum": ["celsius", "fahrenheit"], "default": "fahrenheit"}}}}]}
-{"id": "live_parallel_4-1-0", "question": [[{"role": "user", "content": "Could you tell me the current weather in Boston, USA and also in San Francisco, USA?", "transcript": "Hey, um, hows the weather right now in Boston and, uh, San Francisco?", "audio_path": "BFCL_v3_live_parallel/live_parallel_4-1-0_openai.mp3", "asr_output_openai": "Hey, how's the weather right now in Boston and San Francisco?", "asr_output_elevenlabs": "Hey, um, how's the weather right now in Boston and, uh, San Francisco?", "asr_output_deepgram": "Hey. How's the weather right now in Boston and, San Francisco?", "clarifications": {}}]], "function": [{"name": "get_current_weather", "description": "Retrieves the current weather information for a specified geographic location.", "parameters": {"type": "dict", "required": ["location"], "properties": {"location": {"type": "string", "description": "The geographic location for which to fetch the weather data, in the format of 'City, Country' (e.g., 'London, UK')."}, "url": {"type": "string", "description": "The API endpoint for fetching weather data. This should be a fully qualified URL pointing to the Open-Meteo API with the appropriate query parameters for latitude and longitude.", "default": "https://api.open-meteo.com/v1/forecast"}}}}]}
-{"id": "live_parallel_5-2-0", "question": [[{"role": "user", "content": "Could you tell me the current temperature in Boston, MA and San Francisco, please?", "transcript": "Hey, whats the temperature right now in Boston and San Francisco, okay?", "audio_path": "BFCL_v3_live_parallel/live_parallel_5-2-0_openai.mp3", "asr_output_openai": "Hey, what's the temperature right now in Boston and San Francisco, okay?", "asr_output_elevenlabs": "Hey, what's the temperature right now in Boston and San Francisco? Okay.", "asr_output_deepgram": "Hey, what's the temperature right now in Boston and San Francisco? Okay?", "clarifications": {}}]], "function": [{"name": "get_current_weather", "description": "Retrieves the current weather information for a specified location using the Open-Meteo API.", "parameters": {"type": "dict", "required": ["location"], "properties": {"url": {"type": "string", "description": "The API endpoint for fetching weather data, with a default value pointing to the Open-Meteo API service.", "default": "https://api.open-meteo.com/v1/forecast"}, "location": {"type": "string", "description": "The geographical location for which to retrieve weather data, in the format of 'City, State', such as 'San Francisco, CA'. If using state name, then use short form."}, "unit": {"type": "string", "description": "The unit of measurement for temperature values.", "enum": ["celsius", "fahrenheit"], "default": "celsius"}}}}]}
-{"id": "live_parallel_6-3-0", "question": [[{"role": "user", "content": "What's the snow like in the two cities of Paris and Bordeaux?", "transcript": "Hey, um, can let me know how the snows lookin in Paris and Bordeaux, right?", "audio_path": "BFCL_v3_live_parallel/live_parallel_6-3-0_cartesia.mp3", "asr_output_openai": "Hey, um, can let me know how the snow's lookin' in Paris and Bordeaux, right?", "asr_output_elevenlabs": "Hey, um, can let me know how the snows look in, in Paris and Bordeaux, right?", "asr_output_deepgram": "Hey. Can let me know how the snows look in in Paris and Bordeaux. Right?", "clarifications": {}}]], "function": [{"name": "get_current_weather", "description": "Retrieves the current weather conditions for a specified location.", "parameters": {"type": "dict", "required": ["location"], "properties": {"location": {"type": "string", "description": "The location for which to get the weather, in the format of 'City, State' (e.g., 'San Francisco, CA'). If city does not have a state, then just mention the name of the city."}, "unit": {"type": "string", "description": "The unit of measurement for temperature values.", "enum": ["celsius", "fahrenheit"], "default": "fahrenheit"}}}}, {"name": "get_snow_report", "description": "Retrieves the latest snow report for a specified location, providing details about the snow conditions and weather.", "parameters": {"type": "dict", "required": ["location"], "properties": {"location": {"type": "string", "description": "The location for which to get the snow report, in the format of 'City, State' or 'City, Country', such as 'Aspen, CO' or 'Paris, France'."}, "unit": {"type": "string", "description": "The temperature unit to be used in the snow report.", "enum": ["celsius", "fahrenheit"], "default": "fahrenheit"}}}}]}
-{"id": "live_parallel_7-3-1", "question": [[{"role": "user", "content": "What's the weather like in the two cities of Boston and San Francisco?", "transcript": "Hey, can you tell me the weather in Boston and San Francisco, thanks?", "audio_path": "BFCL_v3_live_parallel/live_parallel_7-3-1_cartesia.mp3", "asr_output_openai": "Hey, can you tell me the weather in Boston and San Francisco thanks?", "asr_output_elevenlabs": "Hey, can you tell me the weather in Boston and San Francisco? Thanks!", "asr_output_deepgram": "Hey. Can you tell me the weather in Boston and San Francisco? Thanks.", "clarifications": {}}]], "function": [{"name": "get_current_weather", "description": "Retrieves the current weather conditions for a specified location.", "parameters": {"type": "dict", "required": ["location"], "properties": {"location": {"type": "string", "description": "The location for which to get the weather, in the format of 'City, State' (e.g., 'San Francisco, CA'). For state, use short form."}, "unit": {"type": "string", "description": "The unit of measurement for temperature values.", "enum": ["celsius", "fahrenheit"], "default": "fahrenheit"}}}}, {"name": "get_snow_report", "description": "Retrieves the latest snow report for a specified location, providing details about the snow conditions and weather.", "parameters": {"type": "dict", "required": ["location"], "properties": {"location": {"type": "string", "description": "The location for which to get the snow report, in the format of 'City, State', such as 'Aspen, CO'."}, "unit": {"type": "string", "description": "The temperature unit to be used in the snow report.", "enum": ["celsius", "fahrenheit"], "default": "fahrenheit"}}}}]}
-{"id": "live_parallel_8-4-0", "question": [[{"role": "user", "content": "Hi there! Could you please help me manage my tasks? I need to add a task called 'Machine Learning Study Session'. Also, I have completed one of my tasks named 'todo random', and I would like to delete it from my list.", "transcript": "Hey! Can you, uh, help me with my tasks? Add one called Machine Learning Study Session. Oh, Ive finished todo random, so, um, please remove it.", "audio_path": "BFCL_v3_live_parallel/live_parallel_8-4-0_cartesia.mp3", "asr_output_openai": "Hey, can you help me with my tasks? Add one called 'Machine Learning Study Session'. Oh, I've finished 'Todo Random', so please remove it.", "asr_output_elevenlabs": "Hey, can you, uh, help me with my tasks? Add one called Machine Learning Study Session. Oh, I've finished Toto Random so, um, please remove it.", "asr_output_deepgram": "Hey. Can you, help me with my tasks? Add one called machine learning study session. Oh, I finished Toto random. So, please remove it.", "clarifications": {"add_task_content": "Machine Learning Study Session", "delete_task_content": "todo random"}}]], "function": [{"name": "todo", "description": "Manages a todo list allowing the user to add, delete, or update items.", "parameters": {"type": "dict", "required": ["type", "content"], "properties": {"type": {"type": "string", "description": "The action to be performed on the todo list.", "enum": ["add", "delete", "update"]}, "content": {"type": "string", "description": "The details of the todo item relevant to the action being performed."}}}}]}
-{"id": "live_parallel_9-5-0", "question": [[{"role": "user", "content": "What's cost of 2 and 4 gb ram machine on aws ec2 with one CPU?", "transcript": "Hey, can you check cost on A W S E C two for a machine with two and four gigabytes of R A M and one C P U?", "audio_path": "BFCL_v3_live_parallel/live_parallel_9-5-0_cartesia.mp3", "asr_output_openai": "Hey, can you check cost on a AWS EC, two for a machine with two and four gigabytes of RAM and one CPU?", "asr_output_elevenlabs": "Hey, can you check cost on AWS EC2 for a machine with 2 and 4 gigabytes of RAM and one CPU?", "asr_output_deepgram": "Hey. Can you check cost on AWS EC? Two for a machine with two and four gigabytes of RAM and one CPU.", "clarifications": {"memory_amount": "2 and 4 gb", "cpu_units": "one CPU"}}]], "function": [{"name": "get_aws_pricing", "description": "Retrieves the pricing information for an AWS EC2 instance based on the provided memory and CPU requirements. The returned pricing is an estimate and may vary based on region and availability.", "parameters": {"type": "dict", "required": ["memory", "cpu"], "properties": {"memory": {"type": "integer", "description": "The amount of memory required for the instance in gigabytes (GB)."}, "cpu": {"type": "string", "description": "The number of CPU units required for the instance. Valid options are 'single', 'dual', or 'quad'.", "enum": ["single", "dual", "quad"]}, "region": {"type": "string", "description": "The AWS region where the instance will be launched, such as 'us-east-1' or 'eu-central-1'.", "default": "us-east-1"}, "operating_system": {"type": "string", "description": "The operating system to be used on the instance.", "enum": ["Linux", "Windows"], "default": "Linux"}}}}]}
-{"id": "live_parallel_10-6-0", "question": [[{"role": "user", "content": "I need to make a couple of hotel reservations. First, secure a room for 2 adults and 1 child at the Sheraton Hotel in New York with check-in on May 1, 2022, and check-out on May 5, 2022. Then, reserve a room for 1 adult and 2 children at the Marriott in Los Angeles, checking in on June 1, 2022, and checking out on June 10, 2022.", "transcript": "Uh, snag two hotel stays for me. First, um, a room at the Sheraton in New York, Sheraton thats S-H-E-R-A-T-O-N, Sheraton in New York for two adults and one child, with check-in on May first and, uh, check-out on May fifth, twenty twenty-two. Then, book a room at the Marriott in Los Angeles, Marriott thats M-A-R-R-I-O-T-T, Marriott in Los Angeles for one adult and two kids, uh, checkin in June first and out June tenth, twenty twenty-two.", "audio_path": "BFCL_v3_live_parallel/live_parallel_10-6-0_cartesia.mp3", "asr_output_openai": "Snag two hotel stays for me. First, a room at the Sheraton in New York, Sheraton that's S-H-E-R-A-T-O-N, Sheraton in New York for two adults and one child, with check-in on May 1st and a check-out on May 5th, 2022. Then, book a room at the Marriott in Los Angeles, Marriott that's M-A-R-R-I-O-T-T, Marriott in Los Angeles for one adult and two kids, check-in on June 1st and out June 10th, 2022.", "asr_output_elevenlabs": "Uh, snag two hotel stays for me. First, um, a room at the Sheraton in New York. Sheraton, that's S-H-E-R-A-T-O-N. Sheraton in New York for two adults and one child with check-in on May 1st and a checkout on May 5th, 2022. Then book a room at the Marriott in Los Angeles. Marriott, that's M-A-R-R-I-O-T-T. Marriott in Los Angeles for one adult and two kids, uh, check-in in June 1st and out June 10th, 2022.", "asr_output_deepgram": "Snag two hotel stays for me. First, a room at the Sheraton in New York. Sheraton, that's s h e r a t o n, Sheraton in New York for two adults and one child with check-in on May first and a check out on May fifth twenty twenty two. Then book a room at the Marriott in Los Angeles. Marriott, that's m a r r I o t t Marriott in Los Angeles for one adult and two kids. Check-in in June first and out June tenth twenty twenty two.", "clarifications": {"first_hotel_name": "Sheraton Hotel", "first_location": "New York", "first_check_in_date": "May 1, 2022", "first_check_out_date": "May 5, 2022", "second_hotel_name": "Marriott", "second_location": "Los Angeles", "second_check_in_date": "June 1, 2022", "second_check_out_date": "June 10, 2022"}}]], "function": [{"name": "hotel_booking_book", "description": "Book a hotel room at the specified location for the specified number of adults and children, ensuring the accommodation dates are available.", "parameters": {"type": "dict", "required": ["hotel_name", "location", "check_in", "check_out", "adults", "children"], "properties": {"hotel_name": {"type": "string", "description": "The name of the hotel to book."}, "location": {"type": "string", "description": "The location of the hotel, in the format of 'City, State', such as 'San Francisco, CA' or 'New York, NY'."}, "check_in": {"type": "string", "description": "The check-in date for the booking, in the format 'YYYY-MM-DD'."}, "check_out": {"type": "string", "description": "The check-out date for the booking, in the format 'YYYY-MM-DD'."}, "adults": {"type": "integer", "description": "The number of adults included in the booking."}, "children": {"type": "integer", "description": "The number of children included in the booking."}}}}]}
-{"id": "live_parallel_12-8-0", "question": [[{"role": "user", "content": "For breakfast I had a 12 ounce iced coffee and a banana.\n\nFor lunch I had a quesadilla\n\nBreakfast four ounces of asparagus, two eggs, one piece of gluten free bread.", "transcript": "So, uh, for breakfast, I had twelve-ounce iced coffee and a banana. Then for lunch, I went with a, uh, quesadilla. Oh, and breakfast also included four ounces of asparagus, uh, two eggs, and one slice of gluten-free bread.", "audio_path": "BFCL_v3_live_parallel/live_parallel_12-8-0_elevenlabs.mp3", "asr_output_openai": "So, for breakfast, I had 12 oz iced coffee and a banana. Then for lunch, I went with a quesadilla. Oh, and breakfast also included 4 oz of asparagus, two eggs, and one slice of gluten-free bread.", "asr_output_elevenlabs": "So, uh, for breakfast I had twelve ounce iced coffee and a banana. Then for lunch I went with a, uh, quesadilla. Oh, and breakfast also included four ounces of asparagus, uh, two eggs and one slice of gluten-free bread.", "asr_output_deepgram": "So, for breakfast, I had twelve ounce iced coffee and a banana. Then for lunch, I went with a, quesadilla. Oh, and breakfast also included four ounces of asparagus, two eggs, and one slice of gluten free bread.", "clarifications": {"portion_amount_spelling1": "12 ounce", "food_name1": "iced coffee", "meal_name1": "breakfast", "food_name2": "banana", "meal_name2": "breakfast", "food_name3": "quesadilla", "meal_name3": "lunch", "portion_amount_spelling2": "four ounces", "food_name4": "asparagus", "meal_name4": "breakfast", "portion_amount_spelling3": "two", "food_name5": "eggs", "meal_name5": "breakfast", "portion_amount_spelling4": "one piece", "food_name6": "gluten free bread", "meal_name6": "breakfast"}}]], "function": [{"name": "log_food", "description": "Logs a food item with details about the portion size and the meal it is associated with.", "parameters": {"type": "dict", "required": ["food_name", "portion_amount", "meal_name"], "properties": {"food_name": {"type": "string", "description": "The name of the food to log."}, "portion_amount": {"type": "float", "description": "The amount of the food item that was consumed, in specified units."}, "portion_unit": {"type": "string", "description": "The unit of measure for the portion amount. Choose a unit such as 'grams', 'ounces', 'pieces', 'cups', or 'tablespoons'.", "enum": ["grams", "ounces", "pieces", "cups", "tablespoons"], "default": "grams"}, "meal_name": {"type": "string", "description": "The name of the meal with which the food item is associated. Options include 'breakfast', 'lunch', 'dinner', or 'snack'."}}}}]}
-{"id": "live_parallel_13-9-0", "question": [[{"role": "user", "content": "Could you tell me the current weather in Boston, MA and also in San Francisco?", "transcript": "Um, can you get me the current weather in Boston and uh, San Francisco?", "audio_path": "BFCL_v3_live_parallel/live_parallel_13-9-0_elevenlabs.mp3", "asr_output_openai": "Um, can you get me the current weather in Boston and San Francisco?", "asr_output_elevenlabs": "Um, can you get me the current weather in Boston and, uh, San Francisco?", "asr_output_deepgram": "Can you get me the current weather in Boston and, San Francisco?", "clarifications": {}}]], "function": [{"name": "get_current_weather", "description": "Retrieves the current weather for a specified location, with the option to get the result in either Celsius or Fahrenheit.", "parameters": {"type": "dict", "properties": {"location": {"type": "string", "description": "The location for which to retrieve the weather, in the format of 'City, State', such as 'San Francisco, CA'. If using state name then use short form."}, "unit": {"type": "string", "description": "The unit of temperature for the weather report.", "enum": ["celsius", "fahrenheit"], "default": "fahrenheit"}}, "required": ["location"]}}]}
-{"id": "live_parallel_14-10-0", "question": [[{"role": "user", "content": "What's the weather like in the two cities of Boston and San Francisco?", "transcript": "Hey, yknow, whats the weather in, uh, Boston and San Francisco right now?", "audio_path": "BFCL_v3_live_parallel/live_parallel_14-10-0_elevenlabs.mp3", "asr_output_openai": "Hey, you know, what's the weather in Boston and San Francisco right now?", "asr_output_elevenlabs": "Hey, you know, what's the weather in Boston and San Francisco right now?", "asr_output_deepgram": "Hey. You know, what's the weather in, Boston and San Francisco right now?", "clarifications": {}}]], "function": [{"name": "get_current_weather", "description": "Retrieves the current weather information for a specified location.", "parameters": {"type": "dict", "required": ["location"], "properties": {"location": {"type": "string", "description": "The location for which the current weather is requested, in the format of 'City, State', such as 'San Francisco, CA' or 'New York, NY'. Use short form for state"}, "unit": {"type": "string", "description": "The unit of measurement for temperature values.", "enum": ["celsius", "fahrenheit"], "default": "fahrenheit"}}}}]}
-{"id": "live_parallel_15-11-0", "question": [[{"role": "user", "content": "list file in c drive and make file called testing.txt", "transcript": "Uh, list files in the C drive and, um, create a file named testing dot t x t.", "audio_path": "BFCL_v3_live_parallel/live_parallel_15-11-0_elevenlabs.mp3", "asr_output_openai": "List files in the C drive and create a file named testing.txt.", "asr_output_elevenlabs": "List files in the C drive and create a file named testing.txt.", "asr_output_deepgram": "List files in the C drive and, create a file named testing dot TXT.", "clarifications": {"command_spelling": "list file in c drive and make file called testing.txt"}}]], "function": [{"name": "cmd_controller.execute", "description": "Executes a specified command in the Windows operating system using the os.system() function.", "parameters": {"type": "dict", "required": ["command"], "properties": {"command": {"type": "string", "description": "The command line instruction to be passed to os.system() for execution, formatted as a Windows command prompt statement."}, "unit": {"type": "string", "description": "The unit of measurement for the command execution time, such as 'seconds' or 'milliseconds'", "enum": ["seconds", "milliseconds"], "default": "N/A"}}}}]}
+[
+  {
+    "id": "live_parallel_1-0-1",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "Could you tell me the current weather conditions for Boston, MA and also for San Francisco?",
+          "transcript": "Hey, whats the weather like in Boston and San Francisco right now?",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_1-0-1_openai.mp3",
+          "asr_output_openai": "Hey, what's the weather like in Boston and San Francisco right now?",
+          "asr_output_elevenlabs": "Hey, what's the weather like in Boston and San Francisco right now?",
+          "asr_output_deepgram": "Hey. What's the weather like in Boston and San Francisco right now?",
+          "clarifications": {
+            "location1": "Boston, MA",
+            "location2": "San Francisco"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "get_current_weather",
+        "description": "Retrieves the current weather conditions for a specified city and state.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "location"
+          ],
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location for which to get the weather, in the format of 'City, State', such as 'San Francisco, CA' if State for the city exists. 'City, Country' if State for the city doesn't exist. Use short form for state."
+            },
+            "unit": {
+              "type": "string",
+              "description": "The unit of temperature for the weather report.",
+              "enum": [
+                "celsius",
+                "fahrenheit"
+              ],
+              "default": "fahrenheit"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_2-0-2",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "<<question>> What\\'s the weather like in the two cities of Boston and San Francisco?",
+          "transcript": "Um, whats the weather in Boston and, uh, San Francisco?",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_2-0-2_openai.mp3",
+          "asr_output_openai": "Um, what's the weather in Boston and, uh, San Francisco?",
+          "asr_output_elevenlabs": "Um, what's the weather in Boston and San Francisco?",
+          "asr_output_deepgram": "What's the weather in Boston and, San Francisco?",
+          "clarifications": {
+            "first_city": "Boston",
+            "second_city": "San Francisco"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "get_current_weather",
+        "description": "Retrieves the current weather conditions for a specified city and state.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "location"
+          ],
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location for which to get the weather, in the format of 'City, State', such as 'San Francisco, CA' if State for the city exists. 'City, Country' if State for the city doesn't exist. Use short form for the state"
+            },
+            "unit": {
+              "type": "string",
+              "description": "The unit of temperature for the weather report.",
+              "enum": [
+                "celsius",
+                "fahrenheit"
+              ],
+              "default": "fahrenheit"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_3-0-3",
+    "question": [
+      [
+        {
+          "role": "system",
+          "content": "Eres un asistente IA. Has sido capacitado con una superinteligencia, formidable para comunicar con usuarios en espa\u00f1ol, interpretar sus necesidades y actuar a travez de ellos."
+        },
+        {
+          "role": "user",
+          "content": "\u00bfPodr\u00edas decirme las condiciones actuales del clima en Canc\u00fan, QR, Playa del Carmen, QR y Tulum, QR?",
+          "transcript": "Hey, could you tell me current weather in Cancun, Playa del Carmen, and Tulum?",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_3-0-3_openai.mp3",
+          "asr_output_openai": "Hey, could you tell me current weather in Cancun, Playa del Carmen, and Tulum?",
+          "asr_output_elevenlabs": "Hey, could you tell me current weather in Cancun, Playa del Carmen and Tulum?",
+          "asr_output_deepgram": "Hey. Could you tell me current weather in Cancun, Playa del Carmen, and Tulum?",
+          "clarifications": {
+            "location1": "Canc\u00fan, QR",
+            "location2": "Playa del Carmen, QR",
+            "location3": "Tulum, QR"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "get_current_weather",
+        "description": "Retrieves the current weather conditions for a specified city and state.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "location"
+          ],
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location for which to get the weather, in the format of 'City, State', such as 'San Francisco, CA' if State for the city exists. 'City, Country' if State for the city doesn't exist. Use short form if using state name"
+            },
+            "unit": {
+              "type": "string",
+              "description": "The unit of temperature for the weather report.",
+              "enum": [
+                "celsius",
+                "fahrenheit"
+              ],
+              "default": "fahrenheit"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_4-1-0",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "Could you tell me the current weather in Boston, USA and also in San Francisco, USA?",
+          "transcript": "Hey, um, hows the weather right now in Boston and, uh, San Francisco?",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_4-1-0_openai.mp3",
+          "asr_output_openai": "Hey, how's the weather right now in Boston and San Francisco?",
+          "asr_output_elevenlabs": "Hey, um, how's the weather right now in Boston and, uh, San Francisco?",
+          "asr_output_deepgram": "Hey. How's the weather right now in Boston and, San Francisco?",
+          "clarifications": {
+            "location1": "Boston, USA",
+            "location2": "San Francisco, USA"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "get_current_weather",
+        "description": "Retrieves the current weather information for a specified geographic location.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "location"
+          ],
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The geographic location for which to fetch the weather data, in the format of 'City, Country' (e.g., 'London, UK')."
+            },
+            "url": {
+              "type": "string",
+              "description": "The API endpoint for fetching weather data. This should be a fully qualified URL pointing to the Open-Meteo API with the appropriate query parameters for latitude and longitude.",
+              "default": "https://api.open-meteo.com/v1/forecast"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_5-2-0",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "Could you tell me the current temperature in Boston, MA and San Francisco, please?",
+          "transcript": "Hey, whats the temperature right now in Boston and San Francisco, okay?",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_5-2-0_openai.mp3",
+          "asr_output_openai": "Hey, what's the temperature right now in Boston and San Francisco, okay?",
+          "asr_output_elevenlabs": "Hey, what's the temperature right now in Boston and San Francisco? Okay.",
+          "asr_output_deepgram": "Hey, what's the temperature right now in Boston and San Francisco? Okay?",
+          "clarifications": {
+            "location1": "Boston, MA",
+            "location2": "San Francisco"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "get_current_weather",
+        "description": "Retrieves the current weather information for a specified location using the Open-Meteo API.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "location"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "The API endpoint for fetching weather data, with a default value pointing to the Open-Meteo API service.",
+              "default": "https://api.open-meteo.com/v1/forecast"
+            },
+            "location": {
+              "type": "string",
+              "description": "The geographical location for which to retrieve weather data, in the format of 'City, State', such as 'San Francisco, CA'. If using state name, then use short form."
+            },
+            "unit": {
+              "type": "string",
+              "description": "The unit of measurement for temperature values.",
+              "enum": [
+                "celsius",
+                "fahrenheit"
+              ],
+              "default": "celsius"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_6-3-0",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "What's the snow like in the two cities of Paris and Bordeaux?",
+          "transcript": "Hey, um, can let me know how the snows lookin in Paris and Bordeaux, right?",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_6-3-0_cartesia.mp3",
+          "asr_output_openai": "Hey, um, can let me know how the snow's lookin' in Paris and Bordeaux, right?",
+          "asr_output_elevenlabs": "Hey, um, can let me know how the snows look in, in Paris and Bordeaux, right?",
+          "asr_output_deepgram": "Hey. Can let me know how the snows look in in Paris and Bordeaux. Right?",
+          "clarifications": {
+            "first_city": "Paris",
+            "second_city": "Bordeaux"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "get_current_weather",
+        "description": "Retrieves the current weather conditions for a specified location.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "location"
+          ],
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location for which to get the weather, in the format of 'City, State' (e.g., 'San Francisco, CA'). If city does not have a state, then just mention the name of the city."
+            },
+            "unit": {
+              "type": "string",
+              "description": "The unit of measurement for temperature values.",
+              "enum": [
+                "celsius",
+                "fahrenheit"
+              ],
+              "default": "fahrenheit"
+            }
+          }
+        }
+      },
+      {
+        "name": "get_snow_report",
+        "description": "Retrieves the latest snow report for a specified location, providing details about the snow conditions and weather.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "location"
+          ],
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location for which to get the snow report, in the format of 'City, State' or 'City, Country', such as 'Aspen, CO' or 'Paris, France'."
+            },
+            "unit": {
+              "type": "string",
+              "description": "The temperature unit to be used in the snow report.",
+              "enum": [
+                "celsius",
+                "fahrenheit"
+              ],
+              "default": "fahrenheit"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_7-3-1",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "What's the weather like in the two cities of Boston and San Francisco?",
+          "transcript": "Hey, can you tell me the weather in Boston and San Francisco, thanks?",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_7-3-1_cartesia.mp3",
+          "asr_output_openai": "Hey, can you tell me the weather in Boston and San Francisco thanks?",
+          "asr_output_elevenlabs": "Hey, can you tell me the weather in Boston and San Francisco? Thanks!",
+          "asr_output_deepgram": "Hey. Can you tell me the weather in Boston and San Francisco? Thanks.",
+          "clarifications": {
+            "first_location": "Boston",
+            "second_location": "San Francisco"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "get_current_weather",
+        "description": "Retrieves the current weather conditions for a specified location.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "location"
+          ],
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location for which to get the weather, in the format of 'City, State' (e.g., 'San Francisco, CA'). For state, use short form."
+            },
+            "unit": {
+              "type": "string",
+              "description": "The unit of measurement for temperature values.",
+              "enum": [
+                "celsius",
+                "fahrenheit"
+              ],
+              "default": "fahrenheit"
+            }
+          }
+        }
+      },
+      {
+        "name": "get_snow_report",
+        "description": "Retrieves the latest snow report for a specified location, providing details about the snow conditions and weather.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "location"
+          ],
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location for which to get the snow report, in the format of 'City, State', such as 'Aspen, CO'."
+            },
+            "unit": {
+              "type": "string",
+              "description": "The temperature unit to be used in the snow report.",
+              "enum": [
+                "celsius",
+                "fahrenheit"
+              ],
+              "default": "fahrenheit"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_8-4-0",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "Hi there! Could you please help me manage my tasks? I need to add a task called 'Machine Learning Study Session'. Also, I have completed one of my tasks named 'todo random', and I would like to delete it from my list.",
+          "transcript": "Hey! Can you, uh, help me with my tasks? Add one called Machine Learning Study Session. Oh, Ive finished todo random, so, um, please remove it.",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_8-4-0_cartesia.mp3",
+          "asr_output_openai": "Hey, can you help me with my tasks? Add one called 'Machine Learning Study Session'. Oh, I've finished 'Todo Random', so please remove it.",
+          "asr_output_elevenlabs": "Hey, can you, uh, help me with my tasks? Add one called Machine Learning Study Session. Oh, I've finished Toto Random so, um, please remove it.",
+          "asr_output_deepgram": "Hey. Can you, help me with my tasks? Add one called machine learning study session. Oh, I finished Toto random. So, please remove it.",
+          "clarifications": {
+            "task_to_add": "Machine Learning Study Session",
+            "task_to_delete": "todo random"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "todo",
+        "description": "Manages a todo list allowing the user to add, delete, or update items.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "type",
+            "content"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "The action to be performed on the todo list.",
+              "enum": [
+                "add",
+                "delete",
+                "update"
+              ]
+            },
+            "content": {
+              "type": "string",
+              "description": "The details of the todo item relevant to the action being performed."
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_9-5-0",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "What's cost of 2 and 4 gb ram machine on aws ec2 with one CPU?",
+          "transcript": "Hey, can you check cost on A W S E C two for a machine with two and four gigabytes of R A M and one C P U?",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_9-5-0_cartesia.mp3",
+          "asr_output_openai": "Hey, can you check cost on a AWS EC, two for a machine with two and four gigabytes of RAM and one CPU?",
+          "asr_output_elevenlabs": "Hey, can you check cost on AWS EC2 for a machine with 2 and 4 gigabytes of RAM and one CPU?",
+          "asr_output_deepgram": "Hey. Can you check cost on AWS EC? Two for a machine with two and four gigabytes of RAM and one CPU.",
+          "clarifications": {
+            "memory_option1": "2 gb",
+            "memory_option2": "4 gb",
+            "cpu_units": "one CPU"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "get_aws_pricing",
+        "description": "Retrieves the pricing information for an AWS EC2 instance based on the provided memory and CPU requirements. The returned pricing is an estimate and may vary based on region and availability.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "memory",
+            "cpu"
+          ],
+          "properties": {
+            "memory": {
+              "type": "integer",
+              "description": "The amount of memory required for the instance in gigabytes (GB)."
+            },
+            "cpu": {
+              "type": "string",
+              "description": "The number of CPU units required for the instance. Valid options are 'single', 'dual', or 'quad'.",
+              "enum": [
+                "single",
+                "dual",
+                "quad"
+              ]
+            },
+            "region": {
+              "type": "string",
+              "description": "The AWS region where the instance will be launched, such as 'us-east-1' or 'eu-central-1'.",
+              "default": "us-east-1"
+            },
+            "operating_system": {
+              "type": "string",
+              "description": "The operating system to be used on the instance.",
+              "enum": [
+                "Linux",
+                "Windows"
+              ],
+              "default": "Linux"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_10-6-0",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "I need to make a couple of hotel reservations. First, secure a room for 2 adults and 1 child at the Sheraton Hotel in New York with check-in on May 1, 2022, and check-out on May 5, 2022. Then, reserve a room for 1 adult and 2 children at the Marriott in Los Angeles, checking in on June 1, 2022, and checking out on June 10, 2022.",
+          "transcript": "Uh, snag two hotel stays for me. First, um, a room at the Sheraton in New York, Sheraton thats S-H-E-R-A-T-O-N, Sheraton in New York for two adults and one child, with check-in on May first and, uh, check-out on May fifth, twenty twenty-two. Then, book a room at the Marriott in Los Angeles, Marriott thats M-A-R-R-I-O-T-T, Marriott in Los Angeles for one adult and two kids, uh, checkin in June first and out June tenth, twenty twenty-two.",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_10-6-0_cartesia.mp3",
+          "asr_output_openai": "Snag two hotel stays for me. First, a room at the Sheraton in New York, Sheraton that's S-H-E-R-A-T-O-N, Sheraton in New York for two adults and one child, with check-in on May 1st and a check-out on May 5th, 2022. Then, book a room at the Marriott in Los Angeles, Marriott that's M-A-R-R-I-O-T-T, Marriott in Los Angeles for one adult and two kids, check-in on June 1st and out June 10th, 2022.",
+          "asr_output_elevenlabs": "Uh, snag two hotel stays for me. First, um, a room at the Sheraton in New York. Sheraton, that's S-H-E-R-A-T-O-N. Sheraton in New York for two adults and one child with check-in on May 1st and a checkout on May 5th, 2022. Then book a room at the Marriott in Los Angeles. Marriott, that's M-A-R-R-I-O-T-T. Marriott in Los Angeles for one adult and two kids, uh, check-in in June 1st and out June 10th, 2022.",
+          "asr_output_deepgram": "Snag two hotel stays for me. First, a room at the Sheraton in New York. Sheraton, that's s h e r a t o n, Sheraton in New York for two adults and one child with check-in on May first and a check out on May fifth twenty twenty two. Then book a room at the Marriott in Los Angeles. Marriott, that's m a r r I o t t Marriott in Los Angeles for one adult and two kids. Check-in in June first and out June tenth twenty twenty two.",
+          "clarifications": {
+            "first_hotel_name": "Sheraton Hotel",
+            "first_location": "New York",
+            "first_check_in": "May 1, 2022",
+            "first_check_out": "May 5, 2022",
+            "first_adults": "2",
+            "first_children": "1",
+            "second_hotel_name": "Marriott",
+            "second_location": "Los Angeles",
+            "second_check_in": "June 1, 2022",
+            "second_check_out": "June 10, 2022",
+            "second_adults": "1",
+            "second_children": "2"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "hotel_booking_book",
+        "description": "Book a hotel room at the specified location for the specified number of adults and children, ensuring the accommodation dates are available.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "hotel_name",
+            "location",
+            "check_in",
+            "check_out",
+            "adults",
+            "children"
+          ],
+          "properties": {
+            "hotel_name": {
+              "type": "string",
+              "description": "The name of the hotel to book."
+            },
+            "location": {
+              "type": "string",
+              "description": "The location of the hotel, in the format of 'City, State', such as 'San Francisco, CA' or 'New York, NY'."
+            },
+            "check_in": {
+              "type": "string",
+              "description": "The check-in date for the booking, in the format 'YYYY-MM-DD'."
+            },
+            "check_out": {
+              "type": "string",
+              "description": "The check-out date for the booking, in the format 'YYYY-MM-DD'."
+            },
+            "adults": {
+              "type": "integer",
+              "description": "The number of adults included in the booking."
+            },
+            "children": {
+              "type": "integer",
+              "description": "The number of children included in the booking."
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_12-8-0",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "For breakfast I had a 12 ounce iced coffee and a banana.\n\nFor lunch I had a quesadilla\n\nBreakfast four ounces of asparagus, two eggs, one piece of gluten free bread.",
+          "transcript": "So, uh, for breakfast, I had twelve-ounce iced coffee and a banana. Then for lunch, I went with a, uh, quesadilla. Oh, and breakfast also included four ounces of asparagus, uh, two eggs, and one slice of gluten-free bread.",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_12-8-0_elevenlabs.mp3",
+          "asr_output_openai": "So, for breakfast, I had 12 oz iced coffee and a banana. Then for lunch, I went with a quesadilla. Oh, and breakfast also included 4 oz of asparagus, two eggs, and one slice of gluten-free bread.",
+          "asr_output_elevenlabs": "So, uh, for breakfast I had twelve ounce iced coffee and a banana. Then for lunch I went with a, uh, quesadilla. Oh, and breakfast also included four ounces of asparagus, uh, two eggs and one slice of gluten-free bread.",
+          "asr_output_deepgram": "So, for breakfast, I had twelve ounce iced coffee and a banana. Then for lunch, I went with a, quesadilla. Oh, and breakfast also included four ounces of asparagus, two eggs, and one slice of gluten free bread.",
+          "clarifications": {
+            "portion_amount_breakfast1": "12 ounces",
+            "food_name_breakfast1": "iced coffee",
+            "meal_name_breakfast1": "breakfast",
+            "food_name_breakfast2": "banana",
+            "meal_name_breakfast2": "breakfast",
+            "food_name_lunch": "quesadilla",
+            "meal_name_lunch": "lunch",
+            "portion_amount_breakfast3": "four ounces",
+            "food_name_breakfast3": "asparagus",
+            "meal_name_breakfast3": "breakfast",
+            "food_name_breakfast4": "eggs",
+            "portion_amount_breakfast4": "two",
+            "meal_name_breakfast4": "breakfast",
+            "food_name_breakfast5": "gluten free bread",
+            "portion_amount_breakfast5": "one piece",
+            "meal_name_breakfast5": "breakfast"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "log_food",
+        "description": "Logs a food item with details about the portion size and the meal it is associated with.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "food_name",
+            "portion_amount",
+            "meal_name"
+          ],
+          "properties": {
+            "food_name": {
+              "type": "string",
+              "description": "The name of the food to log."
+            },
+            "portion_amount": {
+              "type": "float",
+              "description": "The amount of the food item that was consumed, in specified units."
+            },
+            "portion_unit": {
+              "type": "string",
+              "description": "The unit of measure for the portion amount. Choose a unit such as 'grams', 'ounces', 'pieces', 'cups', or 'tablespoons'.",
+              "enum": [
+                "grams",
+                "ounces",
+                "pieces",
+                "cups",
+                "tablespoons"
+              ],
+              "default": "grams"
+            },
+            "meal_name": {
+              "type": "string",
+              "description": "The name of the meal with which the food item is associated. Options include 'breakfast', 'lunch', 'dinner', or 'snack'."
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_13-9-0",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "Could you tell me the current weather in Boston, MA and also in San Francisco?",
+          "transcript": "Um, can you get me the current weather in Boston and uh, San Francisco?",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_13-9-0_elevenlabs.mp3",
+          "asr_output_openai": "Um, can you get me the current weather in Boston and San Francisco?",
+          "asr_output_elevenlabs": "Um, can you get me the current weather in Boston and, uh, San Francisco?",
+          "asr_output_deepgram": "Can you get me the current weather in Boston and, San Francisco?",
+          "clarifications": {
+            "location1": "Boston, MA",
+            "location2": "San Francisco"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "get_current_weather",
+        "description": "Retrieves the current weather for a specified location, with the option to get the result in either Celsius or Fahrenheit.",
+        "parameters": {
+          "type": "dict",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location for which to retrieve the weather, in the format of 'City, State', such as 'San Francisco, CA'. If using state name then use short form."
+            },
+            "unit": {
+              "type": "string",
+              "description": "The unit of temperature for the weather report.",
+              "enum": [
+                "celsius",
+                "fahrenheit"
+              ],
+              "default": "fahrenheit"
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_14-10-0",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "What's the weather like in the two cities of Boston and San Francisco?",
+          "transcript": "Hey, yknow, whats the weather in, uh, Boston and San Francisco right now?",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_14-10-0_elevenlabs.mp3",
+          "asr_output_openai": "Hey, you know, what's the weather in Boston and San Francisco right now?",
+          "asr_output_elevenlabs": "Hey, you know, what's the weather in Boston and San Francisco right now?",
+          "asr_output_deepgram": "Hey. You know, what's the weather in, Boston and San Francisco right now?",
+          "clarifications": {
+            "first_city": "Boston",
+            "second_city": "San Francisco"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "get_current_weather",
+        "description": "Retrieves the current weather information for a specified location.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "location"
+          ],
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location for which the current weather is requested, in the format of 'City, State', such as 'San Francisco, CA' or 'New York, NY'. Use short form for state"
+            },
+            "unit": {
+              "type": "string",
+              "description": "The unit of measurement for temperature values.",
+              "enum": [
+                "celsius",
+                "fahrenheit"
+              ],
+              "default": "fahrenheit"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "live_parallel_15-11-0",
+    "question": [
+      [
+        {
+          "role": "user",
+          "content": "list file in c drive and make file called testing.txt",
+          "transcript": "Uh, list files in the C drive and, um, create a file named testing dot t x t.",
+          "audio_path": "BFCL_v3_live_parallel/live_parallel_15-11-0_elevenlabs.mp3",
+          "asr_output_openai": "List files in the C drive and create a file named testing.txt.",
+          "asr_output_elevenlabs": "List files in the C drive and create a file named testing.txt.",
+          "asr_output_deepgram": "List files in the C drive and, create a file named testing dot TXT.",
+          "clarifications": {
+            "file_name": "testing.txt",
+            "drive_letter": "C drive"
+          }
+        }
+      ]
+    ],
+    "function": [
+      {
+        "name": "cmd_controller.execute",
+        "description": "Executes a specified command in the Windows operating system using the os.system() function.",
+        "parameters": {
+          "type": "dict",
+          "required": [
+            "command"
+          ],
+          "properties": {
+            "command": {
+              "type": "string",
+              "description": "The command line instruction to be passed to os.system() for execution, formatted as a Windows command prompt statement."
+            },
+            "unit": {
+              "type": "string",
+              "description": "The unit of measurement for the command execution time, such as 'seconds' or 'milliseconds'",
+              "enum": [
+                "seconds",
+                "milliseconds"
+              ],
+              "default": "N/A"
+            }
+          }
+        }
+      }
+    ]
+  }
+]
