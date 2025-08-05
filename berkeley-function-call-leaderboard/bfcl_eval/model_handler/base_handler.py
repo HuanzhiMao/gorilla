@@ -444,7 +444,7 @@ class BaseHandler:
         exclude_state_log: bool,
     ) -> tuple[list[list], dict]:
         initial_config: dict = test_entry.get("initial_config", {})
-        involved_classes: list = test_entry["involved_classes"]
+        involved_classes: list = test_entry.get("involved_classes", [])
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
 

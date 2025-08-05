@@ -22,9 +22,12 @@ class NovaHandler(BaseHandler):
         self.is_fc_model = True
         self.client = boto3.client(
             service_name="bedrock-runtime",
-            region_name="us-east-1",  # Currently only available in us-east-1
+            region_name="us-east-1",
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
             aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+            aws_session_token=os.getenv(
+                "AWS_SESSION_TOKEN"
+            ),  # Include session token for temporary credentials
         )
 
     def decode_ast(self, result, language="Python"):
