@@ -648,7 +648,7 @@ class BaseHandler:
                         clarification_message = [
                             {"role": "user", "content": clarification_content}
                         ]
-                        inference_data = self._add_next_turn_user_message_FC(
+                        inference_data = self._add_next_turn_user_message_prompting(
                             inference_data, clarification_message
                         )
                         current_step_inference_log.append(
