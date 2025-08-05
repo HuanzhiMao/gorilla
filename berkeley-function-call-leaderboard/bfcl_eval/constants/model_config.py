@@ -2015,7 +2015,7 @@ third_party_inference_model_map = {
 
 
 audio_input_model_map = {
-    "audio_text:gpt-4o-audio-preview-2025-06-03-FC": ModelConfig(
+    "audio-text:gpt-4o-audio-preview-2025-06-03-FC": ModelConfig(
         model_name="gpt-4o-audio-preview-2025-06-03",
         display_name="GPT-4o-audio-preview-2025-06-03 (Audio Text FC)",
         url="https://openai.com/index/gpt-4-1/",
@@ -2055,7 +2055,7 @@ audio_input_model_map = {
         supports_audio_input=True,
     ),
     # Duplicate model name for audio input
-    "audio_text:gemini-2.5-pro-FC": ModelConfig(
+    "audio-text:gemini-2.5-pro-FC": ModelConfig(
         model_name="gemini-2.5-pro-FC",
         display_name="Gemini-2.5-Pro (Audio Text FC)",
         url="https://deepmind.google/technologies/gemini/pro/",
