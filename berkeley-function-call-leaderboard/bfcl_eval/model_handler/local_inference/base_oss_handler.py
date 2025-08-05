@@ -279,7 +279,7 @@ class OSSHandler(BaseHandler, EnforceOverrides):
 
         try:
             # FIXME @HuanzhiMao
-            assert "FC" in self.model_name or self.is_fc_model, "Model is not a FC model"
+            # assert "FC" in self.model_name or self.is_fc_model, "Model is not a FC model"
             model_responses, metadata = self.inference_multi_turn_prompting(
                 test_case, include_input_log, exclude_state_log
             )
