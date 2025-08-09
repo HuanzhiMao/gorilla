@@ -356,6 +356,8 @@ class OSSHandler(BaseHandler, EnforceOverrides):
         if hasattr(self, "skip_special_tokens"):
             extra_body["skip_special_tokens"] = self.skip_special_tokens
 
+        extra_body["lora_request"] = {"lora_name": "default"}
+
         start_time = time.time()
         if len(extra_body) > 0:
             api_response = self.client.completions.create(

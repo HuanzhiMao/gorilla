@@ -12,7 +12,7 @@ class Qwen25FCHandler(OSSHandler):
     def __init__(self, model_name, temperature) -> None:
         super().__init__(model_name, temperature)
         self.is_fc_model = True
-        self.model_name_huggingface = model_name.replace("-FC", "")
+        self.model_name_huggingface = model_name.split("-FC")[0]
 
     @override
     def decode_ast(self, result, language="Python"):
