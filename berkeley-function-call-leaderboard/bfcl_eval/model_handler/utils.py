@@ -787,22 +787,44 @@ def check_for_clarification(
     original_user_request: str,
     asr_output: str,
 ) -> tuple[bool, str]:
+    if not original_user_request or not asr_output:
+        return False, ""
 
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    system_prompt = """
-    You are an evaluator in an audio agent setting where the assistant's spoken output may be mis-heard. 
-    User wants to talk to the assistant, but the assistant can only see text, not audio, so we use ASR to transcribe the audio to text.
-    User has a intended request (that's the ground truth intention) that they want to express to the assistant. They then speak it out load, and the audio snippet is transcribed by an ASR modelm and the asssitant sees the transcribed text as user's request. The ASR model can likely make mistakes, and the assistant should not blindly trust the ASR output. Therefore, it is actually encouraged for the assistant to ask clarifying questions to the user to verify the correctness of the transcribed text.
-    
-    Your task is to decide whether the assistant's message is asking clarifying questions that are **only about spelling confirmation** – i.e. verifying the correct spelling of words, names, or values that may have been misunderstood. If **all** clarifying questions are limited to spelling confirmation of topics that appear *only* in *allowed_clarifications*, you should output a JSON object with `allowed=true` and provide a concise simulated user answer (in the `message` field) that supplies the requested values. If there is no clarifying question or any requested topic is outside these spelling confirmations or is disallowed, output `allowed=false` and an empty message. Always respond with only the JSON object and nothing else.
+    user_prompt = """
+You are a judge for an audio-chat scenario where a user speaks and an ASR system transcribes their speech for the assistant. The assistant only sees text (the ASR transcript), which is likely to contain transcription errors.
+
+You are given:
+- intended_request: the user's original, ground-truth intent.
+- asr_text: the ASR-transcribed text the assistant saw.
+- allowed_clarifications: a set of fields with canonical spellings/values the user can confirm (e.g., names, IDs, emails, dates, numbers).
+- assistant_message: the assistant's latest message.
+
+Your job: decide whether assistant_message is a clarifying question specifically about spelling/verification of intent or exact strings/values that could plausibly be misheard (e.g., names, organizations, emails, serials/IDs, numbers, dates, addresses, SKUs). Do not allow general follow-ups (preference, steps to proceed, etc.).
+
+Decision rules:
+1. Classify the message as a spelling confirmation only if it explicitly asks to verify the exact spelling/format/value of one or more items (e.g., “Is it Mikaela or Michaela?”, “Can you spell the email?”, “Is the order number A1B-52?”).
+2. The request must be reasonable given the ASR risk (i.e., the item is a proper noun, key value, or easily misheard token relevant to the task).
+3. To approve (allowed=true), all the topics the assistant asks to confirm must be present in allowed_clarifications. If any requested item is absent or ambiguous, set allowed=false.
+4. Output only a JSON object with two fields:
+- allowed: boolean
+- message: string (a concise simulated user reply only when allowed=true; otherwise empty "").
+5. When allowed=true, compose message by supplying only the requested values with correct spelling/format from allowed_clarifications. Keep it brief (one short sentence or a compact list). Do not include extra commentary, JSON, or fields the assistant didn't request.
+6. If the assistant's message is not a confirmation request, touches topics outside spelling/format/intent verification, or requests values not available in allowed_clarifications, return allowed=false with message="".
+
+Edge cases:
+- If the assistant mixes spelling confirmation with unrelated questions, treat it as not allowed unless the spelling part stands alone and you can fully answer it from allowed_clarifications.
+- Treat homophones and near-matches as spelling checks (e.g., “Brian/Bryan”, “Steven/Stephen”, letters vs. digits).
+- Normalize case/diacritics but preserve canonical spelling in the final answer.
+- Never reveal intended_request verbatim; only return the specific confirmed values.\n\n\n\n
     """
 
     # print(f"model_response: {model_response}")
     if not type(model_response) == str:
         model_response = str(model_response)
 
-    user_prompt = (
+    user_prompt += (
         "The user's original intended request is:\n"
         + original_user_request
         + "\n\n"
@@ -820,10 +842,25 @@ def check_for_clarification(
         # model="o4-mini-2025-04-16",
         model="o3-2025-04-16",
         messages=[
-            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
-        # temperature=0.001,
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "clarification_decision",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "allowed": {"type": "boolean"},
+                        "message": {"type": "string"}
+                    },
+                    "required": ["allowed", "message"]
+                },
+            },
+        },
+        temperature=0,
     )
 
     content = response.choices[0].message.content.strip()
@@ -833,6 +870,7 @@ def check_for_clarification(
         is_allowed = bool(payload.get("allowed", False))
         simulated_message = payload.get("message", "")
     except:
+        print("Error parsing the response from the model.", content)
         # If the assistant returns malformed output, treat as not allowed.
         is_allowed = False
         simulated_message = ""

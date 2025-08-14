@@ -182,6 +182,8 @@ class BaseHandler:
             # FIXME: This is a hack to get the allowed clarifications for the current turn, assume the last message is the user message
             # Use a better way to get the allowed clarifications
             allowed_clarifications = current_turn_message[-1].pop("clarifications", {})
+            original_user_request = current_turn_message[-1].pop("original_content", "")
+            last_user_message_asr_output = current_turn_message[-1].get("content", "")
 
             if turn_idx == 0:
                 inference_data = self.add_first_turn_message_FC(
@@ -298,6 +300,8 @@ class BaseHandler:
                         check_for_clarification(
                             model_response=model_responses,
                             allowed_clarifications=allowed_clarifications,
+                            original_user_request=original_user_request,
+                            last_user_message_asr_output=last_user_message_asr_output,
                         )
                     )
 
@@ -527,6 +531,8 @@ class BaseHandler:
                     }
                 ]
             allowed_clarifications = current_turn_message[-1].pop("clarifications", {})
+            original_user_request = current_turn_message[-1].pop("original_content", "")
+            last_user_message_asr_output = current_turn_message[-1].get("content", "")
 
             if turn_idx == 0:
                 inference_data = self.add_first_turn_message_prompting(
@@ -641,6 +647,8 @@ class BaseHandler:
                         check_for_clarification(
                             model_response=model_responses,
                             allowed_clarifications=allowed_clarifications,
+                            original_user_request=original_user_request,
+                            asr_output=last_user_message_asr_output,
                         )
                     )
 

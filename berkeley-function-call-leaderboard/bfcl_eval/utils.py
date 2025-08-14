@@ -864,6 +864,7 @@ def process_audio_test_case(
                     # msg["content"] = msg["asr_output_openai"]
                     # msg["content"] = msg["asr_output_elevenlabs"]
                     msg["content"] = msg["asr_output_deepgram"]
+                    msg["original_content"] = msg["content"]
 
                 del msg["transcript"]
                 del msg["audio_path"]
