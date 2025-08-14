@@ -860,7 +860,7 @@ Edge cases:
                 },
             },
         },
-        temperature=0,
+        # temperature=0,
     )
 
     content = response.choices[0].message.content.strip()
@@ -875,11 +875,19 @@ Edge cases:
         is_allowed = False
         simulated_message = ""
 
-    # if not is_allowed:
-    #     print(f"model_response: {model_response}")
-    #     print(f"allowed_clarifications: {allowed_clarifications}")
-    #     print(f"is_allowed: {is_allowed}")
-    #     print(f"simulated_message: {simulated_message}")
+    if not is_allowed:
+        print("-" * 100)
+        print(f"original_user_request: {original_user_request}")
+        print(f"asr_output: {asr_output}")
+        print(f"allowed_clarifications: {allowed_clarifications}")
+        print(f"❌ model_response: {model_response}")
+    else:
+        print("-" * 100)
+        print(f"original_user_request: {original_user_request}")
+        print(f"asr_output: {asr_output}")
+        print(f"allowed_clarifications: {allowed_clarifications}")
+        print(f"✅ model_response: {model_response}")
+        print(f"simulated_message: {simulated_message}")
 
     return is_allowed, simulated_message
 

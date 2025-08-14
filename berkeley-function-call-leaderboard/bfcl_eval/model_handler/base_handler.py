@@ -205,10 +205,10 @@ class BaseHandler:
 
             count = 0
             while True:
-                print("-" * 100)
-                print(
-                    f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {count}"
-                )
+                # print("-" * 100)
+                # print(
+                #     f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {count}"
+                # )
                 should_break = False
                 can_have_clarification = False
                 is_allowed_clarification = False
@@ -339,7 +339,7 @@ class BaseHandler:
                     break
 
                 if not contain_multi_turn_interaction(test_entry_id):
-                    print(f"test_entry_id: {test_entry_id} not contain multi turn interaction")
+                    # print(f"test_entry_id: {test_entry_id} not contain multi turn interaction")
                     break
 
                 # Obtain the execution results
@@ -557,10 +557,10 @@ class BaseHandler:
                 should_break = False
                 can_have_clarification = False
                 is_allowed_clarification = False
-                print("-" * 100)
-                print(
-                    f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {count}"
-                )
+                # print("-" * 100)
+                # print(
+                #     f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {count}"
+                # )
                 current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
                 current_turn_inference_log[f"step_{count}"] = current_step_inference_log
@@ -617,7 +617,7 @@ class BaseHandler:
 
                     model_response_data["model_responses_decoded"] = decoded_model_responses
                     if is_empty_execute_response(decoded_model_responses):
-                        print("Empty response from the model. Proceed to next turn.")
+                        # print("Empty response from the model. Proceed to next turn.")
                         current_step_inference_log.append(
                             {
                                 "role": "handler_log",
@@ -630,7 +630,7 @@ class BaseHandler:
                         # break
 
                 except Exception as e:
-                    print("Failed to decode the model response. Proceed to next turn.")
+                    # print("Failed to decode the model response. Proceed to next turn.")
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",
@@ -681,12 +681,12 @@ class BaseHandler:
                         )
 
                 if should_break:
-                    print("break")
-                    print(model_responses)
+                    # print("break")
+                    # print(model_responses)
                     break
 
                 if not contain_multi_turn_interaction(test_entry_id):
-                    print(f"test_entry_id: {test_entry_id} not contain multi turn interaction")
+                    # print(f"test_entry_id: {test_entry_id} not contain multi turn interaction")
                     break
                 # Obtain the execution results
                 execution_results, involved_instances = execute_multi_turn_func_call(
