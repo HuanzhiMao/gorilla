@@ -99,7 +99,7 @@ class GeminiHandler(BaseHandler):
         if "system_prompt" in inference_data:
             config.system_instruction = inference_data["system_prompt"]
 
-        print(f"len tools: {len(inference_data['tools'])}")
+        # print(f"len tools: {len(inference_data['tools'])}")
         if len(inference_data["tools"]) > 0:
             config.tools = [Tool(function_declarations=inference_data["tools"])]
 

@@ -301,7 +301,7 @@ class BaseHandler:
                             model_response=model_responses,
                             allowed_clarifications=allowed_clarifications,
                             original_user_request=original_user_request,
-                            last_user_message_asr_output=last_user_message_asr_output,
+                            asr_output=last_user_message_asr_output,
                         )
                     )
 
