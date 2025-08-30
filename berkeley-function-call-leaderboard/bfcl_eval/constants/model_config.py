@@ -2169,6 +2169,18 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
+    "Qwen/Qwen2.5-14B-Instruct-FC-08-29-16-27-epoch-2": ModelConfig(
+        model_name="Qwen/Qwen2.5-14B-Instruct-FC",
+        display_name="Qwen2.5-14B-Instruct (08-29_16-27/epoch_2)",
+        url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
+        org="Qwen",
+        license="apache-2.0",
+        model_handler=Qwen25FCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
 }
 
 MODEL_CONFIG_MAPPING = {
