@@ -295,6 +295,10 @@ class BaseHandler:
                     should_break = True
                     can_have_clarification = True
                     # break
+                
+                # TODO: move this to a better place
+                count += 1
+
                 if can_have_clarification:
                     is_allowed_clarification, clarification_content = (
                         check_for_clarification(
@@ -368,7 +372,6 @@ class BaseHandler:
                         }
                     )
 
-                count += 1
                 # Force quit after too many steps
                 if count > MAXIMUM_STEP_LIMIT:
                     force_quit = True
@@ -642,6 +645,9 @@ class BaseHandler:
                     can_have_clarification = True
                     # break
                 
+                # TODO: move this to a better place
+                count += 1
+
                 if can_have_clarification:
                     is_allowed_clarification, clarification_content = (
                         check_for_clarification(
@@ -714,7 +720,6 @@ class BaseHandler:
                         }
                     )
 
-                count += 1
                 # Force quit after too many steps
                 if count > MAXIMUM_STEP_LIMIT:
                     force_quit = True

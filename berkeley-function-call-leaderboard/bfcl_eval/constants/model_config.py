@@ -2157,6 +2157,7 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
+    # with 1.6k dataset, no system prompt
     "Qwen/Qwen2.5-14B-Instruct-FC-08-09-00-31-epoch-9": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
         display_name="Qwen2.5-14B-Instruct (08-09_00-31/epoch_9)",
@@ -2169,9 +2170,36 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
+    # With 60k rephrased, no system prompt
     "Qwen/Qwen2.5-14B-Instruct-FC-08-29-16-27-epoch-2": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
         display_name="Qwen2.5-14B-Instruct (08-29_16-27/epoch_2)",
+        url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
+        org="Qwen",
+        license="apache-2.0",
+        model_handler=Qwen25FCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    # With 60k rephrased, with system prompt
+    "Qwen/Qwen2.5-14B-Instruct-FC-08-30-16-57-epoch-2": ModelConfig(
+        model_name="Qwen/Qwen2.5-14B-Instruct-FC",
+        display_name="Qwen2.5-14B-Instruct (08-30_16-57/epoch_2)",
+        url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
+        org="Qwen",
+        license="apache-2.0",
+        model_handler=Qwen25FCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    # With 1.6k vam, no system prompt
+    "Qwen/Qwen2.5-14B-Instruct-FC-08-30-18-47-epoch-5": ModelConfig(
+        model_name="Qwen/Qwen2.5-14B-Instruct-FC",
+        display_name="Qwen2.5-14B-Instruct (08-30_18-47/epoch_5)",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",

@@ -876,11 +876,12 @@ Edge cases:
         simulated_message = ""
 
     if not is_allowed:
-        print("-" * 100)
-        print(f"original_user_request: {original_user_request}")
-        print(f"asr_output: {asr_output}")
-        print(f"allowed_clarifications: {allowed_clarifications}")
-        print(f"❌ model_response: {model_response}")
+        pass
+        # print("-" * 100)
+        # print(f"original_user_request: {original_user_request}")
+        # print(f"asr_output: {asr_output}")
+        # print(f"allowed_clarifications: {allowed_clarifications}")
+        # print(f"❌ model_response: {model_response}")
     else:
         print("-" * 100)
         print(f"original_user_request: {original_user_request}")
