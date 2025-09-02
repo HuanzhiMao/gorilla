@@ -2120,10 +2120,11 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    
+    # baseline, in audio setting
+    # 381 clarification
     "Qwen/Qwen2.5-14B-Instruct-FC": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (FC)",
+        display_name="Qwen2.5-14B-Instruct (Audio baseline)",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",
@@ -2133,9 +2134,10 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
+    # For text bfcl.
     "Qwen/Qwen2.5-14B-Instruct-FC-original": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (Original)",
+        display_name="Qwen2.5-14B-Instruct (Original text)",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",
@@ -2145,22 +2147,10 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
+    # for text bfcl, and not supplying system prompt
     "Qwen/Qwen2.5-14B-Instruct-FC-original-no-system-prompt": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (Original No System Prompt)",
-        url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
-        org="Qwen",
-        license="apache-2.0",
-        model_handler=Qwen25FCHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    # with 1.6k dataset, no system prompt
-    "Qwen/Qwen2.5-14B-Instruct-FC-08-09-00-31-epoch-9": ModelConfig(
-        model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (08-09_00-31/epoch_9)",
+        display_name="Qwen2.5-14B-Instruct (Original text No System Prompt)",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",
@@ -2184,6 +2174,7 @@ audio_input_model_map = {
         underscore_to_dot=False,
     ),
     # With 60k rephrased, with system prompt
+    # 294 clarification
     "Qwen/Qwen2.5-14B-Instruct-FC-08-30-16-57-epoch-2": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
         display_name="Qwen2.5-14B-Instruct (08-30_16-57/epoch_2)",
@@ -2196,7 +2187,8 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    # With 1.6k vam, no system prompt
+    # With 1.6k vam, no extra system prompt
+    # 290 clarification
     "Qwen/Qwen2.5-14B-Instruct-FC-08-30-18-47-epoch-5": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
         display_name="Qwen2.5-14B-Instruct (08-30_18-47/epoch_5)",
@@ -2209,11 +2201,40 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
+    # With 5k multi turn, original system prompt
+    # 294 clarification
+    "Qwen/Qwen2.5-14B-Instruct-FC-08-31-21-21-epoch-7": ModelConfig(
+        model_name="Qwen/Qwen2.5-14B-Instruct-FC",
+        display_name="Qwen2.5-14B-Instruct (08-31_21-21/epoch_7)",
+        url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
+        org="Qwen",
+        license="apache-2.0",
+        model_handler=Qwen25FCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    # With 5k multi turn, original system prompt, speechfied, follow-up
+    # 411 clarification
+    "Qwen/Qwen2.5-14B-Instruct-FC-09-01-18-58-epoch-9": ModelConfig(
+        model_name="Qwen/Qwen2.5-14B-Instruct-FC",
+        display_name="Qwen2.5-14B-Instruct (09-01_18-58/epoch_9)",
+        url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
+        org="Qwen",
+        license="apache-2.0",
+        model_handler=Qwen25FCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    
 }
 
 MODEL_CONFIG_MAPPING = {
-    **api_inference_model_map,
-    **local_inference_model_map,
-    **third_party_inference_model_map,
+    # **api_inference_model_map,
+    # **local_inference_model_map,
+    # **third_party_inference_model_map,
     **audio_input_model_map,
 }

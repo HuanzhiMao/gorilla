@@ -357,12 +357,15 @@ class OSSHandler(BaseHandler, EnforceOverrides):
             extra_body["skip_special_tokens"] = self.skip_special_tokens
 
         if "epoch" in self.model_name:
-            extra_body["lora_request"] = {"lora_name": "default"}
+            name = "default"
+        else:
+            # raise ValueError(f"Something went wrong when checking if the model name contains 'epoch'")
+            name = self.model_path_or_id
 
         start_time = time.time()
         if len(extra_body) > 0:
             api_response = self.client.completions.create(
-                model=self.model_path_or_id,
+                model=name,
                 temperature=self.temperature,
                 prompt=formatted_prompt,
                 max_tokens=leftover_tokens_count,
@@ -371,7 +374,7 @@ class OSSHandler(BaseHandler, EnforceOverrides):
             )
         else:
             api_response = self.client.completions.create(
-                model=self.model_path_or_id,
+                model=name,
                 temperature=self.temperature,
                 prompt=formatted_prompt,
                 max_tokens=leftover_tokens_count,

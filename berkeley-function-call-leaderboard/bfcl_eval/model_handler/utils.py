@@ -863,7 +863,14 @@ Edge cases:
         # temperature=0,
     )
 
-    content = response.choices[0].message.content.strip()
+    msg = response.choices[0].message
+    if msg.content is not None:
+        content = msg.content.strip()
+    else:
+        print("❌" * 100)
+        print(f"msg: {msg}")
+        print("*" * 100)
+        content = ""
 
     try:
         payload = json.loads(content)

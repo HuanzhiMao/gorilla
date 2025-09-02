@@ -552,6 +552,7 @@ def runner(model_names, test_categories, result_dir, score_dir):
             ):
                 continue
 
+            # print(model_result_json)
             model_result = load_file(model_result_json, sort_by_id=True)
 
             state = evaluate_task(
