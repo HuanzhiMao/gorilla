@@ -81,7 +81,11 @@ class OpenAIResponsesHandler(BaseHandler):
         }
 
         # OpenAI reasoning models don't support temperature parameter
-        if "o3" in self.model_name or "o4-mini" in self.model_name or "gpt-5" in self.model_name:
+        if (
+            "o3" in self.model_name
+            or "o4-mini" in self.model_name
+            or "gpt-5" in self.model_name
+        ):
             del kwargs["temperature"]
 
         # Non-reasoning models don't support reasoning parameter
@@ -145,7 +149,24 @@ class OpenAIResponsesHandler(BaseHandler):
     def add_first_turn_message_FC(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
-        inference_data["message"].extend(first_turn_message)
+        for message in first_turn_message:
+            # @HuanzhiMao fixme, abstract
+            if "image_content" in message:
+                image_content = message["image_content"]
+                inference_data["message"].append(
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "input_text", "text": message["content"]},
+                            {
+                                "type": "input_image",
+                                "image_url": f"data:{image_content['type']};base64,{image_content['image_base64']}",
+                            },
+                        ],
+                    }
+                )
+            else:
+                inference_data["message"].append(message)
         return inference_data
 
     def _add_next_turn_user_message_FC(
@@ -196,7 +217,11 @@ class OpenAIResponsesHandler(BaseHandler):
         }
 
         # OpenAI reasoning models don't support temperature parameter
-        if "o3" in self.model_name or "o4-mini" in self.model_name or "gpt-5" in self.model_name:
+        if (
+            "o3" in self.model_name
+            or "o4-mini" in self.model_name
+            or "gpt-5" in self.model_name
+        ):
             del kwargs["temperature"]
 
         # Non-reasoning models don't support reasoning parameter

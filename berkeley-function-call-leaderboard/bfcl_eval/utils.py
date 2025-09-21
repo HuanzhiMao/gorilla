@@ -6,6 +6,8 @@ from pathlib import Path
 from turtle import Turtle
 from typing import Union
 
+from openai.types import image
+
 from bfcl_eval.constants.category_mapping import *
 from bfcl_eval.constants.default_prompts import (
     ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
@@ -251,7 +253,7 @@ def is_sql(test_category):
 
 
 def contain_multi_turn_interaction(test_category):
-    return is_multi_turn(test_category) or is_agentic(test_category)
+    return is_multi_turn(test_category) or is_agentic(test_category) or is_vision(test_category)
 
 
 def get_general_grouping(test_id: str) -> str:
@@ -967,7 +969,35 @@ def get_all_format_sensitivity_configs() -> list[str]:
     return all_configs
 
 
+import base64
+
+
 def load_vision_test_cases(test_category: str) -> list[dict]:
     entries = load_file(f"{VERSION_PREFIX}_{test_category}.json")
+    result = []
     for entry in entries:
-        entry["involved_classes"] = ["VisionSearchAPI"]
+        # @HuanzhiMao fixme, maybe optimize the dataset structure
+        user_query = entry["question"][0][0]["content"]
+        image_path = ""
+        with open(image_path, "rb") as image_file:
+            image_bytes = image_file.read()
+        image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+
+        temp = {}
+        temp["involved_classes"] = ["VisionSearchAPI"]
+        temp["id"] = entry["id"]
+        temp["question"] = [
+            [
+                {
+                    "role": "user",
+                    "content": user_query,
+                    "image_content": {
+                        "image_base64": image_base64,
+                        "image_bytes": image_bytes,
+                        "type": "image/jpeg",
+                    },
+                },
+            ]
+        ]
+        result.append(temp)
+    return result
