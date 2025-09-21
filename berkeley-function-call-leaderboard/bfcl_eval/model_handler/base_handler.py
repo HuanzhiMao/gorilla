@@ -178,8 +178,16 @@ class BaseHandler:
                 )
 
             current_turn_response = []
+            
+            current_turn_message_for_logging = deepcopy(current_turn_message)
+            if is_vision(test_category):
+                for message in current_turn_message_for_logging:
+                    if "image_content" in message:
+                        del message["image_content"]["image_bytes"]
+                        del message["image_content"]["image_base64"]
+                        
             current_turn_inference_log: list[dict] = {
-                "begin_of_turn_query": current_turn_message
+                "begin_of_turn_query": current_turn_message_for_logging
             }
             current_turn_input_token_count: list[float] = []
             current_turn_output_token_count: list[float] = []
@@ -469,9 +477,18 @@ class BaseHandler:
 
             current_turn_response = []
             current_turn_reasoning_content = []
+            
+            current_turn_message_for_logging = deepcopy(current_turn_message)
+            if is_vision(test_category):
+                for message in current_turn_message_for_logging:
+                    if "image_content" in message:
+                        del message["image_content"]["image_bytes"]
+                        del message["image_content"]["image_base64"]
+                        
             current_turn_inference_log: list[dict] = {
-                "begin_of_turn_query": current_turn_message
+                "begin_of_turn_query": current_turn_message_for_logging
             }
+
             current_turn_input_token_count: list[float] = []
             current_turn_output_token_count: list[float] = []
             current_turn_latency: list[float] = []
