@@ -968,3 +968,6 @@ def get_all_format_sensitivity_configs() -> list[str]:
 
 
 def load_vision_test_cases(test_category: str) -> list[dict]:
+    entries = load_file(f"{VERSION_PREFIX}_{test_category}.json")
+    for entry in entries:
+        entry["involved_classes"] = ["VisionSearchAPI"]
