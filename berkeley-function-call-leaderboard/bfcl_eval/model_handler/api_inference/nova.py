@@ -152,7 +152,20 @@ class NovaHandler(BaseHandler):
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
         for message in first_turn_message:
-            message["content"] = [{"text": message["content"]}]
+            if "image_content" in message:
+                image_content = message["image_content"]
+                message["content"] = [
+                    {"text": message["content"]},
+                    {
+                        "image": {
+                            "format": image_content["type"].split("/")[-1],
+                            "source": {"bytes": image_content["image_bytes"]},
+                        }
+                    },
+                ]
+                del message["image_content"]
+            else:
+                message["content"] = [{"text": message["content"]}]
         inference_data["message"].extend(first_turn_message)
         return inference_data
 
