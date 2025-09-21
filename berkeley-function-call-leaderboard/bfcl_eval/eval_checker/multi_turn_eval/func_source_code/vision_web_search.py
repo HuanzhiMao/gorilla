@@ -30,18 +30,12 @@ ERROR_TEMPLATES = [
 class VisionSearchAPI:
     def __init__(self):
         self._api_description = "This tool belongs to the Web Search API category. It provides functions to search the web and browse search results."
-        self.show_snippet = True
         # Note: The following two random generators are used to simulate random errors, but that feature is not currently used
         # This one used to determine if we should simulate a random error
         # Outcome (True means simulate error): [True, False, True, True, False, True, True, True, False, False, True, True, False, True, False, False, False, False, False, True]
         self._random = random.Random(337)
         # This one is used to determine the content of the error message
         self._rng = random.Random(1053)
-
-    def _load_scenario(self, initial_config: dict, long_context: bool = False):
-        # We don't care about the long_context parameter here
-        # It's there to match the signature of functions in the multi-turn evaluation code
-        self.show_snippet = initial_config["show_snippet"]
 
     def search_engine_query(
         self,
@@ -191,21 +185,13 @@ class VisionSearchAPI:
         # Convert the search results to the desired format
         results = []
         for result in search_results[:max_results]:
-            if self.show_snippet:
-                results.append(
-                    {
-                        "title": result["title"],
-                        "href": result["link"],
-                        "body": result["snippet"],
-                    }
-                )
-            else:
-                results.append(
-                    {
-                        "title": result["title"],
-                        "href": result["link"],
-                    }
-                )
+            results.append(
+                {
+                    "title": result["title"],
+                    "href": result["link"],
+                    "body": result["snippet"],
+                }
+            )
 
         return results
 

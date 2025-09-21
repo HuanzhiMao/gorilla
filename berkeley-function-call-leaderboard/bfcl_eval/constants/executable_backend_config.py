@@ -36,6 +36,7 @@ CLASS_FILE_PATH_MAPPING = {
 # These classes are stateless and do not require any initial configuration
 STATELESS_CLASSES = [
     "MathAPI",
+    "VisionSearchAPI",
 ]
 
 # These classes are stateful, but their state is either too verbose to include in the inference log or doesn't provide meaningful insights
@@ -45,5 +46,4 @@ OMIT_STATE_INFO_CLASSES = [
     "MemoryAPI_vector",
     "MemoryAPI_rec_sum",
     "WebSearchAPI",
-    "VisionSearchAPI",
 ]

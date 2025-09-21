@@ -422,7 +422,8 @@ def load_dataset_entry(
     """
     if is_vision(test_category):
         # Vision categories
-        all_entries = load_vision_test_cases(test_category)
+        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{test_category}.json")
+        all_entries = load_vision_test_cases(all_entries)
 
     elif is_format_sensitivity(test_category):
         # Format sensitivity categories
@@ -551,6 +552,8 @@ def sort_key(entry):
     # Hopefully the prereq entries are done by now
     elif is_memory(test_category):
         priority = 4
+    elif is_vision(test_category):
+        priority = 5
 
     return (priority, test_category, int(index))
 
@@ -779,7 +782,8 @@ def populate_test_cases_with_predefined_functions(test_cases: list[dict]) -> lis
     Multi-turn and Agentic test cases don't have the function doc in the prompt. We need to add them here.
     """
     for entry in test_cases:
-        if not is_multi_turn(entry["id"]) and not is_agentic(entry["id"]):
+        # @HuanzhiMao double check this
+        if not contain_multi_turn_interaction(entry["id"]):
             continue
         involved_classes = entry["involved_classes"]
         entry["function"] = []
@@ -972,13 +976,12 @@ def get_all_format_sensitivity_configs() -> list[str]:
 import base64
 
 
-def load_vision_test_cases(test_category: str) -> list[dict]:
-    entries = load_file(f"{VERSION_PREFIX}_{test_category}.json")
+def load_vision_test_cases(all_entries: list[dict]) -> list[dict]:
     result = []
-    for entry in entries:
+    for entry in all_entries:
         # @HuanzhiMao fixme, maybe optimize the dataset structure
         user_query = entry["question"][0][0]["content"]
-        image_path = ""
+        image_path = IMAGE_PATH / entry["image_file_name"]
         with open(image_path, "rb") as image_file:
             image_bytes = image_file.read()
         image_base64 = base64.b64encode(image_bytes).decode("utf-8")
