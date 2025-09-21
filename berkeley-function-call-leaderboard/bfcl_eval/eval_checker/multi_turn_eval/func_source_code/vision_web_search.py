@@ -1,6 +1,7 @@
 import os
 import random
 import time
+import base64
 from typing import Optional
 
 import html2text
@@ -236,3 +237,42 @@ class VisionSearchAPI:
 
         except Exception as e:
             return {"error": f"An error occurred while fetching {url}: {str(e)}"}
+
+    # def fetch_image_base64(self, image_url: str) -> dict:
+    #     """Fetch an image from a URL and return its Base64-encoded representation.
+
+    #     Args:
+    #         image_url (str): Publicly accessible URL pointing to an image (jpg, png, gif, etc.). It must start with 'http://' or 'https://'.
+
+    #     Returns:
+    #         dict: {
+    #             "content": <base64 str>
+    #         } on success or {
+    #             "error": <error str>
+    #         } on failure.
+    #     """
+
+    #     if not image_url.startswith(("http://", "https://")):
+    #         return {"error": f"Invalid URL: {image_url}"}
+
+    #     try:
+    #         headers = {
+    #             "User-Agent": (
+    #                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    #                 "AppleWebKit/537.36 (KHTML, like Gecko) "
+    #                 "Chrome/112.0.0.0 Safari/537.36"
+    #             )
+    #         }
+    #         response = requests.get(image_url, headers=headers, timeout=20, allow_redirects=True)
+    #         response.raise_for_status()
+
+    #         # Ensure content-type is image/*
+    #         content_type = response.headers.get("Content-Type", "")
+    #         if not content_type.startswith("image/"):
+    #             return {"error": f"URL does not point to an image. Content-Type: {content_type}"}
+
+    #         encoded_string = base64.b64encode(response.content).decode("utf-8")
+    #         return {"content": encoded_string}
+
+    #     except Exception as e:
+    #         return {"error": f"An error occurred while fetching {image_url}: {str(e)}"}

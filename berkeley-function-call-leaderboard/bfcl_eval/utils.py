@@ -997,6 +997,7 @@ def load_vision_test_cases(all_entries: list[dict]) -> list[dict]:
                     "image_content": {
                         "image_base64": image_base64,
                         "image_bytes": image_bytes,
+                        "image_path": str(image_path),
                         "type": "image/jpeg",
                     },
                 },
