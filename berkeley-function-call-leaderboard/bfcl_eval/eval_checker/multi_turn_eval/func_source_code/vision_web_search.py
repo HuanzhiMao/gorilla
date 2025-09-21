@@ -2,40 +2,16 @@ import os
 import random
 import time
 from typing import Optional
-from urllib.parse import urlparse
 
 import html2text
 import requests
 from bs4 import BeautifulSoup
 from serpapi import GoogleSearch
 
-ERROR_TEMPLATES = [
-    "503 Server Error: Service Unavailable for url: {url}",
-    "429 Client Error: Too Many Requests for url: {url}",
-    "403 Client Error: Forbidden for url: {url}",
-    (
-        "HTTPSConnectionPool(host='{host}', port=443): Max retries exceeded with url: {path} "
-        "(Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x{id1:x}>, "
-        "'Connection to {host} timed out. (connect timeout=5)'))"
-    ),
-    "HTTPSConnectionPool(host='{host}', port=443): Read timed out. (read timeout=5)",
-    (
-        "Max retries exceeded with url: {path} "
-        "(Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x{id2:x}>: "
-        "Failed to establish a new connection: [Errno -2] Name or service not known'))"
-    ),
-]
-
 
 class VisionSearchAPI:
     def __init__(self):
         self._api_description = "This tool belongs to the Web Search API category. It provides functions to search the web and browse search results."
-        # Note: The following two random generators are used to simulate random errors, but that feature is not currently used
-        # This one used to determine if we should simulate a random error
-        # Outcome (True means simulate error): [True, False, True, True, False, True, True, True, False, False, True, True, False, True, False, False, False, False, False, True]
-        self._random = random.Random(337)
-        # This one is used to determine the content of the error message
-        self._rng = random.Random(1053)
 
     def search_engine_query(
         self,
@@ -236,11 +212,6 @@ class VisionSearchAPI:
             response = requests.get(url, headers=headers, timeout=20, allow_redirects=True)
             response.raise_for_status()
 
-            # Note: Un-comment this when we want to simulate a random error
-            # Flip a coin to simulate a random error
-            # if self._random.random() < 0.95:
-            #     return {"error": self._fake_requests_get_error_msg(url)}
-
             # Process the response based on the mode
             if mode == "raw":
                 return {"content": response.text}
@@ -265,21 +236,3 @@ class VisionSearchAPI:
 
         except Exception as e:
             return {"error": f"An error occurred while fetching {url}: {str(e)}"}
-
-    def _fake_requests_get_error_msg(self, url: str) -> str:
-        """
-        Return a realistic‑looking requests/urllib3 error message.
-        """
-        parsed = urlparse(url)
-
-        context = {
-            "url": url,
-            "host": parsed.hostname or "unknown",
-            "path": parsed.path or "/",
-            "id1": self._rng.randrange(0x10000000, 0xFFFFFFFF),
-            "id2": self._rng.randrange(0x10000000, 0xFFFFFFFF),
-        }
-
-        template = self._rng.choice(ERROR_TEMPLATES)
-
-        return template.format(**context)
