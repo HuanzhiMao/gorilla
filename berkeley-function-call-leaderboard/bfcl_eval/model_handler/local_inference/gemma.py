@@ -26,7 +26,12 @@ class GemmaHandler(OSSHandler):
 
         is_first = True
         for message in messages:
-            formatted_prompt += f"<start_of_turn>{message['role']}\n{first_user_prefix if is_first else ''}{message['content'].strip()}<end_of_turn>\n"
+            formatted_prompt += f"<start_of_turn>{message['role']}\n{first_user_prefix if is_first else ''}"
+            if "image_content" in message:
+                formatted_prompt += f"<start_of_image>{message['image_content']['image_bytes']}<end_of_image>\n"
+            else:
+                formatted_prompt += f"{message['content'].strip()}<end_of_turn>\n"
+            
             is_first = False
 
         formatted_prompt += f"<start_of_turn>model\n"

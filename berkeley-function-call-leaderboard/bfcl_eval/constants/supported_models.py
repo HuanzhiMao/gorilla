@@ -79,8 +79,8 @@ VLM_ORIGIN = [
     # "xiaoming-14B",
     # "DM-Cito-8B-v2",
     # "Ling/ling-lite-v1.5",
-    "glm-4.5-FC",
-    "glm-4.5-air-FC",
+    # "glm-4.5-FC",
+    # "glm-4.5-air-FC",
     # "kimi-k2-0711-preview-FC",
     # "kimi-k2-0711-preview",
     # "deepseek-ai/DeepSeek-R1",
@@ -180,12 +180,6 @@ VLM_ORIGIN_NOT_INCLUDE = [
     "Qwen/Qwen2.5-VL-32B-Instruct",
     "Qwen/Qwen2.5-VL-72B-Instruct",
 
-    #llama
-    "meta-llama/Llama-3.2-11B-Vision-Instruct",
-    "meta-llama/Llama-3.2-90B-Vision-Instruct",
-    "meta-llama/Llama-Guard-4-12B",
-    "meta-llama/Llama-Guard-3-11B-Vision",
-
     #coherelabs
     "CohereLabs/command-a-vision-07-2025",
 
@@ -204,10 +198,6 @@ VLM_ORIGIN_NOT_INCLUDE = [
 
     #microsoft
     "microsoft/kosmos-2.5",
-    "microsoft/GUI-Actor-2B-Qwen2-VL",
-    "microsoft/GUI-Actor-7B-Qwen2-VL",
-    "microsoft/GUI-Actor-3B-Qwen2.5-VL",
-    "microsoft/GUI-Actor-7B-Qwen2.5-VL",
     "microsoft/Florence-2-base",#0.2B
     "microsoft/Florence-2-large",#0.8B    
 ]
