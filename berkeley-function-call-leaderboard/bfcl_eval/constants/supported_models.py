@@ -1,9 +1,9 @@
 # @HuanzhiMao fixme
 VLM_ORIGIN = [
     # "gorilla-openfunctions-v2",
-    "DeepSeek-R1-0528",
-    "DeepSeek-R1-0528-FC",
-    "DeepSeek-V3-0324-FC",
+    # "DeepSeek-R1-0528",
+    # "DeepSeek-R1-0528-FC",
+    # "DeepSeek-V3-0324-FC",
     "gpt-5-2025-08-07-FC",
     "gpt-5-2025-08-07",
     "gpt-5-mini-2025-08-07-FC",
@@ -42,8 +42,8 @@ VLM_ORIGIN = [
     # "mistral-medium-2505",
     # "mistral-medium-2505-FC",
     # "firefunction-v2-FC",
-    "gemini-2.5-flash-lite-preview-06-17-FC",
-    "gemini-2.5-flash-lite-preview-06-17",
+    "gemini-2.5-flash-lite-FC",
+    "gemini-2.5-flash-lite",
     "gemini-2.5-flash-FC",
     "gemini-2.5-flash",
     "gemini-2.5-pro-FC",
