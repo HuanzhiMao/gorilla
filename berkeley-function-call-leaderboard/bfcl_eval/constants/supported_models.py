@@ -95,8 +95,8 @@ VLM_ORIGIN = [
     # "meta-llama/Llama-3.2-1B-Instruct-FC",
     # "meta-llama/Llama-3.2-3B-Instruct-FC",
     # "meta-llama/Llama-3.3-70B-Instruct-FC",
-    "meta-llama/Llama-4-Scout-17B-16E-Instruct-FC",
-    "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC",
+    # "meta-llama/Llama-4-Scout-17B-16E-Instruct-FC",
+    # "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC",
     # "Salesforce/Llama-xLAM-2-70b-fc-r",
     # "Salesforce/Llama-xLAM-2-8b-fc-r",
     # "Salesforce/xLAM-2-32b-fc-r",
@@ -153,9 +153,9 @@ VLM_ORIGIN = [
     # "BitAgent/BitAgent-Bounty-8B",
     # "ThinkAgents/ThinkAgent-1B",
     # "phronetic-ai/RZN-T",
-    # "meta-llama/llama-4-maverick-17b-128e-instruct-fp8-novita",
+    "meta-llama/llama-4-maverick-17b-128e-instruct-fp8-novita",
     # "meta-llama/llama-4-maverick-17b-128e-instruct-fp8-FC-novita",
-    # "meta-llama/llama-4-scout-17b-16e-instruct-novita",
+    "meta-llama/llama-4-scout-17b-16e-instruct-novita",
     # "meta-llama/llama-4-scout-17b-16e-instruct-FC-novita",
     # "qwen/qwq-32b-FC-novita",
     # "qwen/qwq-32b-novita",
@@ -164,9 +164,9 @@ VLM_ORIGIN = [
 ]
 VLM_ORIGIN_NOT_INCLUDE = [
     #deepseek
-    "deepseek-ai/deepseek-vl2",
-    "deepseek-ai/deepseek-vl-7b-chat",
-    "deepseek-ai/deepseek-vl-1.3b-chat",
+    # "deepseek-ai/deepseek-vl2",
+    # "deepseek-ai/deepseek-vl-7b-chat",
+    # "deepseek-ai/deepseek-vl-1.3b-chat",
 
     #kimi
     "moonshotai/Kimi-VL-A3B-Instruct",
@@ -194,10 +194,5 @@ VLM_ORIGIN_NOT_INCLUDE = [
     "pixtral-12b-latest2409",
     "pixtral-large-2411",
     "magistral-small-2509",
-    "magistral-medium-2509",
-
-    #microsoft
-    "microsoft/kosmos-2.5",
-    "microsoft/Florence-2-base",#0.2B
-    "microsoft/Florence-2-large",#0.8B    
+    "magistral-medium-2509",   
 ]

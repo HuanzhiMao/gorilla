@@ -1960,7 +1960,7 @@ third_party_inference_model_map = {
     # Via Novita AI Endpoint
     "meta-llama/llama-4-maverick-17b-128e-instruct-fp8-novita": ModelConfig(
         model_name="meta-llama/llama-4-maverick-17b-128e-instruct-fp8-novita",
-        display_name="Llama-4-Maverick-17B-128E-Instruct-FP8 (Prompt) (Novita)",
+        display_name="Llama-4-Maverick-17B-128E-Instruct-FP8 (FC) (Novita)",
         url="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
         org="Meta",
         license="Meta Llama 4 Community",
@@ -1984,7 +1984,7 @@ third_party_inference_model_map = {
     ),
     "meta-llama/llama-4-scout-17b-16e-instruct-novita": ModelConfig(
         model_name="meta-llama/llama-4-scout-17b-16e-instruct-novita",
-        display_name="Llama-4-Scout-17B-16E-Instruct (Prompt) (Novita)",
+        display_name="Llama-4-Scout-17B-16E-Instruct (FC) (Novita)",
         url="https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
         org="Meta",
         license="Meta Llama 4 Community",
@@ -2058,10 +2058,25 @@ third_party_inference_model_map = {
 }
 
 
+vision_model_map = {
+    "command-a-vision-07-2025": ModelConfig(
+        model_name="command-a-vision-07-2025",
+        display_name="Command-A-Vision-07-2025 (Prompt)",
+        url="https://cohere.com/blog/command-a-vision",
+        org="Cohere",
+        license=" ",
+        model_handler=CohereHandler,
+        input_price=2.5,
+        output_price=10,
+        is_fc_model=False,
+        underscore_to_dot=False,
+    ),
+}
 MODEL_CONFIG_MAPPING = {
     **api_inference_model_map,
     **local_inference_model_map,
     **third_party_inference_model_map,
+    **vision_model_map,
 }
 
 # Uncomment to get the supported_models.py file contents
