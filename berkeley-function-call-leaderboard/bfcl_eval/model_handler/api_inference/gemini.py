@@ -182,12 +182,19 @@ class GeminiHandler(BaseHandler):
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
         for message in first_turn_message:
+            if "image_content" in message:
+                image_content = message["image_content"]
+                parts = [
+                    Part.from_bytes(data=image_content["image_bytes"], mime_type=image_content["type"]),
+                    Part(text=message["content"])
+                ]
+            else:
+                parts = [Part(text=message["content"])]
+
             inference_data["message"].append(
                 Content(
                     role=message["role"],
-                    parts=[
-                        Part(text=message["content"]),
-                    ],
+                    parts=parts,
                 )
             )
         return inference_data
@@ -308,12 +315,19 @@ class GeminiHandler(BaseHandler):
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
         for message in first_turn_message:
+            if "image_content" in message:
+                image_content = message["image_content"]
+                parts = [
+                    Part.from_bytes(data=image_content["image_bytes"], mime_type=image_content["type"]),
+                    Part(text=message["content"])
+                ]
+            else:
+                parts = [Part(text=message["content"])]
+                
             inference_data["message"].append(
                 Content(
                     role=message["role"],
-                    parts=[
-                        Part(text=message["content"]),
-                    ],
+                    parts=parts,
                 )
             )
         return inference_data
