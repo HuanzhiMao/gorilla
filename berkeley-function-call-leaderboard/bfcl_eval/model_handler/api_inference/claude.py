@@ -175,7 +175,22 @@ class ClaudeHandler(BaseHandler):
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
         for message in first_turn_message:
-            message["content"] = [{"type": "text", "text": message["content"]}]
+            if "image_content" in message:
+                image_content = message["image_content"]
+                message["content"] = [
+                    {"type": "text", "text": message["content"]},
+                    {
+                        "type": "image",
+                        "source": {
+                            "type": "base64",
+                            "data": image_content["image_base64"],
+                            "media_type": image_content["type"],
+                        },
+                    },
+                ]
+                del message["image_content"]
+            else:
+                message["content"] = [{"type": "text", "text": message["content"]}]
         inference_data["message"].extend(first_turn_message)
         return inference_data
 
@@ -183,7 +198,19 @@ class ClaudeHandler(BaseHandler):
         self, inference_data: dict, user_message: list[dict]
     ) -> dict:
         for message in user_message:
-            message["content"] = [{"type": "text", "text": message["content"]}]
+            if "image_content" in message:
+                image_content = message["image_content"]
+                message["content"] = [{"type": "text", "text": message["content"]}, {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "data": image_content["image_base64"],
+                        "media_type": image_content["type"],
+                    },
+                }]
+                del message["image_content"]
+            else:
+                message["content"] = [{"type": "text", "text": message["content"]}]
         inference_data["message"].extend(user_message)
         return inference_data
 

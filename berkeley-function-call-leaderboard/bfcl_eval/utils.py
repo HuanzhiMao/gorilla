@@ -267,7 +267,9 @@ def get_general_grouping(test_id: str) -> str:
     • agentic: categories in AGENTIC_CATEGORY
     • format_sensitivity: the format sensitivity test categories
     """
-    if is_format_sensitivity(test_id):
+    if is_vision(test_id):
+        return "vision"
+    elif is_format_sensitivity(test_id):
         return "format_sensitivity"
     elif is_non_live(test_id):
         return "non_live"

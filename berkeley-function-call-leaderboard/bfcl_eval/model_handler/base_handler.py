@@ -168,14 +168,6 @@ class BaseHandler:
                     }
                 ]
 
-            if turn_idx == 0:
-                inference_data = self.add_first_turn_message_FC(
-                    inference_data, current_turn_message
-                )
-            else:
-                inference_data = self._add_next_turn_user_message_FC(
-                    inference_data, current_turn_message
-                )
 
             current_turn_response = []
             
@@ -194,6 +186,16 @@ class BaseHandler:
             current_turn_latency: list[float] = []
             current_turn_reasoning_content = []
 
+            if turn_idx == 0:
+                inference_data = self.add_first_turn_message_FC(
+                    inference_data, current_turn_message
+                )
+            else:
+                inference_data = self._add_next_turn_user_message_FC(
+                    inference_data, current_turn_message
+                )
+                
+                
             count = 0
             while True:
                 print("-" * 100)
@@ -466,14 +468,6 @@ class BaseHandler:
                     }
                 ]
 
-            if turn_idx == 0:
-                inference_data = self.add_first_turn_message_prompting(
-                    inference_data, current_turn_message
-                )
-            else:
-                inference_data = self._add_next_turn_user_message_prompting(
-                    inference_data, current_turn_message
-                )
 
             current_turn_response = []
             current_turn_reasoning_content = []
@@ -493,6 +487,16 @@ class BaseHandler:
             current_turn_output_token_count: list[float] = []
             current_turn_latency: list[float] = []
 
+            if turn_idx == 0:
+                inference_data = self.add_first_turn_message_prompting(
+                    inference_data, current_turn_message
+                )
+            else:
+                inference_data = self._add_next_turn_user_message_prompting(
+                    inference_data, current_turn_message
+                )
+                
+                
             count = 0
             while True:
                 print("-" * 100)
