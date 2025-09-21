@@ -42,6 +42,10 @@ WEB_SEARCH_CATEGORY = [
     "web_search_base",
     "web_search_no_snippet",
 ]
+VISION_CATEGORY = [
+    "vision_base",
+    # "vision",
+]
 
 MEMORY_CATEGORY = [f"memory_{backend}" for backend in ALL_AVAILABLE_MEMORY_BACKENDS]
 MEMORY_SCENARIO_NAME = [
@@ -87,4 +91,5 @@ TEST_COLLECTION_MAPPING = {
     "memory": MEMORY_CATEGORY,
     "web_search": WEB_SEARCH_CATEGORY,
     "agentic": AGENTIC_CATEGORY,
+    "vision": VISION_CATEGORY,
 }

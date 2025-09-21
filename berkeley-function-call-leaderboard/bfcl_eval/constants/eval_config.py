@@ -25,6 +25,7 @@ DOTENV_PATH = PROJECT_ROOT / ".env"
 TEST_IDS_TO_GENERATE_PATH = PROJECT_ROOT / "test_case_ids_to_generate.json"
 
 PROMPT_PATH = PACKAGE_ROOT / "data"
+IMAGE_PATH = PROMPT_PATH / "images"
 MULTI_TURN_FUNC_DOC_PATH = PROMPT_PATH / "multi_turn_func_doc"
 POSSIBLE_ANSWER_PATH = PROMPT_PATH / "possible_answer"
 MEMORY_PREREQ_CONVERSATION_PATH = PROMPT_PATH / "memory_prereq_conversation"

@@ -3,6 +3,7 @@ import os
 import re
 from copy import deepcopy
 from pathlib import Path
+from turtle import Turtle
 from typing import Union
 
 from bfcl_eval.constants.category_mapping import *
@@ -167,6 +168,12 @@ def load_test_entries_from_id_file(id_file_path: Path) -> tuple[list[str], list[
 
 
 #### Predicate functions to check the test category ####
+def is_vision(test_category: str) -> bool:
+    # @HuanzhiMao fixme
+    return True
+    # return "vision" in test_category
+
+
 def is_format_sensitivity(test_category: str) -> bool:
     return "format_sensitivity" in test_category
 
@@ -411,7 +418,11 @@ def load_dataset_entry(
     If `contain_prereq` is True, it will include the pre-requisite entries for the memory test categories.
     If `include_language_specific_hint` is True, it will include the language-specific hint for the function description (for Java, JavaScript, and Python).
     """
-    if is_format_sensitivity(test_category):
+    if is_vision(test_category):
+        # Vision categories
+        all_entries = load_vision_test_cases(test_category)
+
+    elif is_format_sensitivity(test_category):
         # Format sensitivity categories
         all_entries = load_format_sensitivity_test_cases()
 
@@ -954,3 +965,6 @@ def get_all_format_sensitivity_configs() -> list[str]:
     )
 
     return all_configs
+
+
+def load_vision_test_cases(test_category: str) -> list[dict]:
