@@ -169,9 +169,10 @@ VLM_ORIGIN_NOT_INCLUDE = [
     # "deepseek-ai/deepseek-vl-1.3b-chat",
 
     #kimi
-    "moonshotai/Kimi-VL-A3B-Instruct",
-    "moonshotai/Kimi-VL-A3B-Thinking-2506",
-    "moonshotai/Kimi-VL-A3B-Thinking",
+    # need self host, so not include
+    # "moonshotai/Kimi-VL-A3B-Instruct",
+    # "moonshotai/Kimi-VL-A3B-Thinking-2506",
+    # "moonshotai/Kimi-VL-A3B-Thinking",
 
     #qwen
     "qwen2.5-vl-2b-instruct ",
@@ -184,11 +185,8 @@ VLM_ORIGIN_NOT_INCLUDE = [
     "command-a-vision-07-2025",
 
     #zai
-    "zai-org/GLM-4.5V",
-    "zai-org/GLM-4.1V-9B-Thinking",
-    "zai-org/GLM-4.1V-9B-Base",
-    "zai-org/glm-edge-v-2b",
-    "zai-org/glm-edge-v-5b",
+    "glm-4.5v",
+    # "glm-4.1v-9b-thinking",
 
     # mistral
     "pixtral-12b-latest2409",

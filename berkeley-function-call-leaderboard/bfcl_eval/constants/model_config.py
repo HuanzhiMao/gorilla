@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pyexpat import model
 from typing import Optional
 
 from bfcl_eval.model_handler.api_inference.claude import ClaudeHandler
@@ -2126,6 +2127,18 @@ vision_model_map = {
         org="Qwen",
         license="apache-2.0",
         model_handler=QwenAPIHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=False,
+        underscore_to_dot=False,
+    ),
+    "glm-4.5v": ModelConfig(
+        model_name="glm-4.5v",
+        display_name="GLM-4.5V (Prompt)",
+        url="https://huggingface.co/glm-4.5v",
+        org="GLM",
+        license="apache-2.0",
+        model_handler=GLMAPIHandler,
         input_price=None,
         output_price=None,
         is_fc_model=False,
