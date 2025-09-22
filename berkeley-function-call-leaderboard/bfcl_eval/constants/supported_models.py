@@ -39,8 +39,8 @@ VLM_ORIGIN = [
     # "mistral-large-2411-FC",
     "mistral-small-2506",
     "mistral-small-2506-FC",
-    # "mistral-medium-2505",
-    # "mistral-medium-2505-FC",
+    "mistral-medium-2508",
+    "mistral-medium-2508-FC",
     # "firefunction-v2-FC",
     "gemini-2.5-flash-lite-FC",
     "gemini-2.5-flash-lite",
@@ -189,8 +189,8 @@ VLM_ORIGIN_NOT_INCLUDE = [
     # "glm-4.1v-9b-thinking",
 
     # mistral
-    "pixtral-12b-latest2409",
+    # "pixtral-12b-latest2409",
     "pixtral-large-2411",
-    "magistral-small-2509",
+    # "magistral-small-2509",
     "magistral-medium-2509",   
 ]

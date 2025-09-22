@@ -111,6 +111,20 @@ class MistralHandler(BaseHandler):
     def add_first_turn_message_FC(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
+        for message in first_turn_message:
+            if "image_content" in message:
+                image_content = message["image_content"]
+                message["content"] = [
+                    {"type": "text", "text": message["content"]},
+                    {
+                        "type": "image_url",
+                        "image_url": f"data:{image_content['type']};base64,{image_content['image_base64']}",
+                    },
+                ]
+                del message["image_content"]
+            # else:
+            #     message["content"] = [{"type": "text", "text": message["content"]}]
+
         inference_data["message"].extend(first_turn_message)
         return inference_data
 
@@ -178,6 +192,19 @@ class MistralHandler(BaseHandler):
     def add_first_turn_message_prompting(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
+        for message in first_turn_message:
+            if "image_content" in message:
+                image_content = message["image_content"]
+                message["content"] = [
+                    {"type": "text", "text": message["content"]},
+                    {
+                        "type": "image_url",
+                        "image_url": f"data:{image_content['type']};base64,{image_content['image_base64']}",
+                    },
+                ]
+                del message["image_content"]
+            # else:
+            #     message["content"] = [{"type": "text", "text": message["content"]}]
         inference_data["message"].extend(first_turn_message)
         return inference_data
 
