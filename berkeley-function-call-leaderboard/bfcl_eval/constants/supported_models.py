@@ -174,14 +174,14 @@ VLM_ORIGIN_NOT_INCLUDE = [
     "moonshotai/Kimi-VL-A3B-Thinking",
 
     #qwen
-    "Qwen/Qwen2.5-VL-2B-Instruct",
-    "Qwen/Qwen2.5-VL-3B-Instruct",
-    "Qwen/Qwen2.5-VL-7B-Instruct",
-    "Qwen/Qwen2.5-VL-32B-Instruct",
-    "Qwen/Qwen2.5-VL-72B-Instruct",
+    "qwen2.5-vl-2b-instruct ",
+    "qwen2.5-vl-3b-instruct ",
+    "qwen2.5-vl-7b-instruct ",
+    "qwen2.5-vl-32b-instruct ",
+    "qwen2.5-vl-72b-instruct ",
 
     #coherelabs
-    "CohereLabs/command-a-vision-07-2025",
+    "command-a-vision-07-2025",
 
     #zai
     "zai-org/GLM-4.5V",
