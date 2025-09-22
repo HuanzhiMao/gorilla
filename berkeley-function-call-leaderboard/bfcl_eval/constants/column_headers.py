@@ -12,6 +12,7 @@ COLUMNS_NON_LIVE = [
     "Vision Red Green",
 ]
 
+
 COLUMNS_LIVE = [
     "Rank",
     "Model",
