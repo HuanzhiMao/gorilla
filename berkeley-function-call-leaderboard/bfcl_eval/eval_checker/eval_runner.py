@@ -649,7 +649,19 @@ def evaluate_task(
         # Find the corresponding possible answer entries
         possible_answer = load_ground_truth_entry(test_category)
 
-        if is_format_sensitivity(test_category):
+        if is_vision(test_category):
+            # Vision is using the same substring matching logic as agentic categories
+            accuracy, total_count = agentic_runner(
+                handler,
+                model_result,
+                prompt,
+                possible_answer,
+                model_name,
+                test_category,
+                score_dir,
+            )
+
+        elif is_format_sensitivity(test_category):
             accuracy, total_count = format_sensitivity_runner(
                 handler,
                 model_result,
@@ -811,7 +823,7 @@ if __name__ == "__main__":
         "--test-category",
         nargs="+",
         type=str,
-        default="all",
+        default="vision",
         help="A list of test categories to run the evaluation on",
     )
     parser.add_argument(
