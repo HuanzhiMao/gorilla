@@ -647,7 +647,8 @@ def evaluate_task(
 
     else:
         # Find the corresponding possible answer entries
-        possible_answer = load_ground_truth_entry(test_category)
+        # @HuanzhiMao fixme
+        possible_answer = load_ground_truth_entry("vision_base")
 
         if is_vision(test_category):
             # Vision is using the same substring matching logic as agentic categories
