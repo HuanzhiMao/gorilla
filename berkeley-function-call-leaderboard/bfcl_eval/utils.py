@@ -172,8 +172,8 @@ def load_test_entries_from_id_file(id_file_path: Path) -> tuple[list[str], list[
 #### Predicate functions to check the test category ####
 def is_vision(test_category: str) -> bool:
     # @HuanzhiMao fixme
-    return True
-    # return "vision" in test_category
+    # return True
+    return "vision" in test_category
 
 
 def is_format_sensitivity(test_category: str) -> bool:

@@ -1,16 +1,9 @@
 COLUMNS_NON_LIVE = [
     "Rank",
     "Model",
-    "Non-Live Overall Acc",
-    "AST Summary",
-    "Simple AST",
-    "Python Simple AST",
-    "Java Simple AST",
-    "JavaScript Simple AST",
-    "Multiple AST",
-    "Parallel AST",
-    "Parallel Multiple AST",
-    "Irrelevance Detection",
+    "Vision Overall Acc",
+    "Vision Base",
+    
 ]
 
 COLUMNS_LIVE = [

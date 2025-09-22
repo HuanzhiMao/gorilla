@@ -40,10 +40,10 @@ def agentic_checker(model_response: str, possible_answer_list: list[str]) -> dic
 
 def standardize_string(input_string: str):
     """
-    This function standardizes the string by removing all the whitespace, ",./-_*^()" punctuation, and converting it to lowercase
-    It will also convert all the single quotes to double quotes
+    This function standardizes the string by removing all whitespace, punctuation characters ",./-_*^()", quotation marks, and converting the result to lowercase
     This is used to compare the model output with the possible answers
     We don't want to punish model for answer like April 1, 2024 vs April 1,2024, vs April 1 2024
     """
-    regex_string = r"[\,\.\/\-\_\*\^\(\)]"
-    return re.sub(regex_string, "", input_string).lower().replace("'", '"')
+    # @HuanzhiMao fixme, all quotation marks are removed because dataset is not clean enough. 
+    regex_string = r"[\,\.\/\-\_\*\^\(\)\"']"
+    return re.sub(regex_string, "", input_string).lower()
