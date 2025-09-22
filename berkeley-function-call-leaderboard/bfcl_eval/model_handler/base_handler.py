@@ -156,6 +156,7 @@ class BaseHandler:
         inference_data: dict = {}
         inference_data = self._pre_query_processing_FC(inference_data, test_entry)
         inference_data = self._compile_tools(inference_data, test_entry)
+        
 
         all_multi_turn_messages: list[list[dict]] = test_entry["question"]
         for turn_idx, current_turn_message in enumerate(all_multi_turn_messages):
@@ -204,6 +205,8 @@ class BaseHandler:
             current_turn_reasoning_content = []
 
             count = 0
+            clarification_count = 0
+
             while True:
                 # print("-" * 100)
                 # print(
@@ -310,6 +313,17 @@ class BaseHandler:
                     )
 
                     if is_allowed_clarification:
+                        clarification_count += 1
+                        if clarification_count > 15:
+                            force_quit = True
+                            current_step_inference_log.append(
+                                {
+                                    "role": "handler_log",
+                                    "content": f"Model has been forced to quit after {15} clarifications. Way too many clarifications than needed.",
+                                }
+                            )
+                            break
+                        
                         clarification_message = [
                             {"role": "user", "content": clarification_content}
                         ]
@@ -556,6 +570,8 @@ class BaseHandler:
             current_turn_latency: list[float] = []
 
             count = 0
+            clarification_count = 0
+
             while True:
                 should_break = False
                 can_have_clarification = False
@@ -659,6 +675,17 @@ class BaseHandler:
                     )
 
                     if is_allowed_clarification:
+                        clarification_count += 1
+                        if clarification_count > 15:
+                            force_quit = True
+                            current_step_inference_log.append(
+                                {
+                                    "role": "handler_log",
+                                    "content": f"Model has been forced to quit after {15} clarifications. Way too many clarifications than needed.",
+                                }
+                            )
+                            break
+                        
                         clarification_message = [
                             {"role": "user", "content": clarification_content}
                         ]

@@ -343,7 +343,7 @@ class OSSHandler(BaseHandler, EnforceOverrides):
         # Determine the number of tokens to request. Cap it at 4096 if the model has a larger limit.
         if self.max_context_length < input_token_count + 2:
             # If the prompt is already at the max length, just request 1000 token, we will get an error anyway
-            leftover_tokens_count = 1000
+            leftover_tokens_count = 4096
         else:
             leftover_tokens_count = min(
                 4096,

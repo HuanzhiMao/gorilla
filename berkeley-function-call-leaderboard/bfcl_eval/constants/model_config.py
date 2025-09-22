@@ -2124,7 +2124,7 @@ audio_input_model_map = {
     # 381 clarification
     "Qwen/Qwen2.5-14B-Instruct-FC": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (Audio baseline)",
+        display_name="Audio baseline",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",
@@ -2137,7 +2137,7 @@ audio_input_model_map = {
     # For text bfcl.
     "Qwen/Qwen2.5-14B-Instruct-FC-original": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (Original text)",
+        display_name="Original Text",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",
@@ -2150,7 +2150,7 @@ audio_input_model_map = {
     # for text bfcl, and not supplying system prompt
     "Qwen/Qwen2.5-14B-Instruct-FC-original-no-system-prompt": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (Original text No System Prompt)",
+        display_name="Original Text No System Prompt (Target)",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",
@@ -2160,10 +2160,13 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    # With 60k rephrased, no system prompt
-    "Qwen/Qwen2.5-14B-Instruct-FC-08-29-16-27-epoch-2": ModelConfig(
+    
+    
+    
+    # With 60k xlam, with system prompt, speechfied, follow-up
+    "Qwen/Qwen2.5-14B-Instruct-FC-09-06-18-20-epoch-4": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (08-29_16-27/epoch_2)",
+        display_name="60k xlam speechfied follow-up system prompt (09-06_18-20/epoch_4)",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",
@@ -2175,9 +2178,9 @@ audio_input_model_map = {
     ),
     # With 60k rephrased, with system prompt
     # 294 clarification
-    "Qwen/Qwen2.5-14B-Instruct-FC-08-30-16-57-epoch-2": ModelConfig(
+    "Qwen/Qwen2.5-14B-Instruct-FC-09-08-16-50-epoch-4": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (08-30_16-57/epoch_2)",
+        display_name="60k xlam rephrased (09-08_16-50/epoch_4)",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",
@@ -2189,9 +2192,9 @@ audio_input_model_map = {
     ),
     # With 1.6k vam, no extra system prompt
     # 290 clarification
-    "Qwen/Qwen2.5-14B-Instruct-FC-08-30-18-47-epoch-5": ModelConfig(
+    "Qwen/Qwen2.5-14B-Instruct-FC-09-05-02-58-epoch-5": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (08-30_18-47/epoch_5)",
+        display_name="1k vam (09-05_02-58/epoch_5)",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",
@@ -2201,11 +2204,10 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    # With 5k multi turn, original system prompt
-    # 294 clarification
-    "Qwen/Qwen2.5-14B-Instruct-FC-08-31-21-21-epoch-7": ModelConfig(
+    # With 5k multi turn, added system prompt, speechfied, follow-up
+    "Qwen/Qwen2.5-14B-Instruct-FC-09-04-03-25-epoch-19": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (08-31_21-21/epoch_7)",
+        display_name="5k multi turn speechfied follow-up system prompt (09-04_03-25/epoch_19)",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",
@@ -2215,11 +2217,36 @@ audio_input_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    # With 5k multi turn, original system prompt, speechfied, follow-up
-    # 411 clarification
-    "Qwen/Qwen2.5-14B-Instruct-FC-09-01-18-58-epoch-9": ModelConfig(
+    # With 5k multi turn, added system prompt, speechfied, follow-up, rope scaling 64k
+    "Qwen/Qwen2.5-14B-Instruct-FC-09-04-03-25-epoch-19-rope-64k": ModelConfig(
         model_name="Qwen/Qwen2.5-14B-Instruct-FC",
-        display_name="Qwen2.5-14B-Instruct (09-01_18-58/epoch_9)",
+        display_name="5k multi turn speechfied follow-up system prompt rope scaling 64k (09-04_03-25/epoch_19-rope-64k)",
+        url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
+        org="Qwen",
+        license="apache-2.0",
+        model_handler=Qwen25FCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    # With 5k multi turn, added system prompt, speechfied, follow-up, longer
+    "Qwen/Qwen2.5-14B-Instruct-FC-09-04-18-09-epoch-19": ModelConfig(
+        model_name="Qwen/Qwen2.5-14B-Instruct-FC",
+        display_name="5k multi turn speechfied follow-up system prompt longer (09-04_18-09/epoch_19)",
+        url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
+        org="Qwen",
+        license="apache-2.0",
+        model_handler=Qwen25FCHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=False,
+    ),
+    # With 1k hermes, with system prompt
+    "Qwen/Qwen2.5-14B-Instruct-FC-09-05-03-07-epoch-4": ModelConfig(
+        model_name="Qwen/Qwen2.5-14B-Instruct-FC",
+        display_name="1k hermes system prompt (09-05_03-07/epoch_4)",
         url="https://huggingface.co/Qwen/Qwen2.5-14B-Instruct",
         org="Qwen",
         license="apache-2.0",
