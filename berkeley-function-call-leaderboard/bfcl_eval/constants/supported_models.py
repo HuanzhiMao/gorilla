@@ -192,5 +192,7 @@ VLM_ORIGIN_NOT_INCLUDE = [
     # "pixtral-12b-latest2409",
     "pixtral-large-2411",
     # "magistral-small-2509",
-    "magistral-medium-2509",   
+    
+    # ?
+    # "magistral-medium-2509",   
 ]
