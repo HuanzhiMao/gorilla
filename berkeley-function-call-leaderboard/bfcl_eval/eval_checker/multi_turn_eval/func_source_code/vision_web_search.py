@@ -138,11 +138,11 @@ class VisionSearchAPI:
                     return {"error": str(e)}
 
             # SerpAPI sometimes returns the error in the payload instead of raising
-            if "error" in search_results and "429" in str(search_results["error"]):
+            if "error" in search_results or "organic_results" not in search_results:
                 wait_time = backoff + random.uniform(0, backoff)
                 error_block = (
                     "*" * 100
-                    + f"\n❗️❗️ [WebSearchAPI] Received 429 from SerpAPI. The number of requests sent using this API key exceeds the hourly throughput limit OR your account has run out of searches. Retrying in {wait_time:.1f} seconds…"
+                    + f"\n❗️❗️ [WebSearchAPI] Received 429 from SerpAPI. The number of requests sent using this API key exceeds the hourly throughput limit OR your account has run out of searches. Retrying in {wait_time:.1f} seconds… {str(search_results)}"
                     + "*" * 100
                 )
                 print(error_block)
@@ -152,10 +152,10 @@ class VisionSearchAPI:
 
             break  # Success – no rate-limit error detected
 
-        if "organic_results" not in search_results:
-            return {
-                "error": "Failed to retrieve the search results from server. Please try again later."
-            }
+        # if "organic_results" not in search_results:
+        #     return {
+        #         "error": "Failed to retrieve the search results from server. Please try again later."
+        #     }
 
         search_results = search_results["organic_results"]
 
