@@ -560,12 +560,32 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
         # )
         
         vision_base = get_category_score(value, "vision_base")
+        vision_crop_169 = get_category_score(value, "vision_crop_169")
+        vision_crop_43 = get_category_score(value, "vision_crop_43")
+        vision_resize_169 = get_category_score(value, "vision_resize_169")
+        vision_resize_43 = get_category_score(value, "vision_resize_43")
+        vision_bw = get_category_score(value, "vision_bw")
+        vision_edge = get_category_score(value, "vision_edge")
+        vision_rg = get_category_score(value, "vision_rg")
         overall_accuracy_vision = calculate_unweighted_accuracy(
-            [vision_base],
+            [vision_base, vision_crop_169, vision_crop_43, vision_resize_169, vision_resize_43, vision_bw, vision_edge, vision_rg],
             display_na_if_category_missing=False,
         )
         
-        
+        data_non_live.append(
+            [
+                "N/A",
+                overall_accuracy_vision["display_accuracy"],
+                vision_base["display_accuracy"],
+                vision_crop_169["display_accuracy"],
+                vision_crop_43["display_accuracy"],
+                vision_resize_169["display_accuracy"],
+                vision_resize_43["display_accuracy"],
+                vision_bw["display_accuracy"],
+                vision_edge["display_accuracy"],
+                vision_rg["display_accuracy"],
+            ]
+        )
 
     # Write Non-Live Score File
     write_score_csv_file(

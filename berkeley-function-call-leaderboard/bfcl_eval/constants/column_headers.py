@@ -3,7 +3,13 @@ COLUMNS_NON_LIVE = [
     "Model",
     "Vision Overall Acc",
     "Vision Base",
-    
+    "Vision Crop 169",
+    "Vision Crop 43",
+    "Vision Resize 169",
+    "Vision Resize 43",
+    "Vision Black White",
+    "Vision Edge Detection",
+    "Vision Red Green",
 ]
 
 COLUMNS_LIVE = [
