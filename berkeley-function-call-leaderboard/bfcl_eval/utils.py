@@ -880,10 +880,10 @@ def process_audio_test_case(
                     "audio_path" in msg
                 ), f"Audio path should be specified in the test entry: {entry['id']}"
 
-                del msg["content"]
                 if use_audio_input:
                     msg["audio_content"] = load_audio(msg["audio_path"])
                     # msg["audio_format"] = "wav"
+                    del msg["content"]
                 else:
                     # FIXME: uncomment this to determine which text to use
                     # msg["content"] = msg["transcript"]
