@@ -88,7 +88,7 @@ class ClaudeHandler(BaseHandler):
         elif "claude-3-5-haiku-20241022" in self.model_name:
             return 8192
         else:
-            raise ValueError(f"Unsupported model: {self.model_name}")
+            return 32000
 
     #### FC methods ####
 
