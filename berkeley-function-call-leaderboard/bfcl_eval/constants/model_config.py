@@ -2309,8 +2309,8 @@ audio_input_model_map = {
 }
 
 MODEL_CONFIG_MAPPING = {
-    # **api_inference_model_map,
-    # **local_inference_model_map,
-    # **third_party_inference_model_map,
+    **api_inference_model_map,
+    **local_inference_model_map,
+    **third_party_inference_model_map,
     **audio_input_model_map,
 }
