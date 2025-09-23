@@ -28,7 +28,7 @@ POSSIBLE_ANSWER_PATH = PROMPT_PATH / "possible_answer"
 MEMORY_PREREQ_CONVERSATION_PATH = PROMPT_PATH / "memory_prereq_conversation"
 UTILS_PATH = PACKAGE_ROOT / "scripts"
 
-AUDIO_FILE_PATH = PROMPT_PATH / "audio"
+AUDIO_FILE_PATH = PROMPT_PATH / "audio_noise"
 FORMAT_SENSITIVITY_IDS_PATH = PROMPT_PATH / "BFCL_v4_format_sensitivity.json"
 
 

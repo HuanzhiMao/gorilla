@@ -780,10 +780,35 @@ def populate_initial_settings_for_web_search_test_cases(
 
 
 def load_audio(path: str) -> bytes:
-    """Load audio file from disk."""
-    # assert path.endswith(".mp3"), "Audio file should be in mp3 format"
+    """Load audio file from disk given a prefix of the filename.
 
-    with open(AUDIO_FILE_PATH / path, "rb") as f:
+    The provided *path* is expected to be only a prefix of the actual filename that
+    lives inside the ``AUDIO_FILE_PATH`` directory (e.g. ``live_simple_0-0-0_openai``)
+    while the real file might be something like
+    ``live_simple_0-0-0_openai_audio_mumbling_background_noise_mosquito_db-5_network_cut_n10.mp3``.
+
+    We search for files whose names start with the given prefix and ensure exactly
+    one match is found.
+    """
+
+    # Ensure we are only dealing with the filename part in case a path is passed in
+    prefix = Path(path).name  # Strip any possible directories
+
+    # Perform prefix matching inside the audio directory
+    candidates = list(AUDIO_FILE_PATH.glob(f"{prefix}*"))
+
+    if not candidates:
+        raise FileNotFoundError(
+            f"No audio file found in '{AUDIO_FILE_PATH}' with prefix '{prefix}'."
+        )
+    if len(candidates) > 1:
+        raise RuntimeError(
+            "Multiple audio files match the given prefix "
+            f"'{prefix}': {[c.name for c in candidates]}"
+        )
+
+    audio_path = candidates[0]
+    with open(audio_path, "rb") as f:
         return f.read()
 
 
