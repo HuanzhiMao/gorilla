@@ -137,12 +137,33 @@ class VisionSearchAPI:
                     print(error_block)
                     return {"error": str(e)}
 
-            # SerpAPI sometimes returns the error in the payload instead of raising
+            # Handle cases where SerpAPI returns an "error" key in the payload.
+            # If the error indicates that DuckDuckGo simply found no results for the query, we
+            # treat this as a normal (non-exceptional) outcome and return an empty list so the
+            # caller can decide how to proceed.  For all other error messages – or if the
+            # expected "organic_results" field is missing – we assume this is a transient
+            # issue (e.g., rate-limited) and retry with exponential back-off.
+
+            if "error" in search_results and (
+                isinstance(search_results["error"], str)
+                and "hasn't returned any results" in search_results["error"]
+            ):
+                # Nothing found – return empty result set immediately.
+                return (
+                    "Error: The search engine hasn't returned any results for this query."
+                )
+            if "error" in search_results and (
+                isinstance(search_results["error"], str)
+                and "Unsupported" in search_results["error"]
+            ):
+                # Unsupported parameter
+                return search_results['error']
+
             if "error" in search_results or "organic_results" not in search_results:
                 wait_time = backoff + random.uniform(0, backoff)
                 error_block = (
                     "*" * 100
-                    + f"\n❗️❗️ [WebSearchAPI] Received 429 from SerpAPI. The number of requests sent using this API key exceeds the hourly throughput limit OR your account has run out of searches. Retrying in {wait_time:.1f} seconds… {str(search_results)}"
+                    + f"\n❗️❗️ [WebSearchAPI] Received error from SerpAPI. Retrying in {wait_time:.1f} seconds… {str(search_results)}"
                     + "*" * 100
                 )
                 print(error_block)
@@ -276,3 +297,4 @@ class VisionSearchAPI:
 
     #     except Exception as e:
     #         return {"error": f"An error occurred while fetching {image_url}: {str(e)}"}
+

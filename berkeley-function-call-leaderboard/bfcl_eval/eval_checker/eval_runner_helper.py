@@ -575,6 +575,7 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
         data_non_live.append(
             [
                 "N/A",
+                model_config.display_name,
                 overall_accuracy_vision["display_accuracy"],
                 vision_base["display_accuracy"],
                 vision_crop_169["display_accuracy"],

@@ -464,6 +464,12 @@ def agentic_runner(
     test_category,
     score_dir,
 ):
+    if len(model_result) != len(possible_answer):
+        print(f"NOOOOOOOOOOOOOOOOOOOOOOOO model: {model_name} doesn't have all the answers, {len(model_result)} != {len(possible_answer)}")
+        return 0, len(model_result)
+    # else:
+        # print("YESSSSSSSS")
+    
     assert (
         len(model_result) == len(prompt) == len(possible_answer)
     ), f"The length of the model result ({len(model_result)}) does not match the length of the prompt ({len(prompt)}) or possible answer ({len(possible_answer)}). Please check the input files for completeness."
