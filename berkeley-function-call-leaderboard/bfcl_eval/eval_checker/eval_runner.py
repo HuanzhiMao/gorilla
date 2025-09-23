@@ -645,6 +645,12 @@ def evaluate_task(
     prompt = load_dataset_entry(
         test_category, include_prereq=False, include_language_specific_hint=False
     )
+    
+    for entry in prompt:
+        for message in entry["question"]:
+            if "image_content" in message:
+                del message["image_content"]["image_bytes"]
+                del message["image_content"]["image_base64"]
 
     if is_relevance_or_irrelevance(test_category):
         accuracy, total_count = relevance_file_runner(
