@@ -792,10 +792,10 @@ def load_audio(path: str) -> bytes:
     """
 
     # Ensure we are only dealing with the filename part in case a path is passed in
-    prefix = Path(path).name  # Strip any possible directories
+    prefix = Path(path).name.split(".")[0]  # Strip any possible directories
 
-    # Perform prefix matching inside the audio directory
-    candidates = list(AUDIO_FILE_PATH.glob(f"{prefix}*"))
+    # Perform prefix matching recursively inside AUDIO_FILE_PATH and its sub-directories
+    candidates = [p for p in AUDIO_FILE_PATH.rglob(f"{prefix}*.*") if p.is_file()]
 
     if not candidates:
         raise FileNotFoundError(
