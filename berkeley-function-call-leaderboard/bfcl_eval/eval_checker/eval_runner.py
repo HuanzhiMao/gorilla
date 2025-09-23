@@ -647,10 +647,11 @@ def evaluate_task(
     )
     
     for entry in prompt:
-        for message in entry["question"]:
-            if "image_content" in message:
-                del message["image_content"]["image_bytes"]
-                del message["image_content"]["image_base64"]
+        for turn in entry["question"]:
+            for message in turn:
+                if "image_content" in message:
+                    del message["image_content"]["image_bytes"]
+                    del message["image_content"]["image_base64"]
 
     if is_relevance_or_irrelevance(test_category):
         accuracy, total_count = relevance_file_runner(
