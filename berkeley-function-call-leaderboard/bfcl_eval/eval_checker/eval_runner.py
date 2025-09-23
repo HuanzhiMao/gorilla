@@ -464,9 +464,9 @@ def agentic_runner(
     test_category,
     score_dir,
 ):
-    if len(model_result) != len(possible_answer):
-        print(f"NOOOOOOOOOOOOOOOOOOOOOOOO model: {model_name} doesn't have all the answers, {len(model_result)} != {len(possible_answer)}")
-        return 0, len(model_result)
+    # if len(model_result) != len(possible_answer):
+    #     print(f"NOOOOOOOOOOOOOOOOOOOOOOOO model: {model_name} doesn't have all the answers, {len(model_result)} != {len(possible_answer)}")
+    #     return 0, len(model_result)
     # else:
         # print("YESSSSSSSS")
     
@@ -664,6 +664,10 @@ def evaluate_task(
         possible_answer = load_ground_truth_entry("vision_base")
 
         if is_vision(test_category):
+            if len(model_result) != len(possible_answer):
+                print(f"NOOOOOOOOOOOOOOOOOOOOOOOO model: {model_name} doesn't have all the answers, {len(model_result)} != {len(possible_answer)}")
+                return leaderboard_table
+
             # Vision is using the same substring matching logic as agentic categories
             accuracy, total_count = agentic_runner(
                 handler,
