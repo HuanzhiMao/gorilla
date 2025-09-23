@@ -2108,6 +2108,9 @@ audio_input_model_map = {
         supports_audio_input=True,
     ),
     
+    
+    
+    
     "Qwen/Qwen2.5-7B-Instruct-FC": ModelConfig(
         model_name="Qwen/Qwen2.5-7B-Instruct-FC",
         display_name="Qwen2.5-7B-Instruct (FC)",
