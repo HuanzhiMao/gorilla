@@ -35,7 +35,7 @@ MULTI_TURN_CATEGORY = [
     "multi_turn_base",
     "multi_turn_miss_func",
     "multi_turn_miss_param",
-    "multi_turn_long_context",
+    # "multi_turn_long_context",
     # "multi_turn_composite",
 ]
 WEB_SEARCH_CATEGORY = [
