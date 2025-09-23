@@ -73,7 +73,7 @@ class OpenAIResponsesHandler(BaseHandler):
 
         kwargs = {
             "input": message,
-            "model": self.model_name.replace("-FC", "").replace("audio:", ""),
+            "model": self.model_name.replace("-FC", "").replace("audio:", "").replace("audio-clean:", ""),
             "store": False,
             "include": ["reasoning.encrypted_content"],
             "reasoning": {"summary": "auto"},

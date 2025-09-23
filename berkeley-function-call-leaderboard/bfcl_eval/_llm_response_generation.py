@@ -317,10 +317,10 @@ def main(args):
         ):
             raise ValueError(f"Model {model_name} does not support native audio input.")
 
-        if args.use_audio_input and not model_name.startswith("audio:"):
-            raise ValueError(
-                f"Model {model_name} should not be used with the --use-audio-input flag. Please use the `audio:` prefix for models that support native audio input. For example, use `audio:gemini-2.5-pro-Audio-FC` instead of `gemini-2.5-pro-Audio-FC`."
-            )
+        # if args.use_audio_input and not model_name.startswith("audio:"):
+        #     raise ValueError(
+        #         f"Model {model_name} should not be used with the --use-audio-input flag. Please use the `audio:` prefix for models that support native audio input. For example, use `audio:gemini-2.5-pro-Audio-FC` instead of `gemini-2.5-pro-Audio-FC`."
+        #     )
 
     print(f"Generating results for {args.model}")
     if args.run_ids:

@@ -76,7 +76,7 @@ class OpenAICompletionsHandler(BaseHandler):
 
         kwargs = {
             "messages": message,
-            "model": self.model_name.replace("-FC", "").replace("audio:", ""),
+            "model": self.model_name.replace("-FC", "").replace("audio:", "").replace("audio-clean:", ""),
             "temperature": self.temperature,
             "store": False,
             "timeout": 120,
