@@ -1,3 +1,4 @@
+from cgi import test
 import json
 import os
 import re
@@ -172,8 +173,8 @@ def load_test_entries_from_id_file(id_file_path: Path) -> tuple[list[str], list[
 #### Predicate functions to check the test category ####
 def is_vision(test_category: str) -> bool:
     # @HuanzhiMao fixme
-    return True
-    # return "vision" in test_category
+    # return True
+    return "vision" in test_category
 
 
 def is_format_sensitivity(test_category: str) -> bool:
@@ -424,8 +425,8 @@ def load_dataset_entry(
     """
     if is_vision(test_category):
         # Vision categories
-        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{test_category}.json")
-        all_entries = load_vision_test_cases(all_entries)
+        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_vision_base.json")
+        all_entries = load_vision_test_cases(all_entries, test_category)
 
     elif is_format_sensitivity(test_category):
         # Format sensitivity categories
@@ -978,19 +979,34 @@ def get_all_format_sensitivity_configs() -> list[str]:
 import base64
 
 
-def load_vision_test_cases(all_entries: list[dict]) -> list[dict]:
+def load_vision_test_cases(all_entries: list[dict], test_category: str) -> list[dict]:
     result = []
     for entry in all_entries:
         # @HuanzhiMao fixme, maybe optimize the dataset structure
         user_query = entry["question"][0][0]["content"]
-        image_path = IMAGE_PATH / entry["image_file_name"]
+        image_file_name = entry["image_file_name"]
+        if test_category == "vision_crop_169":
+            image_file_name = image_file_name.replace(".jpeg", "_169.jpeg")
+        elif test_category == "vision_crop_43":
+            image_file_name = image_file_name.replace(".jpeg", "_43.jpeg")
+        elif test_category == "vision_resize_169":
+            image_file_name = image_file_name.replace(".jpeg", "_resize_169.jpeg")
+        elif test_category == "vision_resize_43":
+            image_file_name = image_file_name.replace(".jpeg", "_resize_43.jpeg")
+        elif test_category == "vision_bw":
+            image_file_name = image_file_name.replace(".jpeg", "_bw.jpeg")
+        elif test_category == "vision_edge":
+            image_file_name = image_file_name.replace(".jpeg", "_edge.jpeg")
+        elif test_category == "vision_rg":
+            image_file_name = image_file_name.replace(".jpeg", "_rg.jpeg")
+        image_path = IMAGE_PATH / image_file_name
         with open(image_path, "rb") as image_file:
             image_bytes = image_file.read()
         image_base64 = base64.b64encode(image_bytes).decode("utf-8")
 
         temp = {}
         temp["involved_classes"] = ["VisionSearchAPI"]
-        temp["id"] = entry["id"]
+        temp["id"] = entry["id"].replace("vision_base", test_category)
         temp["question"] = [
             [
                 {

@@ -44,7 +44,13 @@ WEB_SEARCH_CATEGORY = [
 ]
 VISION_CATEGORY = [
     "vision_base",
-    # "vision",
+    "vision_crop_169",
+    "vision_crop_43",
+    "vision_resize_169",
+    "vision_resize_43",
+    "vision_bw",
+    "vision_edge",
+    "vision_rg",
 ]
 
 MEMORY_CATEGORY = [f"memory_{backend}" for backend in ALL_AVAILABLE_MEMORY_BACKENDS]

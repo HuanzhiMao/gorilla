@@ -307,311 +307,340 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
         )
 
         # Non-Live Score
-        python_simple_ast_non_live = get_category_score(value, "simple_python")
-        python_multiple_ast_non_live = get_category_score(value, "multiple")
-        python_parallel_ast_non_live = get_category_score(value, "parallel")
-        python_parallel_multiple_ast_non_live = get_category_score(
-            value, "parallel_multiple"
-        )
-        java_simple_ast_non_live = get_category_score(value, "simple_java")
-        javascript_simple_ast_non_live = get_category_score(value, "simple_javascript")
-        irrelevance_non_live = get_category_score(value, "irrelevance")
+        # python_simple_ast_non_live = get_category_score(value, "simple_python")
+        # python_multiple_ast_non_live = get_category_score(value, "multiple")
+        # python_parallel_ast_non_live = get_category_score(value, "parallel")
+        # python_parallel_multiple_ast_non_live = get_category_score(
+        #     value, "parallel_multiple"
+        # )
+        # java_simple_ast_non_live = get_category_score(value, "simple_java")
+        # javascript_simple_ast_non_live = get_category_score(value, "simple_javascript")
+        # irrelevance_non_live = get_category_score(value, "irrelevance")
 
-        simple_ast_non_live = calculate_unweighted_accuracy(
-            [
-                python_simple_ast_non_live,
-                java_simple_ast_non_live,
-                javascript_simple_ast_non_live,
-            ]
-        )
-        multiple_ast_non_live = python_multiple_ast_non_live
-        parallel_ast_non_live = python_parallel_ast_non_live
-        parallel_multiple_ast_non_live = python_parallel_multiple_ast_non_live
+        # simple_ast_non_live = calculate_unweighted_accuracy(
+        #     [
+        #         python_simple_ast_non_live,
+        #         java_simple_ast_non_live,
+        #         javascript_simple_ast_non_live,
+        #     ]
+        # )
+        # multiple_ast_non_live = python_multiple_ast_non_live
+        # parallel_ast_non_live = python_parallel_ast_non_live
+        # parallel_multiple_ast_non_live = python_parallel_multiple_ast_non_live
 
-        summary_ast_non_live = calculate_unweighted_accuracy(
-            [
-                simple_ast_non_live,
-                multiple_ast_non_live,
-                parallel_ast_non_live,
-                parallel_multiple_ast_non_live,
-            ]
-        )
-        overall_accuracy_non_live = calculate_unweighted_accuracy(
-            [
-                simple_ast_non_live,
-                multiple_ast_non_live,
-                parallel_ast_non_live,
-                parallel_multiple_ast_non_live,
-            ],
+        # summary_ast_non_live = calculate_unweighted_accuracy(
+        #     [
+        #         simple_ast_non_live,
+        #         multiple_ast_non_live,
+        #         parallel_ast_non_live,
+        #         parallel_multiple_ast_non_live,
+        #     ]
+        # )
+        # overall_accuracy_non_live = calculate_unweighted_accuracy(
+        #     [
+        #         simple_ast_non_live,
+        #         multiple_ast_non_live,
+        #         parallel_ast_non_live,
+        #         parallel_multiple_ast_non_live,
+        #     ],
+        #     display_na_if_category_missing=False,
+        # )
+
+        # data_non_live.append(
+        #     [
+        #         "N/A",
+        #         model_config.display_name,
+        #         overall_accuracy_non_live["display_accuracy"],
+        #         summary_ast_non_live["display_accuracy"],
+        #         simple_ast_non_live["display_accuracy"],
+        #         python_simple_ast_non_live["display_accuracy"],
+        #         java_simple_ast_non_live["display_accuracy"],
+        #         javascript_simple_ast_non_live["display_accuracy"],
+        #         multiple_ast_non_live["display_accuracy"],
+        #         parallel_ast_non_live["display_accuracy"],
+        #         parallel_multiple_ast_non_live["display_accuracy"],
+        #         irrelevance_non_live["display_accuracy"],
+        #     ]
+        # )
+
+        # # Live Score
+        # python_simple_ast_live = get_category_score(value, "live_simple")
+        # python_multiple_ast_live = get_category_score(value, "live_multiple")
+        # python_parallel_ast_live = get_category_score(value, "live_parallel")
+        # python_parallel_multiple_ast_live = get_category_score(
+        #     value, "live_parallel_multiple"
+        # )
+        # irrelevance_live = get_category_score(value, "live_irrelevance")
+        # relevance_live = get_category_score(value, "live_relevance")
+        # summary_ast_live = calculate_weighted_accuracy(
+        #     [
+        #         python_simple_ast_live,
+        #         python_multiple_ast_live,
+        #         python_parallel_ast_live,
+        #         python_parallel_multiple_ast_live,
+        #     ]
+        # )
+
+        # overall_accuracy_live = calculate_weighted_accuracy(
+        #     [
+        #         python_simple_ast_live,
+        #         python_multiple_ast_live,
+        #         python_parallel_ast_live,
+        #         python_parallel_multiple_ast_live,
+        #     ],
+        #     display_na_if_category_missing=False,
+        # )
+
+        # data_live.append(
+        #     [
+        #         "N/A",
+        #         model_config.display_name,
+        #         overall_accuracy_live["display_accuracy"],
+        #         summary_ast_live["display_accuracy"],
+        #         python_simple_ast_live["display_accuracy"],
+        #         python_multiple_ast_live["display_accuracy"],
+        #         python_parallel_ast_live["display_accuracy"],
+        #         python_parallel_multiple_ast_live["display_accuracy"],
+        #         irrelevance_live["display_accuracy"],
+        #         relevance_live["display_accuracy"],
+        #     ]
+        # )
+
+        # # Multi-Turn Score
+        # multi_turn_base = get_category_score(value, "multi_turn_base")
+        # multi_turn_miss_func = get_category_score(value, "multi_turn_miss_func")
+        # multi_turn_miss_param = get_category_score(value, "multi_turn_miss_param")
+        # multi_turn_long_context = get_category_score(value, "multi_turn_long_context")
+        # overall_accuracy_multi_turn = calculate_unweighted_accuracy(
+        #     [
+        #         multi_turn_base,
+        #         multi_turn_miss_func,
+        #         multi_turn_miss_param,
+        #         multi_turn_long_context,
+        #     ],
+        #     display_na_if_category_missing=False,
+        # )
+
+        # data_multi_turn.append(
+        #     [
+        #         "N/A",
+        #         model_config.display_name,
+        #         overall_accuracy_multi_turn["display_accuracy"],
+        #         multi_turn_base["display_accuracy"],
+        #         multi_turn_miss_func["display_accuracy"],
+        #         multi_turn_miss_param["display_accuracy"],
+        #         multi_turn_long_context["display_accuracy"],
+        #     ]
+        # )
+
+        # # Agentic Score
+        # web_search_base = get_category_score(value, "web_search_base")
+        # web_search_no_snippet = get_category_score(value, "web_search_no_snippet")
+        # summary_web_search = calculate_unweighted_accuracy(
+        #     [
+        #         web_search_base,
+        #         web_search_no_snippet,
+        #     ]
+        # )
+        # memory_kv = get_category_score(value, "memory_kv")
+        # memory_vector = get_category_score(value, "memory_vector")
+        # memory_rec_sum = get_category_score(value, "memory_rec_sum")
+        # summary_memory = calculate_unweighted_accuracy(
+        #     [
+        #         memory_kv,
+        #         memory_vector,
+        #         memory_rec_sum,
+        #     ]
+        # )
+        # overall_accuracy_agentic = calculate_unweighted_accuracy(
+        #     [
+        #         summary_web_search,
+        #         summary_memory,
+        #     ],
+        #     display_na_if_category_missing=False,
+        # )
+
+        # data_agentic.append(
+        #     [
+        #         "N/A",
+        #         model_config.display_name,
+        #         overall_accuracy_agentic["display_accuracy"],
+        #         summary_web_search["display_accuracy"],
+        #         web_search_base["display_accuracy"],
+        #         web_search_no_snippet["display_accuracy"],
+        #         summary_memory["display_accuracy"],
+        #         memory_kv["display_accuracy"],
+        #         memory_vector["display_accuracy"],
+        #         memory_rec_sum["display_accuracy"],
+        #     ]
+        # )
+
+        # # Total Score
+        # total_irrelevance = calculate_unweighted_accuracy(
+        #     [irrelevance_non_live, irrelevance_live]
+        # )
+        # total_relevance = relevance_live
+
+        # # Format Sensitivity statistics
+        # format_sensitivity_metadata = value.get("format_sensitivity", {})
+        # format_sensitivity_max_delta = format_sensitivity_metadata.get(
+        #     "accuracy_max_delta", "N/A"
+        # )
+        # format_sensitivity_std = format_sensitivity_metadata.get("accuracy_std", "N/A")
+
+        # # Prepare row for format sensitivity CSV
+        # config_accuracy_values = []
+        # for cfg in all_format_configs:
+        #     cfg_stats = format_sensitivity_metadata.get(cfg, {})
+        #     cfg_acc = cfg_stats.get("accuracy", "N/A")
+        #     config_accuracy_values.append(cfg_acc)
+
+        # data_format_sensitivity.append(
+        #     [
+        #         "N/A",
+        #         model_config.display_name,
+        #         format_sensitivity_max_delta,
+        #         format_sensitivity_std,
+        #         *config_accuracy_values,
+        #     ]
+        # )
+
+        # # TODO: @HuanzhiMao adjust the weights
+        # total_overall_accuracy = calculate_percentage_weighted_accuracy(
+        #     [
+        #         overall_accuracy_non_live,
+        #         overall_accuracy_live,
+        #         total_irrelevance,
+        #         overall_accuracy_multi_turn,
+        #         overall_accuracy_agentic,
+        #     ],
+        #     [10, 10, 10, 30, 40],
+        #     display_na_if_category_missing=False,
+        # )
+
+        # data_combined.append(
+        #     [
+        #         "N/A",
+        #         total_overall_accuracy["display_accuracy"],
+        #         model_config.display_name,
+        #         model_config.url,
+        #         cost,
+        #         latency_mean,
+        #         latency_std,
+        #         percentile_95_latency,
+        #         summary_ast_non_live["display_accuracy"],
+        #         simple_ast_non_live["display_accuracy"],
+        #         multiple_ast_non_live["display_accuracy"],
+        #         parallel_ast_non_live["display_accuracy"],
+        #         parallel_multiple_ast_non_live["display_accuracy"],
+        #         overall_accuracy_live["display_accuracy"],
+        #         python_simple_ast_live["display_accuracy"],
+        #         python_multiple_ast_live["display_accuracy"],
+        #         python_parallel_ast_live["display_accuracy"],
+        #         python_parallel_multiple_ast_live["display_accuracy"],
+        #         overall_accuracy_multi_turn["display_accuracy"],
+        #         multi_turn_base["display_accuracy"],
+        #         multi_turn_miss_func["display_accuracy"],
+        #         multi_turn_miss_param["display_accuracy"],
+        #         multi_turn_long_context["display_accuracy"],
+        #         summary_web_search["display_accuracy"],
+        #         web_search_base["display_accuracy"],
+        #         web_search_no_snippet["display_accuracy"],
+        #         summary_memory["display_accuracy"],
+        #         memory_kv["display_accuracy"],
+        #         memory_vector["display_accuracy"],
+        #         memory_rec_sum["display_accuracy"],
+        #         total_relevance["display_accuracy"],
+        #         total_irrelevance["display_accuracy"],
+        #         format_sensitivity_max_delta,
+        #         format_sensitivity_std,
+        #         model_config.org,
+        #         model_config.license,
+        #     ]
+        # )
+        
+        vision_base = get_category_score(value, "vision_base")
+        vision_crop_169 = get_category_score(value, "vision_crop_169")
+        vision_crop_43 = get_category_score(value, "vision_crop_43")
+        vision_resize_169 = get_category_score(value, "vision_resize_169")
+        vision_resize_43 = get_category_score(value, "vision_resize_43")
+        vision_bw = get_category_score(value, "vision_bw")
+        vision_edge = get_category_score(value, "vision_edge")
+        vision_rg = get_category_score(value, "vision_rg")
+        overall_accuracy_vision = calculate_unweighted_accuracy(
+            [vision_base, vision_crop_169, vision_crop_43, vision_resize_169, vision_resize_43, vision_bw, vision_edge, vision_rg],
             display_na_if_category_missing=False,
         )
-
+        
         data_non_live.append(
             [
                 "N/A",
                 model_config.display_name,
-                overall_accuracy_non_live["display_accuracy"],
-                summary_ast_non_live["display_accuracy"],
-                simple_ast_non_live["display_accuracy"],
-                python_simple_ast_non_live["display_accuracy"],
-                java_simple_ast_non_live["display_accuracy"],
-                javascript_simple_ast_non_live["display_accuracy"],
-                multiple_ast_non_live["display_accuracy"],
-                parallel_ast_non_live["display_accuracy"],
-                parallel_multiple_ast_non_live["display_accuracy"],
-                irrelevance_non_live["display_accuracy"],
-            ]
-        )
-
-        # Live Score
-        python_simple_ast_live = get_category_score(value, "live_simple")
-        python_multiple_ast_live = get_category_score(value, "live_multiple")
-        python_parallel_ast_live = get_category_score(value, "live_parallel")
-        python_parallel_multiple_ast_live = get_category_score(
-            value, "live_parallel_multiple"
-        )
-        irrelevance_live = get_category_score(value, "live_irrelevance")
-        relevance_live = get_category_score(value, "live_relevance")
-        summary_ast_live = calculate_weighted_accuracy(
-            [
-                python_simple_ast_live,
-                python_multiple_ast_live,
-                python_parallel_ast_live,
-                python_parallel_multiple_ast_live,
-            ]
-        )
-
-        overall_accuracy_live = calculate_weighted_accuracy(
-            [
-                python_simple_ast_live,
-                python_multiple_ast_live,
-                python_parallel_ast_live,
-                python_parallel_multiple_ast_live,
-            ],
-            display_na_if_category_missing=False,
-        )
-
-        data_live.append(
-            [
-                "N/A",
-                model_config.display_name,
-                overall_accuracy_live["display_accuracy"],
-                summary_ast_live["display_accuracy"],
-                python_simple_ast_live["display_accuracy"],
-                python_multiple_ast_live["display_accuracy"],
-                python_parallel_ast_live["display_accuracy"],
-                python_parallel_multiple_ast_live["display_accuracy"],
-                irrelevance_live["display_accuracy"],
-                relevance_live["display_accuracy"],
-            ]
-        )
-
-        # Multi-Turn Score
-        multi_turn_base = get_category_score(value, "multi_turn_base")
-        multi_turn_miss_func = get_category_score(value, "multi_turn_miss_func")
-        multi_turn_miss_param = get_category_score(value, "multi_turn_miss_param")
-        multi_turn_long_context = get_category_score(value, "multi_turn_long_context")
-        overall_accuracy_multi_turn = calculate_unweighted_accuracy(
-            [
-                multi_turn_base,
-                multi_turn_miss_func,
-                multi_turn_miss_param,
-                multi_turn_long_context,
-            ],
-            display_na_if_category_missing=False,
-        )
-
-        data_multi_turn.append(
-            [
-                "N/A",
-                model_config.display_name,
-                overall_accuracy_multi_turn["display_accuracy"],
-                multi_turn_base["display_accuracy"],
-                multi_turn_miss_func["display_accuracy"],
-                multi_turn_miss_param["display_accuracy"],
-                multi_turn_long_context["display_accuracy"],
-            ]
-        )
-
-        # Agentic Score
-        web_search_base = get_category_score(value, "web_search_base")
-        web_search_no_snippet = get_category_score(value, "web_search_no_snippet")
-        summary_web_search = calculate_unweighted_accuracy(
-            [
-                web_search_base,
-                web_search_no_snippet,
-            ]
-        )
-        memory_kv = get_category_score(value, "memory_kv")
-        memory_vector = get_category_score(value, "memory_vector")
-        memory_rec_sum = get_category_score(value, "memory_rec_sum")
-        summary_memory = calculate_unweighted_accuracy(
-            [
-                memory_kv,
-                memory_vector,
-                memory_rec_sum,
-            ]
-        )
-        overall_accuracy_agentic = calculate_unweighted_accuracy(
-            [
-                summary_web_search,
-                summary_memory,
-            ],
-            display_na_if_category_missing=False,
-        )
-
-        data_agentic.append(
-            [
-                "N/A",
-                model_config.display_name,
-                overall_accuracy_agentic["display_accuracy"],
-                summary_web_search["display_accuracy"],
-                web_search_base["display_accuracy"],
-                web_search_no_snippet["display_accuracy"],
-                summary_memory["display_accuracy"],
-                memory_kv["display_accuracy"],
-                memory_vector["display_accuracy"],
-                memory_rec_sum["display_accuracy"],
-            ]
-        )
-
-        # Total Score
-        total_irrelevance = calculate_unweighted_accuracy(
-            [irrelevance_non_live, irrelevance_live]
-        )
-        total_relevance = relevance_live
-
-        # Format Sensitivity statistics
-        format_sensitivity_metadata = value.get("format_sensitivity", {})
-        format_sensitivity_max_delta = format_sensitivity_metadata.get(
-            "accuracy_max_delta", "N/A"
-        )
-        format_sensitivity_std = format_sensitivity_metadata.get("accuracy_std", "N/A")
-
-        # Prepare row for format sensitivity CSV
-        config_accuracy_values = []
-        for cfg in all_format_configs:
-            cfg_stats = format_sensitivity_metadata.get(cfg, {})
-            cfg_acc = cfg_stats.get("accuracy", "N/A")
-            config_accuracy_values.append(cfg_acc)
-
-        data_format_sensitivity.append(
-            [
-                "N/A",
-                model_config.display_name,
-                format_sensitivity_max_delta,
-                format_sensitivity_std,
-                *config_accuracy_values,
-            ]
-        )
-
-        # TODO: @HuanzhiMao adjust the weights
-        total_overall_accuracy = calculate_percentage_weighted_accuracy(
-            [
-                overall_accuracy_non_live,
-                overall_accuracy_live,
-                total_irrelevance,
-                overall_accuracy_multi_turn,
-                overall_accuracy_agentic,
-            ],
-            [10, 10, 10, 30, 40],
-            display_na_if_category_missing=False,
-        )
-
-        data_combined.append(
-            [
-                "N/A",
-                total_overall_accuracy["display_accuracy"],
-                model_config.display_name,
-                model_config.url,
-                cost,
-                latency_mean,
-                latency_std,
-                percentile_95_latency,
-                summary_ast_non_live["display_accuracy"],
-                simple_ast_non_live["display_accuracy"],
-                multiple_ast_non_live["display_accuracy"],
-                parallel_ast_non_live["display_accuracy"],
-                parallel_multiple_ast_non_live["display_accuracy"],
-                overall_accuracy_live["display_accuracy"],
-                python_simple_ast_live["display_accuracy"],
-                python_multiple_ast_live["display_accuracy"],
-                python_parallel_ast_live["display_accuracy"],
-                python_parallel_multiple_ast_live["display_accuracy"],
-                overall_accuracy_multi_turn["display_accuracy"],
-                multi_turn_base["display_accuracy"],
-                multi_turn_miss_func["display_accuracy"],
-                multi_turn_miss_param["display_accuracy"],
-                multi_turn_long_context["display_accuracy"],
-                summary_web_search["display_accuracy"],
-                web_search_base["display_accuracy"],
-                web_search_no_snippet["display_accuracy"],
-                summary_memory["display_accuracy"],
-                memory_kv["display_accuracy"],
-                memory_vector["display_accuracy"],
-                memory_rec_sum["display_accuracy"],
-                total_relevance["display_accuracy"],
-                total_irrelevance["display_accuracy"],
-                format_sensitivity_max_delta,
-                format_sensitivity_std,
-                model_config.org,
-                model_config.license,
+                overall_accuracy_vision["display_accuracy"],
+                vision_base["display_accuracy"],
+                vision_crop_169["display_accuracy"],
+                vision_crop_43["display_accuracy"],
+                vision_resize_169["display_accuracy"],
+                vision_resize_43["display_accuracy"],
+                vision_bw["display_accuracy"],
+                vision_edge["display_accuracy"],
+                vision_rg["display_accuracy"],
             ]
         )
 
     # Write Non-Live Score File
     write_score_csv_file(
         data=data_non_live,
-        file_path=output_path / "data_non_live.csv",
+        file_path=output_path / "data_vision.csv",
         header=COLUMNS_NON_LIVE,
         sort_column_index=2,
     )
 
-    # Write Live Score File
-    write_score_csv_file(
-        data=data_live,
-        file_path=output_path / "data_live.csv",
-        header=COLUMNS_LIVE,
-        sort_column_index=2,
-    )
+    # # Write Live Score File
+    # write_score_csv_file(
+    #     data=data_live,
+    #     file_path=output_path / "data_live.csv",
+    #     header=COLUMNS_LIVE,
+    #     sort_column_index=2,
+    # )
 
-    # Write Multi Turn Score File
-    write_score_csv_file(
-        data=data_multi_turn,
-        file_path=output_path / "data_multi_turn.csv",
-        header=COLUMNS_MULTI_TURN,
-        sort_column_index=2,
-    )
+    # # Write Multi Turn Score File
+    # write_score_csv_file(
+    #     data=data_multi_turn,
+    #     file_path=output_path / "data_multi_turn.csv",
+    #     header=COLUMNS_MULTI_TURN,
+    #     sort_column_index=2,
+    # )
 
     # Write Agentic Score File
-    write_score_csv_file(
-        data=data_agentic,
-        file_path=output_path / "data_agentic.csv",
-        header=COLUMNS_AGENTIC,
-        sort_column_index=2,
-    )
+    # write_score_csv_file(
+    #     data=data_agentic,
+    #     file_path=output_path / "data_agentic.csv",
+    #     header=COLUMNS_AGENTIC,
+    #     sort_column_index=2,
+    # )
 
-    # Write Format Sensitivity Score File
-    COLUMNS_FORMAT_SENS = COLUMNS_FORMAT_SENS_PREFIX + [
-        f"Config {cfg}" for cfg in all_format_configs
-    ]
+    # # Write Format Sensitivity Score File
+    # COLUMNS_FORMAT_SENS = COLUMNS_FORMAT_SENS_PREFIX + [
+    #     f"Config {cfg}" for cfg in all_format_configs
+    # ]
 
-    write_score_csv_file(
-        data=data_format_sensitivity,
-        file_path=output_path / "data_format_sensitivity.csv",
-        header=COLUMNS_FORMAT_SENS,
-        sort_column_index=2,
-        no_conversion_numeric_column_index=[2, 3],
-    )
+    # write_score_csv_file(
+    #     data=data_format_sensitivity,
+    #     file_path=output_path / "data_format_sensitivity.csv",
+    #     header=COLUMNS_FORMAT_SENS,
+    #     sort_column_index=2,
+    #     no_conversion_numeric_column_index=[2, 3],
+    # )
 
     # Write Total Score File
-    write_score_csv_file(
-        data=data_combined,
-        file_path=output_path / "data_overall.csv",
-        header=COLUMNS_OVERALL,
-        sort_column_index=1,
-        no_conversion_numeric_column_index=[4, 5, 6, 7, 32, 33],
-    )
+    # write_score_csv_file(
+    #     data=data_combined,
+    #     file_path=output_path / "data_overall.csv",
+    #     header=COLUMNS_OVERALL,
+    #     sort_column_index=1,
+    #     no_conversion_numeric_column_index=[4, 5, 6, 7, 32, 33],
+    # )
 
     wandb_project = os.getenv("WANDB_BFCL_PROJECT")
     if wandb_project and wandb_project != "ENTITY:PROJECT":

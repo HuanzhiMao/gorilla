@@ -464,6 +464,12 @@ def agentic_runner(
     test_category,
     score_dir,
 ):
+    # if len(model_result) != len(possible_answer):
+    #     print(f"NOOOOOOOOOOOOOOOOOOOOOOOO model: {model_name} doesn't have all the answers, {len(model_result)} != {len(possible_answer)}")
+    #     return 0, len(model_result)
+    # else:
+        # print("YESSSSSSSS")
+    
     assert (
         len(model_result) == len(prompt) == len(possible_answer)
     ), f"The length of the model result ({len(model_result)}) does not match the length of the prompt ({len(prompt)}) or possible answer ({len(possible_answer)}). Please check the input files for completeness."
@@ -639,6 +645,13 @@ def evaluate_task(
     prompt = load_dataset_entry(
         test_category, include_prereq=False, include_language_specific_hint=False
     )
+    
+    for entry in prompt:
+        for turn in entry["question"]:
+            for message in turn:
+                if "image_content" in message:
+                    del message["image_content"]["image_bytes"]
+                    del message["image_content"]["image_base64"]
 
     if is_relevance_or_irrelevance(test_category):
         accuracy, total_count = relevance_file_runner(
@@ -647,9 +660,26 @@ def evaluate_task(
 
     else:
         # Find the corresponding possible answer entries
-        possible_answer = load_ground_truth_entry(test_category)
+        # @HuanzhiMao fixme
+        possible_answer = load_ground_truth_entry("vision_base")
 
-        if is_format_sensitivity(test_category):
+        if is_vision(test_category):
+            if len(model_result) != len(possible_answer):
+                print(f"NOOOOOOOOOOOOOOOOOOOOOOOO model: {model_name} doesn't have all the answers, {len(model_result)} != {len(possible_answer)}")
+                return leaderboard_table
+
+            # Vision is using the same substring matching logic as agentic categories
+            accuracy, total_count = agentic_runner(
+                handler,
+                model_result,
+                prompt,
+                possible_answer,
+                model_name,
+                test_category,
+                score_dir,
+            )
+
+        elif is_format_sensitivity(test_category):
             accuracy, total_count = format_sensitivity_runner(
                 handler,
                 model_result,
@@ -811,7 +841,7 @@ if __name__ == "__main__":
         "--test-category",
         nargs="+",
         type=str,
-        default="all",
+        default="vision",
         help="A list of test categories to run the evaluation on",
     )
     parser.add_argument(

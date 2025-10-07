@@ -1,5 +1,5 @@
-MAXIMUM_STEP_LIMIT = 50
-# @HuanzhiMao fixme
+# @HuanzhiMao fixme, fix the value and maybe move to a different place
+MAXIMUM_STEP_LIMIT = 40
 
 
 #### System Prompts for Chat Models ####
