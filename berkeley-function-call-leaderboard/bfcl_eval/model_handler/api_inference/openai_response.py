@@ -113,6 +113,7 @@ class OpenAIResponsesHandler(BaseHandler):
         ):
             del kwargs["temperature"]
 
+
         # Non-reasoning models don't support reasoning parameter
         else:
             del kwargs["reasoning"]
@@ -162,7 +163,7 @@ class OpenAIResponsesHandler(BaseHandler):
                 for summary in item.summary:
                     reasoning_content.append(summary.text)
             elif item.type == "web_search_call":
-                reasoning_content.append({"type": item.action.type, "action": item.action.query})
+                reasoning_content.append(repr(item.action))
 
         return {
             "model_responses": model_responses,
