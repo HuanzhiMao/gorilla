@@ -182,8 +182,8 @@ class WebSearchAPI:
             break  # Success – no rate-limit error detected
 
         if "organic_results" not in search_results:
-            print(search_results)
-            print("look here")
+            # print(search_results)
+            # print("look here")
             return {
                 "error": "Failed to retrieve the search results from server. Please try again later."
             }
