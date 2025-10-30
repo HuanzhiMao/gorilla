@@ -36,7 +36,7 @@ class OpenAIResponsesHandler(BaseHandler):
         include them if they are actually present so that we keep the call minimal
         and rely on the OpenAI SDK's own defaults when possible."""
 
-        kwargs = {}
+        kwargs = {"timeout": 3600}
 
         if api_key := os.getenv("OPENAI_API_KEY"):
             kwargs["api_key"] = api_key
@@ -101,7 +101,7 @@ class OpenAIResponsesHandler(BaseHandler):
             "model": self.model_name,
             "store": False,
             "include": ["reasoning.encrypted_content"],
-            "reasoning": {"summary": "auto", "effort": "high"},
+            "reasoning": {"summary": "auto", "effort": "medium"},
             "temperature": self.temperature,
         }
 
@@ -119,7 +119,7 @@ class OpenAIResponsesHandler(BaseHandler):
             del kwargs["include"]
 
         if len(tools) > 0:
-            kwargs["tools"] = tools
+            kwargs["tools"] = [{"type": "web_search"}]
 
         return self.generate_with_backoff(**kwargs)
 
@@ -156,11 +156,13 @@ class OpenAIResponsesHandler(BaseHandler):
 
         # OpenAI reasoning models don't show full reasoning content in the api response,
         # but only a summary of the reasoning content.
-        reasoning_content = ""
+        reasoning_content = []
         for item in api_response.output:
             if item.type == "reasoning":
                 for summary in item.summary:
-                    reasoning_content += summary.text + "\n"
+                    reasoning_content.append(summary.text)
+            elif item.type == "web_search_call":
+                reasoning_content.append({"type": item.action.type, "action": item.action.query})
 
         return {
             "model_responses": model_responses,

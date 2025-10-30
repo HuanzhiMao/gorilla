@@ -365,7 +365,7 @@ api_inference_model_map = {
         underscore_to_dot=False,
     ),
     "o3-2025-04-16-FC": ModelConfig(
-        model_name="o3-2025-04-16",
+        model_name="o3-deep-research",
         display_name="o3-2025-04-16 (FC)",
         url="https://openai.com/index/introducing-o3-and-o4-mini/",
         org="OpenAI",
@@ -389,7 +389,7 @@ api_inference_model_map = {
         underscore_to_dot=False,
     ),
     "o4-mini-2025-04-16-FC": ModelConfig(
-        model_name="o4-mini-2025-04-16",
+        model_name="o4-mini-deep-research",
         display_name="o4-mini-2025-04-16 (FC)",
         url="https://openai.com/index/introducing-o3-and-o4-mini/",
         org="OpenAI",

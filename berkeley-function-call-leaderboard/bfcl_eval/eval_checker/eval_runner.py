@@ -2,6 +2,8 @@ import argparse
 import statistics
 from collections import defaultdict
 
+from concurrent.futures import ThreadPoolExecutor
+
 from bfcl_eval.constants.enums import Language, ReturnFormat
 from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING
@@ -145,6 +147,7 @@ def _evaluate_single_agentic_entry(
     accuracy_checker_result = agentic_checker(
         last_unsuccessful_decoding_message,
         possible_answer_item,
+        prompt_entry["question"][0][0]["content"],
     )
 
     if not accuracy_checker_result["valid"]:
@@ -513,7 +516,8 @@ def agentic_runner(
 
     result = []
     correct_count = 0
-    for i in range(len(model_result)):
+
+    def evaluate_entry(i):
         index = model_result[i]["id"]
         model_result_list = model_result[i]["result"]
         possible_answer_item = possible_answer[i]["ground_truth"]
@@ -530,10 +534,19 @@ def agentic_runner(
         )
 
         if entry_result["valid"]:
-            correct_count += 1
-        else:
-            entry_result["inference_log"] = model_result[i].get("inference_log", "")
-            result.append(entry_result)
+            return True, entry_result
+
+        entry_result["inference_log"] = model_result[i].get("inference_log", "")
+        return False, entry_result
+
+    with ThreadPoolExecutor(max_workers=1000) as executor:
+        futures = [executor.submit(evaluate_entry, i) for i in range(len(model_result))]
+        for future in tqdm(futures, desc="Evaluating agentic entries", total=len(model_result)):
+            is_valid, entry_result = future.result()
+            if is_valid:
+                correct_count += 1
+            else:
+                result.append(entry_result)
 
     return save_eval_results(
         result, correct_count, model_result, test_category, model_name, score_dir
