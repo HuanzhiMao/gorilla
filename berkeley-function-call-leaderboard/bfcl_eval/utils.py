@@ -700,8 +700,21 @@ def process_web_search_test_case(test_cases: list[dict], test_category: str) -> 
     """
     Web search test cases need to have their entry id updated. As both the base and no_snippet test categories are using the same question (from the same file), we need to differentiate them here.
     """
+    QUERY_TEMPLATE = """
+{Question}
+
+Your response should be in the following format:
+Explanation: {{your explanation for your final answer}}
+Exact Answer: {{your succinct, final answer}}
+Confidence: {{your confidence score between 0% and 100% for your answer}}
+""".strip()
     for entry in test_cases:
         entry["id"] = entry["id"].replace("web_search", test_category)
+        entry["question"][0][0]["content"] = QUERY_TEMPLATE.format(Question=entry["question"][0][0]["content"])
+        # print(entry["question"])
+        
+        
+
 
     return test_cases
 
@@ -751,15 +764,15 @@ def process_agentic_test_case(test_cases: list[dict]) -> list[dict]:
     """
     Agentic test cases need to have a specific response format. We add this to the user query here.
     """
-    for entry in test_cases:
-        if is_agentic(entry["id"]) and not is_memory_prereq(entry["id"]):
-            entry["question"][0].insert(
-                0,
-                {
-                    "role": "system",
-                    "content": ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
-                },
-            )
+    # for entry in test_cases:
+    #     if is_agentic(entry["id"]) and not is_memory_prereq(entry["id"]):
+    #         entry["question"][0].insert(
+    #             0,
+    #             {
+    #                 "role": "system",
+    #                 "content": ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
+    #             },
+    #         )
 
     return test_cases
 

@@ -101,7 +101,7 @@ class OpenAIResponsesHandler(BaseHandler):
             "model": self.model_name,
             "store": False,
             "include": ["reasoning.encrypted_content"],
-            "reasoning": {"summary": "auto"},
+            "reasoning": {"summary": "auto", "effort": "high"},
             "temperature": self.temperature,
         }
 

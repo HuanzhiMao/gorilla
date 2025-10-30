@@ -47,7 +47,7 @@ def get_args():
     parser.add_argument(
         "--skip-server-setup",
         action="store_true",
-        default=False,
+        default=True,
         help="Skip vLLM/SGLang server setup and use existing endpoint specified by the LOCAL_SERVER_ENDPOINT and LOCAL_SERVER_PORT environment variables.",
     )
     # Optional local model path
