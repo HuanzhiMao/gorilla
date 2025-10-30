@@ -37,7 +37,7 @@ def get_args():
     parser.add_argument("--temperature", type=float, default=0.01)
     parser.add_argument("--include-input-log", action="store_true", default=False)
     parser.add_argument("--exclude-state-log", action="store_true", default=False)
-    parser.add_argument("--num-threads", default=80, type=int)
+    parser.add_argument("--num-threads", default=1500, type=int)
     parser.add_argument("--num-gpus", default=8, type=int)
     parser.add_argument("--backend", default="vllm", type=str, choices=["vllm", "sglang"])
     parser.add_argument("--gpu-memory-utilization", default=0.9, type=float)
