@@ -18,6 +18,6 @@ class KimiHandler(OpenAICompletionsHandler):
             # base_url="https://api.moonshot.ai/v1", 
             # If API Key is from US platform, use the above URL
             # If API Key is from China platform, use the below URL
-            base_url="https://api.moonshot.cn/v1", 
+            base_url="https://api.moonshot.ai/v1", 
             api_key=os.getenv("KIMI_API_KEY")
         )

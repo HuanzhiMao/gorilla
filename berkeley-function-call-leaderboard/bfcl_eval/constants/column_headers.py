@@ -41,14 +41,14 @@ COLUMNS_MULTI_TURN = [
 COLUMNS_AGENTIC = [
     "Rank",
     "Model",
-    "Agentic Overall Acc",
-    "Web Search Summary",
+    # "Agentic Overall Acc",
+    # "Web Search Summary",
     "Web Search Base",
-    "Web Search No Snippet",
-    "Memory Summary",
-    "Memory KV",
-    "Memory Vector",
-    "Memory Recursive Summarization",
+    # "Web Search No Snippet",
+    # "Memory Summary",
+    # "Memory KV",
+    # "Memory Vector",
+    # "Memory Recursive Summarization",
 ]
 
 # Format Sensitivity columns are not scored but informative

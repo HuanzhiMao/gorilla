@@ -464,14 +464,14 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
             [
                 "N/A",
                 model_config.display_name,
-                overall_accuracy_agentic["display_accuracy"],
-                summary_web_search["display_accuracy"],
+                # overall_accuracy_agentic["display_accuracy"],
+                # summary_web_search["display_accuracy"],
                 web_search_base["display_accuracy"],
-                web_search_no_snippet["display_accuracy"],
-                summary_memory["display_accuracy"],
-                memory_kv["display_accuracy"],
-                memory_vector["display_accuracy"],
-                memory_rec_sum["display_accuracy"],
+                # web_search_no_snippet["display_accuracy"],
+                # summary_memory["display_accuracy"],
+                # memory_kv["display_accuracy"],
+                # memory_vector["display_accuracy"],
+                # memory_rec_sum["display_accuracy"],
             ]
         )
 
