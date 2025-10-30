@@ -455,7 +455,10 @@ def load_ground_truth_entry(test_category: str) -> list[dict]:
         return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_memory.json")
 
     elif is_web_search(test_category):
-        return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_web_search.json")
+        answer = load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_web_search.json")
+        for item in answer:
+            item["ground_truth"] = [(item["ground_truth"])]
+        return answer
 
     else:
         return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_{test_category}.json")
