@@ -2411,9 +2411,13 @@
     "ground_truth": [
         "3,940"
     ],
-    "ground_truth_source": "",
+    "ground_truth_source": "https://en.wikipedia.org/wiki/Starship_flight_test_5",
     "reasoning": [
-        "Visual info: ‘s30’, coastal, rocket, launch pad, 2. Google Search → ‘s30 rocket’ 3: A: https://starship-spacex.fandom.com/wiki/Ship_30_(S30) → ‘Ship 30 (S30) was a Starship second stage prototype. ’ 4. Search → ‘starship interstage tons’ → https://everydayastronaut.com/starbase-tour-and-interview-with-elon-musk/"
+        "Visual info: ‘s30’, coastal, rocket, launch pad",
+        "2. Google Search → ‘s30 rocket’",
+        "3: A: https:starship-spacex.fandom.com/wiki/Ship_30_(S30) > ‘Ship 30 (S30) was a Starship second stage prototype. ’ ",
+        "4. Search → ‘starship s30 flight duration’ """,
+        "5. A: https://en.wikipedia.org/wiki/Starship_flight_test_5 -> Mission Duration: 1 hour, 5 minutes, 40 seconds - 3940 seconds"
     ]
 }
 {
@@ -2692,10 +2696,11 @@
     ],
     "ground_truth_source": "",
     "reasoning": [
+        "Visual info: 'Chongqing East-' futuristic architecture"
         "Background information about “Chongqing East Railway Station”",
         "Google Search → “Chongqing East Railway Station opening date”",
-        "A: “",
-        "”"
+        "A: “June 27th, 2025",
+    
     ]
 }
 {
@@ -2713,14 +2718,17 @@
 {
     "id": "vision_base_211",
     "ground_truth": [
-        "9:55 PM"
+        "No."
     ],
-    "ground_truth_source": "",
+    "ground_truth_source": "http://www.nao.org.uk/, https://www.google.com/maps/place/National+Audit+Office/@51.4917385,-0.1486779,3a,75y,123.28h,111.39t/data=!3m10!1e1!3m8!1sscaNrBjjPgM9bG6fWB7SUg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-21.38628132087959%26panoid%3DscaNrBjjPgM9bG6fWB7SUg%26yaw%3D123.283381581517!7i16384!8i8192!9m2!1b1!2i17!4m6!3m5!1s0x48760518e7719fd9:0x5d8dbc0441be8df3!8m2!3d51.4916012!4d-0.1483446!16s%2Fg%2F1tlkbvst?entry=ttu&g_ep=EgoyMDI1MTAyNi4wIKXMDSoASAFQAw%3D%3D ",
     "reasoning": [
-        "Background Information: dark sky, unlabeled clock tower with hour hand at 9 and minute hand at 11",
-        "Google Search → ‘analog clock times’ → 9:55",
-        "Dark sky indicates it is PM.",
-        "A: 9:55 PM"
+        "Background Information: dark sky, clock tower on National Audit Office with hour hand at 9 and minute hand at 11",
+        "Google Search → ‘ london government office buildings on Buckingham Palace Road clock tower’",
+        "A: National Audit Office ", 
+        "Search → 'national audit office hours'",
+        "A: 'Monday to Friday, 9:00 AM to 5:30 PM, excluding public holidays'",
+        "Visual Info: Clock tower reads 9:55, Dark sky indicates it is PM.",
+        "A: The National Audit Office closes at 5:30 M-F, and the clock shows 9:55 PM so, "
     ]
 }
 {
@@ -2786,10 +2794,10 @@
     ],
     "ground_truth_source": "",
     "reasoning": [
-        "Background information about “”",
-        "Bottom right corner “”",
-        "Google Search → “”",
-        "A:"
+        "Visual info: ‘GEFION’, ‘data center’, ‘bull’",
+        "Google Search → “ ‘GEFION’, ‘data centers’, ‘bull’",
+        "A: Gefion AI supercomputer: Gefion is Denmark's flagship artificial intelligence supercomputer, launched in 2024. It is housed in a Digital Realty data center near Copenhagen and runs on 100% renewable energy.
+"
     ]
 }
 {
@@ -2854,9 +2862,9 @@
     "ground_truth_source": "",
     "reasoning": [
         "Visual information: “Integration of … Existence” ‘R *’ logo, ‘Accelerated Materials research and development’ ‘",
-        "Bottom right corner “”",
-        "Google Search → “”",
-        "A:"
+        "Google Search → “Integration of Accelerated Materials R&D into Technological Development”",
+        "A: radical-ai.com"
+        "Search → 'how much did radical ai raise most recent funding round' "
     ]
 }
 {
@@ -2866,7 +2874,10 @@
     ],
     "ground_truth_source": "",
     "reasoning": [
-        "Background information about 'montgomery county agricultural fair, Aug 8 -16th -> Search -> find fair site, locate carnval ride '"
+        "Background information about 'montgomery county agricultural fair, Aug 8 -16th -> ",
+        "Search ->  '",
+        "A: https://mcagfair.com/",
+        "*Parse site for Carnival prices* -> "
     ]
 }
 {
@@ -2891,14 +2902,8 @@
     ],
     "ground_truth_source": "",
     "reasoning": [
-        "Background information about “i-dle wins best international group of the year”",
-        "Google Search → “what year did idle win best international group at the tima awards” → 2025",
-        "Search → ‘2025 TIMA Awards triple crown winner’",
-        "A: aespa",
-        "OR",
-        "Or, zoom in on bottom right",
+        "Background information about 'i-dle wins best international group of the year'",
         "Translate Chinese text into ‘annual awards ceremony’",
-        "b. gpt-5 could even though it’s blurry!",
         "Google → ‘did any group win triple crown at TIMA annual awards ceremony’",
         "A: aespa"
     ]
@@ -2947,10 +2952,11 @@
     "ground_truth": [
         "Korean Presbyterian Church in Greater Boston"
     ],
-    "ground_truth_source": "",
+    "ground_truth_source": "https://hopkintonindependent.com/wp-content/uploads/2021/10/Marathon-start-open-field-10-11-21-JS-scaled.jpeg",
     "reasoning": [
-        "Background information about 'yellow names on chests, boston marathon start line'",
-        "Google Search → '126th boston marathon start locations'",
+        "Visual info: White building with clock, 126th boston marathon start line'",
+        "Google Search → ' photos boston marathon start line  '",
+        "A: https://hopkintonindependent.com/photos-boston-marathon-start-area/ ",
         "A: Korean Presbyterian Church in Greater Boston"
     ]
 }
@@ -3048,7 +3054,7 @@
         "Background information about “whitehall gardens on victoria embankment gardens in london”",
         "Google Search → “statutes in whitehall gardens london”",
         "Visually match to tyndale?",
-        "A:"
+
     ]
 }
 {
@@ -3058,7 +3064,8 @@
     ],
     "ground_truth_source": "",
     "reasoning": [
-        "Background information about “embankment place, charing cross station”, heaven nightclub (red neon ‘C’)",
+        "Background information about “embankment place, charing cross station”, (red neon ‘C’)",
+        "A: The building with the red 'c' logo is heaven nightclub."
         "Google Search → “heaven nightclub capacity”",
         "A: 1725"
     ]
@@ -3071,8 +3078,9 @@
     "ground_truth_source": "",
     "reasoning": [
         "Background information about “-over 7”, ferry berth, ramps & gangways for vehicle loading, LED board",
-        "Google Search → “over 7 ferry berth” → Port of Dover, United Kingdom",
-        "Search → ‘what year did the port of dover open ’"
+        "Google Search → “over 7 ferry berth LED display”",
+        "A: Port of Dover, United Kingdom",
+        "Search → ‘what year did the port of dover open?’"
     ]
 }
 {
@@ -3083,9 +3091,8 @@
     "ground_truth_source": "",
     "reasoning": [
         "Background information about “Apr 20, Tate Modern, Hilma af Klimt & Piet Modrian”",
-        "Bottom right corner “”",
-        "Google Search → “”",
-        "A:"
+        "Google Search → “Tate Modern, Hilma af Klimt & Piet Modrian still running",
+        "A: No, ended in Sep 2023"
     ]
 }
 {
@@ -3110,7 +3117,9 @@
         "Visual info: 414, ‘light street’",
         "Search → 414 Light street location",
         "A: Baltimore Inner Harbor, tallest residential tower in Maryland.",
-        "Search → what floor is the pool deck on 414 Light street baltimore"
+        "Search → what floor is the pool deck on 414 Light street baltimore",
+        "A: Seventh"
+
     ]
 }
 {
@@ -3130,7 +3139,7 @@
     "ground_truth": [
         "lassonde"
     ],
-    "ground_truth_source": "",
+    "ground_truth_source": "https://www.reddit.com/r/LiminalSpace/comments/yi067b/my_very_brutalist_university_library/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button",
     "reasoning": [
         "Visual info: ‘quiet please this is a library’ = library, brutalist architectural style",
         "search → ‘brutalist library interior’",
@@ -3147,7 +3156,8 @@
     "reasoning": [
         "Visual info: “red bull logo, prada logo, ski jump, snowy landscape”",
         "Google Search → “red bull prada longest ski jump’”",
-        "A:https://www.redbull.com/us-en/ryoyu-kobayashi-how-he-broke-the-world-record → 291 m"
+        "A:https://www.redbull.com/us-en/ryoyu-kobayashi-how-he-broke-the-world-record",
+        "A: 291 m"
     ]
 }
 {
@@ -3157,7 +3167,7 @@
     ],
     "ground_truth_source": "",
     "reasoning": [
-        "Visual info: ‘aztec sun stone, concentric bands, tonatiuh sun gof’",
+        "Visual info: ‘aztec sun stone, concentric bands, tonatiuh sun god’",
         "Google Search → “aztec sunstone creation century”",
         "A: 1502 -1520 → 16th century"
     ]
@@ -3165,12 +3175,14 @@
 {
     "id": "vision_base_245",
     "ground_truth": [
-        "September 7th, 2025"
+        "March 13th, 2025."
     ],
     "ground_truth_source": "",
     "reasoning": [
-        "Vis info: “blood moon, east coast us ”",
-        "Google Search → “date + location + lunar eclipse”"
+        "Vis info: lunar eclipse ", 
+        "Query info: total lunar eclipse, east coast of north america",
+        "Google Search → '2025 + east coast north america + total lunar eclipse date",
+        "A: March 13th, 2025."
     ]
 }
 {
@@ -3180,7 +3192,12 @@
     ],
     "ground_truth_source": "",
     "reasoning": [
-        "Text: 'solar chrome c-logo t-shirt'"
+        "Text: 'solar chrome c-logo t-shirt'",
+        "Search → solar chrome c-logo t-shirt",
+        "A: carhartt solar chrome t-shirt",
+        "Search → 'carhartt solar chrome t-shirt weight"
+        "A: 175 g/sqm"
+
     ]
 }
 {
@@ -3206,7 +3223,7 @@
         "search → 'Great Sage Equal to Heaven Sun Wukong story'",
         "A: 'Journey to the west'",
         "search -> 'journey to the west most recent english translation author'",
-        "Julia Lovell"
+        "A: Julia Lovell"
     ]
 }
 {
@@ -3216,8 +3233,9 @@
     ],
     "ground_truth_source": "",
     "reasoning": [
+        "Rotate 90 degrees and extract text",
         "Visual info: shell recharge station, ‘systend journalid[392] - failed to connect to notify socket’",
-        "search -> ''failed to notify sockey shell recharge station",
+        "search -> ''failed to notify socket' shell recharge station operational",
         "A: Display error, charger still functional"
     ]
 }
@@ -3232,6 +3250,6 @@
         "search → 'climbing, mountain icon/logo, hampden, move-'",
         "' movement climbing fitness & yoga gym hampden'",
         "search -> 'does movement hampden offer belay classes'",
-        "A:no"
+        "A: no"
     ]
 }
