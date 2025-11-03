@@ -1,251 +1,3263 @@
-{"id": "vision_base_0", "question": [[{"role": "user", "content": "What was the prize money for this team in IEM Cologne 2025? I want it in US dollars"}]], "image_file_name": "0.jpeg", "img_source": "https://img-cdn.hltv.org/gallerypicture/ZAg0keb2eh9Ss_uc1KBuoT.jpeg?auto=compress&fm=avif&ixlib=java-2.1.0&m=%2Fm.jpeg&mw=320&mx=59&my=1421&q=75&w=2400&s=8d20fa66a8a46672b35634ed8c7daa13"}
-{"id": "vision_base_1", "question": [[{"role": "user", "content": "I took this taxi tonight and I was surprised that it did not have a driver. Technology is happening so fast. In what year did this company start?"}]], "image_file_name": "1.jpeg", "img_source": ""}
-{"id": "vision_base_2", "question": [[{"role": "user", "content": "how much is chirashi-sushi here in this restaurant in London in GBP?"}]], "image_file_name": "2.jpeg", "img_source": ""}
-{"id": "vision_base_3", "question": [[{"role": "user", "content": "My girlfriend brought this as my birthday gift. What's the max video resolution it can support? Give the answer in format of ###K, where ### is a decimal number."}]], "image_file_name": "3.jpeg", "img_source": ""}
-{"id": "vision_base_4", "question": [[{"role": "user", "content": "I was visiting Berkeley a few years ago and I took this course which I enjoyed a lot. I don't remember the course number, but I found a picture I took when studying for its past exams. Could you remind me who is the instructor for that class in Fall 2025? I think there is two, one male and one female. I want the female one."}]], "image_file_name": "4.jpeg", "img_source": ""}
-{"id": "vision_base_5", "question": [[{"role": "user", "content": "This building in Boston achieved LEED Platinum certification. What percentage of energy savings does its orientation provide? Just give the number."}]], "image_file_name": "5.jpeg", "img_source": ""}
-{"id": "vision_base_6", "question": [[{"role": "user", "content": "When did this complex complete construction?"}]], "image_file_name": "6.jpeg", "img_source": ""}
-{"id": "vision_base_7", "question": [[{"role": "user", "content": "I took this taxi tonight and I was surprised that it did not have a driver. Technology is happening so fast. When did this company start?"}]], "image_file_name": "7.jpeg", "img_source": ""}
-{"id": "vision_base_8", "question": [[{"role": "user", "content": "How much is the full tuition with boarding in this school in London in 2025-26 in GBP rounded to the nearest thousand? Give answer format in  ###k where ### is a number followed by lower case k."}]], "image_file_name": "8.jpeg", "img_source": ""}
-{"id": "vision_base_9", "question": [[{"role": "user", "content": "How much does one pack of coffee bean blend cost from this coffee shop on their official website in US Dollars?"}]], "image_file_name": "9.jpeg", "img_source": ""}
-{"id": "vision_base_10", "question": [[{"role": "user", "content": "This man just told me the restaurant he works in operates in many countries, but can you tell me the city in which the restaurant first opened in?"}]], "image_file_name": "10.jpeg", "img_source": ""}
-{"id": "vision_base_11", "question": [[{"role": "user", "content": "I found this sticker from a cs class I took in berkeley in summer, could you remind me what day of the week was final exam?"}]], "image_file_name": "11.jpeg", "img_source": ""}
-{"id": "vision_base_12", "question": [[{"role": "user", "content": "I took this picture in 2010 when watching this player, what's his last serving team?"}]], "image_file_name": "12.jpeg", "img_source": ""}
-{"id": "vision_base_13", "question": [[{"role": "user", "content": "I really like this coffee shop, when did they first open? Just give the year."}]], "image_file_name": "13.jpeg", "img_source": ""}
-{"id": "vision_base_14", "question": [[{"role": "user", "content": "When did the winner of this tournament first become a grand master? Answer in just a number of years."}]], "image_file_name": "14.jpeg", "img_source": ""}
-{"id": "vision_base_15", "question": [[{"role": "user", "content": "This new engineering building just opened at my university, is there a new building being built for CS too? Answer in its acronyms only."}]], "image_file_name": "15.jpeg", "img_source": ""}
-{"id": "vision_base_16", "question": [[{"role": "user", "content": "Was this soccer player fit to play in July 2025 according to espn,  Yes or No ?"}]], "image_file_name": "16.jpeg", "img_source": ""}
-{"id": "vision_base_17", "question": [[{"role": "user", "content": "Which club had higher possession in this final? Answer with their full name."}]], "image_file_name": "17.jpeg", "img_source": ""}
-{"id": "vision_base_18", "question": [[{"role": "user", "content": "This festival took place in 2024 and featured installations from international artists. How many installations were displayed throughout the city?"}]], "image_file_name": "18.jpeg", "img_source": ""}
-{"id": "vision_base_19", "question": [[{"role": "user", "content": "How many qualifying spots does this tournament offer for the candidates tournament"}]], "image_file_name": "19.jpeg", "img_source": ""}
-{"id": "vision_base_20", "question": [[{"role": "user", "content": "I got gifted this perfume, but I was wondering if Citral is in it? Yes or No"}]], "image_file_name": "20.jpeg", "img_source": ""}
-{"id": "vision_base_21", "question": [[{"role": "user", "content": "I am from Romania and I work in this facility. Our team achieved a record laser intensity in 2024. What peak intensity was reached in watts per square centimeter? Answer in format of ##^## where ## are  numbers of watts per square centimeter"}]], "image_file_name": "21.jpeg", "img_source": ""}
-{"id": "vision_base_22", "question": [[{"role": "user", "content": "I was walking and saw this building, when was the official inauguration of this facility? Only give the year"}]], "image_file_name": "22.jpeg", "img_source": ""}
-{"id": "vision_base_23", "question": [[{"role": "user", "content": "What is the most number of viewers ever this streamer had in a stream?"}]], "image_file_name": "23.jpeg", "img_source": ""}
-{"id": "vision_base_24", "question": [[{"role": "user", "content": "I remember there is a Mediterranean restaurant nearby, what is its name? Answer in all lowercase letters"}]], "image_file_name": "24.jpeg", "img_source": ""}
-{"id": "vision_base_25", "question": [[{"role": "user", "content": "Hey, I am in this station right now, can you tell me what is the official number of National Rail platforms at this station?"}]], "image_file_name": "25.jpeg", "img_source": ""}
-{"id": "vision_base_26", "question": [[{"role": "user", "content": "I really like the shoes from this brand, but I was wondering in which town was this brand originally founded?"}]], "image_file_name": "26.jpeg", "img_source": ""}
-{"id": "vision_base_27", "question": [[{"role": "user", "content": "What is the weekly free-admission window (day and local time) at this museum"}]], "image_file_name": "27.jpeg", "img_source": ""}
-{"id": "vision_base_28", "question": [[{"role": "user", "content": "What is the last day of instruction for undergraduates in Fall 2025 at this university? Answer in format dd/mm/yy"}]], "image_file_name": "28.jpeg", "img_source": ""}
-{"id": "vision_base_29", "question": [[{"role": "user", "content": "Should these people receive a ticket by law, if they did not create any danger? Yes or No"}]], "image_file_name": "29.jpeg", "img_source": ""}
-{"id": "vision_base_30", "question": [[{"role": "user", "content": "I took this picture at a museum. I heard that there is an event is happening at this museum that is recurring daily and ends 8/31/2025, can you tell me what event it is?"}]], "image_file_name": "30.jpeg", "img_source": ""}
-{"id": "vision_base_31", "question": [[{"role": "user", "content": "The architecture firm that designed this building also designed two stores for Tiffany & Co. in Singapore and Mexico. What animal were the two Tiffany & Co. stores inspired by?"}]], "image_file_name": "31.jpeg", "img_source": ""}
-{"id": "vision_base_32", "question": [[{"role": "user", "content": "This is a stadium at one of the University of California campuses. What stadium is this?"}]], "image_file_name": "32.jpeg", "img_source": ""}
-{"id": "vision_base_33", "question": [[{"role": "user", "content": "Which French department was the head chef of this restaurant born in?"}]], "image_file_name": "33.jpeg", "img_source": ""}
-{"id": "vision_base_34", "question": [[{"role": "user", "content": "How many stores are in the shopping mall to the right of where this picture was taken? Round to the nearest thousand."}]], "image_file_name": "34.jpeg", "img_source": ""}
-{"id": "vision_base_35", "question": [[{"role": "user", "content": "What new matcha place opened up here recently?"}]], "image_file_name": "35.jpeg", "img_source": ""}
-{"id": "vision_base_36", "question": [[{"role": "user", "content": "How many airport runways are in this city?"}]], "image_file_name": "36.jpeg", "img_source": ""}
-{"id": "vision_base_37", "question": [[{"role": "user", "content": "What town is this in?"}]], "image_file_name": "37.jpeg", "img_source": ""}
-{"id": "vision_base_38", "question": [[{"role": "user", "content": "This is from a tournament that took place in the last 7 years. What tournament is this? Just give me year and name"}]], "image_file_name": "38.jpeg", "img_source": ""}
-{"id": "vision_base_39", "question": [[{"role": "user", "content": "These three pictures (from left to right) were taken in 2009, 2009, and 2011. What's the highest career playoff steals per game achieved by any of the three players shown?"}]], "image_file_name": "39.jpeg", "img_source": ""}
-{"id": "vision_base_40", "question": [[{"role": "user", "content": "What day of the week was this game on?"}]], "image_file_name": "40.jpeg", "img_source": ""}
-{"id": "vision_base_41", "question": [[{"role": "user", "content": "I took this picture while I was at the NBA 2025 All Star Weekend game. Can you remind me who is the player on the left in red?"}]], "image_file_name": "41.jpeg", "img_source": ""}
-{"id": "vision_base_42", "question": [[{"role": "user", "content": "I saw this picture online, and I cant remember the name of this person. Can you tell me who is this?"}]], "image_file_name": "42.jpeg", "img_source": ""}
-{"id": "vision_base_43", "question": [[{"role": "user", "content": "What event or concert is this? Just give me year and name"}]], "image_file_name": "43.jpeg", "img_source": ""}
-{"id": "vision_base_44", "question": [[{"role": "user", "content": "I was at this concert and I really liked the most popular song on this concert's title album. Can you tell me the name of the song?"}]], "image_file_name": "44.jpeg", "img_source": ""}
-{"id": "vision_base_45", "question": [[{"role": "user", "content": "This was taken at a Counter-Strike 2 tournament in 2025. As of June 18, 2025, out of all tournaments this team has won in 2025, which offered the biggest prize pool?"}]], "image_file_name": "45.jpeg", "img_source": ""}
-{"id": "vision_base_46", "question": [[{"role": "user", "content": "My friend and I are driving through here right now, and we are wondering who was this city named after?"}]], "image_file_name": "46.jpeg", "img_source": ""}
-{"id": "vision_base_47", "question": [[{"role": "user", "content": "I am walking through this campus right now, and I want to know how many NCAA Division I men's basketball tournaments has this school won? Just give me the number."}]], "image_file_name": "47.jpeg", "img_source": ""}
-{"id": "vision_base_48", "question": [[{"role": "user", "content": "What's the acceptance rate in 2024 of the most prestigious university in this city (rounded to the nearest tenth of a percent (e.g. 17.8%)?"}]], "image_file_name": "48.jpeg", "img_source": ""}
-{"id": "vision_base_49", "question": [[{"role": "user", "content": "This vehicle was part of a moon mission(s) in the first half of 2025. How many experiments / scientific instruments is this vehicle carrying?"}]], "image_file_name": "49.jpeg", "img_source": ""}
-{"id": "vision_base_50", "question": [[{"role": "user", "content": "I have allergy on some seed oils, so can you tell me what seed oil is this hydrating bar soap enhanced with? (hint: the soap is named after a European country)"}]], "image_file_name": "50.jpeg", "img_source": ""}
-{"id": "vision_base_51", "question": [[{"role": "user", "content": "I took this screenshot from a level from a my favourite video game. Can you tell me what city is this level based in?"}]], "image_file_name": "51.jpeg", "img_source": ""}
-{"id": "vision_base_52", "question": [[{"role": "user", "content": "How many square feet are in this newly built building?"}]], "image_file_name": "52.jpeg", "img_source": ""}
-{"id": "vision_base_53", "question": [[{"role": "user", "content": "Who commissioned this fragrance house to create this fragrance?"}]], "image_file_name": "53.jpeg", "img_source": ""}
-{"id": "vision_base_54", "question": [[{"role": "user", "content": "Where did he live after being banished to the Void?"}]], "image_file_name": "54.jpeg", "img_source": ""}
-{"id": "vision_base_55", "question": [[{"role": "user", "content": "My friends and I used to always buy Heritage Kulfi ice cream to celebrate big events when we were in college and I was really craving some while I was out grocery shopping. Which flavors of Heritage Kulfi were not available for sale on the shelf at this moment I was at the grocery store? I asked an employee and these are the only flavors in store at the moment. I was there on 09/12/2025. Return a list of strings where each item represents one flavor alphabetically sorted, Example: [Coconut, Vanilla, …]."}]], "image_file_name": "55.jpeg", "img_source": ""}
-{"id": "vision_base_56", "question": [[{"role": "user", "content": "I was at the South Shore Plaza in Braintree, MA when I took this photo. I really wanted to buy this shirt but I can't remember the name of the store. What store can I purchase this item? Return the name of a singular store. "}]], "image_file_name": "56.jpeg", "img_source": ""}
-{"id": "vision_base_57", "question": [[{"role": "user", "content": "My mom is making a scrapbook of our family memories and she needs to date each image. This photo is from my sister's graduation, what day did this event happen? Return a date in the format dd/mm/yyyy."}]], "image_file_name": "57.jpeg", "img_source": ""}
-{"id": "vision_base_58", "question": [[{"role": "user", "content": "I'm an art student and love the style of the sculpture in this lobby. I was visiting this hotel while attending a conference. Who designed the sculpture? Return the full name of the artist."}]], "image_file_name": "58.jpeg", "img_source": ""}
-{"id": "vision_base_59", "question": [[{"role": "user", "content": "My friends and I come to this parade every year. We really liked the design of this new balloon that they showed off at this years parade. What parade in what year was where this balloon design made its debut? Return the year followed by the parade name, Ex. XXXX Parade Name."}]], "image_file_name": "59.jpeg", "img_source": ""}
-{"id": "vision_base_60", "question": [[{"role": "user", "content": "I'm a student in NJ and love using my scooter to get to class because I always oversleep. I know there's some new local laws around PEVs, am I still allowed to ride this specifically on my campus as of 10/27/2024? Return a Yes or No."}]], "image_file_name": "60.jpeg", "img_source": ""}
-{"id": "vision_base_61", "question": [[{"role": "user", "content": "My friends and I frequent this restaurant. Last time we went we were debating about colleges in the area. What college in this city has the lowest acceptance rate? Return the full college name, Ex. X University, X College, etc."}]], "image_file_name": "61.jpeg", "img_source": ""}
-{"id": "vision_base_62", "question": [[{"role": "user", "content": "I've been obssessed with this girl group since they debuted and am trying to remember some facts about their tour. What was the next venue they performed at directly after this performance I went to in the northeast USA? I think this was around the first half of the tour. Return the full venue name (no acronyms)."}]], "image_file_name": "62.jpeg", "img_source": "https://preview.redd.it/221115-some-pictures-i-took-at-the-concert-v0-ssed7vsd8u1a1.png?width=1080&crop=smart&auto=webp&s=800ca7905634ef28b1890ac0530551b75f8bd089"}
-{"id": "vision_base_63", "question": [[{"role": "user", "content": "I'm at the grocery store fulfilling an order for an InstaCart customer. They requested a specific Fiber One cereal flavor and I need to be sure if it's here or not. Which flavor of Fiber One cereal is present in this aisle?"}]], "image_file_name": "63.jpeg", "img_source": "https://c8.alamy.com/comp/2T6B58A/miami-beach-floridapublix-grocery-store-supermarketinside-interior-indoorsshelf-shelves-sale-displayfood-market-marketplacebusinessaislebreakfa-2T6B58A.jpg"}
-{"id": "vision_base_64", "question": [[{"role": "user", "content": "It's bulking season and I'm obssessed with instant noodles. Buldak is my favorite brand so I'm trying to find the available flavor that meets my macros but I need some help. Which flavor of Buldak present in the aisle contains the most calories?"}]], "image_file_name": "64.jpeg", "img_source": "https://static01.nyt.com/images/2024/06/22/multimedia/11ASIAN-FOOD-07-qctp-LN/11ASIAN-FOOD-07-qctp-superJumbo.jpg?quality=75&auto=webp"}
-{"id": "vision_base_65", "question": [[{"role": "user", "content": "I'm a coffee lover and frequent a bunch of different shops in the city. I want to recommend this one to my friend but I didn't get a good picture. What's the address of this cafe I parked in front of? I can't remember but I think I was around Pike Place. Return a US address in the format: STREET_NUMBER STREET_NAME STREET_TYPE, CITY, ST ZIP5"}]], "image_file_name": "65.jpeg", "img_source": ""}
-{"id": "vision_base_66", "question": [[{"role": "user", "content": "I was solo travelling in this area on vacation and stayed at the hotel in the image. I want to rebook for a larger group family vacation but need to make sure they have capacity. How many rooms are in this building I stayed? I can't remember. Return a singular whole number."}]], "image_file_name": "66.jpeg", "img_source": "https://i.redd.it/9gbq0zfqxkx11.jpg"}
-{"id": "vision_base_67", "question": [[{"role": "user", "content": "I was at this research conference and thought the works from this person's lab were really cool. I'm interested in extending some of the work from the PhD students in their lab but I cant remember the paper title. What are the names of the papers only presented by PhD level students from this person's research group at this conference in 2024? Return the full title of the paper."}]], "image_file_name": "67.jpeg", "img_source": ""}
-{"id": "vision_base_68", "question": [[{"role": "user", "content": "I'm reselling some of my old games but I can't shake the feeling that I'm missing one somewhere and I just can't remember the name. I have a question about the game directly to the right of The Smurfs cartridge. What other games from the same franchise as that one (specifically the shown character's franchise), came out the year after its release for the same device? Return a single answer."}]], "image_file_name": "68.jpeg", "img_source": "https://preview.redd.it/found-my-sisters-old-game-boy-collection-anyone-know-the-v0-fmxrys6zhf2b1.jpg?width=640&crop=smart&auto=webp&s=bd20cf7604761c4f5d4c0d620db8c19a6f72e1ac"}
-{"id": "vision_base_69", "question": [[{"role": "user", "content": "I was traveling abroad on vacation and found this little coffee shop that I really loved. I didn't save the details, and now I'd like to share it with a friend. What's the street address of this café I went to during that trip? Return ONLY the street address, Ex. STREET_NUMBER STREET_NAME"}]], "image_file_name": "69.jpeg", "img_source": "https://preview.redd.it/i-was-in-paris-once-and-fell-in-love-with-her-caf%C3%A9s-v0-asiyzjx7ts9a1.jpg?width=1080&crop=smart&auto=webp&s=db3ce2f8ac6768e018c54f3b8b831292944f8f19"}
-{"id": "vision_base_70", "question": [[{"role": "user", "content": "When I was visiting this city, I stumbled upon a café with bright orange signage that really stood out. I forgot the exact location. What is the street address of that café? Return ONLY the street address, Ex. STREET_NUMBER STREET_NAME"}]], "image_file_name": "70.jpeg", "img_source": "https://i.redd.it/vyslqu08yaw81.jpg"}
-{"id": "vision_base_71", "question": [[{"role": "user", "content": "I had dinner at this restaurant recently and really enjoyed the food. I know the chain has multiple locations, but I want the specific one I visited. What is the address of this restaurant? Return a US address in the format: STREET_NUMBER STREET_NAME STREET_TYPE, CITY, ST ZIP5"}]], "image_file_name": "71.jpeg", "img_source": "https://s3-media0.fl.yelpcdn.com/bphoto/WtxiqjEoABuR_Tw2LGxClQ/o.jpg"}
-{"id": "vision_base_72", "question": [[{"role": "user", "content": "I'm in a nostalgic mood and have been cataloging my game collection. I have a question about the game positioned in the center of the row of other games. What date did the next game in its franchise (specifically this character's franchise) release for the same device? Return a date in the format dd/mm/yyyy."}]], "image_file_name": "72.jpeg", "img_source": "https://preview.redd.it/how-much-should-i-sell-my-switch-for-and-where-v0-xghkywlbbnce1.jpg?width=1080&crop=smart&auto=webp&s=a8c61cf7753eb5dcb22f2179c16c9417375e2038"}
-{"id": "vision_base_73", "question": [[{"role": "user", "content": "I went to this baseball game on 7/29/2025 and was keeping track of home runs. Which players on the winning team hit home runs in that game? Return a list of strings where each item is full player name, alphabetically sorted by first name. Ex. [Jane Doe, John Doe, ...]"}]], "image_file_name": "73.jpeg", "img_source": "https://www.youtube.com/watch?v=kXw7uSmzkdM&ab_channel=MLB"}
-{"id": "vision_base_74", "question": [[{"role": "user", "content": "I'm following this competitive swimming event from 2025 and want to know the podium results. Who won the silver medal in this race? Return the full name of the athlete."}]], "image_file_name": "74.jpeg", "img_source": "https://www.youtube.com/watch?v=uZ8wZ1ucDFI&ab_channel=USASwimming"}
-{"id": "vision_base_75", "question": [[{"role": "user", "content": "I'm a sports photographer and took a photo at this race and I'm trying to remember details. The person on the left was a standout competitor. What was his finishing time? I believe this was the only event he medaled in this year. Return a number to 2 decimal places with no units, Ex. 1.32. "}]], "image_file_name": "75.jpeg", "img_source": "https://www.youtube.com/watch?v=8c4oI2hBZPQ&ab_channel=Olympics"}
-{"id": "vision_base_76", "question": [[{"role": "user", "content": "I'm scouting stats for college basketball defenders. Looking at the defending player in this image (the player is from a Big Ten team), what was their 3-point percentage (3P%) for the 2023-24 season? Return as a percentage with one decimal place, Ex. 35.7%."}]], "image_file_name": "76.jpeg", "img_source": "https://cdn.vox-cdn.com/thumbor/-PYsGDxEj1oljkUmNaKVhax3YlU=/0x0:6048x4024/1200x800/filters:focal(2541x1529:3507x2495)/cdn.vox-cdn.com/uploads/chorus_image/image/73178462/usa_today_22646828.0.jpg"}
-{"id": "vision_base_77", "question": [[{"role": "user", "content": "I was reading up on this group's competition history and want to check something. What rank did they place in the 2024 edition of this event? Return a singular whole number, Ex. if they placed first return 1."}]], "image_file_name": "77.jpeg", "img_source": "https://www.youtube.com/watch?v=TwZjHq-Wwns&ab_channel=VIBEDanceComp"}
-{"id": "vision_base_78", "question": [[{"role": "user", "content": "I'm considering letting my teenager attend this place for an event. Can my 17 year old son go here unaccompanied this Friday night, as of current policy? Return a Yes or No."}]], "image_file_name": "78.jpeg", "img_source": "https://i.redd.it/kjhblul79ds01.jpg"}
-{"id": "vision_base_79", "question": [[{"role": "user", "content": "'I was watching people play chess at this event and noticed the board further back in the image had more interesting plays going on. What was the result of the game played on the board further back in this image? Return the result as [WINNER_NAME, LOSER_NAME] or DRAW."}]], "image_file_name": "79.jpeg", "img_source": "https://www.europechess.org/wp-content/uploads/2024/11/29-scaled.jpg"}
-{"id": "vision_base_80", "question": [[{"role": "user", "content": "I'm at the largest airport in this city and need to check in for my Alaska Airlines flight. Which terminal should I go to for Alaska Airlines check-in? Return a single whole number."}]], "image_file_name": "80.jpeg", "img_source": "https://i.redd.it/q9fud0vzxx901.jpg"}
-{"id": "vision_base_81", "question": [[{"role": "user", "content": "I'm a huge chess lover and I was following this match closely and but am having some trouble trying to recall the details. During this event, how many moves were made in the game that had the greatest number of moves? Return a singular whole number."}]], "image_file_name": "81.jpeg", "img_source": "https://i.redd.it/a1ie7g1m7n4e1.jpeg"}
-{"id": "vision_base_82", "question": [[{"role": "user", "content": "I am a PhD student and went to this conference last week. I attended this research seminar while I was there and want to file my notes from the session in the right section of my weekly notes. Which day of the week was this seminar held? Return the full weekday name, Ex. Monday."}]], "image_file_name": "82.jpeg", "img_source": "https://cs.uiowa.edu/sites/cs.uiowa.edu/files/2025-05/thumbnail_PXL_20250430_055001767.jpg"}
-{"id": "vision_base_83", "question": [[{"role": "user", "content": "I went to this event a little while back and loved the music. What songs were performed for the encore? I can't remember. I think the concert was a part of a tour and happened somewhere in Boston on May 18, 2024 but not sure. Return a list of strings where each item is a full song title, alphabetically sorted. Ex. [ABCs, Wheels on the Bus, ...]"}]], "image_file_name": "83.jpeg", "img_source": "https://i.redd.it/t2x6mg9fxgpc1.jpeg"}
-{"id": "vision_base_84", "question": [[{"role": "user", "content": "This company hosted the event I attended, and I later realized they went public. What date did the company running this event IPO? Return a date in the format dd/mm/yyyy."}]], "image_file_name": "84.jpeg", "img_source": "https://miro.medium.com/v2/resize:fit:1400/1*yvYfawY92VWJDaMgmnrMLw.jpeg"}
-{"id": "vision_base_85", "question": [[{"role": "user", "content": "I used to be a fan of this team who won a world championship back in 2021. I remember there was one Russian member on their 2024 roster who was really good. What team(s) does he play for as of May 2025? Return a list of strings where each item is a team name, in alphabetical order. Ex. [A Team,B Team, ...]"}]], "image_file_name": "85.jpeg", "img_source": "https://cdn.oneesports.gg/cdn-data/2021/12/Valorant_Acend_ValorantChampions2021_winners_2-1024x576.jpg"}
-{"id": "vision_base_86", "question": [[{"role": "user", "content": "I saw this person present their work at a conference and loved the ideas being explored. I think they had another work that was accepted at the same conference a few years earlier. What country was that earlier conference held? Return the full name of the country."}]], "image_file_name": "86.jpeg", "img_source": "https://pbs.twimg.com/media/Gm-88oHXoAA0BXd.jpg"}
-{"id": "vision_base_87", "question": [[{"role": "user", "content": "I was restocking shelves at the grocery store on 09/01/2025 and needed to double check something. Are all flavors of Calpico present? Return Yes or No."}]], "image_file_name": "87.jpeg", "img_source": "https://i.redd.it/my-ocd-really-comes-in-handy-when-i-make-shelves-look-nice-v0-llflh974ijd91.jpg?width=3019&format=pjpg&auto=webp&s=a76415ccb0c84825e76155fa42a6fbef351efd35"}
-{"id": "vision_base_88", "question": [[{"role": "user", "content": "This athlete competed in an Olympic event that occurred for the first time in this year's games. I'm trying to remember the results for a news article I'm writing. What rank did she place? Return a singular whole number."}]], "image_file_name": "88.jpeg", "img_source": "https://i.abcnewsfe.com/a/1ee44e01-4a08-4e80-bfce-c64f69be6bee/Raygun-3-gty-gmh-240812_1723472077546_hpMain.jpg"}
-{"id": "vision_base_89", "question": [[{"role": "user", "content": "I was visiting a university campus and saw this construction project in progress while I was there. I heard from a friend who ended up going there that they recently completed a chunk of the project. When was phase 1 of this project completed? Return a date in the format dd/mm/yyyy."}]], "image_file_name": "89.jpeg", "img_source": "https://inside.princeton.edu/sites/g/files/toruqf456/files/styles/16x9_2880w_1620h/public/2023-08/230821_dillon-cam.jpg?itok=xDfdVqyX"}
-{"id": "vision_base_90", "question": [[{"role": "user", "content": "I grew up going to this library and recently visited after living in a different city for a few years. I really admired the renovations to the building during my visit. What firm led the design for the renovation? Return the full name of the firm."}]], "image_file_name": "90.jpeg", "img_source": "https://www.lwa-architects.com/wp-content/uploads/2018/05/05_BPLRoslindale_ExteriorEntryDusk2_JaneMessinger-1700x1133.jpg"}
-{"id": "vision_base_91", "question": [[{"role": "user", "content": "I'm a huge fan of live music and performances and recently attended this concert with my girlfriend. I want to trace the tour history after this day we went to compare our venue to others on the tour. What was the next venue the artist performed at directly after this show? Return the full venue name (no acronyms)."}]], "image_file_name": "91.jpeg", "img_source": "https://preview.redd.it/thousands-of-taylor-swift-enthusiasts-outside-her-concert-v0-kiz97nni7bkc1.jpeg?width=1080&crop=smart&auto=webp&s=ae030d0d08629b4beb0874a45d11379cc2369781"}
-{"id": "vision_base_92", "question": [[{"role": "user", "content": "I grew up going to horse racing events with my dad and recently went to this one. We always choose a horse to bet on between ourselves for fun. I snapped this picture of the horse I bet on but can't remember what place it finished in. What place did this horse finish in? Return a singular whole number."}]], "image_file_name": "92.jpeg", "img_source": "https://www.usatoday.com/gcdn/authoring/authoring-images/2025/05/03/USAT/83435059007-gty-2213258248.jpg?crop=5333,3999,x333,y0 "}
-{"id": "vision_base_93", "question": [[{"role": "user", "content": "A few years ago, I stayed at this NYC building with distinctive orange window accents during a conference. What is the address of that building? Return a US address in the format: STREET_NUMBER STREET_NAME STREET_TYPE, CITY, ST ZIP5."}]], "image_file_name": "93.jpeg", "img_source": "https://images.unsplash.com/photo-1754079133052-cf62bd71776c?q=80&w=3308&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
-{"id": "vision_base_94", "question": [[{"role": "user", "content": "I'm trying to update my calendar of live music performances I've attended this year as I'm sorting out my yearly expenses. On what date did this performance take place? Return a date in the format dd/mm/yyyy."}]], "image_file_name": "94.jpeg", "img_source": "https://preview.redd.it/doechii-announces-tour-during-lollapalooza-v0-cdfea79bepgf1.jpg?width=1080&crop=smart&auto=webp&s=647b1a3868be79becf50751eeba11fbe1d86a44f"}
-{"id": "vision_base_95", "question": [[{"role": "user", "content": "I watched this individual compete at the event and became a huge fan! I couldn't stick around for the whole event so I want to know their outcome. What total score did they receive? Return a singular decimal score to 1 decmal point, Ex. 5.2."}]], "image_file_name": "95.jpeg", "img_source": "https://s7d2.scene7.com/is/image/TWCNews/caroline_marks_melbourne_beach_olympic_gold_medal_AP24218797294616_n13_080524"}
-{"id": "vision_base_96", "question": [[{"role": "user", "content": "I'm a big health nut and always make time to run or cycle while on vacation. While cycling on vacation in the UK, I stopped at this café. What is the street address of this café? Return in the UK address format: STREET_NAME STREET_TYPE, CITY POSTCODE, United Kingdom."}]], "image_file_name": "96.jpeg", "img_source": "https://preview.redd.it/on-a-100k-ride-around-the-isle-of-wight-first-coffee-stop-v0-q7xsjl4kf6if1.jpeg?width=1080&crop=smart&auto=webp&s=d734502ec9d4ee4dbfda5cd54137ae29ce8efded"}
-{"id": "vision_base_97", "question": [[{"role": "user", "content": "I saw this advertisement for a new show back when I visited New York a few years ago. I'm looking for something new to binge but want to know the time commitment. How many episodes is it? Return a singular whole number."}]], "image_file_name": "97.jpeg", "img_source": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQlqHR1rMKyqumg0q8XGtyQfiYg_3TvSMoB5PfRjiPuAwHVN-D6"}
-{"id": "vision_base_98", "question": [[{"role": "user", "content": "I snapped a photo of this cool design on a manhole cover while I was on a walking tour of this city. Apparently this city once had its first provisional mayor. On what exact date did that mayor leave office? Return a date in the format dd/mm/yyyy."}]], "image_file_name": "98.jpeg", "img_source": "https://live.staticflickr.com/65535/48061890706_e232509cdb_b.jpg"}
-{"id": "vision_base_99", "question": [[{"role": "user", "content": "This man on the right in the image signed a historic education investment into law in his state in 2023. How much was the investment? Return the full amount with no dollar sign character, Ex. 4.2 million."}]], "image_file_name": "99.jpeg", "img_source": "https://external-preview.redd.it/npr-fact-checked-the-vance-walz-vice-presidential-debate-v0-Wsxq1f1nX6wtBuDtlY8WuoMreXKyEVGinNzDUl0GxpY.jpg?auto=webp&s=27313749eb597e3565caaa9add4cc8de8fe7235f"}
-{"id": "vision_base_100", "question": [[{"role": "user", "content": "I went to this company's first in-person conference and loved the vibes. What date did it take place? Return a date in the format dd/mm/yyyy."}]], "image_file_name": "100.jpeg", "img_source": "https://www.youtube.com/watch?v=k0PJHSG4yqM&list=PLzaYMdbJMZW3dqS4rTuAP1sdKuu6o9iZm&index=3&ab_channel=Notion"}
-{"id": "vision_base_101", "question": [[{"role": "user", "content": "I'm planning to revisit this venue as I'm scouting out a place to host my own company's product launch keynote. I need to know what dates the space will be empty so I can schedule a tour. What events are taking place there in August 2025? Return a list of strings where each item is a full event name, sorted alphabetically. Ex. [Machine Learning Conference 2025, Pizza Making Competition 2025, ...]"}]], "image_file_name": "101.jpeg", "img_source": "https://www.youtube.com/watch?v=5q8YAUTYAyk&ab_channel=Figma"}
-{"id": "vision_base_102", "question": [[{"role": "user", "content": "I'm a designer and frequently attend various tech conferences every year. I need to report which exact dates I attended conferences to my boss for budgeting. At this event in the image, a new design was announced. On what date did this event take place? Return a date in the format dd/mm/yyyy."}]], "image_file_name": "102.jpeg", "img_source": "https://www.youtube.com/shorts/OSRPx8O4dx0"}
-{"id": "vision_base_103", "question": [[{"role": "user", "content": "I was at this sculpture competition and absolutely loved this participant's submission. As an art student I'm always taking pictures like this for inspiration for my own works. What was the name of the piece? I can't remember. Return the full title name with no special characters."}]], "image_file_name": "103.jpeg", "img_source": "https://i0.wp.com/reverebeach.com/wp-content/uploads/2022/07/abe-waterman.jpeg?w=1365&ssl=1"}
-{"id": "vision_base_104", "question": [[{"role": "user", "content": "I was in the live audience watching my kid participate in this event. Although my kid lost, I'm curious to know what regional partner sponsored the individual in the image?"}]], "image_file_name": "104.jpeg", "img_source": "https://people.com/thmb/ha_P6SSpD65EEE9GMmWt5dBtOC8=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():focal(997x567:999x569)/Faizan-Zaki-spelling-bee-winner-052925-1-706aef5e97a24eb49ea69b5aa4695782.jpg"}
-{"id": "vision_base_105", "question": [[{"role": "user", "content": "I recently attended this match in person but couldn't stick around for the outcome. I'm not the biggest soccer fan so I don't remember who played but my friend took this awesome photo before we left. Who won this match? Return the full name of the winning team, no acronyms. "}]], "image_file_name": "105.jpeg", "img_source": "https://youtu.be/fc6-M80xFrY?t=458"}
-{"id": "vision_base_106", "question": [[{"role": "user", "content": "My friend told me it was torn down for construction, but I don't think that's true. Why was this place actually destroyed? Output format: Reason (e.g., Security Issues)"}]], "image_file_name": "106.jpeg", "img_source": "https://www.instagram.com/p/C2IBT6CM-K-/"}
-{"id": "vision_base_107", "question": [[{"role": "user", "content": "I snapped this during my trip but forgot to note the moment. What was the exact time this picture was taken? Output format: H:MMAM/PM (e.g., 8:30PM)"}]], "image_file_name": "107.jpeg", "img_source": "https://www.pexels.com/photo/iconic-big-ben-at-sunset-in-london-32951976/"}
-{"id": "vision_base_108", "question": [[{"role": "user", "content": "During a meeting, a coworker brought up this launch but didn't know the full lineup. How many distinct products did Apple announce including this laptop? Output format: Number (e.g., 5)"}]], "image_file_name": "108.jpeg", "img_source": ""}
-{"id": "vision_base_109", "question": [[{"role": "user", "content": "I have seen this thing everywhere in London. What was this artist's first song? Output format: Song Title (e.g., My First Song)"}]], "image_file_name": "109.jpeg", "img_source": "https://www.pexels.com/photo/red-telephone-booth-in-front-of-big-ben-221166/"}
-{"id": "vision_base_110", "question": [[{"role": "user", "content": "I visited this museum few weeks back. How much do I have to pay to see this? Output format: approx €Amount (e.g., approx €15)"}]], "image_file_name": "110.jpeg", "img_source": "https://www.pexels.com/photo/majestic-interior-of-versailles-palace-29775992/"}
-{"id": "vision_base_111", "question": [[{"role": "user", "content": "This car, number 18, competed in the 1986 24 Hours of Le Mans. Who was its first-listed driver, and what was the primary sponsor of the team he won the Can-Am championship with? Output format: Sponsor Name. (e.g., Pepsi Cola.)"}]], "image_file_name": "111.jpeg", "img_source": "https://unsplash.com/photos/close-up-view-of-a-vintage-race-cars-front-side-rjdF_HeLMbM"}
-{"id": "vision_base_112", "question": [[{"role": "user", "content": "I had the best Negroni last night here but dont remember how much it cost. How much does a Negroni cost here? Output format: $Amount (e.g., $15)"}]], "image_file_name": "112.jpeg", "img_source": "https://unsplash.com/photos/a-coffee-shop-is-seen-in-this-corner-building-8lMvKttWq2M"}
-{"id": "vision_base_113", "question": [[{"role": "user", "content": "I came from city side but don't remember which station I came from. Where is this train coming from? Output format: Station Name (e.g., Grand Central Station)"}]], "image_file_name": "113.jpeg", "img_source": ""}
-{"id": "vision_base_114", "question": [[{"role": "user", "content": "My friend has this setup, I want the exact same one, how much will they cost in total (Use MRP). The output should be in alphabetical order. Output format: 1. Item ($Price) 2. Item ($Price) 3. Item ($Price) = $Total (e.g., 1. Controller ($50) 2. Headset ($100) = $150)."}]], "image_file_name": "114.jpeg", "img_source": "https://unsplash.com/photos/a-ps5-controller-and-accessories-rest-on-a-table-i1VDAvFG4zw"}
-{"id": "vision_base_115", "question": [[{"role": "user", "content": "I am thinking of buying this card. How many free cash withdrawals a month can I make using this card from UK ATMs? Output format: Number (e.g., 5)"}]], "image_file_name": "115.jpeg", "img_source": "https://unsplash.com/photos/aM4vzfIsAo0"}
-{"id": "vision_base_116", "question": [[{"role": "user", "content": "My mom asked me to come to a store between these two beigel shop. Which shops are between two of these beigel shops? Give store name and number. Output format: Shop Name, lane number (e.g., Corner Bakery, 233 john lane)"}]], "image_file_name": "116.jpeg", "img_source": "https://unsplash.com/photos/a-classic-bagel-shop-glows-in-the-evening-light-bVJd0pKkMUs"}
-{"id": "vision_base_117", "question": [[{"role": "user", "content": "How much carbon emission does this bus do when driving? Output format: Number (e.g., 5)"}]], "image_file_name": "117.jpeg", "img_source": "https://unsplash.com/photos/a-blue-bus-speeds-past-a-decorative-building-6xOlLR7avI0"}
-{"id": "vision_base_118", "question": [[{"role": "user", "content": "This toy is gaining a lot of attraction. How much money did Wang Ning make from this toy in a day? Output format: Amount dollars (e.g., 2.5 billion dollars)"}]], "image_file_name": "118.jpeg", "img_source": "https://unsplash.com/photos/coffee-a-doll-and-a-book-on-a-marble-table-NnCPCKoFMVM"}
-{"id": "vision_base_119", "question": [[{"role": "user", "content": "I am about to get down there, but I am new to this city. What is the closest train station to me?"}]], "image_file_name": "119.jpeg", "img_source": "https://unsplash.com/photos/view-from-above-a-city-street-with-traffic-sp5TFLhI3hM"}
-{"id": "vision_base_120", "question": [[{"role": "user", "content": "I can see the entire city from here. How tall is the building from which this picture was taken? Output format: Number feet (e.g., 1200 feet)"}]], "image_file_name": "120.jpeg", "img_source": "https://unsplash.com/photos/woman-reads-with-a-spectacular-view-of-new-york-city-uEWJ3wTkkQs"}
-{"id": "vision_base_121", "question": [[{"role": "user", "content": "My friend left his laptop open, what 2 apps are open on his laptop?. The output should be in alphabetical order. Output format: app1 and app2 (e.g., chrome and spotify)"}]], "image_file_name": "121.jpeg", "img_source": ""}
-{"id": "vision_base_122", "question": [[{"role": "user", "content": "I just came for grocery shopping and was wondering what bottle is he holding? I want that bottle. Output format: brand flavor (e.g., coca cola vanilla)"}]], "image_file_name": "122.jpeg", "img_source": "https://unsplash.com/photos/man-shopping-for-drinks-in-a-supermarket-Sqn8GiW3oSM"}
-{"id": "vision_base_123", "question": [[{"role": "user", "content": "I was looking at this travel photo I took the other day, but I can't recall where it was. Which lake is in the image? Output format: Lake name (e.g., Lake Superior)"}]], "image_file_name": "123.jpeg", "img_source": "https://www.nokia.com/sites/default/files/2023-09/4.jpg?height=305&width=543"}
-{"id": "vision_base_124", "question": [[{"role": "user", "content": "My friends and I are planning on vising this state, what state is this? Output format: State name (e.g., California)"}]], "image_file_name": "124.jpeg", "img_source": ""}
-{"id": "vision_base_125", "question": [[{"role": "user", "content": "I was comparing the different Sucrilhos boxes at the store earlier, but I noticed one was missing. Which Sucrilhos flavor is not in the image? The output should be in alphabetical order. The Output format: flavor1, flavor2 (e.g., chocolate, vanilla)"}]], "image_file_name": "125.jpeg", "img_source": ""}
-{"id": "vision_base_126", "question": [[{"role": "user", "content": "I was going through a picture of the drinks section in the store, and I noticed a bunch of Coca Cola bottles. Can you list all the Coca Cola bottle flavors in the image? The output should be in alphabetical order. Output format: 1. flavor1, flavor2, flavor3, ... (e.g., 1. Classic, Diet, Zero)"}]], "image_file_name": "126.jpeg", "img_source": ""}
-{"id": "vision_base_127", "question": [[{"role": "user", "content": "I was looking at this city photo someone shared, and I'm curious about the viewpoint. From where was this picture taken, and can you name the building? Output format: The Building Name (e.g., The Plaza Hotel)"}]], "image_file_name": "127.jpeg", "img_source": ""}
-{"id": "vision_base_128", "question": [[{"role": "user", "content": "I found this old photo in my gallery, but I can't remember when it was taken. In what season was this picture taken? Output format: Season (e.g., summer)"}]], "image_file_name": "128.jpeg", "img_source": ""}
-{"id": "vision_base_129", "question": [[{"role": "user", "content": "I came across this photo of a store and was wondering — how much does an espresso cost here? Output format: Currency Amount (e.g., USD 5)"}]], "image_file_name": "129.jpeg", "img_source": ""}
-{"id": "vision_base_130", "question": [[{"role": "user", "content": "My friends shared this picture the other day and said they had the best pizza in the world but won't tell me. Where is this pizza chain in the US? Output format: City (e.g., Chicago)"}]], "image_file_name": "130.jpeg", "img_source": ""}
-{"id": "vision_base_131", "question": [[{"role": "user", "content": "This restaurant in the photo is pretty popular — which famous entrepreneur used to eat here? Output format: Full Name (e.g., Bill Gates)"}]], "image_file_name": "131.jpeg", "img_source": ""}
-{"id": "vision_base_132", "question": [[{"role": "user", "content": "The map shown here looks different from the earlier one. How big is this map compared to the previous one? Output format: Number (e.g., 3.5)"}]], "image_file_name": "132.jpeg", "img_source": ""}
-{"id": "vision_base_133", "question": [[{"role": "user", "content": "I saw this picture and it made me wonder — who won the award for Lead Actress in a Drama Series in 2020? Output format: Full Name (e.g., Jennifer Aniston)"}]], "image_file_name": "133.jpeg", "img_source": "https://www.npr.org/2020/09/21/915132850/the-emmys-pull-off-a-good-show-as-schitt-s-creek-and-watchmen-shine"}
-{"id": "vision_base_134", "question": [[{"role": "user", "content": "Seeing this made me curious. Who is the Player of the Season? Output format: Full Name (e.g., Lionel Messi)"}]], "image_file_name": "134.jpeg", "img_source": "https://www.90min.com/posts/psg-2022-23-season-review-more-trophies-more-headaches"}
-{"id": "vision_base_135", "question": [[{"role": "user", "content": "This picture looks like it's from a cricket tournament — in which T20 season was it taken? Output format: Year (e.g., 2023)"}]], "image_file_name": "135.jpeg", "img_source": "https://www.instagram.com/p/DHaaa8oStuT/?locale=pt_PT"}
-{"id": "vision_base_136", "question": [[{"role": "user", "content": "This picture is going around alot. Which company do the people on the screen belong to? Output format: Company Name (e.g., Microsoft)"}]], "image_file_name": "136.jpeg", "img_source": "https://www.cnn.com/2025/07/19/business/andy-byron-astronomer-ceo-resigns"}
-{"id": "vision_base_137", "question": [[{"role": "user", "content": "I went to this concert last night but only one performer is visible in this picture, but there were actually two. Who was the second artist not shown in the image? Output format: Full Name (e.g., Taylor Swift)"}]], "image_file_name": "137.jpeg", "img_source": "https://www.youtube.com/watch?v=WOnvdXpGZKE"}
-{"id": "vision_base_138", "question": [[{"role": "user", "content": "Went to this show with my girlfriend and now we're arguing about when it actually happened. Can you tell me the exact year of this concert? Output format: Year (e.g., 2021)"}]], "image_file_name": "138.jpeg", "img_source": "https://www.charlotteobserver.com/entertainment/music-news-reviews/article273177305.html"}
-{"id": "vision_base_139", "question": [[{"role": "user", "content": "My friend keeps bragging that he went to this show, but he won't say where it was. Can you tell me the location of this concert? Output format: City, Country (e.g., Mumbai, India)"}]], "image_file_name": "139.jpeg", "img_source": "https://in.bookmyshow.com/events/sunburn-arena-ft-alan-walker-hyderabad/ET00394924"}
-{"id": "vision_base_140", "question": [[{"role": "user", "content": "This came on at a party last night, and everyone knew the main artist. But who was the second singer featured in the song? Output format: Full Name (e.g., John Smith)"}]], "image_file_name": "140.jpeg", "img_source": "https://creativeyatra.com/news/ed-sheerans-sapphire-a-cross-cultural-melody-with-a-desi-twist/"}
-{"id": "vision_base_141", "question": [[{"role": "user", "content": "My friend and I am arguing what's the easiest way to end this way. What is the easiest way to end this war? Output format: Action description (e.g., Destroying the command center)"}]], "image_file_name": "141.jpeg", "img_source": "https://marvel-movies.fandom.com/wiki/Chitauri"}
-{"id": "vision_base_142", "question": [[{"role": "user", "content": "Everyone was shocked when this episode dropped. Do you remember what Sung Jin-Woo's level was in this picture? Output format: Number (e.g., 85)"}]], "image_file_name": "142.jpeg", "img_source": "https://marvel-movies.fandom.com/wiki/Chitauri"}
-{"id": "vision_base_143", "question": [[{"role": "user", "content": "My mom is here right now. What kind of event is this? Output format: Event Type (e.g., Art Exhibition)"}]], "image_file_name": "143.jpeg", "img_source": "https://www.pexels.com/photo/vintage-vinyl-record-market-in-nancy-france-32750757/"}
-{"id": "vision_base_144", "question": [[{"role": "user", "content": "Someone sent me this snap of their room calendar, and I'm trying to figure it out. What month is going on here? Output format: Month Year (e.g., March 2023)"}]], "image_file_name": "144.jpeg", "img_source": "https://images.unsplash.com/photo-1706200234277-3586cd003ba3"}
-{"id": "vision_base_145", "question": [[{"role": "user", "content": "Everyone online was buzzing about this announcement. Which Bard model was actually released? Output format: Model (e.g., Bard)"}]], "image_file_name": "145.jpeg", "img_source": "https://andwalsh.com/_image/800x/126b28510985b417631b7bf26a5bc94d.webp"}
-{"id": "vision_base_146", "question": [[{"role": "user", "content": "I am kind of lost right now. What train line is shown in this image? Output format: Train line description (e.g., The Metro Red Line connects downtown to the airport)"}]], "image_file_name": "146.jpeg", "img_source": "https://images.unsplash.com/photo-1750785354752-2c234b875cdd?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
-{"id": "vision_base_147", "question": [[{"role": "user", "content": "Back when I was learning about embedded systems, this board always came up. Which one here can only run on a single CPU core? Output format: Board name (e.g., Arduino Uno)"}]], "image_file_name": "147.jpeg", "img_source": "https://raspberrytips.com/which-raspberry-pi-model/"}
-{"id": "vision_base_148", "question": [[{"role": "user", "content": "Everyone in the crowd went crazy when it happened. Which world record was actually broken here? Output format: Record description (e.g., Fastest time to solve a Rubik's cube)"}]], "image_file_name": "148.jpeg", "img_source": "https://www.japantimes.co.jp/life/2019/11/30/lifestyle/world-records-japan/"}
-{"id": "vision_base_149", "question": [[{"role": "user", "content": "This guy on market place is selling all these GPUs. Can you name every graphics card brand and model in this picture? The output should be in alphabetical order. Output format: 1. Brand Model, 2. Brand Model, 3. Brand Model, ... (e.g., 1. AMD RX 6800, 2. NVIDIA RTX 3080, ...)"}]], "image_file_name": "149.jpeg", "img_source": "https://assetsio.gnwcdn.com/graphics-cards-2023.JPG?width=690&quality=80&format=jpg&dpr=2&auto=webp"}
-{"id": "vision_base_150", "question": [[{"role": "user", "content": "People still talk about how one track dominated that event. Which song was played the most times on repeat? Output format: Song Title (e.g., Bohemian Rhapsody)"}]], "image_file_name": "150.jpeg", "img_source": "https://soundcloud.com/user-472596107/travis-scott-circus-maximus"}
-{"id": "vision_base_151", "question": [[{"role": "user", "content": "My friend swears there were guest performers, but I'm pretty sure it was just the main band. How many artists performed here? Output format: Number (e.g., 7)"}]], "image_file_name": "151.jpeg", "img_source": "https://www.seattlemusicnews.com/2014/08/16/arctic-monkeys-seattle-paramount-theatre/"}
-{"id": "vision_base_152", "question": [[{"role": "user", "content": "People online are guessing different films based on this picture, but no one seems sure. What movie shoot is this really? Output format: Movie Title (e.g., Avengers Endgame)"}]], "image_file_name": "152.jpeg", "img_source": "https://www.brit.co/materialists-news/"}
-{"id": "vision_base_153", "question": [[{"role": "user", "content": "My buddy insists the lead actor did all their own stunts, but I've heard otherwise. How many stunt doubles did each main character have? The output should be in alphabetical order. Output format: Actor → Number, Actor → Number, Actor → Number (e.g., Chris Evans → 3, Chris Hemsworth → 1, Robert Downey Jr → 2, ...)"}]], "image_file_name": "153.jpeg", "img_source": "https://www.hindustantimes.com/entertainment/hollywood/tom-holland-andrew-garfield-tobey-maguire-pose-with-stunt-doubles-in-unseen-epic-picture-from-spider-man-no-way-home-101645001929633.html"}
-{"id": "vision_base_154", "question": [[{"role": "user", "content": "I love this episode, I took a screenshot once but I don't remember which episode is this? Output format: Season Number, episode Number → Episode Title (e.g., Season 5, episode 12 → The One with Chandler's Work Laugh)"}]], "image_file_name": "154.jpeg", "img_source": "https://www.denofgeek.com/tv/the-big-bang-theory-25-best-episodes/"}
-{"id": "vision_base_155", "question": [[{"role": "user", "content": "I remember seeing this team lineup somewhere, but I can't recall the names. Can you tell me both drivers? The output should be in alphabetical order. Output format: Driver Name and Driver Name (e.g., George Russell and Lewis Hamilton)"}]], "image_file_name": "155.jpeg", "img_source": "https://www.the-race.com/formula-1/impressive-but-clunky-our-review-f1-the-movie/"}
-{"id": "vision_base_156", "question": [[{"role": "user", "content": "Everyone keeps talking about this particular moment. Who are the two drivers here? Output format: Driver Name and ( Driver Name or Driver Name) (e.g., Max Verstappen and ( Lewis Hamilton or George Russell))"}]], "image_file_name": "156.jpeg", "img_source": "https://www.the-race.com/formula-1/impressive-but-clunky-our-review-f1-the-movie/"}
-{"id": "vision_base_157", "question": [[{"role": "user", "content": "Everyone started cheering at this moment. Whom are they all looking at? Output format: Character/Person Name (e.g., Spider-Man)"}]], "image_file_name": "157.jpeg", "img_source": "https://deadline.com/2025/08/marvels-thunderbolts-streaming-release-date-disney-plus-1236486207/"}
-{"id": "vision_base_158", "question": [[{"role": "user", "content": "My cousin said this picture was from way back, but I don't believe him. When was this taken? Output format: Month Dayth Year (e.g., March 15th 2022)"}]], "image_file_name": "158.jpeg", "img_source": "https://attractionsmagazine.com/marvel-announcements-comic-con-2024/"}
-{"id": "vision_base_159", "question": [[{"role": "user", "content": "A kid pointed at this picture and asked me who they were — I couldn't answer. What team/panel is this? Output format: Show/Movie Name panel (e.g., Breaking Bad panel)"}]], "image_file_name": "159.jpeg", "img_source": "https://www.youtube.com/watch?v=7fPOzX6PTHE"}
-{"id": "vision_base_160", "question": [[{"role": "user", "content": "My little cousin thought they dropped two different phones here, and I wasn't sure how to answer. Which phone model was announced with this one? Output format: Brand Model (e.g., iPhone 14 Pro)"}]], "image_file_name": "160.jpeg", "img_source": "https://www.upi.com/Top_News/US/2019/02/20/Samsung-unveils-Galaxy-Fold-S10-opens-first-US-retail-stores/4431550610235/"}
-{"id": "vision_base_161", "question": [[{"role": "user", "content": "My sister mentioned seeing Linus on this show but couldn't remember the details. What laptop is he showing? Output format: Brand Model Name (e.g., Dell XPS 13 Gaming Laptop)"}]], "image_file_name": "161.jpeg", "img_source": "https://www.dexerto.com/youtube/linus-tech-tips-shocks-jimmy-fallon-with-newest-tech-from-ces-2025-3030486/"}
-{"id": "vision_base_162", "question": [[{"role": "user", "content": "This photo of the tower has been trending online, but people are guessing random numbers. What's its actual height? Output format: Number feet (e.g., 500 feet)"}]], "image_file_name": "162.jpeg", "img_source": "https://www.reddit.com/r/OppenheimerMovie/comments/194iywi/whos_this_actor_not_smiling_in_the_berkeley_scene/"}
-{"id": "vision_base_163", "question": [[{"role": "user", "content": "Everyone at the gym was talking about this video, but no one agreed on the number. How much weight is he lifting? Give Exact Number. Output format: Number KG (e.g., 95 KG)"}]], "image_file_name": "163.jpeg", "img_source": "https://www.nytimes.com/2021/07/29/world/asia/china-olympics.html"}
-{"id": "vision_base_164", "question": [[{"role": "user", "content": "My cousin is lost and visiting the city and asked me about afternoon trains. Can you transfer to the C from this spot at 2:30 pm.? Output format: Yes/No (e.g., Yes)"}]], "image_file_name": "164.jpeg", "img_source": "https://documentedny.com/2025/02/13/mta-subway-parole-ice-gps-new-york-doccs/"}
-{"id": "vision_base_165", "question": [[{"role": "user", "content": "I swears he thanked the director first, but my friend thinks it was someone else. Who was the first person he mentioned? Output format: Person/people (e.g., friends)"}]], "image_file_name": "165.jpeg", "img_source": "https://www.latimes.com/entertainment-arts/awards/story/2023-03-12/ke-huy-quan-full-acceptance-speech-oscars-2023"}
-{"id": "vision_base_166", "question": [[{"role": "user", "content": "I saw a clip of this going viral, and the comments say he was taunted into it. Who were the two people behind it? The output should be in alphabetical order. Output format: Person1, Person2 (e.g., Jane Smith, John Doe)"}]], "image_file_name": "166.jpeg", "img_source": "https://deadline.com/2025/03/adam-sandler-oscars-timothee-chalamet-opening-monologue-1236307667/"}
-{"id": "vision_base_167", "question": [[{"role": "user", "content": "My friends and I am trying to find where this food truck is exactly. Where is this picture taken from? Give the building number. Output format:  Number street name (e.g.,  1250 broadway)"}]], "image_file_name": "167.jpeg", "img_source": "https://upload.wikimedia.org/wikipedia/commons/a/a7/StreetfoodNY.jpg"}
-{"id": "vision_base_168", "question": [[{"role": "user", "content": "I am trying to bulk. How many calories is this? Output format: Number calories (e.g., 1200 calories)"}]], "image_file_name": "168.jpeg", "img_source": "https://www.visitoakland.com/listing/raising-canes-chicken-fingers/8013/"}
-{"id": "vision_base_169", "question": [[{"role": "user", "content": "I am cutting. How many calories, sugar, and fat does this uncustomized drink have? Output format:  Around Number Calories, Numberh sugar, Numberh fat (e.g.,  Around 350 Calories, 30g sugar, 15g fat)"}]], "image_file_name": "169.jpeg", "img_source": "https://www.reddit.com/r/starbucks/comments/1b8vjrc/lavender_cold_foam/#lightbox"}
-{"id": "vision_base_170", "question": [[{"role": "user", "content": "People always talk about this moment like it's iconic, but I can't place it. Which film is this scene from? Output format: Movie Title (e.g., The Matrix)"}]], "image_file_name": "170.jpeg", "img_source": "https://indigomusic.com/pop-cultures/whats-up-pop-news/how-vanilla-sky-emptied-times-square-the-1-million-scene-that-stopped-new-york-9342789"}
-{"id": "vision_base_171", "question": [[{"role": "user", "content": "My buddy and I are planned wing night on Thursday and the year was 2025, and we're splitting the bill. How much would 12 traditional wings plus 12 boneless wings cost in total? Output format: $Amount (e.g., $32.50)"}]], "image_file_name": "171.jpeg", "img_source": "https://www.wichitabyeb.com/2021/12/lets-review-buffalo-wild-wings.html"}
-{"id": "vision_base_172", "question": [[{"role": "user", "content": "Everyone in the audience was cheering, but I missed the final count. How many did Bill get right? Output format:  Number (e.g., 6)"}]], "image_file_name": "172.jpeg", "img_source": "https://www.businessinsider.com/bill-gates-grocery-prices-ellen-degeneres-video-2018-2"}
-{"id": "vision_base_173", "question": [[{"role": "user", "content": "The crowd went wild as soon as the opening notes started. Which album was being played in this performance? Output format:  * Album Name (e.g., Abbey Road)"}]], "image_file_name": "173.jpeg", "img_source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbKalbvFfCLsrsRonj78QplGt0VOqaGot8jQ&s"}
-{"id": "vision_base_174", "question": [[{"role": "user", "content": "I found this picture in an old album. When was the first picture taken give me the exact date and time? Output format:  * Anytime between H:MM a.m to H:MMam (e.g., Anytime between 9:30 a.m to 10:15am)"}]], "image_file_name": "174.jpeg", "img_source": "https://www.reddit.com/r/pics/comments/1necyzf/i_had_a_disposable_camera_in_my_pocket_on_91101/#lightbox"}
-{"id": "vision_base_175", "question": [[{"role": "user", "content": "I caught a glimpse of this event but not the result. What team won this race? Output format: Team Name (e.g., The Redbull team)"}]], "image_file_name": "175.jpeg", "img_source": "https://www.lego.com/en-us/aboutus/news/2025/may/lego-f1-drivers-parade?locale=en-us"}
-{"id": "vision_base_176", "question": [[{"role": "user", "content": "I missed my morning coffee today. How far is the nearest coffee place, in feet?"}]], "image_file_name": "176.jpeg", "img_source": "https://maps.apple.com/place?address=801%20K%20St%20NW,%20Washington,%20DC%20%2020001,%20United%20States&coordinate=38.902601,-77.022989&name=Apple%20Carnegie%20Library&place-id=IBD4F1548B8A0F77C&map=explore"}
-{"id": "vision_base_177", "question": [[{"role": "user", "content": "I am at the CapitolOne Arena. I have a flight to catch at the closest airport at 2:50. I aim to be at the airport by 1 pm.  Will I get there on time if I catch an Uber?"}]], "image_file_name": "177.jpeg", "img_source": ""}
-{"id": "vision_base_178", "question": [[{"role": "user", "content": "I am fixing my watch. This photo was taken at 7:22 PM. Is the time shown here?"}]], "image_file_name": "178.jpeg", "img_source": ""}
-{"id": "vision_base_179", "question": [[{"role": "user", "content": "Last time I came here this mall was under renovation, when was this mall's renovations completed?"}]], "image_file_name": "179.jpeg", "img_source": "https://www.bizjournals.com/baltimore/news/2018/12/05/shops-at-kenilworth-to-expand-in-new-year.html"}
-{"id": "vision_base_180", "question": [[{"role": "user", "content": "I saw highlights from this competition but didn't catch the result. What is the name of the team that lost this match?"}]], "image_file_name": "180.jpeg", "img_source": "https://www.pcgamer.com/the-shanghai-dragons-didnt-win-a-single-match-in-overwatch-league-stage-oneheres-why/"}
-{"id": "vision_base_181", "question": [[{"role": "user", "content": "My little brother saw this picture and asked me about the weapon. What's the name of the staff the leftmost character is holding?"}]], "image_file_name": "181.jpeg", "img_source": "https://overwatch.fandom.com/wiki/Wuyang?file=Wuyang_BeautyShot_001.png"}
-{"id": "vision_base_182", "question": [[{"role": "user", "content": "Looking at this map, I can't quite remember. What's the name of that cosmetic at the end?"}]], "image_file_name": "182.jpeg", "img_source": "https://overwatch.fandom.com/wiki/Eichenwalde"}
-{"id": "vision_base_183", "question": [[{"role": "user", "content": "During class, the professor mentioned this book, but didn't say if it goes into detail. Does it explain the Bellman Optimality Equation?"}]], "image_file_name": "183.jpeg", "img_source": ""}
-{"id": "vision_base_184", "question": [[{"role": "user", "content": "Fans were chanting the owner's name during the game, which made me wonder — who owns the opposing team?"}]], "image_file_name": "184.jpeg", "img_source": ""}
-{"id": "vision_base_185", "question": [[{"role": "user", "content": "I visited this city a few weeks later and saw the statue already up. On what date was it unveiled? Format the answer as mm/dd/yyyy."}]], "image_file_name": "185.jpeg", "img_source": "https://www.reddit.com/r/nfl/comments/1ml8w0i/highlight_tom_bradys_statue_outside_gillette/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button"}
-{"id": "vision_base_186", "question": [[{"role": "user", "content": "My dad watched this unfold on TV back in the day, but I forgot which one it was. What mission were they part of?"}]], "image_file_name": "186.jpeg", "img_source": "https://www.cbsnews.com/news/jim-lovell-dies-age-97-apollo-13-commander/"}
-{"id": "vision_base_187", "question": [[{"role": "user", "content": "My Uncle swears this was filmed in the summer, but I think he's wrong. What exact date was it filmed? Format the answer as mm/dd/yyyy"}]], "image_file_name": "187.jpeg", "img_source": "https://images.app.goo.gl/U7gqn9L58DNG7Pqw7"}
-{"id": "vision_base_188", "question": [[{"role": "user", "content": "This was awesome to see in person-how something so heavy can get launched into space truly baffles me. In seconds what was the duration of this mission?"}]], "image_file_name": "188.jpeg", "img_source": ""}
-{"id": "vision_base_189", "question": [[{"role": "user", "content": "My son and I want to celebrate the day we went to go see this launch. I believe it was the one prior to the most recent launch. What day was it? (Format as mm/dd/yyyy)"}]], "image_file_name": "189.jpeg", "img_source": "https://en.wikipedia.org/wiki/Starship_flight_test_5"}
-{"id": "vision_base_190", "question": [[{"role": "user", "content": "My daughter wants to be an astronaut and loves watching videos of people in microgravity. Who person in the blue?"}]], "image_file_name": "190.jpeg", "img_source": "https://youtu.be/ojpLfJrBdKI?si=yKjbhDPbZyolJ0XC&t=202"}
-{"id": "vision_base_191", "question": [[{"role": "user", "content": "My neuroscience professor showed this slide during class today, but he doesn't share them with the class. What is the specific structure the blue line is pointing to? "}]], "image_file_name": "191.jpeg", "img_source": "https://www.elsevier.com/resources/anatomy/nervous-system/central-nervous-system/lateral-geniculate-nucleus-of-thalamus/23365"}
-{"id": "vision_base_192", "question": [[{"role": "user", "content": "I was traveling in this city for work and took this picture from the highway in my Uber. The driver was a big fan of the home team. Who won the last championship game played here?"}]], "image_file_name": "192.jpeg", "img_source": ""}
-{"id": "vision_base_193", "question": [[{"role": "user", "content": "I've been diving into Go recently and was watching some famous matches. what was the last move before this photo was taken?"}]], "image_file_name": "193.jpeg", "img_source": "https://www.youtube.com/live/l-GsfyVCBu0?si=KJNNgpOQR0sbzSb7"}
-{"id": "vision_base_194", "question": [[{"role": "user", "content": "I was driving around and thought this was interesting. As you can see, this university has a gerard manley hopkins quote on the facade of their buildings. What was this university's acceptance rate in 2023?"}]], "image_file_name": "194.jpeg", "img_source": "https://www.americamagazine.org/faith/2019/07/24/what-10-years-protestant-church-taught-me-about-my-catholic-faith/?utm_source=chatgpt.com"}
-{"id": "vision_base_195", "question": [[{"role": "user", "content": "I was watching this documentary and wanted to know how long races typically are. How long is the track shown on the screen here in meters?"}]], "image_file_name": "195.jpeg", "img_source": "https://youtu.be/phZfIA9fAUM?si=88xpn3i8H2dc0YFP"}
-{"id": "vision_base_196", "question": [[{"role": "user", "content": "I didn't even know this was a thing--my friend just put me on to these. What was the name of the sculpture that won this year's championship?"}]], "image_file_name": "196.jpeg", "img_source": "https://kdvr.com/news/local/winners-announced-for-the-2025-international-snow-sculpture-championships-in-breckenridge/"}
-{"id": "vision_base_197", "question": [[{"role": "user", "content": "I saw this poster online and find the art style really striking. who directed this video?"}]], "image_file_name": "197.jpeg", "img_source": "https://www.imdb.com/title/tt34204967/fullcredits/"}
-{"id": "vision_base_198", "question": [[{"role": "user", "content": "This photo was taken on a trading floor. What city is the company that owns this exchange headquarted in?"}]], "image_file_name": "198.jpeg", "img_source": "https://en.wikipedia.org/wiki/New_York_Mercantile_Exchange"}
-{"id": "vision_base_199", "question": [[{"role": "user", "content": "This match was really dynamic! A great showing on both ends, but the winner's precision and tempo gave them a substantial edge. who was knocked down first?"}]], "image_file_name": "199.jpeg", "img_source": "https://www.espn.com/boxing/story/_/id/45002676/naoya-inoue-avoids-disaster-stops-ramon-cardenas-thriller"}
-{"id": "vision_base_200", "question": [[{"role": "user", "content": "What a way to pose! Interesting mix of countries on this expedition. Who is featured in this photo?"}]], "image_file_name": "200.jpeg", "img_source": "https://www.nasa.gov/mission/expedition-37/#:~:text=Pictured%20from%20the%20left%20(back,Sergey%20Ryazanskiy%2C%20all%20flight%20engineers.&text=End-,The%20official%20insignia%20of%20the%20Expedition,aboard%20the%20International%20Space%20Station."}
-{"id": "vision_base_201", "question": [[{"role": "user", "content": "My friend just sent me this photo. What road does this bridge run on? "}]], "image_file_name": "201.jpeg", "img_source": "https://images.app.goo.gl/b3cTqbTHNBV27WTc9"}
-{"id": "vision_base_202", "question": [[{"role": "user", "content": "My friend and I just started a small business in this town and are buying some furniture later. In meters, how far is the store up ahead from the city government office?"}]], "image_file_name": "202.jpeg", "img_source": "https://www.pexels.com/photo/urban-surfing-scene-in-canary-islands-with-surfer-32762625/"}
-{"id": "vision_base_203", "question": [[{"role": "user", "content": "We were walking along the quay and were curious about tours of the river. What is the maximum capacity of the white boat?"}]], "image_file_name": "203.jpeg", "img_source": "https://www.pexels.com/video/parisian-sunset-by-the-eiffel-tower-32801416/"}
-{"id": "vision_base_204", "question": [[{"role": "user", "content": "The poltical history of this country is fascinating to me. In kilometers, how far is this city from the capital by car? Round to the nearest whole number."}]], "image_file_name": "204.jpeg", "img_source": "https://ameblo.jp/cotsplace/image-12563689218-14690559332.html"}
-{"id": "vision_base_205", "question": [[{"role": "user", "content": "My girlfriend and I have been going year-by-year, trying to watch every top-rated film. What movie won the most awards at this event?'"}]], "image_file_name": "205.jpeg", "img_source": "https://www.newyorker.com/culture/the-front-row/oscars-2020-parasites-best-picture-win-cant-redeem-the-academys-failings"}
-{"id": "vision_base_206", "question": [[{"role": "user", "content": "My wife wanted to visit this place on our way back from the beach. In feet, how far underground are these caves at the deepest point?"}]], "image_file_name": "206.jpeg", "img_source": "https://www.npr.org/2023/11/07/1211027608/the-largest-musical-instrument-in-the-world-is-underground-in-a-virginia-cave"}
-{"id": "vision_base_207", "question": [[{"role": "user", "content": "Look at this beauty. Take it in. What is the top speed of the variant shown here?"}]], "image_file_name": "207.jpeg", "img_source": "https://astonmartinworks.com/models/db11/"}
-{"id": "vision_base_208", "question": [[{"role": "user", "content": "I want to visit this exhibit after class one day. How far is this museum from the city centre campus?"}]], "image_file_name": "208.jpeg", "img_source": ""}
-{"id": "vision_base_209", "question": [[{"role": "user", "content": "I'm going to be traveling here soon and am trying to figure out logistics for when get there. when did this place open?"}]], "image_file_name": "209.jpeg", "img_source": "https://en.wikipedia.org/wiki/Chongqing_East_railway_station#/media/File:CR%E9%87%8D%E5%BA%86%E4%B8%9C_%E5%BC%80%E5%9F%8E%E5%A4%A7%E9%81%93%E4%BE%A7%E5%A4%9C%E6%99%AF.jpg"}
-{"id": "vision_base_210", "question": [[{"role": "user", "content": "I've been seeing a bunch of analog clocks throughout my time here. What clock is that in the background?"}]], "image_file_name": "210.jpeg", "img_source": ""}
-{"id": "vision_base_211", "question": [[{"role": "user", "content": "Is this building still open for tours?"}]], "image_file_name": "211.jpeg", "img_source": ""}
-{"id": "vision_base_212", "question": [[{"role": "user", "content": "I took this photo three years ago but cannot remember where. What mall is this? Include the city and country too."}]], "image_file_name": "212.jpeg", "img_source": "https://www.koskikeskus.fi/en/stores"}
-{"id": "vision_base_213", "question": [[{"role": "user", "content": "My friend just got off their flight and sent me this but I have no idea where they are. What airport is this?"}]], "image_file_name": "213.jpeg", "img_source": "https://aviarealestate.fi/en/building/avia-fleet/"}
-{"id": "vision_base_214", "question": [[{"role": "user", "content": "How many floors are in the tallest building of this city?"}]], "image_file_name": "214.jpeg", "img_source": "https://www.reddit.com/r/fujifilm/comments/1khnzkq/xt5_viltrox_13_mm/"}
-{"id": "vision_base_215", "question": [[{"role": "user", "content": "This building really stands out amongst others in the city. What is the postal code of this building?"}]], "image_file_name": "215.jpeg", "img_source": ""}
-{"id": "vision_base_216", "question": [[{"role": "user", "content": "what are the countries these quantum computers are in?"}]], "image_file_name": "216.jpeg", "img_source": ""}
-{"id": "vision_base_217", "question": [[{"role": "user", "content": "Of the publicly traded companies shown, what was the stock price (per share) at close on 5/31/2025?"}]], "image_file_name": "217.jpeg", "img_source": ""}
-{"id": "vision_base_218", "question": [[{"role": "user", "content": "What organization put together the event held on 7/23/25 in dollars?"}]], "image_file_name": "218.jpeg", "img_source": "https://web.cvent.com/event/370695fe-856e-4bae-88c5-7140600de0ee/summary"}
-{"id": "vision_base_219", "question": [[{"role": "user", "content": "It's interesting to see mythological or allegorical imagery on government buildings. who is the center figure?"}]], "image_file_name": "219.jpeg", "img_source": "https://prologue.blogs.archives.gov/2014/10/01/symbols-of-significance-the-pediments-of-the-national-archives-building/"}
-{"id": "vision_base_220", "question": [[{"role": "user", "content": "I fell asleep at the end of the first half. what was the final score of this game?"}]], "image_file_name": "220.jpeg", "img_source": ""}
-{"id": "vision_base_221", "question": [[{"role": "user", "content": "How much did this company raise in their most recent seed funding round?"}]], "image_file_name": "221.jpeg", "img_source": "https://www.radical-ai.com/news/series-seed"}
-{"id": "vision_base_222", "question": [[{"role": "user", "content": "I'm waiting for the metrobus and saw this billboard. How much for two carnival wristbands? ()"}]], "image_file_name": "222.jpeg", "img_source": "https://www.etix.com/ticket/v/9714/the-montgomery-county-agricultural-fair"}
-{"id": "vision_base_223", "question": [[{"role": "user", "content": "What kind of software is the staff sergeant presenting?"}]], "image_file_name": "223.jpeg", "img_source": "https://www.dvidshub.net/search/2.0?q=drone"}
-{"id": "vision_base_224", "question": [[{"role": "user", "content": "did any group win a triple crown at this event? if so which?"}]], "image_file_name": "224.jpeg", "img_source": "https://biz.chosun.com/en/en-entertainment/2025/08/24/PPBO7YYBR5G6BDYDLB7IFCXNXA/#:~:text=NCT WISH showcased a variety,Share your feedback here."}
-{"id": "vision_base_225", "question": [[{"role": "user", "content": "This slide shows the top four impact areas. what are the bottom four impact areas?"}]], "image_file_name": "225.jpeg", "img_source": "https://youtu.be/gevJ5xU_WUA?si=fmR81t3lM2dau9W7"}
-{"id": "vision_base_226", "question": [[{"role": "user", "content": "Pretty fascinated by this presentation but i can't remember who gave it. What organization gave this talk?"}]], "image_file_name": "226.jpeg", "img_source": "https://www.emeraldcloudlab.com/"}
-{"id": "vision_base_227", "question": [[{"role": "user", "content": "My favorite photographer used this photo as the cover for his most recent book. Who was governor when final approval for this project was granted?"}]], "image_file_name": "227.jpeg", "img_source": "https://www.bernhardlang.de/solarplants#:~:text=Solar%20Power%20Plants%202018,%E2%80%9C"}
-{"id": "vision_base_228", "question": [[{"role": "user", "content": "This was taken at the 126th Boston Marathon. What is the white building in the background?"}]], "image_file_name": "228.jpeg", "img_source": "()https://www.usatoday.com/story/sports/2022/04/17/2022-boston-marathon-live-stream-race-schedule-tv-channel/7305922001/"}
-{"id": "vision_base_229", "question": [[{"role": "user", "content": "In kilometeres, How far is it from here to the nearest airport?"}]], "image_file_name": "229.jpeg", "img_source": "61° 27' 25.1082\" N 23° 43' 57.4889\" E"}
-{"id": "vision_base_230", "question": [[{"role": "user", "content": "This facility is built in a very interesting way. Most of its parking structure is underground. How many stores are in this mall?"}]], "image_file_name": "230.jpeg", "img_source": "https://en.wikipedia.org/wiki/Ratina_(shopping_centre)"}
-{"id": "vision_base_231", "question": [[{"role": "user", "content": "I'm meeting a date tonight for dinner. If I start walking now from the building with the clock, what time will I get to the nearest Teaism?"}]], "image_file_name": "231.jpeg", "img_source": ""}
-{"id": "vision_base_232", "question": [[{"role": "user", "content": "I'm late to work! How many minutes until market close here?"}]], "image_file_name": "232.jpeg", "img_source": ""}
-{"id": "vision_base_233", "question": [[{"role": "user", "content": "I'm suprised by how well the metro fucntions here! How many subway stops does this city have?"}]], "image_file_name": "233.jpeg", "img_source": ""}
-{"id": "vision_base_234", "question": [[{"role": "user", "content": "I love the style of this building, its very modern compared to the rest of the city. Is that a penthouse on top?"}]], "image_file_name": "234.jpeg", "img_source": "https://www.google.com/imgres?imgurl=https%3A%2F%2Fwww.hotelbergs.lv%2Fimages%2Fheaders%2F1170x390%2Fhotel-bergs-2003.jpg&tbnid=S9Q-MkkCIsIfJM&vet=1&imgrefurl=https%3A%2F%2Fwww.hotelbergs.lv%2Fen%2Fmeetings-events%2Fglass-hall%2F&docid=Wx2ehLj33-KjjM&w=1170&h=390&itg=1&hl=en&source=sh%2Fx%2Fim%2Fm1%2F5&kgs=75aa809bfe6108f4&shem=isst"}
-{"id": "vision_base_235", "question": [[{"role": "user", "content": "this statue is near another representing Bartle Frere. Who is it of?"}]], "image_file_name": "235.jpeg", "img_source": "https://essentialldn.com/2023/05/10/victoria-embankment-gardens/\nhttps://www.google.com/imgres?imgurl=https%3A%2F%2Fi0.wp.com%2Fessentialldn.com%2Fwp-content%2Fuploads%2F2023%2F05%2Fimg_9779.jpg%3Ffit%3D2651%252C3759%26ssl%3D1&tbnid=QufHYHcxu_5ISM&vet=1&imgrefurl=https%3A%2F%2Fessentialldn.com%2F2023%2F05%2F10%2Fvictoria-embankment-gardens%2F&docid=pw0eFQVnks4vsM&w=2651&h=3759&hl=en&source=sh%2Fx%2Fim%2Fm1%2F5&kgs=648882670b44d7e7&shem=isst#imgrc=y-NGRi5dcJXSbM&imgdii=eTCKfS9T-4cmmM"}
-{"id": "vision_base_236", "question": [[{"role": "user", "content": "This thing is really tucked away, I never would've found it. what is the club's capacity"}]], "image_file_name": "236.jpeg", "img_source": "https://en.wikipedia.org/wiki/Heaven_(nightclub)"}
-{"id": "vision_base_237", "question": [[{"role": "user", "content": "We've been walking around here at night while we wait. what year did this port open?"}]], "image_file_name": "237.jpeg", "img_source": "https://en.wikipedia.org/wiki/Port_of_Dover"}
-{"id": "vision_base_238", "question": [[{"role": "user", "content": "I was thinking of seeing this with a friend who'll be in the city soon. Is this ending soon?"}]], "image_file_name": "238.jpeg", "img_source": "https://www.theguardian.com/artanddesign/2024/dec/26/sensual-surrealism-kiefers-delights-gehrys-guggenheim-the-best-art-and-architecture-shows-to-visit-in-2025?utm_source=chatgpt.com"}
-{"id": "vision_base_239", "question": [[{"role": "user", "content": "I sent this photo to a friend to point out where I was; they were shocked. In meters, how long is the longest span of this city's famous bridge?"}]], "image_file_name": "239.jpeg", "img_source": "https://en.wikipedia.org/wiki/Troms%C3%B8_Bridge#"}
-{"id": "vision_base_240", "question": [[{"role": "user", "content": "I'm thinking of renting something here. What floor is the pool deck on?"}]], "image_file_name": "240.jpeg", "img_source": "https://en.wikipedia.org/wiki/414_Light_Street_(Baltimore)#:~:text=Article,steel%20structure%20completed%20in%202018."}
-{"id": "vision_base_241", "question": [[{"role": "user", "content": "I'm interested in the history of this place, especially the people who shaped its history. What did the founder of this store originally sell before moving to manhattan?"}]], "image_file_name": "241.jpeg", "img_source": "https://en.wikipedia.org/wiki/Frederick_August_Otto_Schwarz?wprov=sfti1#"}
-{"id": "vision_base_242", "question": [[{"role": "user", "content": "Warm light really brings this style of architecture to life. What is the name of the engineering school here?"}]], "image_file_name": "242.jpeg", "img_source": "https://www.reddit.com/r/LiminalSpace/comments/yi067b/my_very_brutalist_university_library/"}
-{"id": "vision_base_243", "question": [[{"role": "user", "content": "This was really crazy to see, with all the terraforming and preparation that went into it. What was the longest ski jump completed by this individual here?"}]], "image_file_name": "243.jpeg", "img_source": "https://youtu.be/ngddfxog-yw?si=FsZOXmyFvDN5CVW6"}
-{"id": "vision_base_244", "question": [[{"role": "user", "content": "I was initially fooled when I saw this; I thought it was a photo of something totally different. What century is this estimated to have been created in?"}]], "image_file_name": "244.jpeg", "img_source": "https://en.wikipedia.org/wiki/Aztec_sun_stone"}
-{"id": "vision_base_245", "question": [[{"role": "user", "content": "What day was this eclipse in 2025? I live on the east coast of the US."}]], "image_file_name": "245.jpeg", "img_source": "https://en.wikipedia.org/wiki/September_2025_lunar_eclipse"}
-{"id": "vision_base_246", "question": [[{"role": "user", "content": "I'm shopping and am looking for a t-shirt that's a bit heavier. what is the metric weight of this fabric? Give the answer in g/sqm"}]], "image_file_name": "246.jpeg", "img_source": "https://us.carhartt-wip.com/en-us/products/s-s-solar-chrome-c-logo-t-shirt-white-1285?Color=White&Size=S"}
-{"id": "vision_base_247", "question": [[{"role": "user", "content": "I've been looking into game studios that really push the industry forward with each release. I was wondering; what game is this?"}]], "image_file_name": "247.jpeg", "img_source": "https://youtu.be/SC3C7GMMfDU?si=2nN4CRIc3_71KYaO"}
-{"id": "vision_base_248", "question": [[{"role": "user", "content": "My friend who recently came back from China bought me this and encouraged me to read the original myth. who is the author or the most recent english translation of this story?"}]], "image_file_name": "248.jpeg", "img_source": ""}
-{"id": "vision_base_249", "question": [[{"role": "user", "content": "I wanted to charge my car at the Shell Recharge while I went grocery shopping. Can I still charge my car?"}]], "image_file_name": "249.jpeg", "img_source": ""}
-{"id": "vision_base_250", "question": [[{"role": "user", "content": "I'm new to this area and just got a memebership here. does this gym offer belay classes?"}]], "image_file_name": "250.jpeg", "img_source": ""}
+{
+    "id": "vision_base_0",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What was the prize money for this team in IEM Cologne 2025? I want it in US dollars"
+            }
+        ]
+    ],
+    "image_file_name": "0.jpeg",
+    "img_source": "https://img-cdn.hltv.org/gallerypicture/ZAg0keb2eh9Ss_uc1KBuoT.jpeg?auto=compress&fm=avif&ixlib=java-2.1.0&m=%2Fm.jpeg&mw=320&mx=59&my=1421&q=75&w=2400&s=8d20fa66a8a46672b35634ed8c7daa13"
+}
+{
+    "id": "vision_base_1",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I took this taxi tonight and I was surprised that it did not have a driver. Technology is happening so fast. In what year did this company start?"
+            }
+        ]
+    ],
+    "image_file_name": "1.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_2",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "how much is chirashi-sushi here in this restaurant in London in GBP?"
+            }
+        ]
+    ],
+    "image_file_name": "2.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_3",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My girlfriend brought this as my birthday gift. What's the max video resolution it can support? Give the answer in format of ###K, where ### is a decimal number."
+            }
+        ]
+    ],
+    "image_file_name": "3.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_4",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was visiting Berkeley a few years ago and I took this course which I enjoyed a lot. I don't remember the course number, but I found a picture I took when studying for its past exams. Could you remind me who is the instructor for that class in Fall 2025? I think there is two, one male and one female. I want the female one."
+            }
+        ]
+    ],
+    "image_file_name": "4.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_5",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This building in Boston achieved LEED Platinum certification. What percentage of energy savings does its orientation provide? Just give the number."
+            }
+        ]
+    ],
+    "image_file_name": "5.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_6",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "When did this complex complete construction?"
+            }
+        ]
+    ],
+    "image_file_name": "6.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_7",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I took this taxi tonight and I was surprised that it did not have a driver. Technology is happening so fast. When did this company start?"
+            }
+        ]
+    ],
+    "image_file_name": "7.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_8",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "How much is the full tuition with boarding in this school in London in 2025-26 in GBP rounded to the nearest thousand? Give answer format in  ###k where ### is a number followed by lower case k."
+            }
+        ]
+    ],
+    "image_file_name": "8.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_9",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "How much does one pack of coffee bean blend cost from this coffee shop on their official website in US Dollars?"
+            }
+        ]
+    ],
+    "image_file_name": "9.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_10",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This man just told me the restaurant he works in operates in many countries, but can you tell me the city in which the restaurant first opened in?"
+            }
+        ]
+    ],
+    "image_file_name": "10.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_11",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I found this sticker from a cs class I took in berkeley in summer, could you remind me what day of the week was final exam?"
+            }
+        ]
+    ],
+    "image_file_name": "11.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_12",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I took this picture in 2010 when watching this player, what's his last serving team?"
+            }
+        ]
+    ],
+    "image_file_name": "12.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_13",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I really like this coffee shop, when did they first open? Just give the year."
+            }
+        ]
+    ],
+    "image_file_name": "13.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_14",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "When did the winner of this tournament first become a grand master? Answer in just a number of years."
+            }
+        ]
+    ],
+    "image_file_name": "14.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_15",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This new engineering building just opened at my university, is there a new building being built for CS too? Answer in its acronyms only."
+            }
+        ]
+    ],
+    "image_file_name": "15.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_16",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Was this soccer player fit to play in July 2025 according to espn,  Yes or No ?"
+            }
+        ]
+    ],
+    "image_file_name": "16.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_17",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Which club had higher possession in this final? Answer with their full name."
+            }
+        ]
+    ],
+    "image_file_name": "17.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_18",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This festival took place in 2024 and featured installations from international artists. How many installations were displayed throughout the city?"
+            }
+        ]
+    ],
+    "image_file_name": "18.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_19",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "How many qualifying spots does this tournament offer for the candidates tournament"
+            }
+        ]
+    ],
+    "image_file_name": "19.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_20",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I got gifted this perfume, but I was wondering if Citral is in it? Yes or No"
+            }
+        ]
+    ],
+    "image_file_name": "20.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_21",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I am from Romania and I work in this facility. Our team achieved a record laser intensity in 2024. What peak intensity was reached in watts per square centimeter? Answer in format of ##^## where ## are  numbers of watts per square centimeter"
+            }
+        ]
+    ],
+    "image_file_name": "21.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_22",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was walking and saw this building, when was the official inauguration of this facility? Only give the year"
+            }
+        ]
+    ],
+    "image_file_name": "22.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_23",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What is the most number of viewers ever this streamer had in a stream?"
+            }
+        ]
+    ],
+    "image_file_name": "23.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_24",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I remember there is a Mediterranean restaurant nearby, what is its name? Answer in all lowercase letters"
+            }
+        ]
+    ],
+    "image_file_name": "24.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_25",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Hey, I am in this station right now, can you tell me what is the official number of National Rail platforms at this station?"
+            }
+        ]
+    ],
+    "image_file_name": "25.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_26",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I really like the shoes from this brand, but I was wondering in which town was this brand originally founded?"
+            }
+        ]
+    ],
+    "image_file_name": "26.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_27",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What is the weekly free-admission window (day and local time) at this museum"
+            }
+        ]
+    ],
+    "image_file_name": "27.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_28",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What is the last day of instruction for undergraduates in Fall 2025 at this university? Answer in format dd/mm/yy"
+            }
+        ]
+    ],
+    "image_file_name": "28.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_29",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Should these people receive a ticket by law, if they did not create any danger? Yes or No"
+            }
+        ]
+    ],
+    "image_file_name": "29.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_30",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I took this picture at a museum. I heard that there is an event is happening at this museum that is recurring daily and ends 8/31/2025, can you tell me what event it is?"
+            }
+        ]
+    ],
+    "image_file_name": "30.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_31",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "The architecture firm that designed this building also designed two stores for Tiffany & Co. in Singapore and Mexico. What animal were the two Tiffany & Co. stores inspired by?"
+            }
+        ]
+    ],
+    "image_file_name": "31.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_32",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This is a stadium at one of the University of California campuses. What stadium is this?"
+            }
+        ]
+    ],
+    "image_file_name": "32.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_33",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Which French department was the head chef of this restaurant born in?"
+            }
+        ]
+    ],
+    "image_file_name": "33.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_34",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "How many stores are in the shopping mall to the right of where this picture was taken? Round to the nearest thousand."
+            }
+        ]
+    ],
+    "image_file_name": "34.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_35",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What new matcha place opened up here recently?"
+            }
+        ]
+    ],
+    "image_file_name": "35.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_36",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "How many airport runways are in this city?"
+            }
+        ]
+    ],
+    "image_file_name": "36.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_37",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What town is this in?"
+            }
+        ]
+    ],
+    "image_file_name": "37.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_38",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This is from a tournament that took place in the last 7 years. What tournament is this? Just give me year and name"
+            }
+        ]
+    ],
+    "image_file_name": "38.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_39",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "These three pictures (from left to right) were taken in 2009, 2009, and 2011. What's the highest career playoff steals per game achieved by any of the three players shown?"
+            }
+        ]
+    ],
+    "image_file_name": "39.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_40",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What day of the week was this game on?"
+            }
+        ]
+    ],
+    "image_file_name": "40.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_41",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I took this picture while I was at the NBA 2025 All Star Weekend game. Can you remind me who is the player on the left in red?"
+            }
+        ]
+    ],
+    "image_file_name": "41.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_42",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I saw this picture online, and I cant remember the name of this person. Can you tell me who is this?"
+            }
+        ]
+    ],
+    "image_file_name": "42.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_43",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What event or concert is this? Just give me year and name"
+            }
+        ]
+    ],
+    "image_file_name": "43.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_44",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was at this concert and I really liked the most popular song on this concert's title album. Can you tell me the name of the song?"
+            }
+        ]
+    ],
+    "image_file_name": "44.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_45",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This was taken at a Counter-Strike 2 tournament in 2025. As of June 18, 2025, out of all tournaments this team has won in 2025, which offered the biggest prize pool?"
+            }
+        ]
+    ],
+    "image_file_name": "45.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_46",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friend and I are driving through here right now, and we are wondering who was this city named after?"
+            }
+        ]
+    ],
+    "image_file_name": "46.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_47",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I am walking through this campus right now, and I want to know how many NCAA Division I men's basketball tournaments has this school won? Just give me the number."
+            }
+        ]
+    ],
+    "image_file_name": "47.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_48",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What's the acceptance rate in 2024 of the most prestigious university in this city (rounded to the nearest tenth of a percent (e.g. 17.8%)?"
+            }
+        ]
+    ],
+    "image_file_name": "48.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_49",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This vehicle was part of a moon mission(s) in the first half of 2025. How many experiments / scientific instruments is this vehicle carrying?"
+            }
+        ]
+    ],
+    "image_file_name": "49.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_50",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I have allergy on some seed oils, so can you tell me what seed oil is this hydrating bar soap enhanced with? (hint: the soap is named after a European country)"
+            }
+        ]
+    ],
+    "image_file_name": "50.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_51",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I took this screenshot from a level from a my favourite video game. Can you tell me what city is this level based in?"
+            }
+        ]
+    ],
+    "image_file_name": "51.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_52",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "How many square feet are in this newly built building?"
+            }
+        ]
+    ],
+    "image_file_name": "52.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_53",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Who commissioned this fragrance house to create this fragrance?"
+            }
+        ]
+    ],
+    "image_file_name": "53.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_54",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Where did he live after being banished to the Void?"
+            }
+        ]
+    ],
+    "image_file_name": "54.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_55",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friends and I used to always buy Heritage Kulfi ice cream to celebrate big events when we were in college and I was really craving some while I was out grocery shopping. Which flavors of Heritage Kulfi were not available for sale on the shelf at this moment I was at the grocery store? I asked an employee and these are the only flavors in store at the moment. I was there on 09/12/2025. Return a list of strings where each item represents one flavor alphabetically sorted, Example: [Coconut, Vanilla, …]."
+            }
+        ]
+    ],
+    "image_file_name": "55.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_56",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was at the South Shore Plaza in Braintree, MA when I took this photo. I really wanted to buy this shirt but I can't remember the name of the store. What store can I purchase this item? Return the name of a singular store. "
+            }
+        ]
+    ],
+    "image_file_name": "56.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_57",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My mom is making a scrapbook of our family memories and she needs to date each image. This photo is from my sister's graduation, what day did this event happen? Return a date in the format dd/mm/yyyy."
+            }
+        ]
+    ],
+    "image_file_name": "57.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_58",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm an art student and love the style of the sculpture in this lobby. I was visiting this hotel while attending a conference. Who designed the sculpture? Return the full name of the artist."
+            }
+        ]
+    ],
+    "image_file_name": "58.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_59",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friends and I come to this parade every year. We really liked the design of this new balloon that they showed off at this years parade. What parade in what year was where this balloon design made its debut? Return the year followed by the parade name, Ex. XXXX Parade Name."
+            }
+        ]
+    ],
+    "image_file_name": "59.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_60",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm a student in NJ and love using my scooter to get to class because I always oversleep. I know there's some new local laws around PEVs, am I still allowed to ride this specifically on my campus as of 10/27/2024? Return a Yes or No."
+            }
+        ]
+    ],
+    "image_file_name": "60.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_61",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friends and I frequent this restaurant. Last time we went we were debating about colleges in the area. What college in this city has the lowest acceptance rate? Return the full college name, Ex. X University, X College, etc."
+            }
+        ]
+    ],
+    "image_file_name": "61.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_62",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I've been obssessed with this girl group since they debuted and am trying to remember some facts about their tour. What was the next venue they performed at directly after this performance I went to in the northeast USA? I think this was around the first half of the tour. Return the full venue name (no acronyms)."
+            }
+        ]
+    ],
+    "image_file_name": "62.jpeg",
+    "img_source": "https://preview.redd.it/221115-some-pictures-i-took-at-the-concert-v0-ssed7vsd8u1a1.png?width=1080&crop=smart&auto=webp&s=800ca7905634ef28b1890ac0530551b75f8bd089"
+}
+{
+    "id": "vision_base_63",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm at the grocery store fulfilling an order for an InstaCart customer. They requested a specific Fiber One cereal flavor and I need to be sure if it's here or not. Which flavor of Fiber One cereal is present in this aisle?"
+            }
+        ]
+    ],
+    "image_file_name": "63.jpeg",
+    "img_source": "https://c8.alamy.com/comp/2T6B58A/miami-beach-floridapublix-grocery-store-supermarketinside-interior-indoorsshelf-shelves-sale-displayfood-market-marketplacebusinessaislebreakfa-2T6B58A.jpg"
+}
+{
+    "id": "vision_base_64",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "It's bulking season and I'm obssessed with instant noodles. Buldak is my favorite brand so I'm trying to find the available flavor that meets my macros but I need some help. Which flavor of Buldak present in the aisle contains the most calories?"
+            }
+        ]
+    ],
+    "image_file_name": "64.jpeg",
+    "img_source": "https://static01.nyt.com/images/2024/06/22/multimedia/11ASIAN-FOOD-07-qctp-LN/11ASIAN-FOOD-07-qctp-superJumbo.jpg?quality=75&auto=webp"
+}
+{
+    "id": "vision_base_65",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm a coffee lover and frequent a bunch of different shops in the city. I want to recommend this one to my friend but I didn't get a good picture. What's the address of this cafe I parked in front of? I can't remember but I think I was around Pike Place. Return a US address in the format: STREET_NUMBER STREET_NAME STREET_TYPE, CITY, ST ZIP5"
+            }
+        ]
+    ],
+    "image_file_name": "65.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_66",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was solo travelling in this area on vacation and stayed at the hotel in the image. I want to rebook for a larger group family vacation but need to make sure they have capacity. How many rooms are in this building I stayed? I can't remember. Return a singular whole number."
+            }
+        ]
+    ],
+    "image_file_name": "66.jpeg",
+    "img_source": "https://i.redd.it/9gbq0zfqxkx11.jpg"
+}
+{
+    "id": "vision_base_67",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was at this research conference and thought the works from this person's lab were really cool. I'm interested in extending some of the work from the PhD students in their lab but I cant remember the paper title. What are the names of the papers only presented by PhD level students from this person's research group at this conference in 2024? Return the full title of the paper."
+            }
+        ]
+    ],
+    "image_file_name": "67.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_68",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm reselling some of my old games but I can't shake the feeling that I'm missing one somewhere and I just can't remember the name. I have a question about the game directly to the right of The Smurfs cartridge. What other games from the same franchise as that one (specifically the shown character's franchise), came out the year after its release for the same device? Return a single answer."
+            }
+        ]
+    ],
+    "image_file_name": "68.jpeg",
+    "img_source": "https://preview.redd.it/found-my-sisters-old-game-boy-collection-anyone-know-the-v0-fmxrys6zhf2b1.jpg?width=640&crop=smart&auto=webp&s=bd20cf7604761c4f5d4c0d620db8c19a6f72e1ac"
+}
+{
+    "id": "vision_base_69",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was traveling abroad on vacation and found this little coffee shop that I really loved. I didn't save the details, and now I'd like to share it with a friend. What's the street address of this café I went to during that trip? Return ONLY the street address, Ex. STREET_NUMBER STREET_NAME"
+            }
+        ]
+    ],
+    "image_file_name": "69.jpeg",
+    "img_source": "https://preview.redd.it/i-was-in-paris-once-and-fell-in-love-with-her-caf%C3%A9s-v0-asiyzjx7ts9a1.jpg?width=1080&crop=smart&auto=webp&s=db3ce2f8ac6768e018c54f3b8b831292944f8f19"
+}
+{
+    "id": "vision_base_70",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "When I was visiting this city, I stumbled upon a café with bright orange signage that really stood out. I forgot the exact location. What is the street address of that café? Return ONLY the street address, Ex. STREET_NUMBER STREET_NAME"
+            }
+        ]
+    ],
+    "image_file_name": "70.jpeg",
+    "img_source": "https://i.redd.it/vyslqu08yaw81.jpg"
+}
+{
+    "id": "vision_base_71",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I had dinner at this restaurant recently and really enjoyed the food. I know the chain has multiple locations, but I want the specific one I visited. What is the address of this restaurant? Return a US address in the format: STREET_NUMBER STREET_NAME STREET_TYPE, CITY, ST ZIP5"
+            }
+        ]
+    ],
+    "image_file_name": "71.jpeg",
+    "img_source": "https://s3-media0.fl.yelpcdn.com/bphoto/WtxiqjEoABuR_Tw2LGxClQ/o.jpg"
+}
+{
+    "id": "vision_base_72",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm in a nostalgic mood and have been cataloging my game collection. I have a question about the game positioned in the center of the row of other games. What date did the next game in its franchise (specifically this character's franchise) release for the same device? Return a date in the format dd/mm/yyyy."
+            }
+        ]
+    ],
+    "image_file_name": "72.jpeg",
+    "img_source": "https://preview.redd.it/how-much-should-i-sell-my-switch-for-and-where-v0-xghkywlbbnce1.jpg?width=1080&crop=smart&auto=webp&s=a8c61cf7753eb5dcb22f2179c16c9417375e2038"
+}
+{
+    "id": "vision_base_73",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I went to this baseball game on 7/29/2025 and was keeping track of home runs. Which players on the winning team hit home runs in that game? Return a list of strings where each item is full player name, alphabetically sorted by first name. Ex. [Jane Doe, John Doe, ...]"
+            }
+        ]
+    ],
+    "image_file_name": "73.jpeg",
+    "img_source": "https://www.youtube.com/watch?v=kXw7uSmzkdM&ab_channel=MLB"
+}
+{
+    "id": "vision_base_74",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm following this competitive swimming event from 2025 and want to know the podium results. Who won the silver medal in this race? Return the full name of the athlete."
+            }
+        ]
+    ],
+    "image_file_name": "74.jpeg",
+    "img_source": "https://www.youtube.com/watch?v=uZ8wZ1ucDFI&ab_channel=USASwimming"
+}
+{
+    "id": "vision_base_75",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm a sports photographer and took a photo at this race and I'm trying to remember details. The person on the left was a standout competitor. What was his finishing time? I believe this was the only event he medaled in this year. Return a number to 2 decimal places with no units, Ex. 1.32. "
+            }
+        ]
+    ],
+    "image_file_name": "75.jpeg",
+    "img_source": "https://www.youtube.com/watch?v=8c4oI2hBZPQ&ab_channel=Olympics"
+}
+{
+    "id": "vision_base_76",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm scouting stats for college basketball defenders. Looking at the defending player in this image (the player is from a Big Ten team), what was their 3-point percentage (3P%) for the 2023-24 season? Return as a percentage with one decimal place, Ex. 35.7%."
+            }
+        ]
+    ],
+    "image_file_name": "76.jpeg",
+    "img_source": "https://cdn.vox-cdn.com/thumbor/-PYsGDxEj1oljkUmNaKVhax3YlU=/0x0:6048x4024/1200x800/filters:focal(2541x1529:3507x2495)/cdn.vox-cdn.com/uploads/chorus_image/image/73178462/usa_today_22646828.0.jpg"
+}
+{
+    "id": "vision_base_77",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was reading up on this group's competition history and want to check something. What rank did they place in the 2024 edition of this event? Return a singular whole number, Ex. if they placed first return 1."
+            }
+        ]
+    ],
+    "image_file_name": "77.jpeg",
+    "img_source": "https://www.youtube.com/watch?v=TwZjHq-Wwns&ab_channel=VIBEDanceComp"
+}
+{
+    "id": "vision_base_78",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm considering letting my teenager attend this place for an event. Can my 17 year old son go here unaccompanied this Friday night, as of current policy? Return a Yes or No."
+            }
+        ]
+    ],
+    "image_file_name": "78.jpeg",
+    "img_source": "https://i.redd.it/kjhblul79ds01.jpg"
+}
+{
+    "id": "vision_base_79",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "'I was watching people play chess at this event and noticed the board further back in the image had more interesting plays going on. What was the result of the game played on the board further back in this image? Return the result as [WINNER_NAME, LOSER_NAME] or DRAW."
+            }
+        ]
+    ],
+    "image_file_name": "79.jpeg",
+    "img_source": "https://www.europechess.org/wp-content/uploads/2024/11/29-scaled.jpg"
+}
+{
+    "id": "vision_base_80",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm at the largest airport in this city and need to check in for my Alaska Airlines flight. Which terminal should I go to for Alaska Airlines check-in? Return a single whole number."
+            }
+        ]
+    ],
+    "image_file_name": "80.jpeg",
+    "img_source": "https://i.redd.it/q9fud0vzxx901.jpg"
+}
+{
+    "id": "vision_base_81",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm a huge chess lover and I was following this match closely and but am having some trouble trying to recall the details. During this event, how many moves were made in the game that had the greatest number of moves? Return a singular whole number."
+            }
+        ]
+    ],
+    "image_file_name": "81.jpeg",
+    "img_source": "https://i.redd.it/a1ie7g1m7n4e1.jpeg"
+}
+{
+    "id": "vision_base_82",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I am a PhD student and went to this conference last week. I attended this research seminar while I was there and want to file my notes from the session in the right section of my weekly notes. Which day of the week was this seminar held? Return the full weekday name, Ex. Monday."
+            }
+        ]
+    ],
+    "image_file_name": "82.jpeg",
+    "img_source": "https://cs.uiowa.edu/sites/cs.uiowa.edu/files/2025-05/thumbnail_PXL_20250430_055001767.jpg"
+}
+{
+    "id": "vision_base_83",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I went to this event a little while back and loved the music. What songs were performed for the encore? I can't remember. I think the concert was a part of a tour and happened somewhere in Boston on May 18, 2024 but not sure. Return a list of strings where each item is a full song title, alphabetically sorted. Ex. [ABCs, Wheels on the Bus, ...]"
+            }
+        ]
+    ],
+    "image_file_name": "83.jpeg",
+    "img_source": "https://i.redd.it/t2x6mg9fxgpc1.jpeg"
+}
+{
+    "id": "vision_base_84",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This company hosted the event I attended, and I later realized they went public. What date did the company running this event IPO? Return a date in the format dd/mm/yyyy."
+            }
+        ]
+    ],
+    "image_file_name": "84.jpeg",
+    "img_source": "https://miro.medium.com/v2/resize:fit:1400/1*yvYfawY92VWJDaMgmnrMLw.jpeg"
+}
+{
+    "id": "vision_base_85",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I used to be a fan of this team who won a world championship back in 2021. I remember there was one Russian member on their 2024 roster who was really good. What team(s) does he play for as of May 2025? Return a list of strings where each item is a team name, in alphabetical order. Ex. [A Team,B Team, ...]"
+            }
+        ]
+    ],
+    "image_file_name": "85.jpeg",
+    "img_source": "https://cdn.oneesports.gg/cdn-data/2021/12/Valorant_Acend_ValorantChampions2021_winners_2-1024x576.jpg"
+}
+{
+    "id": "vision_base_86",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I saw this person present their work at a conference and loved the ideas being explored. I think they had another work that was accepted at the same conference a few years earlier. What country was that earlier conference held? Return the full name of the country."
+            }
+        ]
+    ],
+    "image_file_name": "86.jpeg",
+    "img_source": "https://pbs.twimg.com/media/Gm-88oHXoAA0BXd.jpg"
+}
+{
+    "id": "vision_base_87",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was restocking shelves at the grocery store on 09/01/2025 and needed to double check something. Are all flavors of Calpico present? Return Yes or No."
+            }
+        ]
+    ],
+    "image_file_name": "87.jpeg",
+    "img_source": "https://i.redd.it/my-ocd-really-comes-in-handy-when-i-make-shelves-look-nice-v0-llflh974ijd91.jpg?width=3019&format=pjpg&auto=webp&s=a76415ccb0c84825e76155fa42a6fbef351efd35"
+}
+{
+    "id": "vision_base_88",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This athlete competed in an Olympic event that occurred for the first time in this year's games. I'm trying to remember the results for a news article I'm writing. What rank did she place? Return a singular whole number."
+            }
+        ]
+    ],
+    "image_file_name": "88.jpeg",
+    "img_source": "https://i.abcnewsfe.com/a/1ee44e01-4a08-4e80-bfce-c64f69be6bee/Raygun-3-gty-gmh-240812_1723472077546_hpMain.jpg"
+}
+{
+    "id": "vision_base_89",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was visiting a university campus and saw this construction project in progress while I was there. I heard from a friend who ended up going there that they recently completed a chunk of the project. When was phase 1 of this project completed? Return a date in the format dd/mm/yyyy."
+            }
+        ]
+    ],
+    "image_file_name": "89.jpeg",
+    "img_source": "https://inside.princeton.edu/sites/g/files/toruqf456/files/styles/16x9_2880w_1620h/public/2023-08/230821_dillon-cam.jpg?itok=xDfdVqyX"
+}
+{
+    "id": "vision_base_90",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I grew up going to this library and recently visited after living in a different city for a few years. I really admired the renovations to the building during my visit. What firm led the design for the renovation? Return the full name of the firm."
+            }
+        ]
+    ],
+    "image_file_name": "90.jpeg",
+    "img_source": "https://www.lwa-architects.com/wp-content/uploads/2018/05/05_BPLRoslindale_ExteriorEntryDusk2_JaneMessinger-1700x1133.jpg"
+}
+{
+    "id": "vision_base_91",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm a huge fan of live music and performances and recently attended this concert with my girlfriend. I want to trace the tour history after this day we went to compare our venue to others on the tour. What was the next venue the artist performed at directly after this show? Return the full venue name (no acronyms)."
+            }
+        ]
+    ],
+    "image_file_name": "91.jpeg",
+    "img_source": "https://preview.redd.it/thousands-of-taylor-swift-enthusiasts-outside-her-concert-v0-kiz97nni7bkc1.jpeg?width=1080&crop=smart&auto=webp&s=ae030d0d08629b4beb0874a45d11379cc2369781"
+}
+{
+    "id": "vision_base_92",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I grew up going to horse racing events with my dad and recently went to this one. We always choose a horse to bet on between ourselves for fun. I snapped this picture of the horse I bet on but can't remember what place it finished in. What place did this horse finish in? Return a singular whole number."
+            }
+        ]
+    ],
+    "image_file_name": "92.jpeg",
+    "img_source": "https://www.usatoday.com/gcdn/authoring/authoring-images/2025/05/03/USAT/83435059007-gty-2213258248.jpg?crop=5333,3999,x333,y0 "
+}
+{
+    "id": "vision_base_93",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "A few years ago, I stayed at this NYC building with distinctive orange window accents during a conference. What is the address of that building? Return a US address in the format: STREET_NUMBER STREET_NAME STREET_TYPE, CITY, ST ZIP5."
+            }
+        ]
+    ],
+    "image_file_name": "93.jpeg",
+    "img_source": "https://images.unsplash.com/photo-1754079133052-cf62bd71776c?q=80&w=3308&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+}
+{
+    "id": "vision_base_94",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm trying to update my calendar of live music performances I've attended this year as I'm sorting out my yearly expenses. On what date did this performance take place? Return a date in the format dd/mm/yyyy."
+            }
+        ]
+    ],
+    "image_file_name": "94.jpeg",
+    "img_source": "https://preview.redd.it/doechii-announces-tour-during-lollapalooza-v0-cdfea79bepgf1.jpg?width=1080&crop=smart&auto=webp&s=647b1a3868be79becf50751eeba11fbe1d86a44f"
+}
+{
+    "id": "vision_base_95",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I watched this individual compete at the event and became a huge fan! I couldn't stick around for the whole event so I want to know their outcome. What total score did they receive? Return a singular decimal score to 1 decmal point, Ex. 5.2."
+            }
+        ]
+    ],
+    "image_file_name": "95.jpeg",
+    "img_source": "https://s7d2.scene7.com/is/image/TWCNews/caroline_marks_melbourne_beach_olympic_gold_medal_AP24218797294616_n13_080524"
+}
+{
+    "id": "vision_base_96",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm a big health nut and always make time to run or cycle while on vacation. While cycling on vacation in the UK, I stopped at this café. What is the street address of this café? Return in the UK address format: STREET_NAME STREET_TYPE, CITY POSTCODE, United Kingdom."
+            }
+        ]
+    ],
+    "image_file_name": "96.jpeg",
+    "img_source": "https://preview.redd.it/on-a-100k-ride-around-the-isle-of-wight-first-coffee-stop-v0-q7xsjl4kf6if1.jpeg?width=1080&crop=smart&auto=webp&s=d734502ec9d4ee4dbfda5cd54137ae29ce8efded"
+}
+{
+    "id": "vision_base_97",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I saw this advertisement for a new show back when I visited New York a few years ago. I'm looking for something new to binge but want to know the time commitment. How many episodes is it? Return a singular whole number."
+            }
+        ]
+    ],
+    "image_file_name": "97.jpeg",
+    "img_source": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQlqHR1rMKyqumg0q8XGtyQfiYg_3TvSMoB5PfRjiPuAwHVN-D6"
+}
+{
+    "id": "vision_base_98",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I snapped a photo of this cool design on a manhole cover while I was on a walking tour of this city. Apparently this city once had its first provisional mayor. On what exact date did that mayor leave office? Return a date in the format dd/mm/yyyy."
+            }
+        ]
+    ],
+    "image_file_name": "98.jpeg",
+    "img_source": "https://live.staticflickr.com/65535/48061890706_e232509cdb_b.jpg"
+}
+{
+    "id": "vision_base_99",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This man on the right in the image signed a historic education investment into law in his state in 2023. How much was the investment? Return the full amount with no dollar sign character, Ex. 4.2 million."
+            }
+        ]
+    ],
+    "image_file_name": "99.jpeg",
+    "img_source": "https://external-preview.redd.it/npr-fact-checked-the-vance-walz-vice-presidential-debate-v0-Wsxq1f1nX6wtBuDtlY8WuoMreXKyEVGinNzDUl0GxpY.jpg?auto=webp&s=27313749eb597e3565caaa9add4cc8de8fe7235f"
+}
+{
+    "id": "vision_base_100",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I went to this company's first in-person conference and loved the vibes. What date did it take place? Return a date in the format dd/mm/yyyy."
+            }
+        ]
+    ],
+    "image_file_name": "100.jpeg",
+    "img_source": "https://www.youtube.com/watch?v=k0PJHSG4yqM&list=PLzaYMdbJMZW3dqS4rTuAP1sdKuu6o9iZm&index=3&ab_channel=Notion"
+}
+{
+    "id": "vision_base_101",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm planning to revisit this venue as I'm scouting out a place to host my own company's product launch keynote. I need to know what dates the space will be empty so I can schedule a tour. What events are taking place there in August 2025? Return a list of strings where each item is a full event name, sorted alphabetically. Ex. [Machine Learning Conference 2025, Pizza Making Competition 2025, ...]"
+            }
+        ]
+    ],
+    "image_file_name": "101.jpeg",
+    "img_source": "https://www.youtube.com/watch?v=5q8YAUTYAyk&ab_channel=Figma"
+}
+{
+    "id": "vision_base_102",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm a designer and frequently attend various tech conferences every year. I need to report which exact dates I attended conferences to my boss for budgeting. At this event in the image, a new design was announced. On what date did this event take place? Return a date in the format dd/mm/yyyy."
+            }
+        ]
+    ],
+    "image_file_name": "102.jpeg",
+    "img_source": "https://www.youtube.com/shorts/OSRPx8O4dx0"
+}
+{
+    "id": "vision_base_103",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was at this sculpture competition and absolutely loved this participant's submission. As an art student I'm always taking pictures like this for inspiration for my own works. What was the name of the piece? I can't remember. Return the full title name with no special characters."
+            }
+        ]
+    ],
+    "image_file_name": "103.jpeg",
+    "img_source": "https://i0.wp.com/reverebeach.com/wp-content/uploads/2022/07/abe-waterman.jpeg?w=1365&ssl=1"
+}
+{
+    "id": "vision_base_104",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was in the live audience watching my kid participate in this event. Although my kid lost, I'm curious to know what regional partner sponsored the individual in the image?"
+            }
+        ]
+    ],
+    "image_file_name": "104.jpeg",
+    "img_source": "https://people.com/thmb/ha_P6SSpD65EEE9GMmWt5dBtOC8=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():focal(997x567:999x569)/Faizan-Zaki-spelling-bee-winner-052925-1-706aef5e97a24eb49ea69b5aa4695782.jpg"
+}
+{
+    "id": "vision_base_105",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I recently attended this match in person but couldn't stick around for the outcome. I'm not the biggest soccer fan so I don't remember who played but my friend took this awesome photo before we left. Who won this match? Return the full name of the winning team, no acronyms. "
+            }
+        ]
+    ],
+    "image_file_name": "105.jpeg",
+    "img_source": "https://youtu.be/fc6-M80xFrY?t=458"
+}
+{
+    "id": "vision_base_106",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friend told me it was torn down for construction, but I don't think that's true. Why was this place actually destroyed? Output format: Reason (e.g., Security Issues)"
+            }
+        ]
+    ],
+    "image_file_name": "106.jpeg",
+    "img_source": "https://www.instagram.com/p/C2IBT6CM-K-/"
+}
+{
+    "id": "vision_base_107",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I snapped this during my trip but forgot to note the moment. What was the exact time this picture was taken? Output format: H:MMAM/PM (e.g., 8:30PM)"
+            }
+        ]
+    ],
+    "image_file_name": "107.jpeg",
+    "img_source": "https://www.pexels.com/photo/iconic-big-ben-at-sunset-in-london-32951976/"
+}
+{
+    "id": "vision_base_108",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "During a meeting, a coworker brought up this launch but didn't know the full lineup. How many distinct products did Apple announce including this laptop? Output format: Number (e.g., 5)"
+            }
+        ]
+    ],
+    "image_file_name": "108.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_109",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I have seen this thing everywhere in London. What was this artist's first song? Output format: Song Title (e.g., My First Song)"
+            }
+        ]
+    ],
+    "image_file_name": "109.jpeg",
+    "img_source": "https://www.pexels.com/photo/red-telephone-booth-in-front-of-big-ben-221166/"
+}
+{
+    "id": "vision_base_110",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I visited this museum few weeks back. How much do I have to pay to see this? Output format: approx €Amount (e.g., approx €15)"
+            }
+        ]
+    ],
+    "image_file_name": "110.jpeg",
+    "img_source": "https://www.pexels.com/photo/majestic-interior-of-versailles-palace-29775992/"
+}
+{
+    "id": "vision_base_111",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This car, number 18, competed in the 1986 24 Hours of Le Mans. Who was its first-listed driver, and what was the primary sponsor of the team he won the Can-Am championship with? Output format: Sponsor Name. (e.g., Pepsi Cola.)"
+            }
+        ]
+    ],
+    "image_file_name": "111.jpeg",
+    "img_source": "https://unsplash.com/photos/close-up-view-of-a-vintage-race-cars-front-side-rjdF_HeLMbM"
+}
+{
+    "id": "vision_base_112",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I had the best Negroni last night here but dont remember how much it cost. How much does a Negroni cost here? Output format: $Amount (e.g., $15)"
+            }
+        ]
+    ],
+    "image_file_name": "112.jpeg",
+    "img_source": "https://unsplash.com/photos/a-coffee-shop-is-seen-in-this-corner-building-8lMvKttWq2M"
+}
+{
+    "id": "vision_base_113",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I came from city side but don't remember which station I came from. Where is this train coming from? Output format: Station Name (e.g., Grand Central Station)"
+            }
+        ]
+    ],
+    "image_file_name": "113.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_114",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friend has this setup, I want the exact same one, how much will they cost in total (Use MRP). The output should be in alphabetical order. Output format: 1. Item ($Price) 2. Item ($Price) 3. Item ($Price) = $Total (e.g., 1. Controller ($50) 2. Headset ($100) = $150)."
+            }
+        ]
+    ],
+    "image_file_name": "114.jpeg",
+    "img_source": "https://unsplash.com/photos/a-ps5-controller-and-accessories-rest-on-a-table-i1VDAvFG4zw"
+}
+{
+    "id": "vision_base_115",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I am thinking of buying this card. How many free cash withdrawals a month can I make using this card from UK ATMs? Output format: Number (e.g., 5)"
+            }
+        ]
+    ],
+    "image_file_name": "115.jpeg",
+    "img_source": "https://unsplash.com/photos/aM4vzfIsAo0"
+}
+{
+    "id": "vision_base_116",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My mom asked me to come to a store between these two beigel shop. Which shops are between two of these beigel shops? Give store name and number. Output format: Shop Name, lane number (e.g., Corner Bakery, 233 john lane)"
+            }
+        ]
+    ],
+    "image_file_name": "116.jpeg",
+    "img_source": "https://unsplash.com/photos/a-classic-bagel-shop-glows-in-the-evening-light-bVJd0pKkMUs"
+}
+{
+    "id": "vision_base_117",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "How much carbon emission does this bus do when driving? Output format: Number (e.g., 5)"
+            }
+        ]
+    ],
+    "image_file_name": "117.jpeg",
+    "img_source": "https://unsplash.com/photos/a-blue-bus-speeds-past-a-decorative-building-6xOlLR7avI0"
+}
+{
+    "id": "vision_base_118",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This toy is gaining a lot of attraction. How much money did Wang Ning make from this toy in a day? Output format: Amount dollars (e.g., 2.5 billion dollars)"
+            }
+        ]
+    ],
+    "image_file_name": "118.jpeg",
+    "img_source": "https://unsplash.com/photos/coffee-a-doll-and-a-book-on-a-marble-table-NnCPCKoFMVM"
+}
+{
+    "id": "vision_base_119",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I am about to get down there, but I am new to this city. What is the closest train station to me?"
+            }
+        ]
+    ],
+    "image_file_name": "119.jpeg",
+    "img_source": "https://unsplash.com/photos/view-from-above-a-city-street-with-traffic-sp5TFLhI3hM"
+}
+{
+    "id": "vision_base_120",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I can see the entire city from here. How tall is the building from which this picture was taken? Output format: Number feet (e.g., 1200 feet)"
+            }
+        ]
+    ],
+    "image_file_name": "120.jpeg",
+    "img_source": "https://unsplash.com/photos/woman-reads-with-a-spectacular-view-of-new-york-city-uEWJ3wTkkQs"
+}
+{
+    "id": "vision_base_121",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friend left his laptop open, what 2 apps are open on his laptop?. The output should be in alphabetical order. Output format: app1 and app2 (e.g., chrome and spotify)"
+            }
+        ]
+    ],
+    "image_file_name": "121.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_122",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I just came for grocery shopping and was wondering what bottle is he holding? I want that bottle. Output format: brand flavor (e.g., coca cola vanilla)"
+            }
+        ]
+    ],
+    "image_file_name": "122.jpeg",
+    "img_source": "https://unsplash.com/photos/man-shopping-for-drinks-in-a-supermarket-Sqn8GiW3oSM"
+}
+{
+    "id": "vision_base_123",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was looking at this travel photo I took the other day, but I can't recall where it was. Which lake is in the image? Output format: Lake name (e.g., Lake Superior)"
+            }
+        ]
+    ],
+    "image_file_name": "123.jpeg",
+    "img_source": "https://www.nokia.com/sites/default/files/2023-09/4.jpg?height=305&width=543"
+}
+{
+    "id": "vision_base_124",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friends and I are planning on vising this state, what state is this? Output format: State name (e.g., California)"
+            }
+        ]
+    ],
+    "image_file_name": "124.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_125",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was comparing the different Sucrilhos boxes at the store earlier, but I noticed one was missing. Which Sucrilhos flavor is not in the image? The output should be in alphabetical order. The Output format: flavor1, flavor2 (e.g., chocolate, vanilla)"
+            }
+        ]
+    ],
+    "image_file_name": "125.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_126",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was going through a picture of the drinks section in the store, and I noticed a bunch of Coca Cola bottles. Can you list all the Coca Cola bottle flavors in the image? The output should be in alphabetical order. Output format: 1. flavor1, flavor2, flavor3, ... (e.g., 1. Classic, Diet, Zero)"
+            }
+        ]
+    ],
+    "image_file_name": "126.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_127",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was looking at this city photo someone shared, and I'm curious about the viewpoint. From where was this picture taken, and can you name the building? Output format: The Building Name (e.g., The Plaza Hotel)"
+            }
+        ]
+    ],
+    "image_file_name": "127.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_128",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I found this old photo in my gallery, but I can't remember when it was taken. In what season was this picture taken? Output format: Season (e.g., summer)"
+            }
+        ]
+    ],
+    "image_file_name": "128.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_129",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I came across this photo of a store and was wondering — how much does an espresso cost here? Output format: Currency Amount (e.g., USD 5)"
+            }
+        ]
+    ],
+    "image_file_name": "129.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_130",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friends shared this picture the other day and said they had the best pizza in the world but won't tell me. Where is this pizza chain in the US? Output format: City (e.g., Chicago)"
+            }
+        ]
+    ],
+    "image_file_name": "130.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_131",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This restaurant in the photo is pretty popular — which famous entrepreneur used to eat here? Output format: Full Name (e.g., Bill Gates)"
+            }
+        ]
+    ],
+    "image_file_name": "131.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_132",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "The map shown here looks different from the earlier one. How big is this map compared to the previous one? Output format: Number (e.g., 3.5)"
+            }
+        ]
+    ],
+    "image_file_name": "132.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_133",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I saw this picture and it made me wonder — who won the award for Lead Actress in a Drama Series in 2020? Output format: Full Name (e.g., Jennifer Aniston)"
+            }
+        ]
+    ],
+    "image_file_name": "133.jpeg",
+    "img_source": "https://www.npr.org/2020/09/21/915132850/the-emmys-pull-off-a-good-show-as-schitt-s-creek-and-watchmen-shine"
+}
+{
+    "id": "vision_base_134",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Seeing this made me curious. Who is the Player of the Season? Output format: Full Name (e.g., Lionel Messi)"
+            }
+        ]
+    ],
+    "image_file_name": "134.jpeg",
+    "img_source": "https://www.90min.com/posts/psg-2022-23-season-review-more-trophies-more-headaches"
+}
+{
+    "id": "vision_base_135",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This picture looks like it's from a cricket tournament — in which T20 season was it taken? Output format: Year (e.g., 2023)"
+            }
+        ]
+    ],
+    "image_file_name": "135.jpeg",
+    "img_source": "https://www.instagram.com/p/DHaaa8oStuT/?locale=pt_PT"
+}
+{
+    "id": "vision_base_136",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This picture is going around alot. Which company do the people on the screen belong to? Output format: Company Name (e.g., Microsoft)"
+            }
+        ]
+    ],
+    "image_file_name": "136.jpeg",
+    "img_source": "https://www.cnn.com/2025/07/19/business/andy-byron-astronomer-ceo-resigns"
+}
+{
+    "id": "vision_base_137",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I went to this concert last night but only one performer is visible in this picture, but there were actually two. Who was the second artist not shown in the image? Output format: Full Name (e.g., Taylor Swift)"
+            }
+        ]
+    ],
+    "image_file_name": "137.jpeg",
+    "img_source": "https://www.youtube.com/watch?v=WOnvdXpGZKE"
+}
+{
+    "id": "vision_base_138",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Went to this show with my girlfriend and now we're arguing about when it actually happened. Can you tell me the exact year of this concert? Output format: Year (e.g., 2021)"
+            }
+        ]
+    ],
+    "image_file_name": "138.jpeg",
+    "img_source": "https://www.charlotteobserver.com/entertainment/music-news-reviews/article273177305.html"
+}
+{
+    "id": "vision_base_139",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friend keeps bragging that he went to this show, but he won't say where it was. Can you tell me the location of this concert? Output format: City, Country (e.g., Mumbai, India)"
+            }
+        ]
+    ],
+    "image_file_name": "139.jpeg",
+    "img_source": "https://in.bookmyshow.com/events/sunburn-arena-ft-alan-walker-hyderabad/ET00394924"
+}
+{
+    "id": "vision_base_140",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This came on at a party last night, and everyone knew the main artist. But who was the second singer featured in the song? Output format: Full Name (e.g., John Smith)"
+            }
+        ]
+    ],
+    "image_file_name": "140.jpeg",
+    "img_source": "https://creativeyatra.com/news/ed-sheerans-sapphire-a-cross-cultural-melody-with-a-desi-twist/"
+}
+{
+    "id": "vision_base_141",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friend and I am arguing what's the easiest way to end this way. What is the easiest way to end this war? Output format: Action description (e.g., Destroying the command center)"
+            }
+        ]
+    ],
+    "image_file_name": "141.jpeg",
+    "img_source": "https://marvel-movies.fandom.com/wiki/Chitauri"
+}
+{
+    "id": "vision_base_142",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Everyone was shocked when this episode dropped. Do you remember what Sung Jin-Woo's level was in this picture? Output format: Number (e.g., 85)"
+            }
+        ]
+    ],
+    "image_file_name": "142.jpeg",
+    "img_source": "https://marvel-movies.fandom.com/wiki/Chitauri"
+}
+{
+    "id": "vision_base_143",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My mom is here right now. What kind of event is this? Output format: Event Type (e.g., Art Exhibition)"
+            }
+        ]
+    ],
+    "image_file_name": "143.jpeg",
+    "img_source": "https://www.pexels.com/photo/vintage-vinyl-record-market-in-nancy-france-32750757/"
+}
+{
+    "id": "vision_base_144",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Someone sent me this snap of their room calendar, and I'm trying to figure it out. What month is going on here? Output format: Month Year (e.g., March 2023)"
+            }
+        ]
+    ],
+    "image_file_name": "144.jpeg",
+    "img_source": "https://images.unsplash.com/photo-1706200234277-3586cd003ba3"
+}
+{
+    "id": "vision_base_145",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Everyone online was buzzing about this announcement. Which Bard model was actually released? Output format: Model (e.g., Bard)"
+            }
+        ]
+    ],
+    "image_file_name": "145.jpeg",
+    "img_source": "https://andwalsh.com/_image/800x/126b28510985b417631b7bf26a5bc94d.webp"
+}
+{
+    "id": "vision_base_146",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I am kind of lost right now. What train line is shown in this image? Output format: Train line description (e.g., The Metro Red Line connects downtown to the airport)"
+            }
+        ]
+    ],
+    "image_file_name": "146.jpeg",
+    "img_source": "https://images.unsplash.com/photo-1750785354752-2c234b875cdd?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+}
+{
+    "id": "vision_base_147",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Back when I was learning about embedded systems, this board always came up. Which one here can only run on a single CPU core? Output format: Board name (e.g., Arduino Uno)"
+            }
+        ]
+    ],
+    "image_file_name": "147.jpeg",
+    "img_source": "https://raspberrytips.com/which-raspberry-pi-model/"
+}
+{
+    "id": "vision_base_148",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Everyone in the crowd went crazy when it happened. Which world record was actually broken here? Output format: Record description (e.g., Fastest time to solve a Rubik's cube)"
+            }
+        ]
+    ],
+    "image_file_name": "148.jpeg",
+    "img_source": "https://www.japantimes.co.jp/life/2019/11/30/lifestyle/world-records-japan/"
+}
+{
+    "id": "vision_base_149",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This guy on market place is selling all these GPUs. Can you name every graphics card brand and model in this picture? The output should be in alphabetical order. Output format: 1. Brand Model, 2. Brand Model, 3. Brand Model, ... (e.g., 1. AMD RX 6800, 2. NVIDIA RTX 3080, ...)"
+            }
+        ]
+    ],
+    "image_file_name": "149.jpeg",
+    "img_source": "https://assetsio.gnwcdn.com/graphics-cards-2023.JPG?width=690&quality=80&format=jpg&dpr=2&auto=webp"
+}
+{
+    "id": "vision_base_150",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "People still talk about how one track dominated that event. Which song was played the most times on repeat? Output format: Song Title (e.g., Bohemian Rhapsody)"
+            }
+        ]
+    ],
+    "image_file_name": "150.jpeg",
+    "img_source": "https://soundcloud.com/user-472596107/travis-scott-circus-maximus"
+}
+{
+    "id": "vision_base_151",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friend swears there were guest performers, but I'm pretty sure it was just the main band. How many artists performed here? Output format: Number (e.g., 7)"
+            }
+        ]
+    ],
+    "image_file_name": "151.jpeg",
+    "img_source": "https://www.seattlemusicnews.com/2014/08/16/arctic-monkeys-seattle-paramount-theatre/"
+}
+{
+    "id": "vision_base_152",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "People online are guessing different films based on this picture, but no one seems sure. What movie shoot is this really? Output format: Movie Title (e.g., Avengers Endgame)"
+            }
+        ]
+    ],
+    "image_file_name": "152.jpeg",
+    "img_source": "https://www.brit.co/materialists-news/"
+}
+{
+    "id": "vision_base_153",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My buddy insists the lead actor did all their own stunts, but I've heard otherwise. How many stunt doubles did each main character have? The output should be in alphabetical order. Output format: Actor → Number, Actor → Number, Actor → Number (e.g., Chris Evans → 3, Chris Hemsworth → 1, Robert Downey Jr → 2, ...)"
+            }
+        ]
+    ],
+    "image_file_name": "153.jpeg",
+    "img_source": "https://www.hindustantimes.com/entertainment/hollywood/tom-holland-andrew-garfield-tobey-maguire-pose-with-stunt-doubles-in-unseen-epic-picture-from-spider-man-no-way-home-101645001929633.html"
+}
+{
+    "id": "vision_base_154",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I love this episode, I took a screenshot once but I don't remember which episode is this? Output format: Season Number, episode Number → Episode Title (e.g., Season 5, episode 12 → The One with Chandler's Work Laugh)"
+            }
+        ]
+    ],
+    "image_file_name": "154.jpeg",
+    "img_source": "https://www.denofgeek.com/tv/the-big-bang-theory-25-best-episodes/"
+}
+{
+    "id": "vision_base_155",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I remember seeing this team lineup somewhere, but I can't recall the names. Can you tell me both drivers? The output should be in alphabetical order. Output format: Driver Name and Driver Name (e.g., George Russell and Lewis Hamilton)"
+            }
+        ]
+    ],
+    "image_file_name": "155.jpeg",
+    "img_source": "https://www.the-race.com/formula-1/impressive-but-clunky-our-review-f1-the-movie/"
+}
+{
+    "id": "vision_base_156",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Everyone keeps talking about this particular moment. Who are the two drivers here? Output format: Driver Name and ( Driver Name or Driver Name) (e.g., Max Verstappen and ( Lewis Hamilton or George Russell))"
+            }
+        ]
+    ],
+    "image_file_name": "156.jpeg",
+    "img_source": "https://www.the-race.com/formula-1/impressive-but-clunky-our-review-f1-the-movie/"
+}
+{
+    "id": "vision_base_157",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Everyone started cheering at this moment. Whom are they all looking at? Output format: Character/Person Name (e.g., Spider-Man)"
+            }
+        ]
+    ],
+    "image_file_name": "157.jpeg",
+    "img_source": "https://deadline.com/2025/08/marvels-thunderbolts-streaming-release-date-disney-plus-1236486207/"
+}
+{
+    "id": "vision_base_158",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My cousin said this picture was from way back, but I don't believe him. When was this taken? Output format: Month Dayth Year (e.g., March 15th 2022)"
+            }
+        ]
+    ],
+    "image_file_name": "158.jpeg",
+    "img_source": "https://attractionsmagazine.com/marvel-announcements-comic-con-2024/"
+}
+{
+    "id": "vision_base_159",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "A kid pointed at this picture and asked me who they were — I couldn't answer. What team/panel is this? Output format: Show/Movie Name panel (e.g., Breaking Bad panel)"
+            }
+        ]
+    ],
+    "image_file_name": "159.jpeg",
+    "img_source": "https://www.youtube.com/watch?v=7fPOzX6PTHE"
+}
+{
+    "id": "vision_base_160",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My little cousin thought they dropped two different phones here, and I wasn't sure how to answer. Which phone model was announced with this one? Output format: Brand Model (e.g., iPhone 14 Pro)"
+            }
+        ]
+    ],
+    "image_file_name": "160.jpeg",
+    "img_source": "https://www.upi.com/Top_News/US/2019/02/20/Samsung-unveils-Galaxy-Fold-S10-opens-first-US-retail-stores/4431550610235/"
+}
+{
+    "id": "vision_base_161",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My sister mentioned seeing Linus on this show but couldn't remember the details. What laptop is he showing? Output format: Brand Model Name (e.g., Dell XPS 13 Gaming Laptop)"
+            }
+        ]
+    ],
+    "image_file_name": "161.jpeg",
+    "img_source": "https://www.dexerto.com/youtube/linus-tech-tips-shocks-jimmy-fallon-with-newest-tech-from-ces-2025-3030486/"
+}
+{
+    "id": "vision_base_162",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This photo of the tower has been trending online, but people are guessing random numbers. What's its actual height? Output format: Number feet (e.g., 500 feet)"
+            }
+        ]
+    ],
+    "image_file_name": "162.jpeg",
+    "img_source": "https://www.reddit.com/r/OppenheimerMovie/comments/194iywi/whos_this_actor_not_smiling_in_the_berkeley_scene/"
+}
+{
+    "id": "vision_base_163",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Everyone at the gym was talking about this video, but no one agreed on the number. How much weight is he lifting? Give Exact Number. Output format: Number KG (e.g., 95 KG)"
+            }
+        ]
+    ],
+    "image_file_name": "163.jpeg",
+    "img_source": "https://www.nytimes.com/2021/07/29/world/asia/china-olympics.html"
+}
+{
+    "id": "vision_base_164",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My cousin is lost and visiting the city and asked me about afternoon trains. Can you transfer to the C from this spot at 2:30 pm.? Output format: Yes/No (e.g., Yes)"
+            }
+        ]
+    ],
+    "image_file_name": "164.jpeg",
+    "img_source": "https://documentedny.com/2025/02/13/mta-subway-parole-ice-gps-new-york-doccs/"
+}
+{
+    "id": "vision_base_165",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I swears he thanked the director first, but my friend thinks it was someone else. Who was the first person he mentioned? Output format: Person/people (e.g., friends)"
+            }
+        ]
+    ],
+    "image_file_name": "165.jpeg",
+    "img_source": "https://www.latimes.com/entertainment-arts/awards/story/2023-03-12/ke-huy-quan-full-acceptance-speech-oscars-2023"
+}
+{
+    "id": "vision_base_166",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I saw a clip of this going viral, and the comments say he was taunted into it. Who were the two people behind it? The output should be in alphabetical order. Output format: Person1, Person2 (e.g., Jane Smith, John Doe)"
+            }
+        ]
+    ],
+    "image_file_name": "166.jpeg",
+    "img_source": "https://deadline.com/2025/03/adam-sandler-oscars-timothee-chalamet-opening-monologue-1236307667/"
+}
+{
+    "id": "vision_base_167",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friends and I am trying to find where this food truck is exactly. Where is this picture taken from? Give the building number. Output format:  Number street name (e.g.,  1250 broadway)"
+            }
+        ]
+    ],
+    "image_file_name": "167.jpeg",
+    "img_source": "https://upload.wikimedia.org/wikipedia/commons/a/a7/StreetfoodNY.jpg"
+}
+{
+    "id": "vision_base_168",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I am trying to bulk. How many calories is this? Output format: Number calories (e.g., 1200 calories)"
+            }
+        ]
+    ],
+    "image_file_name": "168.jpeg",
+    "img_source": "https://www.visitoakland.com/listing/raising-canes-chicken-fingers/8013/"
+}
+{
+    "id": "vision_base_169",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I am cutting. How many calories, sugar, and fat does this uncustomized drink have? Output format:  Around Number Calories, Numberh sugar, Numberh fat (e.g.,  Around 350 Calories, 30g sugar, 15g fat)"
+            }
+        ]
+    ],
+    "image_file_name": "169.jpeg",
+    "img_source": "https://www.reddit.com/r/starbucks/comments/1b8vjrc/lavender_cold_foam/#lightbox"
+}
+{
+    "id": "vision_base_170",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "People always talk about this moment like it's iconic, but I can't place it. Which film is this scene from? Output format: Movie Title (e.g., The Matrix)"
+            }
+        ]
+    ],
+    "image_file_name": "170.jpeg",
+    "img_source": "https://indigomusic.com/pop-cultures/whats-up-pop-news/how-vanilla-sky-emptied-times-square-the-1-million-scene-that-stopped-new-york-9342789"
+}
+{
+    "id": "vision_base_171",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My buddy and I are planned wing night on Thursday and the year was 2025, and we're splitting the bill. How much would 12 traditional wings plus 12 boneless wings cost in total? Output format: $Amount (e.g., $32.50)"
+            }
+        ]
+    ],
+    "image_file_name": "171.jpeg",
+    "img_source": "https://www.wichitabyeb.com/2021/12/lets-review-buffalo-wild-wings.html"
+}
+{
+    "id": "vision_base_172",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Everyone in the audience was cheering, but I missed the final count. How many did Bill get right? Output format:  Number (e.g., 6)"
+            }
+        ]
+    ],
+    "image_file_name": "172.jpeg",
+    "img_source": "https://www.businessinsider.com/bill-gates-grocery-prices-ellen-degeneres-video-2018-2"
+}
+{
+    "id": "vision_base_173",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "The crowd went wild as soon as the opening notes started. Which album was being played in this performance? Output format:  * Album Name (e.g., Abbey Road)"
+            }
+        ]
+    ],
+    "image_file_name": "173.jpeg",
+    "img_source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbKalbvFfCLsrsRonj78QplGt0VOqaGot8jQ&s"
+}
+{
+    "id": "vision_base_174",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I found this picture in an old album. When was the first picture taken give me the exact date and time? Output format:  * Anytime between H:MM a.m to H:MMam (e.g., Anytime between 9:30 a.m to 10:15am)"
+            }
+        ]
+    ],
+    "image_file_name": "174.jpeg",
+    "img_source": "https://www.reddit.com/r/pics/comments/1necyzf/i_had_a_disposable_camera_in_my_pocket_on_91101/#lightbox"
+}
+{
+    "id": "vision_base_175",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I caught a glimpse of this event but not the result. What team won this race? Output format: Team Name (e.g., The Redbull team)"
+            }
+        ]
+    ],
+    "image_file_name": "175.jpeg",
+    "img_source": "https://www.lego.com/en-us/aboutus/news/2025/may/lego-f1-drivers-parade?locale=en-us"
+}
+{
+    "id": "vision_base_176",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I missed my morning coffee today. How far is the nearest coffee place, in feet?"
+            }
+        ]
+    ],
+    "image_file_name": "176.jpeg",
+    "img_source": "https://maps.apple.com/place?address=801%20K%20St%20NW,%20Washington,%20DC%20%2020001,%20United%20States&coordinate=38.902601,-77.022989&name=Apple%20Carnegie%20Library&place-id=IBD4F1548B8A0F77C&map=explore"
+}
+{
+    "id": "vision_base_177",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I am at the CapitolOne Arena. I have a flight to catch at the closest airport at 2:50. I aim to be at the airport by 1 pm.  Will I get there on time if I catch an Uber?"
+            }
+        ]
+    ],
+    "image_file_name": "177.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_178",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I am fixing my watch. This photo was taken at 7:22 PM. Is the time shown here?"
+            }
+        ]
+    ],
+    "image_file_name": "178.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_179",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Last time I came here this mall was under renovation, when was this mall's renovations completed?"
+            }
+        ]
+    ],
+    "image_file_name": "179.jpeg",
+    "img_source": "https://www.bizjournals.com/baltimore/news/2018/12/05/shops-at-kenilworth-to-expand-in-new-year.html"
+}
+{
+    "id": "vision_base_180",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I saw highlights from this competition but didn't catch the result. What is the name of the team that lost this match?"
+            }
+        ]
+    ],
+    "image_file_name": "180.jpeg",
+    "img_source": "https://www.pcgamer.com/the-shanghai-dragons-didnt-win-a-single-match-in-overwatch-league-stage-oneheres-why/"
+}
+{
+    "id": "vision_base_181",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My little brother saw this picture and asked me about the weapon. What's the name of the staff the leftmost character is holding?"
+            }
+        ]
+    ],
+    "image_file_name": "181.jpeg",
+    "img_source": "https://overwatch.fandom.com/wiki/Wuyang?file=Wuyang_BeautyShot_001.png"
+}
+{
+    "id": "vision_base_182",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Looking at this map, I can't quite remember. What's the name of that cosmetic at the end?"
+            }
+        ]
+    ],
+    "image_file_name": "182.jpeg",
+    "img_source": "https://overwatch.fandom.com/wiki/Eichenwalde"
+}
+{
+    "id": "vision_base_183",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "During class, the professor mentioned this book, but didn't say if it goes into detail. Does it explain the Bellman Optimality Equation?"
+            }
+        ]
+    ],
+    "image_file_name": "183.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_184",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Fans were chanting the owner's name during the game, which made me wonder — who owns the opposing team?"
+            }
+        ]
+    ],
+    "image_file_name": "184.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_185",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I visited this city a few weeks later and saw the statue already up. On what date was it unveiled? Format the answer as mm/dd/yyyy."
+            }
+        ]
+    ],
+    "image_file_name": "185.jpeg",
+    "img_source": "https://www.reddit.com/r/nfl/comments/1ml8w0i/highlight_tom_bradys_statue_outside_gillette/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button"
+}
+{
+    "id": "vision_base_186",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My dad watched this unfold on TV back in the day, but I forgot which one it was. What mission were they part of?"
+            }
+        ]
+    ],
+    "image_file_name": "186.jpeg",
+    "img_source": "https://www.cbsnews.com/news/jim-lovell-dies-age-97-apollo-13-commander/"
+}
+{
+    "id": "vision_base_187",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My Uncle swears this was filmed in the summer, but I think he's wrong. What exact date was it filmed? Format the answer as mm/dd/yyyy"
+            }
+        ]
+    ],
+    "image_file_name": "187.jpeg",
+    "img_source": "https://images.app.goo.gl/U7gqn9L58DNG7Pqw7"
+}
+{
+    "id": "vision_base_188",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This was awesome to see in person-how something so heavy can get launched into space truly baffles me. In seconds what was the duration of this mission?"
+            }
+        ]
+    ],
+    "image_file_name": "188.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_189",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My son and I want to celebrate the day we went to go see this launch. I believe it was the one prior to the most recent launch. What day was it? (Format as mm/dd/yyyy)"
+            }
+        ]
+    ],
+    "image_file_name": "189.jpeg",
+    "img_source": "https://en.wikipedia.org/wiki/Starship_flight_test_5"
+}
+{
+    "id": "vision_base_190",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My daughter wants to be an astronaut and loves watching videos of people in microgravity. Who person in the blue?"
+            }
+        ]
+    ],
+    "image_file_name": "190.jpeg",
+    "img_source": "https://youtu.be/ojpLfJrBdKI?si=yKjbhDPbZyolJ0XC&t=202"
+}
+{
+    "id": "vision_base_191",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My neuroscience professor showed this slide during class today, but he doesn't share them with the class. What is the specific structure the blue line is pointing to? "
+            }
+        ]
+    ],
+    "image_file_name": "191.jpeg",
+    "img_source": "https://www.elsevier.com/resources/anatomy/nervous-system/central-nervous-system/lateral-geniculate-nucleus-of-thalamus/23365"
+}
+{
+    "id": "vision_base_192",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was traveling in this city for work and took this picture from the highway in my Uber. The driver was a big fan of the home team. Who won the last championship game played here?"
+            }
+        ]
+    ],
+    "image_file_name": "192.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_193",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I've been diving into Go recently and was watching some famous matches. what was the last move before this photo was taken?"
+            }
+        ]
+    ],
+    "image_file_name": "193.jpeg",
+    "img_source": "https://www.youtube.com/live/l-GsfyVCBu0?si=KJNNgpOQR0sbzSb7"
+}
+{
+    "id": "vision_base_194",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was driving around and thought this was interesting. As you can see, this university has a gerard manley hopkins quote on the facade of their buildings. What was this university's acceptance rate in 2023?"
+            }
+        ]
+    ],
+    "image_file_name": "194.jpeg",
+    "img_source": "https://www.americamagazine.org/faith/2019/07/24/what-10-years-protestant-church-taught-me-about-my-catholic-faith/?utm_source=chatgpt.com"
+}
+{
+    "id": "vision_base_195",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was watching this documentary and wanted to know how long races typically are. How long is the track shown on the screen here in meters?"
+            }
+        ]
+    ],
+    "image_file_name": "195.jpeg",
+    "img_source": "https://youtu.be/phZfIA9fAUM?si=88xpn3i8H2dc0YFP"
+}
+{
+    "id": "vision_base_196",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I didn't even know this was a thing--my friend just put me on to these. What was the name of the sculpture that won this year's championship?"
+            }
+        ]
+    ],
+    "image_file_name": "196.jpeg",
+    "img_source": "https://kdvr.com/news/local/winners-announced-for-the-2025-international-snow-sculpture-championships-in-breckenridge/"
+}
+{
+    "id": "vision_base_197",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I saw this poster online and find the art style really striking. who directed this video?"
+            }
+        ]
+    ],
+    "image_file_name": "197.jpeg",
+    "img_source": "https://www.imdb.com/title/tt34204967/fullcredits/"
+}
+{
+    "id": "vision_base_198",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This photo was taken on a trading floor. What city is the company that owns this exchange headquarted in?"
+            }
+        ]
+    ],
+    "image_file_name": "198.jpeg",
+    "img_source": "https://en.wikipedia.org/wiki/New_York_Mercantile_Exchange"
+}
+{
+    "id": "vision_base_199",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This match was really dynamic! A great showing on both ends, but the winner's precision and tempo gave them a substantial edge. who was knocked down first?"
+            }
+        ]
+    ],
+    "image_file_name": "199.jpeg",
+    "img_source": "https://www.espn.com/boxing/story/_/id/45002676/naoya-inoue-avoids-disaster-stops-ramon-cardenas-thriller"
+}
+{
+    "id": "vision_base_200",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What a way to pose! Interesting mix of countries on this expedition. Who is featured in this photo?"
+            }
+        ]
+    ],
+    "image_file_name": "200.jpeg",
+    "img_source": "https://www.nasa.gov/mission/expedition-37/#:~:text=Pictured%20from%20the%20left%20(back,Sergey%20Ryazanskiy%2C%20all%20flight%20engineers.&text=End-,The%20official%20insignia%20of%20the%20Expedition,aboard%20the%20International%20Space%20Station."
+}
+{
+    "id": "vision_base_201",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friend just sent me this photo. What road does this bridge run on? "
+            }
+        ]
+    ],
+    "image_file_name": "201.jpeg",
+    "img_source": "https://images.app.goo.gl/b3cTqbTHNBV27WTc9"
+}
+{
+    "id": "vision_base_202",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friend and I just started a small business in this town and are buying some furniture later. In meters, how far is the store up ahead from the city government office?"
+            }
+        ]
+    ],
+    "image_file_name": "202.jpeg",
+    "img_source": "https://www.pexels.com/photo/urban-surfing-scene-in-canary-islands-with-surfer-32762625/"
+}
+{
+    "id": "vision_base_203",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "We were walking along the quay and were curious about tours of the river. What is the maximum capacity of the white boat?"
+            }
+        ]
+    ],
+    "image_file_name": "203.jpeg",
+    "img_source": "https://www.pexels.com/video/parisian-sunset-by-the-eiffel-tower-32801416/"
+}
+{
+    "id": "vision_base_204",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "The poltical history of this country is fascinating to me. In kilometers, how far is this city from the capital by car? Round to the nearest whole number."
+            }
+        ]
+    ],
+    "image_file_name": "204.jpeg",
+    "img_source": "https://ameblo.jp/cotsplace/image-12563689218-14690559332.html"
+}
+{
+    "id": "vision_base_205",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My girlfriend and I have been going year-by-year, trying to watch every top-rated film. What movie won the most awards at this event?'"
+            }
+        ]
+    ],
+    "image_file_name": "205.jpeg",
+    "img_source": "https://www.newyorker.com/culture/the-front-row/oscars-2020-parasites-best-picture-win-cant-redeem-the-academys-failings"
+}
+{
+    "id": "vision_base_206",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My wife wanted to visit this place on our way back from the beach. In feet, how far underground are these caves at the deepest point?"
+            }
+        ]
+    ],
+    "image_file_name": "206.jpeg",
+    "img_source": "https://www.npr.org/2023/11/07/1211027608/the-largest-musical-instrument-in-the-world-is-underground-in-a-virginia-cave"
+}
+{
+    "id": "vision_base_207",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Look at this beauty. Take it in. What is the top speed of the variant shown here?"
+            }
+        ]
+    ],
+    "image_file_name": "207.jpeg",
+    "img_source": "https://astonmartinworks.com/models/db11/"
+}
+{
+    "id": "vision_base_208",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I want to visit this exhibit after class one day. How far is this museum from the city centre campus?"
+            }
+        ]
+    ],
+    "image_file_name": "208.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_209",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm going to be traveling here soon and am trying to figure out logistics for when get there. when did this place open?"
+            }
+        ]
+    ],
+    "image_file_name": "209.jpeg",
+    "img_source": "https://en.wikipedia.org/wiki/Chongqing_East_railway_station#/media/File:CR%E9%87%8D%E5%BA%86%E4%B8%9C_%E5%BC%80%E5%9F%8E%E5%A4%A7%E9%81%93%E4%BE%A7%E5%A4%9C%E6%99%AF.jpg"
+}
+{
+    "id": "vision_base_210",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I've been seeing a bunch of analog clocks throughout my time here. What clock is that in the background?"
+            }
+        ]
+    ],
+    "image_file_name": "210.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_211",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Is this building still open for tours?"
+            }
+        ]
+    ],
+    "image_file_name": "211.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_212",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I took this photo three years ago but cannot remember where. What mall is this? Include the city and country too."
+            }
+        ]
+    ],
+    "image_file_name": "212.jpeg",
+    "img_source": "https://www.koskikeskus.fi/en/stores"
+}
+{
+    "id": "vision_base_213",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friend just got off their flight and sent me this but I have no idea where they are. What airport is this?"
+            }
+        ]
+    ],
+    "image_file_name": "213.jpeg",
+    "img_source": "https://aviarealestate.fi/en/building/avia-fleet/"
+}
+{
+    "id": "vision_base_214",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "How many floors are in the tallest building of this city?"
+            }
+        ]
+    ],
+    "image_file_name": "214.jpeg",
+    "img_source": "https://www.reddit.com/r/fujifilm/comments/1khnzkq/xt5_viltrox_13_mm/"
+}
+{
+    "id": "vision_base_215",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This building really stands out amongst others in the city. What is the postal code of this building?"
+            }
+        ]
+    ],
+    "image_file_name": "215.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_216",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "what are the countries these quantum computers are in?"
+            }
+        ]
+    ],
+    "image_file_name": "216.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_217",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Of the publicly traded companies shown, what was the stock price (per share) at close on 5/31/2025?"
+            }
+        ]
+    ],
+    "image_file_name": "217.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_218",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What organization put together the event held on 7/23/25 in dollars?"
+            }
+        ]
+    ],
+    "image_file_name": "218.jpeg",
+    "img_source": "https://web.cvent.com/event/370695fe-856e-4bae-88c5-7140600de0ee/summary"
+}
+{
+    "id": "vision_base_219",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "It's interesting to see mythological or allegorical imagery on government buildings. who is the center figure?"
+            }
+        ]
+    ],
+    "image_file_name": "219.jpeg",
+    "img_source": "https://prologue.blogs.archives.gov/2014/10/01/symbols-of-significance-the-pediments-of-the-national-archives-building/"
+}
+{
+    "id": "vision_base_220",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I fell asleep at the end of the first half. what was the final score of this game?"
+            }
+        ]
+    ],
+    "image_file_name": "220.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_221",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "How much did this company raise in their most recent seed funding round?"
+            }
+        ]
+    ],
+    "image_file_name": "221.jpeg",
+    "img_source": "https://www.radical-ai.com/news/series-seed"
+}
+{
+    "id": "vision_base_222",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm waiting for the metrobus and saw this billboard. How much for two carnival wristbands? ()"
+            }
+        ]
+    ],
+    "image_file_name": "222.jpeg",
+    "img_source": "https://www.etix.com/ticket/v/9714/the-montgomery-county-agricultural-fair"
+}
+{
+    "id": "vision_base_223",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What kind of software is the staff sergeant presenting?"
+            }
+        ]
+    ],
+    "image_file_name": "223.jpeg",
+    "img_source": "https://www.dvidshub.net/search/2.0?q=drone"
+}
+{
+    "id": "vision_base_224",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "did any group win a triple crown at this event? if so which?"
+            }
+        ]
+    ],
+    "image_file_name": "224.jpeg",
+    "img_source": "https://biz.chosun.com/en/en-entertainment/2025/08/24/PPBO7YYBR5G6BDYDLB7IFCXNXA/#:~:text=NCT WISH showcased a variety,Share your feedback here."
+}
+{
+    "id": "vision_base_225",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This slide shows the top four impact areas. what are the bottom four impact areas?"
+            }
+        ]
+    ],
+    "image_file_name": "225.jpeg",
+    "img_source": "https://youtu.be/gevJ5xU_WUA?si=fmR81t3lM2dau9W7"
+}
+{
+    "id": "vision_base_226",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Pretty fascinated by this presentation but i can't remember who gave it. What organization gave this talk?"
+            }
+        ]
+    ],
+    "image_file_name": "226.jpeg",
+    "img_source": "https://www.emeraldcloudlab.com/"
+}
+{
+    "id": "vision_base_227",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My favorite photographer used this photo as the cover for his most recent book. Who was governor when final approval for this project was granted?"
+            }
+        ]
+    ],
+    "image_file_name": "227.jpeg",
+    "img_source": "https://www.bernhardlang.de/solarplants#:~:text=Solar%20Power%20Plants%202018,%E2%80%9C"
+}
+{
+    "id": "vision_base_228",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This was taken at the 126th Boston Marathon. What is the white building in the background?"
+            }
+        ]
+    ],
+    "image_file_name": "228.jpeg",
+    "img_source": "()https://www.usatoday.com/story/sports/2022/04/17/2022-boston-marathon-live-stream-race-schedule-tv-channel/7305922001/"
+}
+{
+    "id": "vision_base_229",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "In kilometeres, How far is it from here to the nearest airport?"
+            }
+        ]
+    ],
+    "image_file_name": "229.jpeg",
+    "img_source": "61° 27' 25.1082\" N 23° 43' 57.4889\" E"
+}
+{
+    "id": "vision_base_230",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This facility is built in a very interesting way. Most of its parking structure is underground. How many stores are in this mall?"
+            }
+        ]
+    ],
+    "image_file_name": "230.jpeg",
+    "img_source": "https://en.wikipedia.org/wiki/Ratina_(shopping_centre)"
+}
+{
+    "id": "vision_base_231",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm meeting a date tonight for dinner. If I start walking now from the building with the clock, what time will I get to the nearest Teaism?"
+            }
+        ]
+    ],
+    "image_file_name": "231.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_232",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm late to work! How many minutes until market close here?"
+            }
+        ]
+    ],
+    "image_file_name": "232.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_233",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm suprised by how well the metro fucntions here! How many subway stops does this city have?"
+            }
+        ]
+    ],
+    "image_file_name": "233.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_234",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I love the style of this building, its very modern compared to the rest of the city. Is that a penthouse on top?"
+            }
+        ]
+    ],
+    "image_file_name": "234.jpeg",
+    "img_source": "https://www.google.com/imgres?imgurl=https%3A%2F%2Fwww.hotelbergs.lv%2Fimages%2Fheaders%2F1170x390%2Fhotel-bergs-2003.jpg&tbnid=S9Q-MkkCIsIfJM&vet=1&imgrefurl=https%3A%2F%2Fwww.hotelbergs.lv%2Fen%2Fmeetings-events%2Fglass-hall%2F&docid=Wx2ehLj33-KjjM&w=1170&h=390&itg=1&hl=en&source=sh%2Fx%2Fim%2Fm1%2F5&kgs=75aa809bfe6108f4&shem=isst"
+}
+{
+    "id": "vision_base_235",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "this statue is near another representing Bartle Frere. Who is it of?"
+            }
+        ]
+    ],
+    "image_file_name": "235.jpeg",
+    "img_source": "https://essentialldn.com/2023/05/10/victoria-embankment-gardens/\nhttps://www.google.com/imgres?imgurl=https%3A%2F%2Fi0.wp.com%2Fessentialldn.com%2Fwp-content%2Fuploads%2F2023%2F05%2Fimg_9779.jpg%3Ffit%3D2651%252C3759%26ssl%3D1&tbnid=QufHYHcxu_5ISM&vet=1&imgrefurl=https%3A%2F%2Fessentialldn.com%2F2023%2F05%2F10%2Fvictoria-embankment-gardens%2F&docid=pw0eFQVnks4vsM&w=2651&h=3759&hl=en&source=sh%2Fx%2Fim%2Fm1%2F5&kgs=648882670b44d7e7&shem=isst#imgrc=y-NGRi5dcJXSbM&imgdii=eTCKfS9T-4cmmM"
+}
+{
+    "id": "vision_base_236",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This thing is really tucked away, I never would've found it. what is the club's capacity"
+            }
+        ]
+    ],
+    "image_file_name": "236.jpeg",
+    "img_source": "https://en.wikipedia.org/wiki/Heaven_(nightclub)"
+}
+{
+    "id": "vision_base_237",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "We've been walking around here at night while we wait. what year did this port open?"
+            }
+        ]
+    ],
+    "image_file_name": "237.jpeg",
+    "img_source": "https://en.wikipedia.org/wiki/Port_of_Dover"
+}
+{
+    "id": "vision_base_238",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was thinking of seeing this with a friend who'll be in the city soon. Is this ending soon?"
+            }
+        ]
+    ],
+    "image_file_name": "238.jpeg",
+    "img_source": "https://www.theguardian.com/artanddesign/2024/dec/26/sensual-surrealism-kiefers-delights-gehrys-guggenheim-the-best-art-and-architecture-shows-to-visit-in-2025?utm_source=chatgpt.com"
+}
+{
+    "id": "vision_base_239",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I sent this photo to a friend to point out where I was; they were shocked. In meters, how long is the longest span of this city's famous bridge?"
+            }
+        ]
+    ],
+    "image_file_name": "239.jpeg",
+    "img_source": "https://en.wikipedia.org/wiki/Troms%C3%B8_Bridge#"
+}
+{
+    "id": "vision_base_240",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm thinking of renting something here. What floor is the pool deck on?"
+            }
+        ]
+    ],
+    "image_file_name": "240.jpeg",
+    "img_source": "https://en.wikipedia.org/wiki/414_Light_Street_(Baltimore)#:~:text=Article,steel%20structure%20completed%20in%202018."
+}
+{
+    "id": "vision_base_241",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm interested in the history of this place, especially the people who shaped its history. What did the founder of this store originally sell before moving to manhattan?"
+            }
+        ]
+    ],
+    "image_file_name": "241.jpeg",
+    "img_source": "https://en.wikipedia.org/wiki/Frederick_August_Otto_Schwarz?wprov=sfti1#"
+}
+{
+    "id": "vision_base_242",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "Warm light really brings this style of architecture to life. What is the name of the engineering school here?"
+            }
+        ]
+    ],
+    "image_file_name": "242.jpeg",
+    "img_source": "https://www.reddit.com/r/LiminalSpace/comments/yi067b/my_very_brutalist_university_library/"
+}
+{
+    "id": "vision_base_243",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "This was really crazy to see, with all the terraforming and preparation that went into it. What was the longest ski jump completed by this individual here?"
+            }
+        ]
+    ],
+    "image_file_name": "243.jpeg",
+    "img_source": "https://youtu.be/ngddfxog-yw?si=FsZOXmyFvDN5CVW6"
+}
+{
+    "id": "vision_base_244",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I was initially fooled when I saw this; I thought it was a photo of something totally different. What century is this estimated to have been created in?"
+            }
+        ]
+    ],
+    "image_file_name": "244.jpeg",
+    "img_source": "https://en.wikipedia.org/wiki/Aztec_sun_stone"
+}
+{
+    "id": "vision_base_245",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "What day was this eclipse in 2025? I live on the east coast of the US."
+            }
+        ]
+    ],
+    "image_file_name": "245.jpeg",
+    "img_source": "https://en.wikipedia.org/wiki/September_2025_lunar_eclipse"
+}
+{
+    "id": "vision_base_246",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm shopping and am looking for a t-shirt that's a bit heavier. what is the metric weight of this fabric? Give the answer in g/sqm"
+            }
+        ]
+    ],
+    "image_file_name": "246.jpeg",
+    "img_source": "https://us.carhartt-wip.com/en-us/products/s-s-solar-chrome-c-logo-t-shirt-white-1285?Color=White&Size=S"
+}
+{
+    "id": "vision_base_247",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I've been looking into game studios that really push the industry forward with each release. I was wondering; what game is this?"
+            }
+        ]
+    ],
+    "image_file_name": "247.jpeg",
+    "img_source": "https://youtu.be/SC3C7GMMfDU?si=2nN4CRIc3_71KYaO"
+}
+{
+    "id": "vision_base_248",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "My friend who recently came back from China bought me this and encouraged me to read the original myth. who is the author or the most recent english translation of this story?"
+            }
+        ]
+    ],
+    "image_file_name": "248.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_249",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I wanted to charge my car at the Shell Recharge while I went grocery shopping. Can I still charge my car?"
+            }
+        ]
+    ],
+    "image_file_name": "249.jpeg",
+    "img_source": ""
+}
+{
+    "id": "vision_base_250",
+    "question": [
+        [
+            {
+                "role": "user",
+                "content": "I'm new to this area and just got a memebership here. does this gym offer belay classes?"
+            }
+        ]
+    ],
+    "image_file_name": "250.jpeg",
+    "img_source": ""
+}
