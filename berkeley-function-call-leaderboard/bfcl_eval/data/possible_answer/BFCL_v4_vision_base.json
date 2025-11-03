@@ -1421,13 +1421,13 @@
 {
     "id": "vision_base_106",
     "ground_truth": [
-        "Kunal Kamra Controversy"
+        "Vandelism"
     ],
     "ground_truth_source": "",
     "reasoning": [
         "Understanding this is stand up comedy",
         "Google_search → “Which is the Stand up comedy place with logo H in background?” → Habitat",
-        "Google_search → “Why was stand up comedy place habitat destroyed?” → Kunal Kamra Controversy"
+        "Google_search → “Why was stand up comedy place habitat destroyed?” → Kunal Kamra Controversy → Vandelism"
     ]
 }
 {
@@ -1445,13 +1445,12 @@
 {
     "id": "vision_base_108",
     "ground_truth": [
-        "3"
+        "4"
     ],
     "ground_truth_source": "",
     "reasoning": [
         "Google_search → “When did apple introduce MacBook Pro 14 inch 2021” → Apple's 'Unleashed' event on 18 October 2021",
         "Google search → “What all products did apple introduce at Apple's 'Unleashed' event on 18 October 2021” → 14-inch MacBook Pro (2021 redesign, M1 Pro / M1 Max options) 16-inch MacBook Pro (2021 redesign, M1 Pro / M1 Max options) AirPods (3rd generation) HomePod mini in new colors (blue, yellow, orange) → 4",
-        "4 - 1 = 3"
     ]
 }
 {
@@ -1461,7 +1460,8 @@
     ],
     "ground_truth_source": "",
     "reasoning": [
-        "Google_search → “Magnifica Locura first song” → No dejaré que te vayas"
+        "Google_search → “Magnifica Locura songs” → artist's spotify profile",
+        "Artist's spotify profile → 3:51 → No dejaré que te vayas"
     ]
 }
 {
@@ -1471,14 +1471,14 @@
     ],
     "ground_truth_source": "",
     "reasoning": [
-        "Understand its palace of Versailles based on text on pillars",
+        "Understand its palace of Versailles based on text on pillars and also a basic image search gives details about the palace of Versailles.",
         "Google_search → “palace of Versailles ticket price” → €21"
     ]
 }
 {
     "id": "vision_base_111",
     "ground_truth": [
-        "Royal Crown Cola."
+        "George Follmer - Royal Crown Cola."
     ],
     "ground_truth_source": "",
     "reasoning": [
@@ -1575,7 +1575,7 @@
     "ground_truth_source": "",
     "reasoning": [
         "Understanding it’s popmart’s labubu doll",
-        "Google search → “How much money did Wang Ning make from this toy in a day?” → 1.6 billion"
+        "Google search → “How much money did Wang Ning make from this toy in a day when it was launched?” → 1.6 billion"
     ]
 }
 {
@@ -1713,7 +1713,7 @@
     "ground_truth_source": "",
     "reasoning": [
         "Understanding that there is a cup on the right side which spelling _RECOS Pizzeria → the blank can be filled in by understanding that the only famous pizza chain with this name is GRECO’S Pizzeria",
-        "Google search →pizzeria greco's location → LA"
+        "Google search → pizzeria greco's location → LA"
     ]
 }
 {
@@ -1814,12 +1814,12 @@
 {
     "id": "vision_base_139",
     "ground_truth": [
-        "Pune, India"
+        "India"
     ],
     "ground_truth_source": "",
     "reasoning": [
         "Understanding that it’s alan walker in the image and the text read SUNBURN which is in reverse and a little cut",
-        "Google → “Where does SunBURN take place?” → Goa, India"
+        "Google → “Where does SunBURN take place?” → India"
     ]
 }
 {
@@ -1953,7 +1953,7 @@
     ],
     "ground_truth_source": "",
     "reasoning": [
-        "Understanding this is an arctic monkey concert from the wave design",
+        "Understanding this is an arctic monkey concert from the wave design, which can also be found using a simple image search.",
         "Google search → “number of members in arctic monkey band” → 4"
     ]
 }
@@ -1977,14 +1977,14 @@
     "reasoning": [
         "Understanding that this scene is from Spiderman No way home and there are 7 characters in this scene",
         "Google search → “How many stunt doubles did Tom Holland have in Spiderman No way home?” → 2",
-        "Google search → “How many stunt doubles did Toby…. have in Spiderman No way home?” → 1",
-        "Google search → “How many stunt doubles did Andrew… have in Spiderman No way home?” → 1"
+        "Google search → “How many stunt doubles did Toby have in Spiderman No way home?” → 1",
+        "Google search → “How many stunt doubles did Andrew have in Spiderman No way home?” → 1"
     ]
 }
 {
     "id": "vision_base_154",
     "ground_truth": [
-        "Season 6, episode 23 → “The Love Spell Potential”"
+        "Season 6, episode 23 - “The Love Spell Potential”"
     ],
     "ground_truth_source": "",
     "reasoning": [
@@ -2025,7 +2025,9 @@
     "ground_truth_source": "",
     "reasoning": [
         "Understanding that this scene is from the thunderbolts movie from marvel.",
-        "Google search → “at whom are all thunderbolts looking at?” → (Most of the LLMs will say Bob Reynolds since he is not in the scene which is technically true but Bob Reynolds is gone and its void that has taken over his body in this scene) → The Void"
+        "Google search → How many characters are in thunderbolts team? → 6",
+        "Understanding there are 5 people in the scene so the obvious guess is saying whoever is missing in this scene",
+        "Sentry is missing so the Void is the correct answer."
     ]
 }
 {
