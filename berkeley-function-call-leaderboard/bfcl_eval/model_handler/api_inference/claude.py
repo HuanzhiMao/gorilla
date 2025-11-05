@@ -3,8 +3,8 @@ import os
 import time
 from typing import Any
 
-from anthropic import Anthropic, RateLimitError
-from anthropic.types import TextBlock, ToolUseBlock
+from anthropic import Anthropic, RateLimitError, BadRequestError
+from anthropic.types import TextBlock, ToolUseBlock, ThinkingBlock
 from bfcl_eval.constants.enums import ModelStyle
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
@@ -108,6 +108,7 @@ class ClaudeHandler(BaseHandler):
             "temperature": self.temperature,
             "tools": inference_data["tools"],
             "messages": messages,
+            # "thinking": {"type": "enabled"},
         }
 
         # Include system_prompt if it exists
@@ -158,6 +159,7 @@ class ClaudeHandler(BaseHandler):
         text_outputs = []
         tool_call_outputs = []
         tool_call_ids = []
+        reasoning_content = []
 
         for content in api_response.content:
             if isinstance(content, TextBlock):
@@ -165,6 +167,8 @@ class ClaudeHandler(BaseHandler):
             elif isinstance(content, ToolUseBlock):
                 tool_call_outputs.append({content.name: json.dumps(content.input)})
                 tool_call_ids.append(content.id)
+            elif isinstance(content, ThinkingBlock):
+                reasoning_content.append(content.thinking)
 
         model_responses = tool_call_outputs if tool_call_outputs else text_outputs
 
@@ -173,6 +177,7 @@ class ClaudeHandler(BaseHandler):
         return {
             "model_responses": model_responses,
             "model_responses_message_for_chat_history": model_responses_message_for_chat_history,
+            "reasoning_content": "\n".join(reasoning_content),
             "tool_call_ids": tool_call_ids,
             "input_token": api_response.usage.input_tokens,
             "output_token": api_response.usage.output_tokens,

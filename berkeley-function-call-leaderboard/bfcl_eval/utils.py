@@ -3,6 +3,7 @@ import os
 import re
 from copy import deepcopy
 from pathlib import Path
+from threading import Lock
 from typing import Union
 
 from bfcl_eval.constants.category_mapping import *
@@ -14,6 +15,20 @@ from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.executable_backend_config import (
     MULTI_TURN_FUNC_DOC_FILE_MAPPING,
 )
+
+_FILE_LOCK_REGISTRY: dict[str, Lock] = {}
+_FILE_LOCK_REGISTRY_LOCK = Lock()
+
+
+def _get_file_lock(filepath: str) -> Lock:
+    normalized_path = os.path.abspath(filepath)
+    with _FILE_LOCK_REGISTRY_LOCK:
+        lock = _FILE_LOCK_REGISTRY.get(normalized_path)
+        if lock is None:
+            lock = Lock()
+            _FILE_LOCK_REGISTRY[normalized_path] = lock
+        return lock
+
 
 #### Helper functions to extract/parse/complete test category from different formats ####
 
@@ -336,8 +351,8 @@ def load_file(file_path, sort_by_id=False, allow_concatenated_json=False):
                 content = json.loads(line)
                 result.append(content)
             except Exception as e:
-                if not allow_concatenated_json:
-                    raise e
+                # if not allow_concatenated_json:
+                raise e
 
                 # Although this really shouldn't happen, sometimes a result file might have more than one JSON objects concatenated on a single line instead of one per line (e.g. '{"id": 1, xxx}{"id": 2, xxx}').
                 # We can parse them incrementally by using `json.JSONDecoder.raw_decode`, which returns both the parsed object and the index where it stopped parsing.
@@ -473,13 +488,17 @@ def write_list_of_dicts_to_file(filename, data, subdir=None) -> None:
         # Construct the full path to the file
         filename = os.path.join(subdir, os.path.basename(filename))
 
+    abs_filename = os.path.abspath(filename)
+    file_lock = _get_file_lock(abs_filename)
+
     # Write the list of dictionaries to the file in JSON format
-    with open(filename, "w", encoding="utf-8") as f:
-        for i, entry in enumerate(data):
-            # Go through each key-value pair in the dictionary to make sure the values are JSON serializable
-            entry = make_json_serializable(entry)
-            json_str = json.dumps(entry, ensure_ascii=False) + "\n"
-            f.write(json_str)
+    with file_lock:
+        with open(abs_filename, "w", encoding="utf-8") as f:
+            for i, entry in enumerate(data):
+                # Go through each key-value pair in the dictionary to make sure the values are JSON serializable
+                entry = make_json_serializable(entry)
+                json_str = json.dumps(entry, ensure_ascii=False) + "\n"
+                f.write(json_str)
 
 
 def make_json_serializable(value):

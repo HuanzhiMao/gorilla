@@ -31,14 +31,14 @@ def get_args():
     # Refer to model_choice for supported models.
     parser.add_argument("--model", type=str, default="gorilla-openfunctions-v2", nargs="+")
     # Refer to test_categories for supported categories.
-    parser.add_argument("--test-category", type=str, default="all", nargs="+")
+    parser.add_argument("--test-category", type=str, default="multi_turn_base", nargs="+")
 
     # Parameters for the model that you want to test.
     parser.add_argument("--temperature", type=float, default=0.001)
     parser.add_argument("--include-input-log", action="store_true", default=False)
     parser.add_argument("--exclude-state-log", action="store_true", default=False)
-    parser.add_argument("--num-threads", required=False, type=int)
-    parser.add_argument("--num-gpus", default=1, type=int)
+    parser.add_argument("--num-threads", default=100, type=int)
+    parser.add_argument("--num-gpus", default=8, type=int)
     parser.add_argument("--backend", default="sglang", type=str, choices=["vllm", "sglang"])
     parser.add_argument("--gpu-memory-utilization", default=0.9, type=float)
     parser.add_argument("--result-dir", default=None, type=str)
@@ -47,7 +47,7 @@ def get_args():
     parser.add_argument(
         "--skip-server-setup",
         action="store_true",
-        default=False,
+        default=True,
         help="Skip vLLM/SGLang server setup and use existing endpoint specified by the LOCAL_SERVER_ENDPOINT and LOCAL_SERVER_PORT environment variables.",
     )
     # Optional local model path
@@ -379,6 +379,14 @@ def main(args):
         args.result_dir = PROJECT_ROOT / args.result_dir
     else:
         args.result_dir = RESULT_PATH
+    
+    # for model_result_json in args.result_dir.rglob(RESULT_FILE_PATTERN):
+    #     try:
+    #         sort_file_content_by_id(model_result_json)
+    #     except Exception as e:
+    #         print(model_result_json)
+    #         print(e)
+    #         return
 
     for model_name in args.model:
         test_cases_total = collect_test_cases(
