@@ -111,6 +111,17 @@ class ClaudeHandler(BaseHandler):
             # "thinking": {"type": "enabled"},
         }
 
+        if "FC-low" in self.registry_name:
+            kwargs["thinking"] = {"type": "enabled", "budget_tokens": "1024"}
+        elif "FC-medium" in self.registry_name:
+            kwargs["thinking"] = {"type": "enabled", "budget_tokens": "2048"}
+        elif "FC-high" in self.registry_name:
+            kwargs["thinking"] = {"type": "enabled", "budget_tokens": "4096"}
+        elif "FC-ultra" in self.registry_name:
+            kwargs["thinking"] = {"type": "enabled", "budget_tokens": "8192"}
+        elif "FC-max" in self.registry_name:
+            kwargs["thinking"] = {"type": "enabled", "budget_tokens": "16384"}
+
         # Include system_prompt if it exists
         if "system_prompt" in inference_data:
             kwargs["system"] = inference_data["system_prompt"]

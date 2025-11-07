@@ -105,6 +105,14 @@ class OpenAIResponsesHandler(BaseHandler):
             "temperature": self.temperature,
         }
 
+        if "FC-low" in self.registry_name:
+            kwargs["reasoning"]["effort"] = "low"
+        elif "FC-medium" in self.registry_name:
+            kwargs["reasoning"]["effort"] = "medium"
+        elif "FC-high" in self.registry_name:
+            kwargs["reasoning"]["effort"] = "high"
+
+
         # OpenAI reasoning models don't support temperature parameter
         if (
             "o3" in self.model_name
