@@ -344,49 +344,14 @@ def get_directory_structure_by_category(test_category: str) -> str:
 
 def load_file(file_path, sort_by_id=False, allow_concatenated_json=False):
     result = []
-    with open(file_path) as f:
-        file = f.readlines()
-        for line in file:
-            try:
+    file_path = os.path.abspath(file_path)
+    with _get_file_lock(file_path):
+        with open(file_path) as f:
+            file = f.readlines()
+            for line in file:
                 content = json.loads(line)
                 result.append(content)
-            except Exception as e:
-                # if not allow_concatenated_json:
-                raise e
-
-                # Although this really shouldn't happen, sometimes a result file might have more than one JSON objects concatenated on a single line instead of one per line (e.g. '{"id": 1, xxx}{"id": 2, xxx}').
-                # We can parse them incrementally by using `json.JSONDecoder.raw_decode`, which returns both the parsed object and the index where it stopped parsing.
-                line_jsons = []
-                decoder = json.JSONDecoder()
-                idx = 0
-                while idx < len(line):
-                    # Skip whitespace between objects (if any)
-                    while idx < len(line) and line[idx].isspace():
-                        idx += 1
-
-                    if idx >= len(line):
-                        break
-
-                    try:
-                        json_obj, idx = decoder.raw_decode(line, idx)
-                        line_jsons.append(json_obj)
-                    except json.JSONDecodeError:
-                        # If decoding fails at any point, the entire line is invalid.
-                        raise e
-
-                # After parsing, we must ensure the entire line has been consumed.
-                # If `idx` is not at the end of the line, it means there's trailing
-                # garbage, which is an error.
-                if idx < len(line):
-                    raise e
-
-                if not line_jsons:
-                    # If the line was non-empty but contained no JSON objects (e.g., only whitespace),
-                    # it's an error.
-                    raise e
-
-                result.extend(line_jsons)
-
+                
     if sort_by_id:
         result.sort(key=sort_key)
     return result
@@ -489,10 +454,9 @@ def write_list_of_dicts_to_file(filename, data, subdir=None) -> None:
         filename = os.path.join(subdir, os.path.basename(filename))
 
     abs_filename = os.path.abspath(filename)
-    file_lock = _get_file_lock(abs_filename)
 
     # Write the list of dictionaries to the file in JSON format
-    with file_lock:
+    with _get_file_lock(abs_filename):
         with open(abs_filename, "w", encoding="utf-8") as f:
             for i, entry in enumerate(data):
                 # Go through each key-value pair in the dictionary to make sure the values are JSON serializable
