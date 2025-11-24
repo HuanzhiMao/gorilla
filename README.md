@@ -1,189 +1,328 @@
-# Gorilla: Large Language Model Connected with Massive APIs
+# Berkeley Function Calling Leaderboard (BFCL)
 
-<div align="center">
-  <img src="https://github.com/ShishirPatil/gorilla/blob/gh-pages/assets/img/logo.png" width="50%" height="50%">
-</div>
+## Table of Contents
 
-<div align="center">
-  
-[![Arxiv](https://img.shields.io/badge/Gorilla_Paper-2305.15334-<COLOR>.svg?style=flat-square)](https://arxiv.org/abs/2305.15334) [![Discord](https://img.shields.io/discord/1111172801899012102?label=Discord&logo=discord&logoColor=green&style=flat-square)](https://discord.gg/grXXvj9Whz) [![Gorilla Website](https://img.shields.io/badge/Website-gorilla.cs.berkeley.edu-blue?style=flat-square)](https://gorilla.cs.berkeley.edu/) [![Gorilla Blog](https://img.shields.io/badge/Blog-gorilla.cs.berkeley.edu/blog.html-blue?style=flat-square)](https://gorilla.cs.berkeley.edu/blog.html) [![Hugging Face](https://img.shields.io/badge/🤗-gorilla--llm-yellow.svg?style=flat-square)](https://huggingface.co/gorilla-llm)
+- [Berkeley Function Calling Leaderboard (BFCL)](#berkeley-function-calling-leaderboard-bfcl)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Installation \& Setup](#installation--setup)
+    - [Basic Installation](#basic-installation)
+    - [Installing from PyPI](#installing-from-pypi)
+    - [Extra Dependencies for Self-Hosted Models](#extra-dependencies-for-self-hosted-models)
+    - [Configuring Project Root Directory](#configuring-project-root-directory)
+    - [Setting up Environment Variables](#setting-up-environment-variables)
+      - [Configuring SerpAPI for Web Search Category](#configuring-serpapi-for-web-search-category)
+  - [Running Evaluations](#running-evaluations)
+    - [Generating LLM Responses](#generating-llm-responses)
+      - [Selecting Models and Test Categories](#selecting-models-and-test-categories)
+      - [Selecting Specific Test Cases with `--run-ids`](#selecting-specific-test-cases-with---run-ids)
+      - [Output and Logging](#output-and-logging)
+      - [For API-based Models](#for-api-based-models)
+      - [For Locally-hosted OSS Models](#for-locally-hosted-oss-models)
+        - [For Pre-existing OpenAI-compatible Endpoints](#for-pre-existing-openai-compatible-endpoints)
+      - [(Alternate) Script Execution for Generation](#alternate-script-execution-for-generation)
+    - [Evaluating Generated Responses](#evaluating-generated-responses)
+      - [Output Structure](#output-structure)
+      - [(Optional) WandB Evaluation Logging](#optional-wandb-evaluation-logging)
+      - [(Alternate) Script Execution for Evaluation](#alternate-script-execution-for-evaluation)
+  - [Contributing \& How to Add New Models](#contributing--how-to-add-new-models)
+  - [Additional Resources](#additional-resources)
 
-</div>
+---
 
-## Latest Updates
-> 📢 Check out our detailed [Berkeley Function Calling Leaderboard changelog](/berkeley-function-call-leaderboard/CHANGELOG.md) (Last updated: ![Last Updated](https://img.shields.io/github/last-commit/ShishirPatil/gorilla?path=berkeley-function-call-leaderboard/CHANGELOG.md)) for the latest dataset / model updates to the Berkeley Function Calling Leaderboard!
+## Introduction
 
+We introduce the Berkeley Function Calling Leaderboard (BFCL), the **first comprehensive and executable function call evaluation** dedicated to assessing Large Language Models' (LLMs) ability to invoke functions. Unlike previous evaluations, BFCL accounts for various forms of function calls, diverse scenarios, and executability.
 
-- 🤖 [07/17/2025] Announcing BFCL V4 Agentic! As function-calling forms the bedrock of Agentic systems, BFCL V4 Agentic benchmark focuses on tool-calling in real-world agentic settings, featuring web search with multi-hop reasoning and error recovery, agent memory management, and format sensitivity evaluation. [[Web-search Blog](https://gorilla.cs.berkeley.edu/blogs/15_bfcl_v4_web_search.html)] [[Memory Blog](https://gorilla.cs.berkeley.edu/blogs/16_bfcl_v4_memory.html)] [[Format Sensitivity Blog](https://gorilla.cs.berkeley.edu/blogs/17_bfcl_v4_prompt_variation.html)] [[PR](https://github.com/ShishirPatil/gorilla/pull/1019)] [[Tweet](https://x.com/shishirpatil_/status/1946020561626546176)]
+💡 Read more in our blog posts:
 
-- 🎯 [10/04/2024] Introducing the Agent Arena by Gorilla X LMSYS Chatbot Arena! Compare different agents in tasks like search, finance, RAG, and beyond. Explore which models and tools work best for specific tasks through our novel ranking system and community-driven prompt hub. [[Blog](https://gorilla.cs.berkeley.edu/blogs/14_agent_arena.html)] [[Arena](http://agent-arena.com)] [[Leaderboard](http://agent-arena.com/leaderboard)] [[Dataset](https://github.com/ShishirPatil/gorilla/tree/main/agent-arena#evaluation-directory)] [[Tweet](https://x.com/shishirpatil_/status/1841876885757977044)]
+- [BFCL v1: Simple, Parallel, and Multiple Function Call eval with AST](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html)
+- [BFCL v2: Enterprise and OSS-contributed Live Data](https://gorilla.cs.berkeley.edu/blogs/12_bfcl_v2_live.html)
+- [BFCL v3: Multi-Turn & Multi-Step Function Call Evaluation](https://gorilla.cs.berkeley.edu/blogs/13_bfcl_v3_multi_turn.html)
+- [BFCL V4 Part 1: Agentic Web Search](https://gorilla.cs.berkeley.edu/blogs/15_bfcl_v4_web_search.html)
+- [BFCL V4 Part 2: Agentic Memory Management](https://gorilla.cs.berkeley.edu/blogs/16_bfcl_v4_memory.html)
+- [BFCL V4 Part 3: Agentic Format Sensitivity](https://gorilla.cs.berkeley.edu/blogs/17_bfcl_v4_prompt_variation.html)
 
-- 📣 [09/21/2024] Announcing BFCL V3 - Evaluating multi-turn and multi-step function calling capabilities! New state-based evaluation system tests models on handling complex workflows, sequential functions, and service states. [[Blog](https://gorilla.cs.berkeley.edu/blogs/13_bfcl_v3_multi_turn.html)] [[Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html)] [[Code](https://github.com/ShishirPatil/gorilla/tree/main/berkeley-function-call-leaderboard)] [[Tweet](https://x.com/shishirpatil_/status/1837205152132153803)]
+🦍 See the live leaderboard at [Berkeley Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html#leaderboard)
 
-- 🚀 [08/20/2024] Released BFCL V2 • Live! The Berkeley Function-Calling Leaderboard now features enterprise-contributed data and real-world scenarios. [[Blog](https://gorilla.cs.berkeley.edu/blogs/12_bfcl_v2_live.html)] [[Live Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard_live.html)] [[V2 Categories Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html)] [[Tweet](https://x.com/shishirpatil_/status/1825577931697233999)]
+![Architecture Diagram](https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/architecture_diagram.png)
 
-- ⚡️ [04/12/2024] Excited to release GoEx - a runtime for LLM-generated actions like code, API calls, and more. Featuring "post-facto validation" for assessing LLM actions after execution, "undo" and "damage confinement" abstractions to manage unintended actions & risks. This paves the way for fully autonomous LLM agents, enhancing interaction between apps & services with human-out-of-loop. [[Blog](https://gorilla.cs.berkeley.edu/blogs/10_gorilla_exec_engine.html)] [[Code](https://github.com/ShishirPatil/gorilla/tree/main/goex)] [[Paper](https://arxiv.org/abs/2404.06921)] [[Tweet](https://x.com/shishirpatil_/status/1778485140257452375)]
+---
 
-- ⏰ [04/01/2024] Introducing cost and latency metrics into [Berkeley function calling leaderboard](https://gorilla.cs.berkeley.edu/leaderboard)!
-- :rocket: [03/15/2024] RAFT: Adapting Language Model to Domain Specific RAG is live! [[MSFT-Meta blog](https://techcommunity.microsoft.com/t5/ai-ai-platform-blog/bg-p/AIPlatformBlog)] [[Berkeley Blog](https://gorilla.cs.berkeley.edu/blogs/9_raft.html)]
-- :trophy: [02/26/2024] [Berkeley Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard) is live!
-- :dart: [02/25/2024] [OpenFunctions v2](https://gorilla.cs.berkeley.edu/blogs/7_open_functions_v2.html) sets new SoTA for open-source LLMs!
-- :fire: [11/16/2023] Excited to release [Gorilla OpenFunctions](https://gorilla.cs.berkeley.edu/blogs/4_open_functions.html)
-- 💻 [06/29/2023] Released [gorilla-cli](https://github.com/gorilla-llm/gorilla-cli), LLMs for your CLI!
-- 🟢 [06/06/2023] Released Commercially usable, Apache 2.0 licensed Gorilla models
-- :rocket: [05/30/2023] Provided the [CLI interface](inference/README.md) to chat with Gorilla!
-- :rocket: [05/28/2023] Released Torch Hub and TensorFlow Hub Models!
-- :rocket: [05/27/2023] Released the first Gorilla model! [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1y78Zj7xHysX0xMpr9S468HYs12Mj6X1F?usp=sharing) or [:hugs:](https://huggingface.co/gorilla-llm/gorilla-7b-hf-delta-v0)!
-- :fire: [05/27/2023] We released the APIZoo contribution guide for community API contributions!
-- :fire: [05/25/2023] We release the APIBench dataset and the evaluation code of Gorilla!
+## Installation & Setup
 
+### Basic Installation
 
-## About
-
-**Gorilla enables LLMs to use tools by invoking APIs. Given a natural language query, Gorilla comes up with the semantically- and syntactically- correct API to invoke.** 
-
-With Gorilla, we are the first to demonstrate how to use LLMs to invoke 1,600+ (and growing) API calls accurately while reducing hallucination. This repository contains [inference code](/gorilla/inference) for running Gorilla finetuned models, [evaluation code](/gorilla/eval) for reproducing results from our paper, and [APIBench](/data) - the largest collection of APIs, curated and easy to be trained on!
-
-Since our initial release, we've served ~500k requests and witnessed incredible adoption by developers worldwide. The project has expanded to include tools, evaluations, leaderboard, end-to-end finetuning recipes, infrastructure components, and the Gorilla API Store:
-
-| Project | Type | Description (click to expand) |
-|---------|------|---------------------------|
-| [Gorilla Paper](https://arxiv.org/abs/2305.15334) | 🤖 Model<br>📝 Fine-tuning<br>📚 Dataset<br>📊 Evaluation<br>🔧 Infra | <details><summary>Large Language Model Connected with Massive APIs</summary>• Novel finetuning approach for API invocation<br>• Evaluation on 1,600+ APIs (APIBench)<br>• Retrieval-augmented training for test-time adaptation |
-| [Gorilla OpenFunctions-V2](openfunctions/) | 🤖 Model | <details><summary>Drop-in alternative for function calling, supporting multiple complex data types and parallel execution</summary>• Multiple & parallel function execution with OpenAI-compatible endpoints<br>• Native support for Python, Java, JavaScript, and REST APIs with expanded data types<br>• Function relevance detection to reduce hallucinations<br>• Enhanced RESTful API formatting capabilities<br>• State-of-the-art performance among open-source models</details> |
-| [Berkeley Function Calling Leaderboard (BFCL)](berkeley-function-call-leaderboard/) | 📊 Evaluation<br>🏆 Leaderboard<br>🔧 Function Calling Infra<br>📚 Dataset | <details><summary>Comprehensive evaluation of function-calling capabilities</summary>• V1: Expert-curated dataset for evaluating single-turn function calling<br>• V2: Enterprise-contributed data for real-world scenarios<br>• V3: Multi-turn & multi-step function calling evaluation<br>• Cost and latency metrics for all models<br>• Interactive API explorer for testing<br>• Community-driven benchmarking platform</details> |
-| [Agent Arena](agent-arena/) | 📊 Evaluation<br>🏆 Leaderboard | <details><summary>Compare LLM agents across models, tools, and frameworks</summary>• Head-to-head agent comparisons with ELO rating system<br>• Framework compatibility testing (LangChain, AutoGPT)<br>• Community-driven evaluation platform<br>• Real-world task performance metrics</details> |
-| [Gorilla Execution Engine (GoEx)](goex/) | 🔧 Infra | <details><summary>Runtime for executing LLM-generated actions with safety guarantees</summary>• Post-facto validation for verifying LLM actions after execution<br>• Undo capabilities and damage confinement for risk mitigation<br>• OAuth2 and API key authentication for multiple services<br>• Support for RESTful APIs, databases, and filesystem operations<br>• Docker-based sandboxed execution environment</details> |
-| [Retrieval-Augmented Fine-tuning (RAFT)](raft/) | 📝 Fine-tuning<br>🤖 Model | <details><summary>Fine-tuning LLMs for robust domain-specific retrieval</summary>• Novel fine-tuning recipe for domain-specific RAG<br>• Chain-of-thought answers with direct document quotes<br>• Training with oracle and distractor documents<br>• Improved performance on PubMed, HotpotQA, and Gorilla benchmarks<br>• Efficient adaptation of smaller models for domain QA</details> |
-| [Gorilla CLI](https://github.com/gorilla-llm/gorilla-cli) | 🤖 Model<br>🔧 Local CLI Infra | <details><summary>LLMs for your command-line interface</summary>• User-friendly CLI tool supporting ~1500 APIs (Kubernetes, AWS, GCP, etc.)<br>• Natural language command generation with multi-LLM fusion<br>• Privacy-focused with explicit execution approval<br>• Command history and interactive selection interface</details> |
-| [Gorilla API Zoo](apizoo/) | 📚 Dataset | <details><summary>A community-maintained repository of up-to-date API documentation</summary>• Centralized, searchable index of APIs across domains<br>• Structured documentation format with arguments, versioning, and examples<br>• Community-driven updates to keep pace with API changes<br>• Rich data source for model training and fine-tuning<br>• Enables retrieval-augmented training and inference<br>• Reduces hallucination through up-to-date documentation</details> |
-
-## Getting Started
-
-### Quick Start
-Try Gorilla in your browser:
-- 🚀 [Gorilla Colab Demo](https://colab.research.google.com/drive/1y78Zj7xHysX0xMpr9S468HYs12Mj6X1F?usp=sharing): Try the base Gorilla model
-- 🌐 [Gorilla Gradio Demo](https://huggingface.co/spaces/gorilla-llm/gorilla-demo/): Interactive web interface
-- 🔥 [OpenFunctions Colab Demo](https://colab.research.google.com/drive/1Td3_R5vPael9PnKYHcl-PxmZkZzA9TCo?usp=sharing): Try the latest OpenFunctions model
-- 🎯 [OpenFunctions Website Demo](https://gorilla.cs.berkeley.edu/leaderboard.html#api-explorer): Experiment with function calling
-- 📊 [Berkeley Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard): Compare function calling capabilities
-
-### Installation Options
-
-1. **Gorilla CLI** - Fastest way to get started
 ```bash
-pip install gorilla-cli
-gorilla generate 100 random characters into a file called test.txt
-```
-[Learn more about Gorilla CLI →](https://github.com/gorilla-llm/gorilla-cli)
+# Create a new Conda environment with Python 3.10
+conda create -n BFCL python=3.10
+conda activate BFCL
 
-2. **Run Gorilla Locally**
-```bash
+# Clone the Gorilla repository
 git clone https://github.com/ShishirPatil/gorilla.git
-cd gorilla/inference
+
+# Change directory to the `berkeley-function-call-leaderboard`
+cd gorilla/berkeley-function-call-leaderboard
+
+# Install the package in editable mode
+pip install -e .
 ```
-[Detailed local setup instructions →](/gorilla/inference/README.md)
 
-3. **Use OpenFunctions**
-```python
-import openai
+### Installing from PyPI
 
-openai.api_key = "EMPTY"
-openai.api_base = "http://luigi.millennium.berkeley.edu:8000/v1"
+If you simply want to run the evaluation without making code changes, you can
+install the prebuilt wheel instead. **Be careful not to confuse our package with
+the *unrelated* `bfcl` project on PyPI—make sure you install `bfcl-eval`:**
 
-# Define your functions
-functions = [{
-    "name": "get_current_weather",
-    "description": "Get weather in a location",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "location": {"type": "string"},
-            "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]}
-        },
-        "required": ["location"]
-    }
-}]
-
-# Make API call
-completion = openai.ChatCompletion.create(
-    model="gorilla-openfunctions-v2",
-    messages=[{"role": "user", "content": "What's the weather in San Francisco?"}],
-    functions=functions
-)
+```bash
+pip install bfcl-eval  # Be careful not to confuse with the unrelated `bfcl` project on PyPI!
 ```
-[OpenFunctions documentation →](/openfunctions/README.md)
 
-### 🔧 Other Quick Starts
+### Extra Dependencies for Self-Hosted Models
 
-- 📊 **Evaluation & Benchmarking**
-  - [Berkeley Function Calling Leaderboard](/berkeley-function-call-leaderboard/README.md): Compare function calling capabilities
-  - [Agent Arena](/agent-arena/README.md): Evaluate agent workflows
-  - [Gorilla Paper Evaluation Scripts](/gorilla/eval/README.md): Run your own evaluations
+For locally hosted models, choose one of the following backends, ensuring you have the right GPU and OS setup:
 
-- 🛠️ **Development Tools**
-  - [GoEx](/goex/README.md): Safe execution of LLM-generated actions
-  - [RAFT](/raft/README.md): Fine-tune models for domain-specific tasks
-  - [API Store](/data/README.md): Contribute and use APIs
+`sglang` is *much faster* than `vllm` in our specific multi-turn use case, but it only supports newer GPUs with SM 80+ (Ampere etc).
+If you are using an older GPU (T4/V100), you should use `vllm` instead as it supports a much wider range of GPUs.
 
-
-## Frequently Asked Questions
-1. I would like to use Gorilla commercially. Is there going to be an Apache 2.0 licensed version?
-
-Yes! We now have models that you can use commercially without any obligations.
-
-
-2. Can we use Gorilla with other tools like Langchain etc?
-
-Absolutely! You've highlighted a great aspect of our tools. Gorilla is  an  end-to-end model, specifically tailored to serve correct API calls (tools) without requiring any additional coding. It's designed to work as part of a wider ecosystem and can be flexibly integrated within agentic frameworks and other tools.
-
-Langchain, is a versatile developer tool. Its "agents" can efficiently swap in any LLM, Gorilla included, making it a highly adaptable solution for various needs.
-
-The beauty of these tools truly shines when they collaborate, complementing each other's strengths and capabilities to create an even more powerful and comprehensive solution. This is where your contribution can make a difference. We enthusiastically welcome any inputs to further refine and enhance these tools. 
-
-Check out our blog on [How to Use Gorilla: A Step-by-Step Walkthrough](https://gorilla.cs.berkeley.edu/blogs/5_how_to_gorilla.html) to see all the different ways you can integrate Gorilla in your projects.
-
-## Project Roadmap
-In the immediate future, we plan to release the following:
-
-- [ ] Multimodal function-calling leaderboard
-- [ ] Agentic function-calling leaderboard
-- [ ] New batch of user contributed live function calling evals. 
-- [ ] BFCL metrics to evaluate contamination
-- [ ] Openfunctions-v3 model to support more languages and multi-turn capability
-- [x] Agent Arena to compare LLM agents across models, tools, and frameworks [10/04/2024]
-- [x] Multi-turn and multi-step function calling evaluation [09/21/2024]
-- [x] User contributed Live Function Calling Leaderboard [08/20/2024]
-- [x] BFCL systems metrics including cost and latency [04/01/2024]
-- [x] Gorilla Execution Engine (GoEx) - Runtime for executing LLM-generated actions with safety guarantees [04/12/2024]
-- [x] Berkeley Function Calling leaderboard (BFCL) for evaluating tool-calling/function-calling models [02/26/2024]
-- [x] Openfunctions-v2 with more languages (Java, JS, Python), relevance detection [02/26/2024]
-- [x] API Zoo Index for easy access to all APIs [02/16/2024]
-- [x] Openfunctions-v1, Apache 2.0, with parallel and multiple function calling [11/16/2023]
-- [x] Openfunctions-v0, Apache 2.0 function calling model [11/16/2023]
-- [X] Release a commercially usable, Apache 2.0 licensed Gorilla model [06/05/2023] 
-- [X] Release weights for all APIs from APIBench [05/28/2023]
-- [X] Run Gorilla LLM locally [05/28/2023]
-- [X] Release weights for HF model APIs [05/27/2023]
-- [X] Hosted Gorilla LLM chat for HF model APIs [05/27/2023]
-- [X] Opening up the APIZoo for contributions from community
-- [X] Dataset and Eval Code
-
-## License
-
-Gorilla is Apache 2.0 licensed, making it suitable for both academic and commercial use.
-
-## Contact
-
-- 💬 Join our [Discord Community](https://discord.gg/grXXvj9Whz)
-- 🐦 Follow us on [X](https://x.com/shishirpatil_)
-
-## Citation
-
-```text
-@article{patil2023gorilla,
-  title={Gorilla: Large Language Model Connected with Massive APIs},
-  author={Shishir G. Patil and Tianjun Zhang and Xin Wang and Joseph E. Gonzalez},
-  year={2023},
-  journal={arXiv preprint arXiv:2305.15334},
-} 
+**Using `vllm`:**
+```bash
+pip install -e .[oss_eval_vllm]
 ```
+
+**Using `sglang`:**
+```bash
+pip install -e .[oss_eval_sglang]
+```
+
+*Optional:* If using `sglang`, we recommend installing `flashinfer` for speedups. Find instructions [here](https://docs.flashinfer.ai/installation.html).
+
+### Configuring Project Root Directory
+
+**Important:** If you installed the package from PyPI (using `pip install bfcl-eval`), you **must** set the `BFCL_PROJECT_ROOT` environment variable to specify where the evaluation results and score files should be stored.
+Otherwise, you'll need to navigate deep into the Python package's source code folder to access the evaluation results and configuration files.
+
+For editable installations (using `pip install -e .`), setting `BFCL_PROJECT_ROOT` is *optional*--it defaults to the `berkeley-function-call-leaderboard` directory.
+
+Set `BFCL_PROJECT_ROOT` as an environment variable in your shell environment:
+
+```bash
+# In your shell environment
+export BFCL_PROJECT_ROOT=/path/to/your/desired/project/directory
+```
+
+When `BFCL_PROJECT_ROOT` is set:
+
+- The `result/` folder (containing model responses) will be created at `$BFCL_PROJECT_ROOT/result/`
+- The `score/` folder (containing evaluation results) will be created at `$BFCL_PROJECT_ROOT/score/`
+- The library will look for the `.env` configuration file at `$BFCL_PROJECT_ROOT/.env` (see [Setting up Environment Variables](#setting-up-environment-variables))
+
+### Setting up Environment Variables
+
+We store API keys and other configuration variables (separate from the `BFCL_PROJECT_ROOT` variable mentioned above) in a `.env` file. A sample `.env.example` file is distributed with the package.
+
+**For editable installations:**
+
+```bash
+cp bfcl_eval/.env.example .env
+# Fill in necessary values in `.env`
+```
+
+**For PyPI installations (using `pip install bfcl-eval`):**
+
+```bash
+cp $(python -c "import bfcl_eval; print(bfcl_eval.__path__[0])")/.env.example $BFCL_PROJECT_ROOT/.env
+# Fill in necessary values in `.env`
+```
+
+If you are running any proprietary models, make sure the model API keys are included in your `.env` file. Models like GPT, Claude, Mistral, Gemini, Nova, will require them.
+
+The library looks for the `.env` file in the project root, i.e. `$BFCL_PROJECT_ROOT/.env`.
+
+#### Configuring SerpAPI for Web Search Category
+
+For the `web_search` test category, we use the [SerpAPI](https://serpapi.com/) service to perform web search. You need to sign up for an API key and add it to your `.env` file. You can also switch to other web search APIs by changing the `search_engine_query` function in `bfcl_eval/eval_checker/multi_turn_eval/func_source_code/web_search.py`.
+
+---
+
+## Running Evaluations
+
+### Generating LLM Responses
+
+#### Selecting Models and Test Categories
+
+- `MODEL_NAME`: For available models, please refer to [SUPPORTED_MODELS.md](./SUPPORTED_MODELS.md). If not specified, the default model `gorilla-openfunctions-v2` is used.
+- `TEST_CATEGORY`: For available test categories, please refer to [TEST_CATEGORIES.md](./TEST_CATEGORIES.md). If not specified, all categories are included by default.
+
+You can provide multiple models or test categories by separating them with commas. For example:
+
+```bash
+bfcl generate --model claude-3-5-sonnet-20241022-FC,gpt-4o-2024-11-20-FC --test-category simple,parallel,multiple,multi_turn
+```
+
+#### Selecting Specific Test Cases with `--run-ids`
+
+Sometimes you may only need to regenerate a handful of test entries—for instance when iterating on a new model or after fixing an inference bug. Passing the `--run-ids` flag lets you target **exact test IDs** rather than an entire category:
+
+```bash
+bfcl generate --model MODEL_NAME --run-ids   # --test-category will be ignored
+```
+
+When this flag is set the generation pipeline reads a JSON file named
+`test_case_ids_to_generate.json` located in the *project root* (the same
+place where `.env` lives). The file should map each test category to a list of
+IDs to run:
+
+```json
+{
+  "simple": ["simple_101", "simple_202"],
+  "multi_turn_base": ["multi_turn_base_14"]
+}
+```
+
+> Note: When using `--run-ids`, the `--test-category` flag is ignored.
+
+A sample file is provided at `bfcl_eval/test_case_ids_to_generate.json.example`; **copy it to your project root** so the CLI can pick it up regardless of your working directory:
+
+**For editable installations:**
+
+```bash
+cp bfcl_eval/test_case_ids_to_generate.json.example ./test_case_ids_to_generate.json
+```
+
+**For PyPI installations:**
+
+```bash
+cp $(python -c "import bfcl_eval, pathlib; print(pathlib.Path(bfcl_eval.__path__[0]) / 'test_case_ids_to_generate.json.example')") $BFCL_PROJECT_ROOT/test_case_ids_to_generate.json
+```
+
+Once `--run-ids` is provided only the IDs listed in the JSON will be evaluated.
+
+#### Output and Logging
+
+- By default, generated model responses are stored in a `result/` folder under the project root (which defaults to the package directory): `result/MODEL_NAME/BFCL_v3_TEST_CATEGORY_result.json`.
+- You can customise the location by setting the `BFCL_PROJECT_ROOT` environment variable or passing the `--result-dir` option.
+
+An inference log is included with the model responses to help analyze/debug the model's performance, and to better understand the model behavior. For more verbose logging, use the `--include-input-log` flag. Refer to [LOG_GUIDE.md](./LOG_GUIDE.md) for details on how to interpret the inference logs.
+
+#### For API-based Models
+
+```bash
+bfcl generate --model MODEL_NAME --test-category TEST_CATEGORY --num-threads 1
+```
+
+- Use `--num-threads` to control the level of parallel inference. The default (`1`) means no parallelization.
+- The maximum allowable threads depends on your API's rate limits.
+
+#### For Locally-hosted OSS Models
+
+```bash
+bfcl generate \
+  --model MODEL_NAME \
+  --test-category TEST_CATEGORY \
+  --backend {sglang|vllm} \
+  --num-gpus 1 \
+  --gpu-memory-utilization 0.9 \
+  --local-model-path /path/to/local/model   # ← optional
+```
+
+- Choose your backend using `--backend sglang` or `--backend vllm`. The default backend is `sglang`.
+- Control GPU usage by adjusting `--num-gpus` (default `1`, relevant for multi-GPU tensor parallelism) and `--gpu-memory-utilization` (default `0.9`), which can help avoid out-of-memory errors.
+- `--local-model-path` (optional): Point this flag at a directory that already contains the model's files (`config.json`, tokenizer, weights, etc.). Use it only when you've pre‑downloaded the model and the weights live somewhere other than the default `$HF_HOME` cache.
+
+##### For Pre-existing OpenAI-compatible Endpoints
+
+If you have a server already running (e.g., vLLM in a SLURM cluster), you can bypass the vLLM/sglang setup phase and directly generate responses by using the `--skip-server-setup` flag:
+
+```bash
+bfcl generate --model MODEL_NAME --test-category TEST_CATEGORY --skip-server-setup
+```
+
+In addition, you should specify the endpoint and port used by the local server. By default, the endpoint is `localhost` and the port is `1053`. These can be overridden by the `LOCAL_SERVER_ENDPOINT` and `LOCAL_SERVER_PORT` environment variables in the `.env` file:
+
+```bash
+LOCAL_SERVER_ENDPOINT=localhost
+LOCAL_SERVER_PORT=1053
+```
+
+#### (Alternate) Script Execution for Generation
+
+For those who prefer using script execution instead of the CLI, you can run the following command:
+
+```bash
+python -m bfcl_eval.openfunctions_evaluation --model MODEL_NAME --test-category TEST_CATEGORY
+```
+
+When specifying multiple models or test categories, separate them with **spaces**, not commas. All other flags mentioned earlier are compatible with the script execution method as well.
+
+### Evaluating Generated Responses
+
+**Important:** You must have generated the model responses before running the evaluation.
+
+Once you have the results, run:
+
+```bash
+bfcl evaluate --model MODEL_NAME --test-category TEST_CATEGORY
+```
+
+The `MODEL_NAME` and `TEST_CATEGORY` options are the same as those used in the [Generating LLM Responses](#generating-llm-responses) section. For details, refer to [SUPPORTED_MODELS.md](./SUPPORTED_MODELS.md) and [TEST_CATEGORIES.md](./TEST_CATEGORIES.md).
+
+If in the previous step you stored the model responses in a custom directory, specify it using the `--result-dir` flag or set `BFCL_PROJECT_ROOT` so the evaluator can locate the files.
+
+> Note: For unevaluated test categories, they will be marked as `N/A` in the evaluation result csv files.
+> For summary columns (e.g., `Overall Acc`, `Non_Live Overall Acc`, `Live Overall Acc`, and `Multi Turn Overall Acc`), the score reported will treat all unevaluated categories as 0 during calculation.
+
+#### Output Structure
+
+Evaluation scores are stored in a `score/` directory under the project root (defaults to the package directory), mirroring the structure of `result/`: `score/MODEL_NAME/BFCL_v3_TEST_CATEGORY_score.json`.
+
+- To use a custom directory for the score file, set the `BFCL_PROJECT_ROOT` environment variable or specify `--score-dir`.
+
+Additionally, four CSV files are generated in `./score/`:
+
+- `data_overall.csv` – Overall scores for each model. This is used for updating the leaderboard.
+- `data_live.csv` – Detailed breakdown of scores for each Live (single-turn) test category.
+- `data_non_live.csv` – Detailed breakdown of scores for each Non-Live (single-turn) test category.
+- `data_multi_turn.csv` – Detailed breakdown of scores for each Multi-Turn test category.
+
+#### (Optional) WandB Evaluation Logging
+
+If you'd like to log evaluation results to WandB artifacts:
+
+```bash
+pip install -e.[wandb]
+```
+
+Mkae sure you also set `WANDB_BFCL_PROJECT=ENTITY:PROJECT` in `.env`.
+
+#### (Alternate) Script Execution for Evaluation
+
+For those who prefer using script execution instead of the CLI, you can run the following command:
+
+```bash
+python -m bfcl_eval.eval_checker.eval_runner --model MODEL_NAME --test-category TEST_CATEGORY
+```
+
+When specifying multiple models or test categories, separate them with **spaces**, not commas. All other flags mentioned earlier are compatible with the script execution method as well.
+
+## Contributing & How to Add New Models
+
+We welcome contributions! To add a new model:
+
+1. Review `bfcl_eval/model_handler/base_handler.py` and/or `bfcl_eval/model_handler/local_inference/base_oss_handler.py` (if your model is hosted locally).
+2. Implement a new handler class for your model.
+3. Update `bfcl_eval/constants/model_config.py`.
+4. Submit a Pull Request.
+
+For detailed steps, please see the [Contributing Guide](./CONTRIBUTING.md).
+
+---
+
+## Additional Resources
+
+- [Discord](https://discord.gg/grXXvj9Whz) (`#leaderboard` channel)
+- [Project Website](https://gorilla.cs.berkeley.edu/leaderboard.html#leaderboard)
+
+All the leaderboard statistics, and data used to train the models are released under Apache 2.0.
+BFCL is an open source effort from UC Berkeley and we welcome contributors.
+For any comments, criticisms, or questions, please feel free to raise an issue or a PR. You can also reach us via [email](mailto:huanzhimao@berkeley.edu).
