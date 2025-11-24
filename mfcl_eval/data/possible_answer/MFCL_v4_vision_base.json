@@ -1,0 +1,3257 @@
+{
+    "id": "vision_base_0",
+    "ground_truth": [
+        "40000"
+    ],
+    "ground_truth_source": "https://www.hltv.org/events/8038/iem-cologne-2025",
+    "reasoning": [
+        "Figure out the team of the player by spotting RedBull, Adidas, and ‘Poker’ as sponsors",
+        "Search up ‘Poker cs team sponsor’ to see its Pokerstars",
+        "Search up “CS 2 team with black shirt, redbull, adidas and pokerstars” to find its Furia",
+        "Search up Furia CS2 team players, to confirm this player matches their player",
+        "Conclude that Furia got $40,000"
+    ]
+}
+{
+    "id": "vision_base_1",
+    "ground_truth": [
+        "2009"
+    ],
+    "ground_truth_source": "https://waymo.com/rides/san-francisco/#:~:text=Designed%20with%20the%20Bay%20at,on%20Waymo%20and%20our%20technology",
+    "reasoning": [
+        "Recognise from the question its a driverless taxi",
+        "Recognise the car brand logo on wheel as Jaguar",
+        "Search up “driverless taxi jaguar” to find that it is Waymo",
+        "Search up “When did waymo launch in the US”"
+    ]
+}
+{
+    "id": "vision_base_2",
+    "ground_truth": [
+        "75"
+    ],
+    "ground_truth_source": "https://www.umurestaurant.com/menus/lunch-menu",
+    "reasoning": [
+        "Recognise its a sushi restaurant from the picture, and the question has a hint that it is in London",
+        "Recognise the writing on the uniform to say “Umu”",
+        "Search up “Umu sushi london menu” to find its menu",
+        "Confirm the price of chirashi-sushi to be £75"
+    ]
+}
+{
+    "id": "vision_base_3",
+    "ground_truth": [
+        "5.1K"
+    ],
+    "ground_truth_source": "https://www.dji.com/mavic-3-classic/specs",
+    "reasoning": [
+        "Recognise the object as a drone",
+        "Spot the writing on the wing as ‘mavic 3’",
+        "Search up mavic 3 and mavic 2, see that the camera is specific to mavic 3, and confirm its mavic 3",
+        "Search for DJI Magic 3 specs",
+        "Find that 5.1K/50fps is max resolution"
+    ]
+}
+{
+    "id": "vision_base_4",
+    "ground_truth": [
+        "Emma Pierson"
+    ],
+    "ground_truth_source": "https://inst.eecs.berkeley.edu/~cs188/fa25/staff/",
+    "reasoning": [
+        "Identify that the tablet has the homework",
+        "Read the info on the tablet and focus on the name of the file on the top left corner",
+        "Find that it says ‘CS 188’",
+        "Search up CS188 Berkeley Fall 2025 and find the instructors"
+    ]
+}
+{
+    "id": "vision_base_5",
+    "ground_truth": [
+        "15"
+    ],
+    "ground_truth_source": "https://www.ptc.com/en/blogs/corporate/121-seaport-efficient",
+    "reasoning": [
+        "Identify the building as a modern elliptical office building from its distinctive curved glass facade",
+        "Search for \"elliptical office building Boston LEED Platinum energy savings\"",
+        "Find 121 Seaport as matching the visual description and location",
+        "Search for specific energy performance data related to building orientation",
+        "Search for sustainability specifications including recycled material content"
+    ]
+}
+{
+    "id": "vision_base_6",
+    "ground_truth": [
+        "2022"
+    ],
+    "ground_truth_source": "https://samal4stroy.net/index.php/en/bez-kategorii-2/95-mirabad-12",
+    "reasoning": [
+        "The writing as ‘Mirabad Avenue’ and “",
+        "Recognise the name of the shop ‘Glamour’",
+        "Search Mirabad Avenue (Glamour shop) is optional",
+        "Search Mirabad Avenue Complex to find that it is a residential complex",
+        "Search “When did mirabad residential complex finish construction”",
+        "Find it to be 2022"
+    ]
+}
+{
+    "id": "vision_base_7",
+    "ground_truth": [
+        "2009"
+    ],
+    "ground_truth_source": "https://waymo.com/rides/san-francisco/#:~:text=Designed%20with%20the%20Bay%20at,on%20Waymo%20and%20our%20technology",
+    "reasoning": [
+        "Recognise from the question its a driverless taxi",
+        "Recognise the car brand logo on wheel as Jaguar",
+        "Search up “driverless taxi jaguar” to find that it is Waymo",
+        "Search up “When did waymo launch in the US”"
+    ]
+}
+{
+    "id": "vision_base_8",
+    "ground_truth": [
+        "64k"
+    ],
+    "ground_truth_source": "https://www.dulwich.org.uk/admissions/fees",
+    "reasoning": [
+        "Analyze visual features: the sign says “_wich college, 1619”",
+        "Search up _wich college, 1619” and find that its Dulwich College in London",
+        "Further can analyze the distinct architecture of the school to cross reference it to confirm it is indeed Dulwich College",
+        "Search for \"Dulwich College London fees 2025\"",
+        "Find the answer in GBP to be 64,266"
+    ]
+}
+{
+    "id": "vision_base_9",
+    "ground_truth": [
+        "14.95"
+    ],
+    "ground_truth_source": "https://caffestrada.com/collections/coffee-beans",
+    "reasoning": [
+        "Recognise ‘cafe strad berk’ on the lamp inside",
+        "Search up “caf strad berk” to recognise its Caffe Strada Berkeley",
+        "Search up their official website to find the price of the blend"
+    ]
+}
+{
+    "id": "vision_base_10",
+    "ground_truth": [
+        "London"
+    ],
+    "ground_truth_source": "https://en.wikipedia.org/wiki/Hakkasan",
+    "reasoning": [
+        "Spot the writing on the top right that says “Hakassan”",
+        "Search “in what city did hakassan first open in?”"
+    ]
+}
+{
+    "id": "vision_base_11",
+    "ground_truth": [
+        "Wednesday"
+    ],
+    "ground_truth_source": "https://su25.cs161.org/calendar/",
+    "reasoning": [
+        "From the clues in the question realise its a UC Berkeley CS class in summer 2025",
+        "Search up what cs classes were offered",
+        "See the sticker has a specific mascot theme and has ‘CS 16_’",
+        "Search up what CS 16_ classes were offered in summer 2025",
+        "Cross reference to see that it was CS161 from sticker comparisons",
+        "Go to the calendar and find the corresponding times for the OH"
+    ]
+}
+{
+    "id": "vision_base_12",
+    "ground_truth": [
+        "the club of Estrela Amadora"
+    ],
+    "ground_truth_source": "https://en.wikipedia.org/wiki/Nani_(footballer)",
+    "reasoning": [
+        "Recognise the sponsors, distinct color and logo to get the club to be Manchester United",
+        "Cross reference online with Man Utd 2010 kit",
+        "Realise the player number is 17",
+        "Search up, “manchester united squad 2010”",
+        "Find that player number 17 was Nani",
+        "Search up, “Is Nani still playing” to find that he has retired in 2024 and his last club was Estrela Amadora"
+    ]
+}
+{
+    "id": "vision_base_13",
+    "ground_truth": [
+        "2022"
+    ],
+    "ground_truth_source": "https://www.sfgate.com/food/article/delah-brings-yemeni-coffee-house-to-sf-17338633.php",
+    "reasoning": [
+        "Identify the large sign that says “_Elah Coffee” and “authentic arabic coffee”",
+        "Search up the term, to find that it is likely Delah Coffee",
+        "Search up “when did delah coffee open”",
+        "Confirm it is 2022 in San Francisco"
+    ]
+}
+{
+    "id": "vision_base_14",
+    "ground_truth": [
+        "12"
+    ],
+    "ground_truth_source": "https://en.wikipedia.org/wiki/Gukesh_Dommaraju",
+    "reasoning": [
+        "Recognise its a chess tournament",
+        "Analyze blurry text at the back \"Fide\" and “Candidates” and tournament format to identify as Candidates Tournament",
+        "Search for \"Candidates Tournament 2024 winner\"",
+        "Find that its \"Gukesh Dommaraju”",
+        "Search for \"when did gukesh become grandmaster\""
+    ]
+}
+{
+    "id": "vision_base_15",
+    "ground_truth": [
+        "CDSS"
+    ],
+    "ground_truth_source": "https://calbears.com/sports/2013/4/17/208213293.aspx",
+    "reasoning": [
+        "Visual cues in the image: the banner on the post has writing ‘UC Berkeley Engineering’",
+        "Search for UC Berkeley new CS Building",
+        "Read the site to find the building is CDSS"
+    ]
+}
+{
+    "id": "vision_base_16",
+    "ground_truth": [
+        "No"
+    ],
+    "ground_truth_source": "https://www.espn.com/soccer/story/_/id/45787577/replacing-jude-bellingham-how-real-madrid-cope-star-midfielder",
+    "reasoning": [
+        "Recognize the player in the image as Jude Bellingham from his jersey (Real Madrid, number 5) and face.",
+        "To verify current fitness, search “Jude Bellingham injury update August 2025 espn.”",
+        "espn reported that on July 16, 2025, he underwent surgery on his left shoulder to correct a recurring dislocation issue.",
+        "Recovery time is estimated at 10–12 weeks, meaning he is currently out and not fit to play"
+    ]
+}
+{
+    "id": "vision_base_17",
+    "ground_truth": [
+        "Paris Saint-Germain"
+    ],
+    "ground_truth_source": "https://en.wikipedia.org/wiki/2025_UEFA_Champions_League_final",
+    "reasoning": [
+        "The image clearly depicts a Champions League final between PSG (in navy/navy striped kit) and Inter Milan (in their yellow \"University Gold\" away strip), confirming the match context.",
+        "Can google PSG final, to cross reference Inter Milan being the opposition team as they were a yellow shirt and can recognise their logo from the shorts",
+        "To answer, search for possession stats for the 2025 UEFA Champions League final between Paris Saint-Germain and Inter Milan.",
+        "Official match overviews (e.g. UEFA Wikipedia and Italian match recap sources) report full-time possession of 59% for PSG and 41% for Inter Milan."
+    ]
+}
+{
+    "id": "vision_base_18",
+    "ground_truth": [
+        "29"
+    ],
+    "ground_truth_source": "https://www.turistickeprice.hr/en/Festival-of-Lights-2024%2C-in-its-sixth-edition%2C-brings-29-attractions-to-24-locations-on-the-streets-of-Zagreb/#:~:text=*%20Facebook.%20*%20Instagram:",
+    "reasoning": [
+        "Identify the celebration as Festival of Lights, and recognise the famous building as “The Croatian National Theatre”",
+        "Recognize this as \"Festival of Lights Zagreb\" and the distinctive historic architecture",
+        "Search for \"Zagreb Festival of Lights 2024\" to confirm event details",
+        "Find information about the March 2024 edition and its scale",
+        "Verify award details and presenting organization"
+    ]
+}
+{
+    "id": "vision_base_19",
+    "ground_truth": [
+        "2"
+    ],
+    "ground_truth_source": "https://grandswiss2025.fide.com/",
+    "reasoning": [
+        "Spot partial text \"Ide and recognize chess tournament setup with FIDE branding and chess piece logo on the left",
+        "Spot silhouette that resemble “Samarkand”",
+        "Search up “Fide Samarkand”",
+        "Search up \"FIDE Grand Swiss 2025\" to confirm its correct",
+        "Further spot player names to be Arjun Erigaisi and opponent is Martirosyan from name cards and cross reference to make sure it is the correct tournament",
+        "Determine tournament location as Samarkand, Uzbekistan from search results",
+        "Locate prize fund information showing $625,000 for Open section and 2 qualifying spots"
+    ]
+}
+{
+    "id": "vision_base_20",
+    "ground_truth": [
+        "Yes"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Recognise the bottle to be perfume",
+        "Recognise the writing ‘Tal 33’ and ‘spray’ etc",
+        "Search up the words from the clues to find it to be Santal 33",
+        "Search up ingredients for Santal 33",
+        "Find that Citral is included"
+    ]
+}
+{
+    "id": "vision_base_21",
+    "ground_truth": [
+        "10^23"
+    ],
+    "ground_truth_source": "https://optics.org/news/10/3/41#:~:text=Laser%20and%20gamma%20sources%20The%20laser%20source,diameter%20of%2050%20centimeters%20is%20ultimately%20envisaged.",
+    "reasoning": [
+        "Identify this as referring to the ELI (Extreme Light Infrastructure) project",
+        "Analyze modern laser research facility architecture",
+        "Search for \"ELI Extreme Light Infrastructure\" to understand the multi-site structure",
+        "Search for \"ELI laser intensity record 2024\" across all three facilities",
+        "Find specific peak intensity measurements and which site achieved the record"
+    ]
+}
+{
+    "id": "vision_base_22",
+    "ground_truth": [
+        "2016"
+    ],
+    "ground_truth_source": "https://en.wikipedia.org/wiki/MAX_IV_Laboratory",
+    "reasoning": [
+        "Analyze modern industrial/scientific architecture with distinctive metallic facade",
+        "Read partial text \"NX IV\" on building flag",
+        "Recognise the writing on the road sign and recognise its Swedish",
+        "Search for \"NX IV facility Sweden\" to identify it is actually MAX IV in Sweden",
+        "“Research MAX IV year of finishing the construction”",
+        "Confirm the result is 2016"
+    ]
+}
+{
+    "id": "vision_base_23",
+    "ground_truth": [
+        "722K"
+    ],
+    "ground_truth_source": "https://www.google.com/search?q=kai+cenat+most+viewed+stream+of+all+time&sca_esv=8011337b228d5ddd&biw=1680&bih=952&sxsrf=AE3TifNI1H7wFN7YovjgRM00PBhE7YRepQ%3A1754616264811&ei=yFGVaNSjMcaRm9cP4bHJmQs&ved=0ahUKEwjUp7n5hvqOAxXGyOYEHeFYMrMQ4dUDCBA&uact=5&oq=kai+cenat+most+viewed+stream+of+all+time&gs_lp=Egxnd3Mtd2l6LXNlcnAiKGthaSBjZW5hdCBtb3N0IHZpZXdlZCBzdHJlYW0gb2YgYWxsIHRpbWUyBRAhGKABMgUQIRigATIFECEYoAEyBRAhGKABMgUQIRigAUiSEVCEB1ihEHACeAGQAQCYAWSgAf0HqgEEMTEuMbgBA8gBAPgBAZgCDqACwgjCAgoQABiwAxjWBBhHwgINEC4YgAQYsAMYQxiKBcICDRAAGIAEGLADGEMYigXCAgYQABgWGB7CAgsQABiABBiGAxiKBcICCBAAGIAEGKIEwgIFEAAY7wXCAgUQIRirApgDAIgGAZAGCpIHBDEzLjGgB99EsgcEMTEuMbgHuAjCBwUxLjQuOcgHMw&sclient=gws-wiz-serp",
+    "reasoning": [
+        "Spot the poster at the back on the left",
+        "Recognise that the poster on the wall says “Cenat,” confirming the streamer's identity.",
+        "Search “Kai Cenat most viewers”  to conclude that multiple sources list 722K peak viewers."
+    ]
+}
+{
+    "id": "vision_base_24",
+    "ground_truth": [
+        "my-o-my"
+    ],
+    "ground_truth_source": "Google maps",
+    "reasoning": [
+        "Search up all the restaurant and coffee shops including ‘Hearst Food Court’",
+        "Recognise the location in Berkeley North side",
+        "Search up the walking distance to my o my",
+        "Find the walking distance time to be 1 minute"
+    ]
+}
+{
+    "id": "vision_base_25",
+    "ground_truth": [
+        "24"
+    ],
+    "ground_truth_source": "https://en.wikipedia.org/wiki/London_Waterloo_station",
+    "reasoning": [
+        "Recognise its London, from colors of the station, “Costa”, “Burger king” and information board has a site that ends in ‘.co.uk’",
+        "Read wayfinding: boards say “Water” on the right side",
+        "Search up london station Water, to realise its waterloo",
+        "Search “official national rail platforms number of waterloo station”"
+    ]
+}
+{
+    "id": "vision_base_26",
+    "ground_truth": [
+        "Corridonia"
+    ],
+    "ground_truth_source": "https://se.fashionnetwork.com/news/Santoni-unveils-new-flagship-boutique-on-madison-avenue,1712660.html#:~:text=Jennifer%20Braun-,Published,%2C%20polish%2C%20and%20resole%20footwear.",
+    "reasoning": [
+        "Recognize the writing on the shoe as ‘Santoni’",
+        "Recognise the orange bottom as style of Santoni if needed for further confirmation of the branch",
+        "Search up “In which Italian town was Santoni originally founded?”"
+    ]
+}
+{
+    "id": "vision_base_27",
+    "ground_truth": [
+        "Tuesday; 5:00–8:00PM"
+    ],
+    "ground_truth_source": "https://www.hmns.org/visit/",
+    "reasoning": [
+        "Read the wall text: “Paula and Rusty” and “Late Cretace.”",
+        "Search the phrase to find that it is in the Houston Museum of Natural Science (HMNS)",
+        "Open HMNS’s official pages and find the free-admission policy for Permanent Exhibit Halls at Hermann Park",
+        "Find that it is listed as Free Tuesdays 5:00–8:00 PM (local)"
+    ]
+}
+{
+    "id": "vision_base_28",
+    "ground_truth": [
+        "19/12/25"
+    ],
+    "ground_truth_source": "https://registrar.berkeley.edu/wp-content/uploads/UCB_AcademicCalendar_2025-26.pdf",
+    "reasoning": [
+        "Look at the license plate and recognise its Californian",
+        "Look at the far banner for “reserved” parking, notice above it, it says “Cal”",
+        "Recognise the university as UC Berkeley",
+        "Look up “uc berkeley academic calendar”",
+        "Find the answer to be Friday, December 19, 2025"
+    ]
+}
+{
+    "id": "vision_base_29",
+    "ground_truth": [
+        "No"
+    ],
+    "ground_truth_source": "https://www.nordstrandlaw.com/blog/pedestrian-car-accident/fact-check-is-jaywalking-really-legal-in-california-now/#:~:text=On%20September%2030%2C%202022%2C%20Governor,and%20good%20for%20the%20environment",
+    "reasoning": [
+        "Read the street sign on the corner: “Wilshire Bl 700W”",
+        "Look up Wilshire Bl 700W to find that it is in California",
+        "Recognise the street light color as red for pedestrians walking",
+        "Search up “should a person jaywalking on redlight receive a ticket by law in california if they did not create any danger?”"
+    ]
+}
+{
+    "id": "vision_base_30",
+    "ground_truth": [
+        "Audubon’s Birds of America"
+    ],
+    "ground_truth_source": "https://www.visithoustontexas.com/event/audubon%E2%80%99s-birds-of-america/107824/",
+    "reasoning": [
+        "Identify the “houston museum of natural science” text on the posters in the back.",
+        "Search up “houston museum of natural science events” and find Audubon’s Birds of America in the list. Notice that it ends on 8/31/2025."
+    ]
+}
+{
+    "id": "vision_base_31",
+    "ground_truth": [
+        "Coral"
+    ],
+    "ground_truth_source": "https://www.mvrdv.com/news/4701/tiffany-co-cancun-3d-printed-coral-facade",
+    "reasoning": [
+        "Search up “rana international hotel albania”. Identify full name of hotel as “Tirana International Hotel”.",
+        "Search up “futuristic building next to tirana international hotel” or similar and first link should be the Tirana’s Rock Wiki page.",
+        "Go to page and identify MVRDV as the firm that designed the building.",
+        "Search up “mvrdv tiffany and co” and visit either the page about the Singapore store or the Mexico store.",
+        "Identify coral as the source of inspiration."
+    ]
+}
+{
+    "id": "vision_base_32",
+    "ground_truth": [
+        "Pauley Pavilion"
+    ],
+    "ground_truth_source": "https://www.latimes.com/sports/ucla/story/2025-04-01/denise-curry-ucla-bruins-final-four",
+    "reasoning": [
+        "Notice the jersey at the top right.",
+        "Search up “[campus] 12 jersey curry” or similar (replace [campus] with each of the 10 UC campuses). Notice for UCLA, Denise Curry’s page shows up either first/second. Go to page and learn that her jersey number, 12, was retired.",
+        "Search up “where’s denise curry’s jersey retired” or similar and find on this page that “Anyone wondering about her influence only needs to glance toward the top of Pauley Pavilion, where Curry’s No. 12 jersey is retired...”. Conclude that the stadium is Pauley Pavilion."
+    ]
+}
+{
+    "id": "vision_base_33",
+    "ground_truth": [
+        "Cantal"
+    ],
+    "ground_truth_source": "https://odetterestaurant.com/chef-julien-royer/",
+    "reasoning": [
+        "Notice cut-off text on man’s sleeve. Search up “odet restaurant” and Odette is the first result.",
+        "Go to Odette’s page and find head chef Julien Royer’s page. Conclude from description on page that he was born in Cantal, France."
+    ]
+}
+{
+    "id": "vision_base_34",
+    "ground_truth": [
+        "7000"
+    ],
+    "ground_truth_source": "https://www.introducingbangkok.com/iconsiam",
+    "reasoning": [
+        "Notice text “Iconsiam” on gate and Thai flag in background. Search up “iconsiam thailand” and identify the mall as ICONSIAM.",
+        "Search up “how many stores in iconsiam” and conclude that there are around 7000 stores."
+    ]
+}
+{
+    "id": "vision_base_35",
+    "ground_truth": [
+        "Mai Matcha"
+    ],
+    "ground_truth_source": "https://www.lmtonline.com/local/article/japanese-menu-drink-gonzalez-4800-mcpherson-flavor-20347467.php",
+    "reasoning": [
+        "Notice the Mexican restaurant Obregon’s. Search up “obregon’s mexican restaurant matcha” or similar and find this news article.",
+        "Conclude from article that the new matcha place is Mai Matcha."
+    ]
+}
+{
+    "id": "vision_base_36",
+    "ground_truth": [
+        "3"
+    ],
+    "ground_truth_source": "https://en.wikipedia.org/wiki/List_of_airports_in_Mongolia",
+    "reasoning": [
+        "Search up names of the stores on the sign. Find that Goimonbaatar is a unique restaurant in Ulaanbaatar, Mongolia.",
+        "Search up “airports in ulaanbaatar” and find that there are two airports in Ulaanbaatar, one with one runway and another with two. Conclude that answer is 3."
+    ]
+}
+{
+    "id": "vision_base_37",
+    "ground_truth": [
+        "Selfoss"
+    ],
+    "ground_truth_source": "https://www.lindex.com/",
+    "reasoning": [
+        "Use flag and text in the picture to conclude that picture is taken in Iceland.",
+        "Notice the cut-off logo “-DƐX”. Search up “scandinavian brands” or “[country] brands” (replace country with Scandinavian countries).",
+        "Arrive at list of Swedish brands after searches (should be one of the top pages for “scandinavian brands”.",
+        "Identify on list 3 Swedish brands ending in “-dex”.",
+        "Match logos to conclude that it’s Lindex (the “e” is replaced with epsilon/backwards “3”).",
+        "Search up “lindex hollin” (text on the building) to conclude that the building is a sports complex in Selfoss, Iceland."
+    ]
+}
+{
+    "id": "vision_base_38",
+    "ground_truth": [
+        "2025 Indonesia Open"
+    ],
+    "ground_truth_source": "https://bwfworldtour.bwfbadminton.com/news-single/2025/06/09/indonesia-open-a-week-to-remember-for-an-se-young/",
+    "reasoning": [
+        "Identify from the text and shuttlecock on the trophies that this is the Indonesia Open for badminton. Notice that the flag on the jerseys shows that the winners are South Korean.",
+        "Search up “indonesia open badminton winners” and find list of past winners. Find that in the last 7 years, the only South Korean players to win the men’s doubles event at the Indonesia Open were Kim Won-ho and Seo Seung-jae in 2025.",
+        "Conclude that this is the 2025 Indonesia Open."
+    ]
+}
+{
+    "id": "vision_base_39",
+    "ground_truth": [
+        "1.2"
+    ],
+    "ground_truth_source": "https://www.basketball-reference.com/players/a/arenagi01.html",
+    "reasoning": [
+        "Search up “celtics jersey number” and get list. Notice under “8”, for the year 2009, the player was Stephon Marbury. Repeat for the Suns and the Magic and identify the players as Shaquille O'Neal and Gilbert Arenas, respectively.",
+        "Search up “[player] playoff stats” for each player and get their career playoff steals per game. Identify Gilbert Arenas as having the highest career playoff steals per game (1.2). Conclude the answer is 1.2."
+    ]
+}
+{
+    "id": "vision_base_40",
+    "ground_truth": [
+        "Wednesday"
+    ],
+    "ground_truth_source": "https://www.espn.com/nba/recap/_/gameId/401772989",
+    "reasoning": [
+        "Notice the score at the top and the fact that Halliburton (the player shooting the shot as shown by the jersey) is shooting a final shot (clock has < 1 second left in the 4th quarter).",
+        "Search up “knicks 125 pacers 123 halliburton” or similar and find numerous pages on the same event.",
+        "From the pages, identify the event as Game 1 of the 2025 Eastern Conference Finals.",
+        "Search up “knicks vs pacers game 1 east finals” or similar and find the date/day of the game on any game report. Conclude that the game happened on a Wednesday."
+    ]
+}
+{
+    "id": "vision_base_41",
+    "ground_truth": [
+        "Pascal Siakam"
+    ],
+    "ground_truth_source": "https://www.nba.com/allstar/2025/roster",
+    "reasoning": [
+        "Search up “nba 2025 all star roster” or similar and get the list of teams. Identify which team Jokić (#15 in picture) is on.",
+        "Find which player on Jokić’s team has 3 as the last digit of their jersey number. Conclude that only one player, Pascal Siakam, fits the description."
+    ]
+}
+{
+    "id": "vision_base_42",
+    "ground_truth": [
+        "Kai Lenny"
+    ],
+    "ground_truth_source": "https://www.tagheuer.com/us/en/partnerships/sports.html",
+    "reasoning": [
+        "Search up “tag heuer sponsored surfers” or similar. Find Tag Heuer’s official page on sports partnerships.",
+        "Identify Kai Lenny as the only sponsored surfer and the board in his picture on the page matches the board presented in the question.",
+        "Conclude Kai Lenny as the answer."
+    ]
+}
+{
+    "id": "vision_base_43",
+    "ground_truth": [
+        "2025 BET Awards"
+    ],
+    "ground_truth_source": "https://www.billboard.com/music/awards/playboi-carti-2025-bet-awards-performance-1235994643/",
+    "reasoning": [
+        "Search up “AM MUSIC” and identify that the text in the picture is referring to Playboi Carti’s album “I Am Music”.",
+        "Search up “i am music carti performance” or similar and notice that his recent performance at the 2025 BET Awards featured SUVs (left) and smoke on stage (right).",
+        "Conclude that the answer is the 2025 BET Awards."
+    ]
+}
+{
+    "id": "vision_base_44",
+    "ground_truth": [
+        "Like Him"
+    ],
+    "ground_truth_source": "https://genius.com/albums/Tyler-the-creator/Chromakopia/q/most-popular-song",
+    "reasoning": [
+        "Search up cut-off text “HROMAKOP” and identify the text as referring to Tyler, The Creator’s album Chromakopia.",
+        "Search up “chromakopia tour” or “tyler the creator tour” and find that the concert and album have the same name.",
+        "Search up “chromokopia most popular songs” and conclude that Like Him is the most popular song on the album."
+    ]
+}
+{
+    "id": "vision_base_45",
+    "ground_truth": [
+        "PGL Astana 2025"
+    ],
+    "ground_truth_source": "https://liquipedia.net/counterstrike/Team_Spirit#Results",
+    "reasoning": [
+        "Search up “top counter-strike 2 teams 2025” or similar. Identify the dragon logo as belonging to Team Spirit, one of the top teams in 2025.",
+        "Search up “team spirit tournaments won” or similar and find their results page. Notice that they’ve won two tournaments in 2025 as of 6/18/2025. Visit or search the page for each and find their respective prize pools.",
+        "Conclude that PGL Astana 2025 has the largest prize pool of $625,000."
+    ]
+}
+{
+    "id": "vision_base_46",
+    "ground_truth": [
+        "Francis Nash"
+    ],
+    "ground_truth_source": "Google Maps",
+    "reasoning": [
+        "Notice the horned skyscraper in the skyline. Search up “pointy horned skyscraper” or similar. Identify it as 333 Commerce Street or the Batman Building in Nashville.",
+        "Search up “who was nashville named after” and conclude answer as Francis Nash."
+    ]
+}
+{
+    "id": "vision_base_47",
+    "ground_truth": [
+        "8"
+    ],
+    "ground_truth_source": "https://en.wikipedia.org/wiki/Kentucky_Wildcats_men%27s_basketball",
+    "reasoning": [
+        "Notice sign on top right. Search up “cat’s path university” or similar and identify campus as University of Kentucky.",
+        "Search up “university of kentucky ncaa div 1 wins” or similar and conclude answer as 8."
+    ]
+}
+{
+    "id": "vision_base_48",
+    "ground_truth": [
+        "2.3%"
+    ],
+    "ground_truth_source": "https://www.clarkecollegeinsight.com/blog/how-to-get-into-caltech#:~:text=For%20first%2Dyear%20students%20entering,early%20action%20and%20regular%20decision.",
+    "reasoning": [
+        "Notice the WeWork logo at the top and 177 at the bottom, which is either street address or building number or similar.",
+        "Search up “177 wework” and find that this WeWork office is located in Pasadena.",
+        "Search up “most prestigious university in pasadena” or similar to get Caltech.",
+        "Search up “caltech acceptance rate 2024” and conclude answer as 2.3%."
+    ]
+}
+{
+    "id": "vision_base_49",
+    "ground_truth": [
+        "10"
+    ],
+    "ground_truth_source": "https://www.nbcnews.com/science/space/2025-space-launches-missions-nasa-rcna185772",
+    "reasoning": [
+        "Search up “nasa moon mission 2025” or similar and find page on the Artemis program.",
+        "Find the mission schedule on the same Wiki page and notice two missions in the first half of 2025. Notice that both missions launch a lunar lander.",
+        "Search up each lunar lander and match the one in the question’s picture to the Firefly Aerospace Blue Ghost (either via the Firefly logo or the general look of the lander).",
+        "Search up “nasa firefly mission” or similar and find page describing mission. Find that lander is carrying 10 NASA science and tech instruments and conclude answer as 10."
+    ]
+}
+{
+    "id": "vision_base_50",
+    "ground_truth": [
+        "Rosehip"
+    ],
+    "ground_truth_source": "https://evolvetogether.com/products/monaco-hydrating-bar-soap",
+    "reasoning": [
+        "Search up motto on soap in picture. Identify brand as “evolvetogether”.",
+        "Search up “evolvetogther hydrating bar soap” or similar and find that there’s only one named after a European country (“Monaco”).",
+        "Search up or go to the Monaco soap’s page and conclude that the seed oil used is rosehip seed oil."
+    ]
+}
+{
+    "id": "vision_base_51",
+    "ground_truth": [
+        "Chongqing"
+    ],
+    "ground_truth_source": "https://hitman.fandom.com/wiki/End_of_an_Era",
+    "reasoning": [
+        "Search up the names of the two characters on the screen “jeremy bolt sharon reed”.",
+        "Find Jeremy Bolt’s page and find that he’s in Hitman III’s End of an Era level.",
+        "Search up or go to that level’s page and conclude that the level is based in Chongqing."
+    ]
+}
+{
+    "id": "vision_base_52",
+    "ground_truth": [
+        "367270"
+    ],
+    "ground_truth_source": "https://capitalstrategies.berkeley.edu/gateway",
+    "reasoning": [
+        "Identify tower in the back as Berkeley’s Sather Tower.",
+        "Search up “berkeley new building” or similar and identify building as The Gateway.",
+        "Search up The Gateway’s page and conclude that it has 367270 sq ft."
+    ]
+}
+{
+    "id": "vision_base_53",
+    "ground_truth": [
+        "An0ther Magazine"
+    ],
+    "ground_truth_source": "https://www.lelabofragrances.com/another-13-463.html",
+    "reasoning": [
+        "Notice cut-off text “ANOTH” on bottle. Assume it says “Another” and search up “fragrance with another in name” or similar. First result should be the fragrance AN0THER 13 by Le Labo.",
+        "Search up or go to fragrance’s page and find that “In 2010, Le Labo was commissioned by An0ther Magazine to work on an exclusive scent.”"
+    ]
+}
+{
+    "id": "vision_base_54",
+    "ground_truth": [
+        "Loki Palace"
+    ],
+    "ground_truth_source": "https://marvelcinematicuniverse.fandom.com/wiki/Alligator_Loki",
+    "reasoning": [
+        "Search up “alligator with horned helmet”. Results should all give “Alligator Loki” from the Marvel Cinematic Universe.",
+        "Search up or go to Alligator Loki’s page. Conclude that “While in the Void, Alligator Loki lived in the Loki Palace...”."
+    ]
+}
+{
+    "id": "vision_base_55",
+    "ground_truth": [
+        "[Almond Blossom, Alphonso Mango, Coconut, Earl Grey, Malai Sweet Cream, Vanilla Bean]"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Search “Full list of heritage kulfi flavors”",
+        "Search “When was each heritage kulfi flavor released?”",
+        "Confirm all flavors that were released prior to 09/12/2025",
+        "Identify via colors of the packaging + text the flavors in the image are, Pistachio, Cardamom Chai, Saffron, and Rosewater",
+        "Compare identified flavors in the image against the full list of flavors."
+    ]
+}
+{
+    "id": "vision_base_56",
+    "ground_truth": [
+        "Abercrombie & Fitch"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Zoom in on shirt label to see “bie & Fitch”",
+        "Search for “bie & Fitch store”",
+        "Validate answer by confirming there is an Abercrombie & Fitch at the South Shore Plaza."
+    ]
+}
+{
+    "id": "vision_base_57",
+    "ground_truth": [
+        "5/17/2024"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Observe that this is a graduation ceremony",
+        "Observe the graduates are wearing master’s hoods",
+        "Observe the sign saying “Cressy, 24, UMass” and the pirate logo",
+        "Search “2024 Umass Master’s graduation Cressy”."
+    ]
+}
+{
+    "id": "vision_base_58",
+    "ground_truth": [
+        "Hebru Brantley"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Extrapolate “lobby” from query that this is a hotel",
+        "Identify text “GRADUA”",
+        "Extrapolate this is a Graduate Hotel",
+        "Identify sculpture to the left “green helmet yellow goggles holding lightbulb”",
+        "Search “graduate hotel sculpture guy holding lightbulb”, find this is a work from Hebru Brantley."
+    ]
+}
+{
+    "id": "vision_base_59",
+    "ground_truth": [
+        "2023 Macy's Thanksgiving Day Parade"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "I see this is a large snoopy balloon with a green hat and red scarf",
+        "I know that this is >=2017 because of the iphone with no home button",
+        "Search “which parade did snoopy balloon with green hat and red scarf debut after 2017”",
+        "Beagle Scout snoopy debuted at the Macy’s Thanksgiving Day Parade 2023",
+        "Check image search for beagle scout snoopy against the provided image for validation."
+    ]
+}
+{
+    "id": "vision_base_60",
+    "ground_truth": [
+        "No"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify this is an electric scooter",
+        "Identify text on the poster, “Cesar Franck: The Complete…”, “Religious Life”, “Scott Detra, Organist”, “University Chapel”",
+        "Search “Cesar Franck, Scott Detra, Organist, University Chapel New Jersey” to find out this event was held at Princeton University",
+        "Search “electric scooter rules in Princeton University”."
+    ]
+}
+{
+    "id": "vision_base_61",
+    "ground_truth": [
+        "Rutgers University"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify the logo text on the circular sign “Chai Chenak”",
+        "Search “Chai Chenak” and find it is located in New Brunswick, NJ",
+        "Search “Which college in New Brunswick NJ, has the lowest acceptance rate?”"
+    ]
+}
+{
+    "id": "vision_base_62",
+    "ground_truth": [
+        "Banc of California Stadium"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify this as a 4-member girl group",
+        "Identify group merch lightsticks as those from Blackpink",
+        "Identify text “WORLD TOUR”, “ORN PIN”",
+        "Search “Blackpink World tours” and match the title with the Born Pink tour",
+        "Search “Born Pink World Tour dates and locations”",
+        "Traverse wikipedia list chronologically for northeastern cities + first half of the tour",
+        "Newark, NJ is the only northeastern USA city they performed at in the first half of the tour",
+        "Identify the next venue after Newark, NJ"
+    ]
+}
+{
+    "id": "vision_base_63",
+    "ground_truth": [
+        "Original"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "First search for “Fiber One cereal flavors” and aggregate images of existing flavors",
+        "Notice the box to the left with the red circle logo cut off and the bowl of cereal with berries matches images from the search result",
+        "Comparing visual details (i.e the blueberries in the bowl, red logo, bowl to the right), this is the “original flavor”"
+    ]
+}
+{
+    "id": "vision_base_64",
+    "ground_truth": [
+        "Quattro Cheese"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Scan image for “Buldak” text or Buldak packaging through image comparison",
+        "Search for “list of all Buldak flavors” via image search",
+        "The list is [Kimchi, Quattro Cheese, Corn, Carbonara, Jjajang, Original]",
+        "Search nutrition facts for each flavor comparing the calories value."
+    ]
+}
+{
+    "id": "vision_base_65",
+    "ground_truth": [
+        "1600 Post Alley Walk Wy, Seattle, WA 98101"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Text recognition “MPAGNE”",
+        "Assume this is most likely is the tail end of “CHAMPAGNE”",
+        "Search “Cafe Champagne near Pike place”."
+    ]
+}
+{
+    "id": "vision_base_66",
+    "ground_truth": [
+        "12"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Notice text, “Hotel, Cafe, Quelle”",
+        "Search “Hotel Cafe Quelle” and find Hotel Restaurant Gute Quelle in Beilstein, Germany",
+        "Search the hotel’s website and find there are 12 rooms total."
+    ]
+}
+{
+    "id": "vision_base_67",
+    "ground_truth": [
+        "Strategic Sacrifice: Self-Organized Robot Swarm Localization for Inspection Productivity"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Search “norman r augstine radhi princeton mechanical and aerospace”",
+        "Identify through logo search and professor this is the Self-Organizing Swarms and Robotics Lab from Princeton University",
+        "Search “Self Organizing Swarms and robotics lab October 2024 conference”",
+        "Find Lab group website for DARS 2024 conference (https://ssr.princeton.edu/news/2024/dars-2024-conference)",
+        "Search paper authors for the PhD presenter."
+    ]
+}
+{
+    "id": "vision_base_68",
+    "ground_truth": [
+        "Mario Tennis"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify the game directly to the right of The Smurfs cartridge as “Super Mario Bros Deluxe”",
+        "Identify the device as “Game Boy Color”",
+        "Search “When did Super Mario Bros Deluxe come out on gameboy color”",
+        "Find it was 1999",
+        "Now search “What other mario games came out for game boy color in 2000”",
+        "You will find the (https://www.mariowiki.com/List_of_games_by_date#2000)",
+        "Search it chronologically for the answer."
+    ]
+}
+{
+    "id": "vision_base_69",
+    "ground_truth": [
+        "2 Place D' Estienne D Orves"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Search text “Rotonde Cafe Brasserie”",
+        "You will first find a different Rotonde location with different sign design (no cursive) in a different part of the city",
+        "Sift through image search to find the Rotonde Cafe that matches the cursive font."
+    ]
+}
+{
+    "id": "vision_base_70",
+    "ground_truth": [
+        "2 Rue Lombards 75004 Paris, France"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text on the orange signage “LE CHANT…” “RESTAURANT”",
+        "Identify this as “Paris” by street signage",
+        "Identify text on the blue street sign “4 arr St Martin”",
+        "Search text “Paris 4 arr St Martin Le Chant restaurant”."
+    ]
+}
+{
+    "id": "vision_base_71",
+    "ground_truth": [
+        "101 7th Ave S New York, NY 10014"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text on the carpet “Two Bo-” “NYC’s Pizza Pioneers”",
+        "Search “NYC’s Pizza Pioneers Two Bo”",
+        "Identify this as a Two Boots Pizza location",
+        "Identify the number in the window is “101”",
+        "Search for the Two Boots location with an address containing building number 101."
+    ]
+}
+{
+    "id": "vision_base_72",
+    "ground_truth": [
+        "6/22/2018"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify the center game in the row as “Super Mario Odyssey”",
+        "Search “What game came out right after Super Mario Odyssey in the Mario franchise?”",
+        "Find list of games by date (https://www.mariowiki.com/List_of_games_by_date#1999)",
+        "Find the next chronological Mario release for Nintendo Switch after “Super Mario Odyssey”",
+        "The next game was “Mario Tennis Aces”",
+        "Search, “What exact date was Mario Tennis Aces released”."
+    ]
+}
+{
+    "id": "vision_base_73",
+    "ground_truth": [
+        "[Brent Rooker, Shea Langeliers]"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Search “Evans 73 team”",
+        "Find that one of the teams is the Seattle Mariners",
+        "Search “Seattle mariners game 07/29/2025 stats”",
+        "Find that the game was between the Mariners vs Athletics",
+        "Find a report of the game stats (i.e https://www.nytimes.com/athletic/mlb/game/stats/athletics-vs-seattle-mariners/qcrCiQzSigA1AYF4/)",
+        "Find that the Athletics won",
+        "Traverse list of stats for Athletics players for this particular game under the “HR” column for homeruns."
+    ]
+}
+{
+    "id": "vision_base_74",
+    "ground_truth": [
+        "Carson Foster"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text, “AMPIO” “INDIANA”, “4 X X M”  “IND”, “TOYOTA” “USA”",
+        "Extrapolate since this is a race “AMPIO” -> “CHAMPION” or “CHAMPIONSHIP”",
+        "Identify this is the Toyota USA Championship 2025",
+        "The event name is occluded but you can assume this is a 400M event and the event name starts with “IND”",
+        "Identify that this is the 400m Individual Medley",
+        "Search “Toyota USA Championship 2025 400m Individual Medley Silver Medalist."
+    ]
+}
+{
+    "id": "vision_base_75",
+    "ground_truth": [
+        "9.81"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify the olympic rings, race track,  “24, “USA”",
+        "This is the 2024 Olympics Team USA",
+        "Identify “ERLEY” on the left",
+        "Search “2024 Olympics Team USA track and field”",
+        "Match “ERLEY” to Fred Kerley",
+        "Search “which event did Fred Kerley medal in 2024 olympics”",
+        "Find that he medaled in the 100m",
+        "Search “Fred Kerley 100m time and placing at Olympics 2024”."
+    ]
+}
+{
+    "id": "vision_base_76",
+    "ground_truth": [
+        "27.10%"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify the defender is the player wearing purple",
+        "Identify text on jersey “MARTIN…” or “MARTI…”",
+        "Identify the “N” logo on the shorts, the purple uniform, and that this is a Big Ten team to extrapolate that this is Northwestern",
+        "Search “2023-24 Northwestern basketball team”",
+        "Traverse last names on site for match for “MARTI” to identify this as Nick Martinelli",
+        "Search Nick Martinelli’s 3P% in the 2023-24 season."
+    ]
+}
+{
+    "id": "vision_base_77",
+    "ground_truth": [
+        "2"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “VIBE JRS”, “..RAVY..” “...AB”, identify this as a dance competition",
+        "Search “Vibe Jrs 2024 competitors”",
+        "Find the Vibe dance comp youtube channel",
+        "Traverse video listings for string match “RAVY…” to find [2nd Place] GRaVy Babies | VIBE Jrs 2024 [@Vibrvncy Front Row 4K]",
+        "Validate with an article about the event."
+    ]
+}
+{
+    "id": "vision_base_78",
+    "ground_truth": [
+        "No"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify sign text “The Streets At Southpoint”",
+        "Search “the streets at southpoint parental adult accompaniment”",
+        "Find the mall website with information (https://www.streetsatsouthpoint.com/en/visit/)",
+        "Traverse FAQ for guidance on youth parental supervision",
+        "Find that “Shoppers who are age 17 and under must be accompanied by a parent or adult age 21 or older on Friday and Saturday after 3PM.”."
+    ]
+}
+{
+    "id": "vision_base_79",
+    "ground_truth": [
+        "DRAW"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text on the nameplate towards the back “Gumularz, Szymon” “European Individual Chess Championship 2024”, “ POL”",
+        "Identify the player facing Gumularz via text “CRO” and flag as someone from Croatia",
+        "Search “European Individual Chess Championship 2024 all games”",
+        "Find game stats for this event (https://www.chess.com/events/2024-european-chess-championship/games)",
+        "Search site by “Gumularz”",
+        "Traverse games played by Gumularz for “CRO” “Croatia” or the Croatian flag",
+        "Ivan Saric was the only Croatian opponent Gumularz faced",
+        "Search -> “Gumularz vs Saric European Individual Chess Championship 2024 result”."
+    ]
+}
+{
+    "id": "vision_base_80",
+    "ground_truth": [
+        "2"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify slanted text “CHICAGO” on the security belt",
+        "Search “biggest airport in Chicago”",
+        "Find that this is the O’Hare International Airport",
+        "Search “O’Hare International Airport Alaska Airlines terminal”."
+    ]
+}
+{
+    "id": "vision_base_81",
+    "ground_truth": [
+        "72"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “LIREN”, “SH!P” == “SHIP”, “2024”",
+        "Extrapolate “CHAMPIONSHIP 2024”",
+        "Search “Liren chess Championship 2024”",
+        "Find that this is the World Chess Championship 2024",
+        "Search and scrape the World Chess Championship 2024 wikipedia page",
+        "Traverse list of games looking at # of moves -> Game 7 had the most amount of moves with 72 moves and it ended in a draw."
+    ]
+}
+{
+    "id": "vision_base_82",
+    "ground_truth": [
+        "Tuesday"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “2025”, “...kohama, Japan”,  “Conversational Food Journaling”, author names, etc.",
+        "Search “Conversational Food Journaling Yokohama Japan 2025”",
+        "Find that the paper title is “Foody Talk: Exploring Opportunities for Conversational Food Journaling” and the conference is “CHI 2025”",
+        "Search “Foody Talk: Exploring Opportunities for Conversational Food Journaling” and identify the link to the conference program containing dates and times for all speaker events ( https://programs.sigchi.org/chi/2025/program/content/189643)"
+    ]
+}
+{
+    "id": "vision_base_83",
+    "ground_truth": [
+        "[Car’s Outside, Say You Won’t Let Go]"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “AMES ART” “ITTERSWEET”",
+        "Search “tour bittersweet 05/18/2024 Boston” and find “James Arthur in Boston, MA (05.18.24)” for a leg of his Bitter Sweet Love World Tour",
+        "Search “James Arthur Bitter Sweet Love World Tour 05/18/2024 setlist”",
+        "Find the songs for the encore on the setlist website."
+    ]
+}
+{
+    "id": "vision_base_84",
+    "ground_truth": [
+        "Thursday, July 31, 2025"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify stylized text as “CONFIG”, identify this as a conference-style event",
+        "Search “CONFIG conference”",
+        "Identify the company as Figma",
+        "Search “When did Figma IPO?”."
+    ]
+}
+{
+    "id": "vision_base_85",
+    "ground_truth": [
+        "[BBL Esports, Joblife]"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text on jerseys “AC”, “CE”, “ACEN”, identify this as an e-sports team",
+        "Search “Esports team ACEN”",
+        "Find that this is ACEND",
+        "Validate this is the right team by searching “ACEND World Championship 2021” and find that they won the Valorant World Championship 2021",
+        "Search “ACEND 2024 team roster”(https://www.vlr.gg/team/3531/acend)",
+        "Traverse roster for Russian flag to find the one Russian member, “Chiwa”",
+        "Search “Chiwa ACEND player profile” (https://www.vlr.gg/player/321/chiwa)",
+        "Traverse associated teams chronologically to find team membership status as of May 2025"
+    ]
+}
+{
+    "id": "vision_base_86",
+    "ground_truth": [
+        "Poland"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “Framework for track…”, “Toebosch”, “Luxembourg”, “25”",
+        "Search “Toebosch framework for tracking research”",
+        "Find the work “Challenging Sensor-based Personal Informatics: A Triadic Framework for Designing Open-ended Self-tracking Devices” by Romain Toebosch presented at TEI 2025",
+        "Search “Romain Toebosch google scholar”",
+        "Traverse publications for a reference to an older TEI conference",
+        "Find “Improving collaboration experiences and skills: An open-ended, user-driven self-tracking approach for education” presented at TEI 2023",
+        "Search “Where did TEI 2023 take place?”."
+    ]
+}
+{
+    "id": "vision_base_87",
+    "ground_truth": [
+        "No"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify the row of Calpico bottles and read labels “Melon, WhitePeach, Lychee, Mango, Strawberry, Original”",
+        "Search “List of Calpico flavors” and find the product list (https://asahibev.com/products/ready-to-drink-calpico/)",
+        "Compare identified list against the product offering on the website",
+        "Identify that Mandarin Orange is missing from the identified list."
+    ]
+}
+{
+    "id": "vision_base_88",
+    "ground_truth": [
+        "16"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “PARIS 2024”, “AU..”",
+        "Extrapolate that this is AUSTRALIA competing in the PARIS 2024 olympics",
+        "Search “What Olympic event debuted in Paris 2024?”",
+        "Find that this is the new breakdancing event",
+        "Search “2024 women's olympic breakdancing”",
+        "Find rankings on the olympics website (https://www.olympics.com/en/olympic-games/paris-2024/results/breaking/b-girls)",
+        "Traverse list of rankings for AUS/Australia."
+    ]
+}
+{
+    "id": "vision_base_89",
+    "ground_truth": [
+        "1/29/2024"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “RINCETON”",
+        "Extrapolate that this is the Princeton University campus",
+        "Reverse image search the building as “Dillon Gymnasium\"",
+        "Search “Phase 1 dillon gymnasium construction project princeton”",
+        "Find articles to surrounding project completion (https://campusrec.princeton.edu/news/reimagining-recreation-princeton-phase-one, https://www.dailyprincetonian.com/article/2024/01/princeton-news-stlife-fitness-center-phase-one-renovation-opening-dillon-gym)",
+        "Find that phase 1 was completed on January 29, 2024."
+    ]
+}
+{
+    "id": "vision_base_90",
+    "ground_truth": [
+        "Leers Weinzapfel Associates"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “Boston Public Library”",
+        "Identify through search that there are multiple branch locations referred to as Boston Public Library",
+        "We need to find the branch matching the building in the image",
+        "Search “Boston Public Library branches” ( https://bpl.bibliocommons.com/v2/locations)",
+        "Traverse location thumbnails to match the image architecture and signage",
+        "Identify this is the “Roslindale” branch of the BPL",
+        "Search “Boston Public Library Roslindale renovation”",
+        "Find the architect's website (https://www.lwa-architects.com/project/roslindale-library/)."
+    ]
+}
+{
+    "id": "vision_base_91",
+    "ground_truth": [
+        "Singapore National Stadium"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “Acco”, “Stad…”",
+        "Extrapolate “Accor Stadium”",
+        "Identify text on poster “AYLOR..” “ERA”",
+        "Extrapolate Taylor Swift Eras Tour",
+        "Search  “Taylor Swift Eras Tour tour dates and locations” (https://en.wikipedia.org/wiki/The_Eras_Tour)",
+        "Traverse list for “Accor Stadium”",
+        "Identify the venue directly after Accor Stadium, which was Singapore National Stadium."
+    ]
+}
+{
+    "id": "vision_base_92",
+    "ground_truth": [
+        "1"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “Kentucky Derby” “151”",
+        "Identify that this is the 151st Kentucky Derby",
+        "Identify text on sash “REIGNTY”",
+        "Search “151st Kentucky Derby Rankings” (https://www.nytimes.com/athletic/live-blogs/kentucky-derby-2025-live-updates-results-highlights/kcbWlQzQKPKF/gDNvVQ4OmBVm/)",
+        "Traverse rankings site for string match “REIGNTY”",
+        "Find that this horse is named Sovereignty and it placed 1st."
+    ]
+}
+{
+    "id": "vision_base_93",
+    "ground_truth": [
+        "154 Madison St, New York, NY 10002"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “Pike St”, “HOTEL”, “MADISON”",
+        "Search “pike street madison hotel nyc”",
+        "Identify this as the Madison LES Hotel",
+        "Search “Madison LES Hotel address”"
+    ]
+}
+{
+    "id": "vision_base_94",
+    "ground_truth": [
+        "8/2/2025"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text and font “palooza”",
+        "Identify that this picture was taken at Lollapalooza",
+        "Identify text “LIVE FROM THE ..WAMP”, “TOUR”, “DOECHII”",
+        "Search “Doechii Live from the swamp tour lollapalooza”",
+        "Articles mention Doechii announced her tour dates during her set at Lollapalooza 2025",
+        "Search “When was Doechii Lollapalooza set in 2025?”"
+    ]
+}
+{
+    "id": "vision_base_95",
+    "ground_truth": [
+        "10.5"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “PARIS 2024” “MARKS”",
+        "Identify the American flag",
+        "Search “PARIS 2024 USA WOMENS SURFING MARKS TOTAL SCORE”",
+        "Find recap article (https://www.teamusa.com/news/2024/august/06/caroline-marks-wins-surfing-gold-at-olympic-games)",
+        "Find that Caroline Marks total score was 10.50."
+    ]
+}
+{
+    "id": "vision_base_96",
+    "ground_truth": [
+        "Pondwell Hill, Ryde PO33 1PX, United Kingdom"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “THE ISLE OF WIGHT DISTILLERY”",
+        "Search “ISLE OF WIGHT DISTILLERY address UK”."
+    ]
+}
+{
+    "id": "vision_base_97",
+    "ground_truth": [
+        "4"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Zoom in on the advertisement to the right about a TV Show",
+        "Search text, “OLIVIA COLMAN”, “DAVID”, “HBO ORIGINAL”, “LANDSCA-”",
+        "Find that this is “Landscapers”",
+        "Search “Landscapers HBO Original how many episodes?”"
+    ]
+}
+{
+    "id": "vision_base_98",
+    "ground_truth": [
+        "11/11/1889"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “Oklahoma City”",
+        "Search “When did the first provisional mayor of Oklahoma City leave office?”"
+    ]
+}
+{
+    "id": "vision_base_99",
+    "ground_truth": [
+        "12"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “AMERI…”,“DECID”,“CAMPAI”, “CBS NEWS”,“VICE”",
+        "Identify through search that this is the America Decides Campaign Vice President Debate on CBS NEWS",
+        "People search the individuals in the image OR reverse image search “America Decides Campaign Vice President Debate CBS” to find this is the 2024 vice presidential debate",
+        "The man on the right is the democratic candidate indicated by the blue lit podium",
+        "Search “Vice President candidate 2024”",
+        "Find that it was Tim Walz",
+        "Search “How many years did Tim Walz serve in Congress”."
+    ]
+}
+{
+    "id": "vision_base_100",
+    "ground_truth": [
+        "10/24/2024"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify Notion logo on the laptop",
+        "Search “When did Notion have its first in-person conference?”."
+    ]
+}
+{
+    "id": "vision_base_101",
+    "ground_truth": [
+        "1981"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text on t-shirt “CONFIG 2025”",
+        "Search “Where did CONFIG 2025 take place”",
+        "Find that it took place in the Moscone Center in San Francisco",
+        "Search 'What year did the Moscone Center in SF first open?'."
+    ]
+}
+{
+    "id": "vision_base_102",
+    "ground_truth": [
+        "6/9/2025"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify the location as Apple Park via reverse image search",
+        "Identify text “iquid Gl”",
+        "Extrapolate “Liquid Gl”",
+        "Search “Apple Park new design announcement Liquid Gl”",
+        "Find that this is the Liquid Glass UI announcement at WWDC 2025 on June 9, 2025."
+    ]
+}
+{
+    "id": "vision_base_103",
+    "ground_truth": [
+        "The Devil Is An Angel Too"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “Rever- Journa-”",
+        "Search to complete text as “Revere Journal” a publication that is from Revere, MA",
+        "Identify this as a sand sculpture with angel wings, devil horns, and beard",
+        "Search “Revere Journal sand sculpture angel wings, devil horns, beard”",
+        "Find that this is the 2022 Revere Beach International Sand Sculpting Festival and the piece is “The Devil Is An Angel Too” by Abe Waterman (https://reverebeach.com/recent-news/the-winners-of-the-2022-international-sand-sculpting-festival-announced/)"
+    ]
+}
+{
+    "id": "vision_base_104",
+    "ground_truth": [
+        "Dallas Sports Commission"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “SCRIPPS NAT… SPELLING”",
+        "Extrapolate Scripps National Spelling Bee",
+        "Identify text bottom right on the trophy “97th Annual”",
+        "Recognize this is the trophy of the person who won the spelling bee",
+        "Search -> “Winner of 97th Annual Scripps National Spelling Bee regional partner”."
+    ]
+}
+{
+    "id": "vision_base_105",
+    "ground_truth": [
+        "Paris Saint-Germain Football Club"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Identify text “025”,“FIFA”,“UB”,“CUP”",
+        "Extrapolate FIFA CLUB CUP 2025",
+        "Identify players and jerseys: “OTHROCK 14”, “C ROLDAN 7”, “FABIAN 8”",
+        "Search “ C ROLDAN 7 team”",
+        "Find that one of the teams is Seattle Sounders FC",
+        "Search “Seattle Sounders games in Fifa Club Cup 2025”",
+        "Search players of each team Seattle Sounders FC played for a Fabian #8",
+        "Among the #8’s that appeared in games against Seattle in this cup there is only one Fabian,  #8 Fabian Ruiz who plays for PSG",
+        "Search “FIFA CLUB CUP 2025 SEATTLE SOUNDERS vs PSG RESULTS”."
+    ]
+}
+{
+    "id": "vision_base_106",
+    "ground_truth": [
+        "Vandelism"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding this is stand up comedy",
+        "Google_search → “Which is the Stand up comedy place with logo H in background?” → Habitat",
+        "Google_search → “Why was stand up comedy place habitat destroyed?” → Kunal Kamra Controversy → Vandelism"
+    ]
+}
+{
+    "id": "vision_base_107",
+    "ground_truth": [
+        "6:57AM"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding it’s 6:57",
+        "Google_search → “Direction of big ben” → “east” → it’s facing sun from an angle so sun is coming from east → morning",
+        "GPT said 8:20PM"
+    ]
+}
+{
+    "id": "vision_base_108",
+    "ground_truth": [
+        "4"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Google_search → “When did apple introduce MacBook Pro 14 inch 2021” → Apple's 'Unleashed' event on 18 October 2021",
+        "Google search → “What all products did apple introduce at Apple's 'Unleashed' event on 18 October 2021” → 14-inch MacBook Pro (2021 redesign, M1 Pro / M1 Max options) 16-inch MacBook Pro (2021 redesign, M1 Pro / M1 Max options) AirPods (3rd generation) HomePod mini in new colors (blue, yellow, orange) → 4",
+    ]
+}
+{
+    "id": "vision_base_109",
+    "ground_truth": [
+        "No dejaré que te vayas"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Google_search → “Magnifica Locura songs” → artist's spotify profile",
+        "Artist's spotify profile → 3:51 → No dejaré que te vayas"
+    ]
+}
+{
+    "id": "vision_base_110",
+    "ground_truth": [
+        "€21"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understand its palace of Versailles based on text on pillars and also a basic image search gives details about the palace of Versailles.",
+        "Google_search → “palace of Versailles ticket price” → €21"
+    ]
+}
+{
+    "id": "vision_base_111",
+    "ground_truth": [
+        "George Follmer - Royal Crown Cola."
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Initial Identification: The AI must first use the visual cues (Rothmans livery, number 18, car design) to identify the car as the Porsche 962C run by Joest Racing at the 1986 Le Mans.",
+        "Finding the Drivers: It must then specifically search for the driver lineup for that exact car in that exact race. The answer is George Follmer, John Morton, and Kenper Miller.",
+        "Identifying the Specific Driver: The query asks for the \"first-listed driver,\" which requires the AI to correctly identify George Follmer from the race records.",
+        "Pivoting to New Information: The AI must then start a completely new line of research about George Follmer's career, specifically his \"Can-Am championship\" win. This will lead it to the 1972 season.",
+        "Final Synthesis: The final and most difficult step requires the AI to find the sponsor for Follmer's 1972 Can-Am team (the AVS Shadow team). The answer is Royal Crown Cola."
+    ]
+}
+{
+    "id": "vision_base_112",
+    "ground_truth": [
+        "$12"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understand the logo says Lane’s Edge wine bar",
+        "Google_search → “Lane’s Edge wine bar Menu”",
+        "Menu → Negroni → $12"
+    ]
+}
+{
+    "id": "vision_base_113",
+    "ground_truth": [
+        "Essex Street station"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Cut off text → 325 kent Ave",
+        "Google_search → “Bridge near 325 kent Ave” → Williams Burg Bridge",
+        "Google_search → “What mta stops are there right before Williamsburg bridge nyc” → Delancey Street/Essex Street station (nyc → brooklyn)",
+        "Google_search → “What mta stops are there right before Williamsburg bridge brooklyn” → Marcy Avenue (brooklyn → nyc)",
+        "Understanding it’s coming from nyc so → Essex Street station"
+    ]
+}
+{
+    "id": "vision_base_114",
+    "ground_truth": [
+        "1. DualSense ($75) 2. Explore Pulse ($200) 3. Carbon fiber skin ($10) = $285"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Google search → “DualSense price” → $75",
+        "Google search → “Explore Pulse price” → $200",
+        "Google search → “Carbon fiber skin price for DualSense” → $10",
+        "75 + 200 + 10 = 285"
+    ]
+}
+{
+    "id": "vision_base_115",
+    "ground_truth": [
+        "3"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding it is SumUp’s Credit Card (Master Card)",
+        "Google search → “How many free cash withdrawals a month can I make using SumUp’s credit card from UK ATMs?” → 3"
+    ]
+}
+{
+    "id": "vision_base_116",
+    "ground_truth": [
+        "Crosstown donut shop, 157 brick lane"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding there is a shop next to the main Beigel shop called Crosstown",
+        "Google search → “Britains first and best beigel shop address” → 155 Brick lane and 159 Brick lane",
+        "Google search → “156 brick lane” → “Urbiana”",
+        "Google search → “157 brick lane” → “Crosstown”",
+        "Google search → “158 brick lane” → “Cream Vintage London”",
+        "Understanding brick lane is diagonal so the store between 155 and 159 is 157 → crosstown"
+    ]
+}
+{
+    "id": "vision_base_117",
+    "ground_truth": [
+        "0"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding this is a blue bus with yellow strip.",
+        "Google search → “Petrossian building location” → NYC",
+        "Google search → “Blue bus with yellow strip in NYC” → “Electric bus”",
+        "Electric bus = 0 carbon emission"
+    ]
+}
+{
+    "id": "vision_base_118",
+    "ground_truth": [
+        "1.6 billion dollars"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding it’s popmart’s labubu doll",
+        "Google search → “How much money did Wang Ning make from this toy in a day when it was launched?” → 1.6 billion"
+    ]
+}
+{
+    "id": "vision_base_119",
+    "ground_truth": [
+        "Grand Central Station"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding there are 2 red bus lanes and a store sign called Portabella",
+        "Google search → “Portabella store in NYC”",
+        "Google search → “train station near 363 Madison Ave, New York, NY 10017” → Grand central"
+    ]
+}
+{
+    "id": "vision_base_120",
+    "ground_truth": [
+        "1401 feet"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is New York City (from Empire State) and the girl is wearing plastic cover to protect glass floor",
+        "Google search → “Which building in NYC has glass floor and requires you to wear plastic cover on shoes?” →  SUMMIT One Vanderbilt",
+        "Google search → “How tall is SUMMIT One Vanderbilt building?” → 1401 feet"
+    ]
+}
+{
+    "id": "vision_base_121",
+    "ground_truth": [
+        "terminal and vs code"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that there is a coding IDE open and a terminal app",
+        "Google search → “Famous Coding IDE” → VS code"
+    ]
+}
+{
+    "id": "vision_base_122",
+    "ground_truth": [
+        "Vitamin water orange"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that there is a very similar looking vitamin bottle on the shelf.",
+        "Google search → “Vitamin water with black and orange label” → “Vitamin water orange essential”"
+    ]
+}
+{
+    "id": "vision_base_123",
+    "ground_truth": [
+        "Lake Lippajärvi"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that the logo is Nokia",
+        "Google search → “Which Nokia building is near water” → Nokia Headquarters in Finland is near a lake.",
+        "Google search → “lake near nokia building finland” → Lake Lippajärvi"
+    ]
+}
+{
+    "id": "vision_base_124",
+    "ground_truth": [
+        "Michigan"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that the person is pointing at the middle top right and it’s a US map",
+        "Google search → “middle top right state near lake in US” → Lake Michigan → Michigan State"
+    ]
+}
+{
+    "id": "vision_base_125",
+    "ground_truth": [
+        "Granola, Original"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that the image shows powder pops and chocolate",
+        "Google search → “All Sucrilhos flavours” → Original, Chocolate, powder pops, and granola→ original and granola"
+    ]
+}
+{
+    "id": "vision_base_126",
+    "ground_truth": [
+        "1. Classic, Caffeine free, Diet, and zero sugar cherry"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that there are 2 fancy bottles coke zero with pink and another with golden ring",
+        "Google search → “Coca cola zero sugar with pink ring” → Coca cola zero sugar cherry",
+        "Google search → “Coca cola with golden ring” → Coca cola caffeine free"
+    ]
+}
+{
+    "id": "vision_base_127",
+    "ground_truth": [
+        "The Millennium Hotel Broadway Times Square"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is the famous paramount building in time square",
+        "Google search → A simple image search reveals that this picture is very famous. A lot of people have posted reviews of this view. → hotel",
+        "Google search → \"Which hotel has the view of the paramount building?” → The Millennium Hotel Broadway Times Square"
+    ]
+}
+{
+    "id": "vision_base_128",
+    "ground_truth": [
+        "winter"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is the famous chicago tower indicating it’s chicago",
+        "Understanding that it’s almost past sunset and the clock says 4:20PM this hints that Daylight saving is off",
+        "Google search → “When does chicago sunset during decembers” (Since it turns off during Nov) → 4:23PM to 4:25PM → late december"
+    ]
+}
+{
+    "id": "vision_base_129",
+    "ground_truth": [
+        "HUF 790"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is a nokia building and a sign in reverse called Snidling coffee and brunch → understanding that is in budapest",
+        "Google search → Snidling Coffee and Brunch Menu → HUF 790[a]"
+    ]
+}
+{
+    "id": "vision_base_130",
+    "ground_truth": [
+        "Los Angeles"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that there is a cup on the right side which spelling _RECOS Pizzeria → the blank can be filled in by understanding that the only famous pizza chain with this name is GRECO’S Pizzeria",
+        "Google search → pizzeria greco's location → LA"
+    ]
+}
+{
+    "id": "vision_base_131",
+    "ground_truth": [
+        "Mark Zuckerberg"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is pinocchio’s pizza in boston by the sign and hint that some famous entrepreneur used to eat here",
+        "Google search → “Which famous entrepreneur used to eat at pinocchio’s pizza and sub at boston” → Mark Zuckerberg"
+    ]
+}
+{
+    "id": "vision_base_132",
+    "ground_truth": [
+        "2.5"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is a game map.",
+        "Google search → “Which game map has vice paint and york town?” → GTA 6",
+        "Google search → “How big is GTA 6 map compared to GTA 5?” → 2 to 2.5 times"
+    ]
+}
+{
+    "id": "vision_base_133",
+    "ground_truth": [
+        "Zendaya"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that it’s dan levy",
+        "Google search → “when did dan levy wore grey kilt for award ceremony?” → Emmy 2020",
+        "Google search → “who won the award for lead actress in drama series emmy 2020” → Zendaya"
+    ]
+}
+{
+    "id": "vision_base_134",
+    "ground_truth": [
+        "Kylian Mbappé"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that PSG won Ligue 1 title",
+        "Google search → “When did PSG won Ligue 1 title” → 2023 and 2025",
+        "Understanding that Messi was part of PSG till 2023 so it’s 2023 season",
+        "Google search → “Who is the person of the season for 2023 season psg?” → Kylian Mbappé"
+    ]
+}
+{
+    "id": "vision_base_135",
+    "ground_truth": [
+        "2025"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that it’s Sachin Tendulakr, Yuvraj Singh, and Sudhir Kumar in picture",
+        "Google search → “Sachin Tendulakr, Yuvraj Singh, and Sudhir Kumar holding trophy” → instagram post by sudhir kumar saying → “ I got the privilege of getting the photo clicked with International masters league trophy, Celebrated the victory with Sachin Sir and Yuvi Paaji” → post date → 19 march 2025 → T20 2025",
+        "(Very easily confusable because trophy and sachin are linked to 2011 world cup)"
+    ]
+}
+{
+    "id": "vision_base_136",
+    "ground_truth": [
+        "Astronomer"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is Cold play’s concert and the girl is hiding her face",
+        "Google search → “Why was the lady hiding her face at the cold play concert?” → HR caught with CEO of Astronomer → Astronomer"
+    ]
+}
+{
+    "id": "vision_base_137",
+    "ground_truth": [
+        "Dua Lipa"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is a concert and there is a #OPMF on top → OnePlus Music Festival",
+        "Google search → “OnePlus Music Festival” → katy perry and dua lipa concert mumbai 2019",
+        "Google search → \"Katy Perry outfit OPMF 2019” → green neon outfit (understand it’s katy perry in the image) → Dua lipa"
+    ]
+}
+{
+    "id": "vision_base_138",
+    "ground_truth": [
+        "2022"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is the bank of america stadium",
+        "Understanding that there are 5 people wearing a band t shirt “metal band with 5 people who performed at bank of america stadium” → the font also similar to Def Leppard",
+        "Google search → “When did Def Leppard perform at Bank of America stadium?” → 2022"
+    ]
+}
+{
+    "id": "vision_base_139",
+    "ground_truth": [
+        "India"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that it’s alan walker in the image and the text read SUNBURN which is in reverse and a little cut",
+        "Google → “Where does SunBURN take place?” → India"
+    ]
+}
+{
+    "id": "vision_base_140",
+    "ground_truth": [
+        "Arjit Singh"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that it’s Ed sheeran (artist) and shah rukh khan (actor) so there is another singer in the song",
+        "Google → “Song with Ed sheeran and shah rukh khan” → Sapphire",
+        "Google → “Artist names in Sapphire song by ed sheeran” →  ed sheeran and arjit singh → arjit singh"
+    ]
+}
+{
+    "id": "vision_base_141",
+    "ground_truth": [
+        "Killing mothership"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this scene is from Avengers the first movie and these are Chitauri",
+        "Google  → “What is the easiest way to kill all Chitauri army?” →  taking out the alien mothership"
+    ]
+}
+{
+    "id": "vision_base_142",
+    "ground_truth": [
+        "97"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this scene is from Solo leveling sung jin-woo vs ant king",
+        "Google → “What was sung jin-woo’s level’s level when fighting ant king” → 97"
+    ]
+}
+{
+    "id": "vision_base_143",
+    "ground_truth": [
+        "Record Fair"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "● Understanding this is a public indoor event and People are flipping through crates filled with LP-sized items.",
+        "● Google search → “What is sucette Distro” → record fair"
+    ]
+}
+{
+    "id": "vision_base_144",
+    "ground_truth": [
+        "July 2024"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that there is a calendar with Monday on 1st and Wednesday on 31st based on positions",
+        "Google search → “Which month in 2024 started on a monday and ended on wednesday” → July"
+    ]
+}
+{
+    "id": "vision_base_145",
+    "ground_truth": [
+        "PALM 2"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding this image is from the Google IO event from the I and O text",
+        "This is the Google IO 2023 event from the rainbow in the middle",
+        "Google search → “What bard model was released at the Google IO 2023 event?” → Bard running on PALM 2"
+    ]
+}
+{
+    "id": "vision_base_146",
+    "ground_truth": [
+        "The JR Yamanote Line is the closest train line, with stations at Ueno Station and Okachimachi Station"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "The train has a distinct blue and gray horizontal stripe, which is characteristic of the JR East.",
+        "The location appears to be ameya yokocho market, based on the visible signs like “ameya yokocho.",
+        "Google search → “which train line is near ameya yokocho market” → JR Yamanote Line"
+    ]
+}
+{
+    "id": "vision_base_147",
+    "ground_truth": [
+        "Raspberry pi Zero"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is raspberry pi zero and zero 2 w based on chip",
+        "Google search → “Which raspberry board has only 1 cpu core?” → zero series"
+    ]
+}
+{
+    "id": "vision_base_148",
+    "ground_truth": [
+        "Eating most about of beans with chopsticks in 1 minute"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that there is an open beans can on lower right side and the person is holding chopsticks",
+        "Google search → “Which world record is broken with chopsticks and beans?” → The most beans eaten with chopsticks in one minute"
+    ]
+}
+{
+    "id": "vision_base_149",
+    "ground_truth": [
+        "1. Evga Geforce rtx 3070, 2. MSI geforce gtx series, 3. Radeon RX 7900, and 4. Suprim geforce rtx series"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding there are 3 text clues → Suprim geforce, Radeon, Evga geforce rtx 3070",
+        "Google search → “Which graphics card is red and black people?” → MSI GTX series"
+    ]
+}
+{
+    "id": "vision_base_150",
+    "ground_truth": [
+        "Fein"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding this is a travis scott concert by the name circus maximus",
+        "Google search → “which song did travis scott played many times on repeat at circus maximus concert” → fein"
+    ]
+}
+{
+    "id": "vision_base_151",
+    "ground_truth": [
+        "4"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding this is an arctic monkey concert from the wave design, which can also be found using a simple image search.",
+        "Google search → “number of members in arctic monkey band” → 4"
+    ]
+}
+{
+    "id": "vision_base_152",
+    "ground_truth": [
+        "Materialists"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding there is pedro pascal, chris evans, and dakota johnson",
+        "Google search → “In which movie did pedro pascal, chris evans, and dakota johnson work together?” → Materialists"
+    ]
+}
+{
+    "id": "vision_base_153",
+    "ground_truth": [
+        "Andrew Garfield → 1, Toby → 1, Tom Holland → 2"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this scene is from Spiderman No way home and there are 7 characters in this scene",
+        "Google search → “How many stunt doubles did Tom Holland have in Spiderman No way home?” → 2",
+        "Google search → “How many stunt doubles did Toby have in Spiderman No way home?” → 1",
+        "Google search → “How many stunt doubles did Andrew have in Spiderman No way home?” → 1"
+    ]
+}
+{
+    "id": "vision_base_154",
+    "ground_truth": [
+        "Season 6, episode 23 - “The Love Spell Potential”"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this scene is from the big bang theory and all girls and guys are playing dungeons and dragons. (Hint there is the dungeon master board near howard)",
+        "Google search → “big bang theory girls play dungeons and dragons” → Season 6, episode 23"
+    ]
+}
+{
+    "id": "vision_base_155",
+    "ground_truth": [
+        "Joshua Pearce and Sonny Hayes"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this scene is from the F1 movie from golden and black helmet and sponsors like expensify and jwc racing",
+        "Google search → “Which team in the f1 movie has golden and black helmet” → apx gp",
+        "Google search → “APX GP team members” → Sonny Hayes and Joshua Pearce"
+    ]
+}
+{
+    "id": "vision_base_156",
+    "ground_truth": [
+        "Sonny Hayes and ( Charles Leccer or Carlos Sainz)"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this scene is from the F1 movie from the text on the helmet that says AP and that the car behind it is ferrari",
+        "Google search → “ferrari drivers in f1 movie” → Charles Leccer and Carlos Sainz",
+        "Google search → “APX GP team members” → Sonny Hayes and Joshua Pearce",
+        "The person in the car is light skinned for it has to be Sonny Hayes"
+    ]
+}
+{
+    "id": "vision_base_157",
+    "ground_truth": [
+        "The void"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this scene is from the thunderbolts movie from marvel.",
+        "Google search → How many characters are in thunderbolts team? → 6",
+        "Understanding there are 5 people in the scene so the obvious guess is saying whoever is missing in this scene",
+        "Sentry is missing so the Void is the correct answer."
+    ]
+}
+{
+    "id": "vision_base_158",
+    "ground_truth": [
+        "07-27-2024"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this picture is from Comic con from the posters behind and this is the cast of the fantastic four",
+        "Google search → “comic con fantastic four date” → Sun, July 27, 2024"
+    ]
+}
+{
+    "id": "vision_base_159",
+    "ground_truth": [
+        "Rick and Morty panel"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this picture is from Comic con from the posters behind and there are name tags that say justin roiland, dan harmon, and ryan ridley",
+        "Google search → “ what tv comic did justin roiland, dan harmon, and ryan ridley all work together?” → Rick and Morty"
+    ]
+}
+{
+    "id": "vision_base_160",
+    "ground_truth": [
+        "Samsung S10 5G"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this picture is from a folding phone with a butterfly wallpaper and has a notch",
+        "Google search → “Which folding phone has butterfly wallpaper and a notch?” → Samsung fold first generation",
+        "Google search → “Which phones were unveiled with the Samsung fold first generation?” → Samsung S10 5G"
+    ]
+}
+{
+    "id": "vision_base_161",
+    "ground_truth": [
+        "Lenovo ThinkBook Plus Gen 6 Rollable laptop"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this picture is of a vertical laptop and the person holding is Linus Sebastian (You can tell that from the LTT [Linus tech tips] logo on his hoodie which is his company logo)",
+        "From the background it is very obvious that this is like a tonight tv show → google search → “linus sebastian tonight show” → jimmy fallon tonight show",
+        "Google search → “what laptop did linus show at jimmy fallon show” → Lenovo ThinkBook Plus Gen 6 Rollable laptop"
+    ]
+}
+{
+    "id": "vision_base_162",
+    "ground_truth": [
+        "307 feet"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this scene is from oppenheimer it looks like a campus surrounding",
+        "Google search → “Where was the Oppenheimer campus shot filmed?” → UC Berkeley",
+        "Google search → “UC berkeley towers” → Sather Tower",
+        "Google search → “How tall is Sather Tower?” → 307 feet"
+    ]
+}
+{
+    "id": "vision_base_163",
+    "ground_truth": [
+        "110 KG"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this picture is from Olympics 2020",
+        "Google search → “olympics weight lifting red plates weight?” → 25KG",
+        "Google search → “olympics weight lifting blue plates weight?” → 20KG",
+        "Google search → “olympics weight lifting barbell weight?” → 20KG",
+        "(25 x 2) + (20 x 2) + 20 = 110 KG"
+    ]
+}
+{
+    "id": "vision_base_164",
+    "ground_truth": [
+        "Yes"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this picture is from new york subways and this is the euclid avenue and the track is A train track",
+        "Google search → “a train euclid avenue map” →",
+        "Euclid Av",
+        "Pitkin Ave and Euclid Ave",
+        "Two island platforms",
+        "C all times except late nights",
+        "So yes you can take the C train from here at 2:30 pm as it doesn’t operate at late night."
+    ]
+}
+{
+    "id": "vision_base_165",
+    "ground_truth": [
+        "Audience"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this picture is from oscar and it’s ke huy quan",
+        "Google search → “Ke Huy Quan oscar speech transcript” →",
+        "Speaker 1 (00:00):",
+        "And the Oscar goes to Ke Huy Quan.",
+        "Speaker 2 (00:04):",
+        "Ke Huy Quan made his big screen debut in Indiana Jones and the Temple of Doom and played Data in The Goonies. He holds a film degree from the USC School of Cinematic Arts and has worked as a stunt coordinator and assistant director.",
+        "Ke Huy Quan (00:24):",
+        "Oh, my God.",
+        "(00:58)",
+        "Thank you."
+    ]
+}
+{
+    "id": "vision_base_166",
+    "ground_truth": [
+        "Conan O’Brien, Nikki Glaser"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Google search → “what two people taunted Adam Sandler into doing this oscar crash stunt?” → mentions Conan O Brein from oscar and Nikki Glaser from golden globes"
+    ]
+}
+{
+    "id": "vision_base_167",
+    "ground_truth": [
+        "1271 avenue of americas"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that in the background it says 6th Ave and there is an aerosoles store or there is a sign that says W 50 st",
+        "Google search → “Where is aerosoles stores in NYC?” → 6th Ave 50th street, 213 W 34th St",
+        "Google search → “Buildings on 6th Ave 50th street” → 1271 Avenue of the Americas"
+    ]
+}
+{
+    "id": "vision_base_168",
+    "ground_truth": [
+        "1480 calories"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that in the background it says cane’s so it’s raising cane’s.",
+        "Google search → “raising cane’s 4 chicken fingers,4 Chicken Fingers, 2 Cane's Sauce, Crinkle-Cut Fries” → The box combo",
+        "Google search → “The box combo calories without drink” → 1290 calories",
+        "Google search → “extra cane’s sauce calories” → 190 calories",
+        "1290 + 190 = 1480"
+    ]
+}
+{
+    "id": "vision_base_169",
+    "ground_truth": [
+        "450 Calories, 42g sugar, 23g fat"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is a starbucks drink and the size is venti.",
+        "Google search → “lav cf and matcha drink” → Iced Lavender Cream Oatmilk Matcha",
+        "Google search → “Iced Lavender Cream Oatmilk Matcha venti calories, sugar and fat” → 450 Calories, 42g sugar, 23g fat"
+    ]
+}
+{
+    "id": "vision_base_170",
+    "ground_truth": [
+        "Vanilla Sky"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this is time square and completely empty",
+        "Google search → “which movie got permission to close time square for shoot?” → Vanilla Sky"
+    ]
+}
+{
+    "id": "vision_base_171",
+    "ground_truth": [
+        "$25.77"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this menu is from Buffalo Wild Wings from the sauce they offer. Also it’s Thursday so boneless wings are buy one get one free",
+        "Google search → “Thursday offers Buffalo Wild Wings” → Buy one get one for boneless",
+        "so 12 traditional wings will cost 2 x 6 traditional wings = 2 x $8.99 = $17.98",
+        "So 12 boneless wings will cost 6 boneless wings + buy one get one = $7.79",
+        "17.98 + 7.79 = 25.77"
+    ]
+}
+{
+    "id": "vision_base_172",
+    "ground_truth": [
+        "3"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this image is from ellen show and it’s bill gates.",
+        "Google search → “What games did bill gates and ellen play on ellen show?” → Guess Grocery item prices",
+        "Google search → “How many items did Bill guess correctly in the Guess Grocery item prices game? → 3 out of 5"
+    ]
+}
+{
+    "id": "vision_base_173",
+    "ground_truth": [
+        "Folklore"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that this image is from Taylor Swift’s Eras Tour concert from the house on the stage and taylor swift on screen.",
+        "Google search → “Which album did Taylor Swift sing on a house in the Eras Tour?” → Folklore"
+    ]
+}
+{
+    "id": "vision_base_174",
+    "ground_truth": [
+        "Anytime between 8:46 a.m to 9:03am"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "In the first image you can see the first tower on fire but not the second one so anytime between 8:46am (first hit) to 9:03am (second hit) is a valid time or even if we get a range.",
+        "Google search → “9/11 plane hit time? → 8:46 a.m first and 9:03am second"
+    ]
+}
+{
+    "id": "vision_base_175",
+    "ground_truth": [
+        "The Alpine team"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding that the cars look different and there are 2 drivers sitting in 1 car",
+        "If you zoom in you can see the cars are actually made up of lego",
+        "Google search → “who won f1 drivers driving lego cars?” → Pierre Gasly and Franco Colapinto"
+    ]
+}
+{
+    "id": "vision_base_176",
+    "ground_truth": [
+        "300 feet, Starbucks"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Blurry text at top of screen indicates location is ‘Apple Carnegie Library’ and the event is “Art Lab Comic Book Adventure”",
+        "Google Search —> ‘coffee shop near Apple Carnegie library’",
+        "Starbucks at 999 Ninth St W"
+    ]
+}
+{
+    "id": "vision_base_177",
+    "ground_truth": [
+        "No"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Hour hand near 1, minute hand near 10; approximately 12:49 PM",
+        "User wants to be at airport by one.",
+        "Google Search → ‘Drive from CapitolOne Arena to BWI Departures’ → 45 minutes",
+        "A: No, an uber would take approximately if your goal is to get to BWI by 1,"
+    ]
+}
+{
+    "id": "vision_base_178",
+    "ground_truth": [
+        "No"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Search could be used to cross-reference images of analog clocks, or find information about how to read them."
+    ]
+}
+{
+    "id": "vision_base_179",
+    "ground_truth": [
+        "2017"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: About Faces, j.jill",
+        "Google Search → ‘about faces j jill mall’",
+        "Get this article with similar title photo: https://www.bizjournals.com/baltimore/news/2018/06/18/j-jill-is-the-second-cross-keys-retailer-leaving.html"
+    ]
+}
+{
+    "id": "vision_base_180",
+    "ground_truth": [
+        "Boston Mayhem"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual Imagery: “Shanghai Wins” “Wins!” + ‘S’ logo",
+        "Google Search → “Shanghai Wins” “Wins!” + “‘S’ logo” → article",
+        "A: → Shanghai Dragons beat the Boston Mayhem"
+    ]
+}
+{
+    "id": "vision_base_181",
+    "ground_truth": [
+        "Xuanwu Staff"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual information: ‘lijiang tower map overwatch staff-wielding hero’",
+        "Google Search → overwatch staff-wielding character",
+        "A: Wuyang",
+        "Google → Wuyang staff name → Xuanwu"
+    ]
+}
+{
+    "id": "vision_base_182",
+    "ground_truth": [
+        [
+            "Griefhardt",
+            "Balderich"
+        ]
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: ‘eichenwalde overwatch attack spawn’",
+        "Google Search → ‘eichenwalde end of map cosmetic’",
+        "A: Balderich or Griefhardt"
+    ]
+}
+{
+    "id": "vision_base_183",
+    "ground_truth": [
+        "Yes"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: book title, edition, publisher, author name""Google Search → does third edition of ‘Hands-On Machine Learning with Scikit… cover bellman optimality equation’",
+        "A: “Yes, \"Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow\" covers the Bellman Optimality Equation.”",
+        "Source: https://www.amazon.com/Hands-Machine-Learning-Scikit-Learn-TensorFlow/dp/1098125975"
+    ]
+}
+{
+    "id": "vision_base_184",
+    "ground_truth": [
+        "Herb Simon"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual Information: basketball trophy, Text on shirts reading: “20” “25” → “2025” “NBA Champions” “Thunder”",
+        "Google Search → “2025 NBA Finals opposing team”",
+        "A: Indiana Pacers",
+        "Google → ‘Pacers owner 2025’",
+        "A: Herb Simon"
+    ]
+}
+{
+    "id": "vision_base_185",
+    "ground_truth": [
+        "08/08/2025"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual information: Patriots logo, statue holding football helmet",
+        "Google Search → “date New England Patriots statue unveiled”",
+        "A: 08/08/2025"
+    ]
+}
+{
+    "id": "vision_base_186",
+    "ground_truth": [
+        "Apollo 13"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual Info: partial nasa logo, “Lovell” nametag",
+        "Google Search → ‘lovell nasa mission’",
+        "A: Apollo 13 mission"
+    ]
+}
+{
+    "id": "vision_base_187",
+    "ground_truth": [
+        "04/15/2006"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: ‘katt williams’ ‘green suit’ ‘comedy special’",
+        "Google Search → ‘katt williams’ + ‘green suit’ + ‘comedy special’",
+        "A: ‘The Pimp Chronicles TV Special’",
+        "Google Search → ‘what day katt williams pimp chronicles filmed’",
+        "A: Aired on HBO on September 16, 2006, filmed at Atlanta Civic Center on April 15th, 2006"
+    ]
+}
+{
+    "id": "vision_base_188",
+    "ground_truth": [
+        "3,940"
+    ],
+    "ground_truth_source": "https://en.wikipedia.org/wiki/Starship_flight_test_5",
+    "reasoning": [
+        "Visual info: ‘s30’, coastal, rocket, launch pad",
+        "2. Google Search → ‘s30 rocket’",
+        "3: A: https:starship-spacex.fandom.com/wiki/Ship_30_(S30) > ‘Ship 30 (S30) was a Starship second stage prototype. ’ ",
+        "4. Search → ‘starship s30 flight duration’ """,
+        "5. A: https://en.wikipedia.org/wiki/Starship_flight_test_5 -> Mission Duration: 1 hour, 5 minutes, 40 seconds - 3940 seconds"
+    ]
+}
+{
+    "id": "vision_base_189",
+    "ground_truth": [
+        "10/13/2024"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: reusable rocket, Starbase in background, Super Heavy Booster",
+        "Google Search ‘Starbase rocket catch location / date’",
+        "https://en.wikipedia.org/wiki/Starship_flight_test_5",
+        "Flight test 5 was conducted on 10/03/2024"
+    ]
+}
+{
+    "id": "vision_base_190",
+    "ground_truth": [
+        "Oleg Platonov"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: Roskosmos Logo, Russia flag, ISS interior, NASA logo, etc.",
+        "Google Search → ‘russian astronaut ISS’"
+    ]
+}
+{
+    "id": "vision_base_191",
+    "ground_truth": [
+        "Lateral Geniculate Nucleus"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: ‘cornell anatomy’ watermark. Model recognizes eyes, optic nerves linked to the retina, distinctive structure between optic nerves and brain",
+        "Google Search → ‘structure between optic nerves and brain’",
+        "A: Lateral Geniculate Nucleus"
+    ]
+}
+{
+    "id": "vision_base_192",
+    "ground_truth": [
+        "Kansas City Chiefs won the AFC Championship at M&T Bank stadium on Jan 24, 2024."
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual Info: faint ‘M&T Bank stadium’ text in background, ‘-MORE’ WIN Waste Trash Incinerator",
+        "Model should infer image is of baltimore, & location in background is the football stadium (rather than the nearby baseball stadium, Camden Yards)",
+        "Google Search → ‘last championship game to have been played at m&t bank stadium’",
+        "A: AFC North Championship between Baltimore Ravens and Kansas City Chiefs."
+    ]
+}
+{
+    "id": "vision_base_193",
+    "ground_truth": [
+        "Move 37"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual Information: board arrangement, time stamps, perplexed commentators",
+        "Google Search ‘lee sedol + alphago + perplexed commentators + [timestamps if necessary]’",
+        "A: The last move at this point in match two was AlphaGo’s placement of the 19th stone, otherwise known as the infamous Move 37."
+    ]
+}
+{
+    "id": "vision_base_194",
+    "ground_truth": [
+        "76%"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: “World is charg-” + “the grandeur” + “-manley hopkins”",
+        "Google → “university engraved gerard manley hopkins ‘world is charged the grandeur’ quote ”",
+        "A: The donnelly science center at loyola university maryland is engraved with this quote.",
+        "Google → ‘Loyola University MD acceptance rate 2023’",
+        "A: 76%"
+    ]
+}
+{
+    "id": "vision_base_195",
+    "ground_truth": [
+        "5,513 meters. "
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual Info: Mclaren jacket, f1 movie logo in top left, Circuit text in top of slide, distinctive track shape",
+        "Google Search → ‘F1 movie circuit track mclaren’",
+        "A: https://www.formula1.com/en/latest/article/brad-pitt-drives-2023-mclaren-f1-car-at-circuit-of-the-americas.2flq2MOoyy86VHRQEnr7i5",
+        "Search → ‘Circuit of the Americas length in meters’ → 5.513 kilometers"
+    ]
+}
+{
+    "id": "vision_base_196",
+    "ground_truth": [
+        "APEX zero gravity series"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: Faint ‘-erwalk center by Breckenridge’ on signage, Columbia logo, snow sculptures",
+        "Google Search → ‘Breckenridge snow sculpture championship 2025 winner’",
+        "A: Team Germany → Search → ‘germany international snow sculpture championship sculpture name’",
+        "A: APEX—zero-gravity series"
+    ]
+}
+{
+    "id": "vision_base_197",
+    "ground_truth": [
+        "meltmirror"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: ‘Whiplash’ logo, SM Entertainment logo, ‘The 5th mini album’, ‘aespa the 5th mini album whiplash’ → model infers ‘music video’",
+        "Google → ‘who directed whiplash music video aespa’",
+        "https://www.reddit.com/r/Aespa/comments/1gofu77/whiplash_editor/",
+        "https://www.imdb.com/title/tt34204967/fullcredits/",
+        "A: Meltmirror"
+    ]
+}
+{
+    "id": "vision_base_198",
+    "ground_truth": [
+        "Chicago"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: ‘NYMEX’, ‘New York Mercantile Exchange’",
+        "Google Search → ‘new york mercantile exchange owned by",
+        "A: CME Group",
+        "Google Search → 'cme group headquarters location'",
+        "A:'Chicago'"
+    ]
+}
+{
+    "id": "vision_base_199",
+    "ground_truth": [
+        "Naoya Inoue"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual Info:",
+        "‘undisputed jr. featherweight world title’, ‘inoue’, ‘cardenas’, round 8/12",
+        "Google Search → ‘cardenas inoue first knockdown",
+        "A: Inoue was knocked down first, but recovered to win the match via TKO"
+    ]
+}
+{
+    "id": "vision_base_200",
+    "ground_truth": [
+        "Fyodor Yurchikhin, Oleg Kotov, Sergey Ryazanskiy, Michael Hopkins, Luca Parmitano, Karen Nyberg"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual Info: 3 Russian Astronaut uniforms, 2 Americans, 1 Italian, 6 astronauts posed in microgravity on the ISS",
+        "Google Search → ‘iss mission with astronauts from russia united states italy’",
+        "A: Expedition 36: https://www.theatlantic.com/photo/2013/09/the-international-space-station-expedition-36/100588/#:~:text=Last%20May%2C%20the%20astronauts%20aboard,a%20remote%20location%20in%20Kazakhstan.",
+        "Google Search → ‘Expedition 36 crew names’",
+        "A: Fyodor Yurchikhin, Oleg Kotov, Sergey Ryazanskiy, Michael Hopkins, Luca Parmitano, Karen Nyberg"
+    ]
+}
+{
+    "id": "vision_base_201",
+    "ground_truth": [
+        "North La Salle Drive in Chicago."
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background Information Chicag Board of trade building clock inthe background, ‘Cars in background’ ‘W Wacker DR’ ‘person walking alone in street’",
+        "Google Search → ‘W Wacker Drive location’",
+        "A: Chicago",
+        "Google Search → ‘Bridges crossing W Wacker DR ’",
+        "A: North La Salle Drive"
+    ]
+}
+{
+    "id": "vision_base_202",
+    "ground_truth": [
+        "58 meters"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “-BITAT” & “-sa design”",
+        "Possible to infer ‘Habitat’, but what about ‘-sa’ design’",
+        "Man carrying surfboard in center, likely near water“”",
+        "Zoom Into store; possibly an furniture store",
+        "Google Search → “Habitat design furniture store maps” * I struggled a bit here; I was able to find the store in maps, but its name is ‘HabitatKasaDesign’ which is hard for a model to organically search",
+        "A: ‘HabitatKasaDesign’, located in the Canary Islands’",
+        "How far from HabitatKasaDesign to city gov office canary islands → 58 m"
+    ]
+}
+{
+    "id": "vision_base_203",
+    "ground_truth": [
+        "220"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “Vedettes De Paris” &",
+        "Google Search → “Vedettes de Paris maximum capacity”",
+        "A: ”https://www.familinparis.fr/en/vedettes-de-paris-reduce-reduce-tarif/",
+        "A → 220 people."
+    ]
+}
+{
+    "id": "vision_base_204",
+    "ground_truth": [
+        "1,351 km"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information showing japanese text & historical plaques.",
+        "Bottom left corner “Naotada Sata” or “Sata Naotada”",
+        "Google Search → “Naotada Sata”",
+        "A: Sata Naotada Garden at Chiran Samurai District in Kagoshima Japan.",
+        "Google Search → “Kagoshima to Tokyo distance km by car",
+        "A: 1,351 km"
+    ]
+}
+{
+    "id": "vision_base_205",
+    "ground_truth": [
+        "Parasite"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understanding ‘Oscars 2020 stage’",
+        "Google Search → ‘Oscars 2020 most awarded film’",
+        "A: Parasite"
+    ]
+}
+{
+    "id": "vision_base_206",
+    "ground_truth": [
+        "164"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understands Image is of an underground organ.",
+        "Google Search → “Underground organ caverns”",
+        "A: “Luray Caverns”",
+        "Google Search → ‘Luray Caverns miles’ or ‘Luray Caverns maximum depth",
+        "A: 164 feet."
+    ]
+}
+{
+    "id": "vision_base_207",
+    "ground_truth": [
+        "208"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understands subtle Aston Martin Logo on the back",
+        "Bottom right corner “V12”",
+        "‘Which aston martin have a V12 engine?’",
+        "A: DB11",
+        "Google Search → “Aston Martin DB11 V12 top speed”",
+        "A: “208”"
+    ]
+}
+{
+    "id": "vision_base_208",
+    "ground_truth": [
+        "3.5 kilometers"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Understands photo is of Brad Pitt, Nick Cave, in art museum",
+        "Google Search → “Brad Pitt, Nick Cave, in art museum”",
+        "A: Sara Hilden Art Museum in Tampere Finland",
+        "Google Search → Sara Hilden Art Museum to Tampere University City Centre Campus",
+        "A: 3.5 kilometers"
+    ]
+}
+{
+    "id": "vision_base_209",
+    "ground_truth": [
+        "June 27th, 2025"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: 'Chongqing East-' futuristic architecture"
+        "Background information about “Chongqing East Railway Station”",
+        "Google Search → “Chongqing East Railway Station opening date”",
+        "A: “June 27th, 2025",
+    
+    ]
+}
+{
+    "id": "vision_base_210",
+    "ground_truth": [
+        "The Chicago Board of Trade building"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “W Wacker Dr 240 N”",
+        "Google Search → “Building near W Wacker Drive with Clock”",
+        "A: 333 West Wacker, or Chicago Board of Trade building"
+    ]
+}
+{
+    "id": "vision_base_211",
+    "ground_truth": [
+        "No."
+    ],
+    "ground_truth_source": "http://www.nao.org.uk/, https://www.google.com/maps/place/National+Audit+Office/@51.4917385,-0.1486779,3a,75y,123.28h,111.39t/data=!3m10!1e1!3m8!1sscaNrBjjPgM9bG6fWB7SUg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-21.38628132087959%26panoid%3DscaNrBjjPgM9bG6fWB7SUg%26yaw%3D123.283381581517!7i16384!8i8192!9m2!1b1!2i17!4m6!3m5!1s0x48760518e7719fd9:0x5d8dbc0441be8df3!8m2!3d51.4916012!4d-0.1483446!16s%2Fg%2F1tlkbvst?entry=ttu&g_ep=EgoyMDI1MTAyNi4wIKXMDSoASAFQAw%3D%3D ",
+    "reasoning": [
+        "Background Information: dark sky, clock tower on National Audit Office with hour hand at 9 and minute hand at 11",
+        "Google Search → ‘ london government office buildings on Buckingham Palace Road clock tower’",
+        "A: National Audit Office ", 
+        "Search → 'national audit office hours'",
+        "A: 'Monday to Friday, 9:00 AM to 5:30 PM, excluding public holidays'",
+        "Visual Info: Clock tower reads 9:55, Dark sky indicates it is PM.",
+        "A: The National Audit Office closes at 5:30 M-F, and the clock shows 9:55 PM so, "
+    ]
+}
+{
+    "id": "vision_base_212",
+    "ground_truth": [
+        "Koskikeskus Ratina, Tampere Finland"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “Pihalajahinna” “Koski-” “Osaka Teppanyaki”",
+        "Can infer location to be Finland from finnish text",
+        "Google Search → “osaka teppanyaki Finland in mall”",
+        "A: “Koskikeskus Tampere”"
+    ]
+}
+{
+    "id": "vision_base_213",
+    "ground_truth": [
+        "Helsinki Vantaa airport."
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “Avia fleet” & “airport”",
+        "Google Search → “Avia Fleet” →",
+        "A: “AVIA Fleet is located right next to the Helsinki-Vantaa Terminal 2”",
+        "A: Helsinki Vantaa airport."
+    ]
+}
+{
+    "id": "vision_base_214",
+    "ground_truth": [
+        "65 floors"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Analyzes skyline for building names",
+        "Top right corner “wework ” “MYP”",
+        "Google Search → “MYP building”",
+        "A: https://www.myp.com.sg/html/business_commercial_myp.php?type=bus1 → “MYP Centre (formerly known as “Straits Trading Building”) is a prime commercial building located at 9 Battery Road, in the heart of Singapore’s Central Business District 01.”",
+        "Cross check with “wework building singapore” → https://www.forbes.com/sites/jonathanburgos/2022/09/06/wework-unveils-its-flagship-asia-pacific-office-tower-in-singapore-amid-narrowing-losses/",
+        "A: “WeWork—controlled by billionaire Masayoshi Son’s SoftBank Group—has unveiled its flagship office tower in Singapore as the company expands in the Asian financial hub, which is among its fastest growing markets.”",
+        "Google Search: “tallest building Singapore no. of floors”",
+        "A: 65"
+    ]
+}
+{
+    "id": "vision_base_215",
+    "ground_truth": [
+        "SE1 9PX"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “Theatre-” “brutalist building”",
+        "Can infer British English spelling",
+        "Google Search → “uk brutalist theatre postal code”",
+        "A: Royal National Theatre, SE1 9PX"
+    ]
+}
+{
+    "id": "vision_base_216",
+    "ground_truth": [
+        "Denmark, Japan"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: ‘GEFION’, ‘data center’, ‘bull’",
+        "Google Search → “ ‘GEFION’, ‘data centers’, ‘bull’",
+        "A: Gefion AI supercomputer: Gefion is Denmark's flagship artificial intelligence supercomputer, launched in 2024. It is housed in a Digital Realty data center near Copenhagen and runs on 100% renewable energy.
+"
+    ]
+}
+{
+    "id": "vision_base_217",
+    "ground_truth": [
+        "12.11"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “Infleqtion”, ‘’rigetti’, ‘quantinuum’, ‘Quera computing Inc’, ‘’QCWARE’",
+        "Google Search → “which of these companies is publicly traded: “Infleqtion”, ‘’rigetti’, ‘quantinuum’, ‘Quera computing Inc’, ‘’QCWARE’”",
+        "A: RGTI is only publicly traded company shown in image",
+        "Next step: Google Search → ‘RGTI closing price 5/30/25’",
+        "A: https://stockanalysis.com/stocks/rgti/history/",
+        "A: $12.11"
+    ]
+}
+{
+    "id": "vision_base_218",
+    "ground_truth": [
+        "Special Competitive Studies Project"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “Waldorf Astoria”",
+        "Search → “Waldorf Astoria events 7/23/35” + (model would need to determine which location (e.g NYC, DC, etc))",
+        "Google Search → “Waldorf Astoria events 7/23/35 ”",
+        "A:https://web.cvent.com/event/370695fe-856e-4bae-88c5-7140600de0ee/summary",
+        "A: ai+science summit hosted by Special Competitive Studies Project"
+    ]
+}
+{
+    "id": "vision_base_219",
+    "ground_truth": [
+        "Destiny"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “-ARCHIVES OF THE UNITED STATES OF AMERICA ”",
+        "Google Search → “who is the figure in the center of the archives facade in dc”",
+        "A: Destiny sits in the center, with genii over his shoulders"
+    ]
+}
+{
+    "id": "vision_base_220",
+    "ground_truth": [
+        "Kansas 17, Baltimore 10"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about ‘M&T Bank’, ‘Merritt’ ‘Kansas City logo’ ‘Interviewed by CBS’ ‘Wawa’, ‘Geha’ ‘Light Touchdown Club’",
+        "Google Search → “M&T Bank Kansas City Chiefs” → AFC Championship played at M&T Bank Stadium on Jan 24, 2024",
+        "Google Search → ‘final score 2024 afc championship game’",
+        "A: ‘17, 10’"
+    ]
+}
+{
+    "id": "vision_base_221",
+    "ground_truth": [
+        "55 million"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual information: “Integration of … Existence” ‘R *’ logo, ‘Accelerated Materials research and development’ ‘",
+        "Google Search → “Integration of Accelerated Materials R&D into Technological Development”",
+        "A: radical-ai.com"
+        "Search → 'how much did radical ai raise most recent funding round' "
+    ]
+}
+{
+    "id": "vision_base_222",
+    "ground_truth": [
+        "67.30"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about 'montgomery county agricultural fair, Aug 8 -16th -> ",
+        "Search ->  '",
+        "A: https://mcagfair.com/",
+        "*Parse site for Carnival prices* -> "
+    ]
+}
+{
+    "id": "vision_base_223",
+    "ground_truth": [
+        "unmanned drone software"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual information:",
+        "‘USAF-CENT’ Patch on sgt.’s arm → Air Force Central Command patch,",
+        "flight simulator on screen, handheld controls, → model infers for a drone",
+        "Google → ‘Airforce Central Command drone software presentation’’ → Task Force 99",
+        "Google → ‘Task Force 99 presents drone software’ → https://www.dvidshub.net/search/2.0?q=drone",
+        "A: ‘unmanned drone software.’"
+    ]
+}
+{
+    "id": "vision_base_224",
+    "ground_truth": [
+        "yes"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about 'i-dle wins best international group of the year'",
+        "Translate Chinese text into ‘annual awards ceremony’",
+        "Google → ‘did any group win triple crown at TIMA annual awards ceremony’",
+        "A: aespa"
+    ]
+}
+{
+    "id": "vision_base_225",
+    "ground_truth": [
+        "Physics modeling, Materials, Nitrogen Fixation, AI and ML"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Google Search → “The Broad Impact of Quantum Processors EV chemistry Drug discovery Logistics Finance”",
+        "A: https://youtu.be/gevJ5xU_WUA?si=fmR81t3lM2dau9W7",
+        "Slide is visible in Google Images"
+    ]
+}
+{
+    "id": "vision_base_226",
+    "ground_truth": [
+        "Emerald Cloud Labs"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “cloud lab” “remote control scientific laboratory”",
+        "Google Search → “what organization offers remote control scientific labs”",
+        "A: Emerald Cloud Labs"
+    ]
+}
+{
+    "id": "vision_base_227",
+    "ground_truth": [
+        "Arnold Schwarzenegger"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about ‘desert’ ’“solar panels” ‘ivanpah solar power plant’ ‘aerial view’ ‘aerial photography’ ‘aerial photographers’",
+        "http://large.stanford.edu/courses/2016/ph240/williams-g1/",
+        "Google Search → “desert solar power plant’",
+        "A: Ivanpah",
+        "Google Search → ‘governor when final approval granted for ivanpah’",
+        "A: Schwarzenegger"
+    ]
+}
+{
+    "id": "vision_base_228",
+    "ground_truth": [
+        "Korean Presbyterian Church in Greater Boston"
+    ],
+    "ground_truth_source": "https://hopkintonindependent.com/wp-content/uploads/2021/10/Marathon-start-open-field-10-11-21-JS-scaled.jpeg",
+    "reasoning": [
+        "Visual info: White building with clock, 126th boston marathon start line'",
+        "Google Search → ' photos boston marathon start line  '",
+        "A: https://hopkintonindependent.com/photos-boston-marathon-start-area/ ",
+        "A: Korean Presbyterian Church in Greater Boston"
+    ]
+}
+{
+    "id": "vision_base_229",
+    "ground_truth": [
+        "18.7 km"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “SYK” “Acgq power” “eParking.fi” “TEK” Lounge”",
+        "Google Search → “SYK eParking.fi TEK Lounge building”",
+        "→ https://www.tek.fi/en/about-tek/contact-information/tek-lounge",
+        "→ “Visit our Lounges in Helsinki, Tampere, Lappeenranta and Turku!”",
+        "Model should test “SYK” “Acgq power” “eParking.fi” → Tietotalo, Hervanta Campus Tampere university",
+        "Google Search → “Tampere airport near Tietotalo”",
+        "A: 18.7 km"
+    ]
+}
+{
+    "id": "vision_base_230",
+    "ground_truth": [
+        "(140+)"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “RATINA, LIMPEX, LAMMIPAA, HALONEN”",
+        "Google Search → “ratina halonen limpex mall no. stores”",
+        "A: https://www.ratina.fi/en/stores/halonen/",
+        "Backtrack search → ratina shopping center no. stores",
+        "A: over 140 (Wikipedia)"
+    ]
+}
+{
+    "id": "vision_base_231",
+    "ground_truth": [
+        "5:07 PM"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Model sees “Old Post Office Pavilion clock",
+        "Hour hand at 5",
+        "A: 5 PM",
+        "search -> 'Waldorf Astoria to Teaism DC"
+    ]
+}
+{
+    "id": "vision_base_232",
+    "ground_truth": [
+        "224 minutes"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information is Roman Numerals on Clock",
+        ": 11:16 AM'",
+        "Google Search → “Chicago Board of Trade hours”",
+        "3: A: 8:30 AM to 3:00PM",
+        "A: the time until 3:00 PM from 11:16 Am is 224 minutes."
+    ]
+}
+{
+    "id": "vision_base_233",
+    "ground_truth": [
+        "98"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Right side information about “Capitol One Arena” (it seems that text written vertically/ perpendicular to the ground models may struggle with.)",
+        "Google Search → “Capitol One arena city”",
+        "A: Washington, DC",
+        "Google Search → “Washington DC number of subway stops”",
+        "A: 91 or 98"
+    ]
+}
+{
+    "id": "vision_base_234",
+    "ground_truth": [
+        "No"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual information about “Hotel Bergs”, Latvian flag",
+        "Google Search → “does hotel bergs latvia have penthouse on top ”",
+        "A: ‘no’"
+    ]
+}
+{
+    "id": "vision_base_235",
+    "ground_truth": [
+        "William Tyndale"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Prompt hint: ‘statue near bartle frere ’",
+        "Background information about “whitehall gardens on victoria embankment gardens in london”",
+        "Google Search → “statutes in whitehall gardens london”",
+        "Visually match to tyndale?",
+
+    ]
+}
+{
+    "id": "vision_base_236",
+    "ground_truth": [
+        "1725"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “embankment place, charing cross station”, (red neon ‘C’)",
+        "A: The building with the red 'c' logo is heaven nightclub."
+        "Google Search → “heaven nightclub capacity”",
+        "A: 1725"
+    ]
+}
+{
+    "id": "vision_base_237",
+    "ground_truth": [
+        "1606"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “-over 7”, ferry berth, ramps & gangways for vehicle loading, LED board",
+        "Google Search → “over 7 ferry berth LED display”",
+        "A: Port of Dover, United Kingdom",
+        "Search → ‘what year did the port of dover open?’"
+    ]
+}
+{
+    "id": "vision_base_238",
+    "ground_truth": [
+        "No"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “Apr 20, Tate Modern, Hilma af Klimt & Piet Modrian”",
+        "Google Search → “Tate Modern, Hilma af Klimt & Piet Modrian still running",
+        "A: No, ended in Sep 2023"
+    ]
+}
+{
+    "id": "vision_base_239",
+    "ground_truth": [
+        "80 meters"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Background information about “Finger pointing at Tromso, other cities”",
+        "Google Search → “tromso bridge longest span”",
+        "A: 260 ft, 80 meters"
+    ]
+}
+{
+    "id": "vision_base_240",
+    "ground_truth": [
+        "seventh"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: 414, ‘light street’",
+        "Search → 414 Light street location",
+        "A: Baltimore Inner Harbor, tallest residential tower in Maryland.",
+        "Search → what floor is the pool deck on 414 Light street baltimore",
+        "A: Seventh"
+
+    ]
+}
+{
+    "id": "vision_base_241",
+    "ground_truth": [
+        "Stationery"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: rockefeller center, promenade, fao schwartz in background",
+        "Search → what did fao schwarz founder before manhattan",
+        "a: sold stationery (office supplies), to increase sales bundled toys that outsold stationery"
+    ]
+}
+{
+    "id": "vision_base_242",
+    "ground_truth": [
+        "lassonde"
+    ],
+    "ground_truth_source": "https://www.reddit.com/r/LiminalSpace/comments/yi067b/my_very_brutalist_university_library/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button",
+    "reasoning": [
+        "Visual info: ‘quiet please this is a library’ = library, brutalist architectural style",
+        "search → ‘brutalist library interior’",
+        "A: York uni toronto ontario",
+        "Search → ‘york uni engineering school’ → lassonde"
+    ]
+}
+{
+    "id": "vision_base_243",
+    "ground_truth": [
+        "291 meters"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: “red bull logo, prada logo, ski jump, snowy landscape”",
+        "Google Search → “red bull prada longest ski jump’”",
+        "A:https://www.redbull.com/us-en/ryoyu-kobayashi-how-he-broke-the-world-record",
+        "A: 291 m"
+    ]
+}
+{
+    "id": "vision_base_244",
+    "ground_truth": [
+        "16th"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: ‘aztec sun stone, concentric bands, tonatiuh sun god’",
+        "Google Search → “aztec sunstone creation century”",
+        "A: 1502 -1520 → 16th century"
+    ]
+}
+{
+    "id": "vision_base_245",
+    "ground_truth": [
+        "March 13th, 2025."
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Vis info: lunar eclipse ", 
+        "Query info: total lunar eclipse, east coast of north america",
+        "Google Search → '2025 + east coast north america + total lunar eclipse date",
+        "A: March 13th, 2025."
+    ]
+}
+{
+    "id": "vision_base_246",
+    "ground_truth": [
+        "175 g/sqm"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Text: 'solar chrome c-logo t-shirt'",
+        "Search → solar chrome c-logo t-shirt",
+        "A: carhartt solar chrome t-shirt",
+        "Search → 'carhartt solar chrome t-shirt weight"
+        "A: 175 g/sqm"
+
+    ]
+}
+{
+    "id": "vision_base_247",
+    "ground_truth": [
+        "The Last of Us II"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "visual info: naughty dog mug, playstation controller on bottom left, female protagonist with backpack on right & left",
+        "search -> naughty dog games backpack female protagonist",
+        "A: 'The Last of Us II'"
+    ]
+}
+{
+    "id": "vision_base_248",
+    "ground_truth": [
+        "Julia Lovell"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: '赍天大聖' -> 'Great sage Equal to Heaven', Opera Mask of Sun Wukong",
+        "search → 'Great Sage Equal to Heaven Sun Wukong story'",
+        "A: 'Journey to the west'",
+        "search -> 'journey to the west most recent english translation author'",
+        "A: Julia Lovell"
+    ]
+}
+{
+    "id": "vision_base_249",
+    "ground_truth": [
+        "yes"
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Rotate 90 degrees and extract text",
+        "Visual info: shell recharge station, ‘systend journalid[392] - failed to connect to notify socket’",
+        "search -> ''failed to notify socket' shell recharge station operational",
+        "A: Display error, charger still functional"
+    ]
+}
+{
+    "id": "vision_base_250",
+    "ground_truth": [
+        "No."
+    ],
+    "ground_truth_source": "",
+    "reasoning": [
+        "Visual info: 'climbing, mountain icon/logo, hampden, move-'",
+        "search → 'climbing, mountain icon/logo, hampden, move-'",
+        "' movement climbing fitness & yoga gym hampden'",
+        "search -> 'does movement hampden offer belay classes'",
+        "A: no"
+    ]
+}
