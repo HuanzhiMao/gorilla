@@ -1,8 +1,8 @@
-# Berkeley Function Calling Leaderboard (BFCL)
+# Berkeley Function Calling Leaderboard (MFCL)
 
 ## Table of Contents
 
-- [Berkeley Function Calling Leaderboard (BFCL)](#berkeley-function-calling-leaderboard-bfcl)
+- [Berkeley Function Calling Leaderboard (MFCL)](#berkeley-function-calling-leaderboard-mfcl)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Installation \& Setup](#installation--setup)
@@ -32,16 +32,16 @@
 
 ## Introduction
 
-We introduce the Berkeley Function Calling Leaderboard (BFCL), the **first comprehensive and executable function call evaluation** dedicated to assessing Large Language Models' (LLMs) ability to invoke functions. Unlike previous evaluations, BFCL accounts for various forms of function calls, diverse scenarios, and executability.
+We introduce the Berkeley Function Calling Leaderboard (MFCL), the **first comprehensive and executable function call evaluation** dedicated to assessing Large Language Models' (LLMs) ability to invoke functions. Unlike previous evaluations, MFCL accounts for various forms of function calls, diverse scenarios, and executability.
 
 💡 Read more in our blog posts:
 
-- [BFCL v1: Simple, Parallel, and Multiple Function Call eval with AST](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html)
-- [BFCL v2: Enterprise and OSS-contributed Live Data](https://gorilla.cs.berkeley.edu/blogs/12_bfcl_v2_live.html)
-- [BFCL v3: Multi-Turn & Multi-Step Function Call Evaluation](https://gorilla.cs.berkeley.edu/blogs/13_bfcl_v3_multi_turn.html)
-- [BFCL V4 Part 1: Agentic Web Search](https://gorilla.cs.berkeley.edu/blogs/15_bfcl_v4_web_search.html)
-- [BFCL V4 Part 2: Agentic Memory Management](https://gorilla.cs.berkeley.edu/blogs/16_bfcl_v4_memory.html)
-- [BFCL V4 Part 3: Agentic Format Sensitivity](https://gorilla.cs.berkeley.edu/blogs/17_bfcl_v4_prompt_variation.html)
+- [MFCL v1: Simple, Parallel, and Multiple Function Call eval with AST](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html)
+- [MFCL v2: Enterprise and OSS-contributed Live Data](https://gorilla.cs.berkeley.edu/blogs/12_bfcl_v2_live.html)
+- [MFCL v3: Multi-Turn & Multi-Step Function Call Evaluation](https://gorilla.cs.berkeley.edu/blogs/13_bfcl_v3_multi_turn.html)
+- [MFCL V4 Part 1: Agentic Web Search](https://gorilla.cs.berkeley.edu/blogs/15_bfcl_v4_web_search.html)
+- [MFCL V4 Part 2: Agentic Memory Management](https://gorilla.cs.berkeley.edu/blogs/16_bfcl_v4_memory.html)
+- [MFCL V4 Part 3: Agentic Format Sensitivity](https://gorilla.cs.berkeley.edu/blogs/17_bfcl_v4_prompt_variation.html)
 
 🦍 See the live leaderboard at [Berkeley Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html#leaderboard)
 
@@ -55,8 +55,8 @@ We introduce the Berkeley Function Calling Leaderboard (BFCL), the **first compr
 
 ```bash
 # Create a new Conda environment with Python 3.10
-conda create -n BFCL python=3.10
-conda activate BFCL
+conda create -n MFCL python=3.10
+conda activate MFCL
 
 # Clone the Gorilla repository
 git clone https://github.com/ShishirPatil/gorilla.git
@@ -99,27 +99,27 @@ pip install -e .[oss_eval_sglang]
 
 ### Configuring Project Root Directory
 
-**Important:** If you installed the package from PyPI (using `pip install bfcl-eval`), you **must** set the `BFCL_PROJECT_ROOT` environment variable to specify where the evaluation results and score files should be stored.
+**Important:** If you installed the package from PyPI (using `pip install bfcl-eval`), you **must** set the `MFCL_PROJECT_ROOT` environment variable to specify where the evaluation results and score files should be stored.
 Otherwise, you'll need to navigate deep into the Python package's source code folder to access the evaluation results and configuration files.
 
-For editable installations (using `pip install -e .`), setting `BFCL_PROJECT_ROOT` is *optional*--it defaults to the `berkeley-function-call-leaderboard` directory.
+For editable installations (using `pip install -e .`), setting `MFCL_PROJECT_ROOT` is *optional*--it defaults to the `berkeley-function-call-leaderboard` directory.
 
-Set `BFCL_PROJECT_ROOT` as an environment variable in your shell environment:
+Set `MFCL_PROJECT_ROOT` as an environment variable in your shell environment:
 
 ```bash
 # In your shell environment
-export BFCL_PROJECT_ROOT=/path/to/your/desired/project/directory
+export MFCL_PROJECT_ROOT=/path/to/your/desired/project/directory
 ```
 
-When `BFCL_PROJECT_ROOT` is set:
+When `MFCL_PROJECT_ROOT` is set:
 
-- The `result/` folder (containing model responses) will be created at `$BFCL_PROJECT_ROOT/result/`
-- The `score/` folder (containing evaluation results) will be created at `$BFCL_PROJECT_ROOT/score/`
-- The library will look for the `.env` configuration file at `$BFCL_PROJECT_ROOT/.env` (see [Setting up Environment Variables](#setting-up-environment-variables))
+- The `result/` folder (containing model responses) will be created at `$MFCL_PROJECT_ROOT/result/`
+- The `score/` folder (containing evaluation results) will be created at `$MFCL_PROJECT_ROOT/score/`
+- The library will look for the `.env` configuration file at `$MFCL_PROJECT_ROOT/.env` (see [Setting up Environment Variables](#setting-up-environment-variables))
 
 ### Setting up Environment Variables
 
-We store API keys and other configuration variables (separate from the `BFCL_PROJECT_ROOT` variable mentioned above) in a `.env` file. A sample `.env.example` file is distributed with the package.
+We store API keys and other configuration variables (separate from the `MFCL_PROJECT_ROOT` variable mentioned above) in a `.env` file. A sample `.env.example` file is distributed with the package.
 
 **For editable installations:**
 
@@ -131,13 +131,13 @@ cp bfcl_eval/.env.example .env
 **For PyPI installations (using `pip install bfcl-eval`):**
 
 ```bash
-cp $(python -c "import bfcl_eval; print(bfcl_eval.__path__[0])")/.env.example $BFCL_PROJECT_ROOT/.env
+cp $(python -c "import bfcl_eval; print(bfcl_eval.__path__[0])")/.env.example $MFCL_PROJECT_ROOT/.env
 # Fill in necessary values in `.env`
 ```
 
 If you are running any proprietary models, make sure the model API keys are included in your `.env` file. Models like GPT, Claude, Mistral, Gemini, Nova, will require them.
 
-The library looks for the `.env` file in the project root, i.e. `$BFCL_PROJECT_ROOT/.env`.
+The library looks for the `.env` file in the project root, i.e. `$MFCL_PROJECT_ROOT/.env`.
 
 #### Configuring SerpAPI for Web Search Category
 
@@ -193,15 +193,15 @@ cp bfcl_eval/test_case_ids_to_generate.json.example ./test_case_ids_to_generate.
 **For PyPI installations:**
 
 ```bash
-cp $(python -c "import bfcl_eval, pathlib; print(pathlib.Path(bfcl_eval.__path__[0]) / 'test_case_ids_to_generate.json.example')") $BFCL_PROJECT_ROOT/test_case_ids_to_generate.json
+cp $(python -c "import bfcl_eval, pathlib; print(pathlib.Path(bfcl_eval.__path__[0]) / 'test_case_ids_to_generate.json.example')") $MFCL_PROJECT_ROOT/test_case_ids_to_generate.json
 ```
 
 Once `--run-ids` is provided only the IDs listed in the JSON will be evaluated.
 
 #### Output and Logging
 
-- By default, generated model responses are stored in a `result/` folder under the project root (which defaults to the package directory): `result/MODEL_NAME/BFCL_v3_TEST_CATEGORY_result.json`.
-- You can customise the location by setting the `BFCL_PROJECT_ROOT` environment variable or passing the `--result-dir` option.
+- By default, generated model responses are stored in a `result/` folder under the project root (which defaults to the package directory): `result/MODEL_NAME/MFCL_v3_TEST_CATEGORY_result.json`.
+- You can customise the location by setting the `MFCL_PROJECT_ROOT` environment variable or passing the `--result-dir` option.
 
 An inference log is included with the model responses to help analyze/debug the model's performance, and to better understand the model behavior. For more verbose logging, use the `--include-input-log` flag. Refer to [LOG_GUIDE.md](./LOG_GUIDE.md) for details on how to interpret the inference logs.
 
@@ -267,16 +267,16 @@ bfcl evaluate --model MODEL_NAME --test-category TEST_CATEGORY
 
 The `MODEL_NAME` and `TEST_CATEGORY` options are the same as those used in the [Generating LLM Responses](#generating-llm-responses) section. For details, refer to [SUPPORTED_MODELS.md](./SUPPORTED_MODELS.md) and [TEST_CATEGORIES.md](./TEST_CATEGORIES.md).
 
-If in the previous step you stored the model responses in a custom directory, specify it using the `--result-dir` flag or set `BFCL_PROJECT_ROOT` so the evaluator can locate the files.
+If in the previous step you stored the model responses in a custom directory, specify it using the `--result-dir` flag or set `MFCL_PROJECT_ROOT` so the evaluator can locate the files.
 
 > Note: For unevaluated test categories, they will be marked as `N/A` in the evaluation result csv files.
 > For summary columns (e.g., `Overall Acc`, `Non_Live Overall Acc`, `Live Overall Acc`, and `Multi Turn Overall Acc`), the score reported will treat all unevaluated categories as 0 during calculation.
 
 #### Output Structure
 
-Evaluation scores are stored in a `score/` directory under the project root (defaults to the package directory), mirroring the structure of `result/`: `score/MODEL_NAME/BFCL_v3_TEST_CATEGORY_score.json`.
+Evaluation scores are stored in a `score/` directory under the project root (defaults to the package directory), mirroring the structure of `result/`: `score/MODEL_NAME/MFCL_v3_TEST_CATEGORY_score.json`.
 
-- To use a custom directory for the score file, set the `BFCL_PROJECT_ROOT` environment variable or specify `--score-dir`.
+- To use a custom directory for the score file, set the `MFCL_PROJECT_ROOT` environment variable or specify `--score-dir`.
 
 Additionally, four CSV files are generated in `./score/`:
 
@@ -293,7 +293,7 @@ If you'd like to log evaluation results to WandB artifacts:
 pip install -e.[wandb]
 ```
 
-Mkae sure you also set `WANDB_BFCL_PROJECT=ENTITY:PROJECT` in `.env`.
+Mkae sure you also set `WANDB_MFCL_PROJECT=ENTITY:PROJECT` in `.env`.
 
 #### (Alternate) Script Execution for Evaluation
 
@@ -324,5 +324,5 @@ For detailed steps, please see the [Contributing Guide](./CONTRIBUTING.md).
 - [Project Website](https://gorilla.cs.berkeley.edu/leaderboard.html#leaderboard)
 
 All the leaderboard statistics, and data used to train the models are released under Apache 2.0.
-BFCL is an open source effort from UC Berkeley and we welcome contributors.
+MFCL is an open source effort from UC Berkeley and we welcome contributors.
 For any comments, criticisms, or questions, please feel free to raise an issue or a PR. You can also reach us via [email](mailto:huanzhimao@berkeley.edu).
