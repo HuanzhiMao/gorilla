@@ -32,7 +32,7 @@
 
 ## Introduction
 
-We introduce the Berkeley Function Calling Leaderboard (MFCL), the **first comprehensive and executable function call evaluation** dedicated to assessing Large Language Models' (LLMs) ability to invoke functions. Unlike previous evaluations, MFCL accounts for various forms of function calls, diverse scenarios, and executability.
+We introduce the Multimodal Function Calling Leaderboard (MFCL), the **first comprehensive and executable function call evaluation** dedicated to assessing Large Language Models' (LLMs) ability to invoke functions. Unlike previous evaluations, MFCL accounts for various forms of function calls, diverse scenarios, and executability.
 
 💡 Read more in our blog posts:
 
@@ -43,7 +43,7 @@ We introduce the Berkeley Function Calling Leaderboard (MFCL), the **first compr
 - [MFCL V4 Part 2: Agentic Memory Management](https://gorilla.cs.berkeley.edu/blogs/16_bfcl_v4_memory.html)
 - [MFCL V4 Part 3: Agentic Format Sensitivity](https://gorilla.cs.berkeley.edu/blogs/17_bfcl_v4_prompt_variation.html)
 
-🦍 See the live leaderboard at [Berkeley Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html#leaderboard)
+🦍 See the live leaderboard at [Multimodal Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html#leaderboard)
 
 ![Architecture Diagram](https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/architecture_diagram.png)
 

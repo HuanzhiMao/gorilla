@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mfcl_eval"
 dynamic = ["version"]
-description = "Berkeley Function Calling Leaderboard (MFCL)"
+description = "Multimodal Function Calling Leaderboard (MFCL)"
 authors = [
     { name = "Huanzhi Mao", email = "huanzhimao@eecs.berkeley.edu" },
     { name = "Shishir Patil", email = "shishirpatil@eecs.berkeley.edu" },
