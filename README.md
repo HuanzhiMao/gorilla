@@ -1,8 +1,8 @@
-# Berkeley Function Calling Leaderboard (MFCL)
+# Multimodal Function Calling Leaderboard (MFCL)
 
 ## Table of Contents
 
-- [Berkeley Function Calling Leaderboard (MFCL)](#berkeley-function-calling-leaderboard-mfcl)
+- [Multimodal Function Calling Leaderboard (MFCL)](#multimodal-function-calling-leaderboard-mfcl)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Installation \& Setup](#installation--setup)
