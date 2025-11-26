@@ -4,7 +4,6 @@
 
 - [Multimodal Function Calling Leaderboard (MFCL)](#multimodal-function-calling-leaderboard-mfcl)
   - [Table of Contents](#table-of-contents)
-  - [Introduction](#introduction)
   - [Installation \& Setup](#installation--setup)
     - [Basic Installation](#basic-installation)
     - [Installing from PyPI](#installing-from-pypi)
@@ -30,21 +29,6 @@
 
 ---
 
-## Introduction
-
-We introduce the Multimodal Function Calling Leaderboard (MFCL), the **first comprehensive and executable function call evaluation** dedicated to assessing Large Language Models' (LLMs) ability to invoke functions. Unlike previous evaluations, MFCL accounts for various forms of function calls, diverse scenarios, and executability.
-
-💡 Read more in our blog posts:
-
-- [MFCL v1: Simple, Parallel, and Multiple Function Call eval with AST](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html)
-- [MFCL v2: Enterprise and OSS-contributed Live Data](https://gorilla.cs.berkeley.edu/blogs/12_bfcl_v2_live.html)
-- [MFCL v3: Multi-Turn & Multi-Step Function Call Evaluation](https://gorilla.cs.berkeley.edu/blogs/13_bfcl_v3_multi_turn.html)
-- [MFCL V4 Part 1: Agentic Web Search](https://gorilla.cs.berkeley.edu/blogs/15_bfcl_v4_web_search.html)
-- [MFCL V4 Part 2: Agentic Memory Management](https://gorilla.cs.berkeley.edu/blogs/16_bfcl_v4_memory.html)
-- [MFCL V4 Part 3: Agentic Format Sensitivity](https://gorilla.cs.berkeley.edu/blogs/17_bfcl_v4_prompt_variation.html)
-
-🦍 See the live leaderboard at [Multimodal Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html#leaderboard)
-
 ![Architecture Diagram](https://raw.githubusercontent.com/ShishirPatil/gorilla/main/berkeley-function-call-leaderboard/architecture_diagram.png)
 
 ---
@@ -58,12 +42,6 @@ We introduce the Multimodal Function Calling Leaderboard (MFCL), the **first com
 conda create -n MFCL python=3.10
 conda activate MFCL
 
-# Clone the Gorilla repository
-git clone https://github.com/ShishirPatil/gorilla.git
-
-# Change directory to the `berkeley-function-call-leaderboard`
-cd gorilla/berkeley-function-call-leaderboard
-
 # Install the package in editable mode
 pip install -e .
 ```
@@ -72,10 +50,10 @@ pip install -e .
 
 If you simply want to run the evaluation without making code changes, you can
 install the prebuilt wheel instead. **Be careful not to confuse our package with
-the *unrelated* `bfcl` project on PyPI—make sure you install `bfcl-eval`:**
+the *unrelated* `mfcl` project on PyPI—make sure you install `mfcl-eval`:**
 
 ```bash
-pip install bfcl-eval  # Be careful not to confuse with the unrelated `bfcl` project on PyPI!
+pip install mfcl-eval  # Be careful not to confuse with the unrelated `mfcl` project on PyPI!
 ```
 
 ### Extra Dependencies for Self-Hosted Models
@@ -99,9 +77,6 @@ pip install -e .[oss_eval_sglang]
 
 ### Configuring Project Root Directory
 
-**Important:** If you installed the package from PyPI (using `pip install bfcl-eval`), you **must** set the `MFCL_PROJECT_ROOT` environment variable to specify where the evaluation results and score files should be stored.
-Otherwise, you'll need to navigate deep into the Python package's source code folder to access the evaluation results and configuration files.
-
 For editable installations (using `pip install -e .`), setting `MFCL_PROJECT_ROOT` is *optional*--it defaults to the `berkeley-function-call-leaderboard` directory.
 
 Set `MFCL_PROJECT_ROOT` as an environment variable in your shell environment:
@@ -124,14 +99,14 @@ We store API keys and other configuration variables (separate from the `MFCL_PRO
 **For editable installations:**
 
 ```bash
-cp bfcl_eval/.env.example .env
+cp mfcl_eval/.env.example .env
 # Fill in necessary values in `.env`
 ```
 
-**For PyPI installations (using `pip install bfcl-eval`):**
+**For PyPI installations (using `pip install mfcl-eval`):**
 
 ```bash
-cp $(python -c "import bfcl_eval; print(bfcl_eval.__path__[0])")/.env.example $MFCL_PROJECT_ROOT/.env
+cp $(python -c "import mfcl_eval; print(mfcl_eval.__path__[0])")/.env.example $MFCL_PROJECT_ROOT/.env
 # Fill in necessary values in `.env`
 ```
 
@@ -141,7 +116,7 @@ The library looks for the `.env` file in the project root, i.e. `$MFCL_PROJECT_R
 
 #### Configuring SerpAPI for Web Search Category
 
-For the `web_search` test category, we use the [SerpAPI](https://serpapi.com/) service to perform web search. You need to sign up for an API key and add it to your `.env` file. You can also switch to other web search APIs by changing the `search_engine_query` function in `bfcl_eval/eval_checker/multi_turn_eval/func_source_code/web_search.py`.
+For the `web_search` test category, we use the [SerpAPI](https://serpapi.com/) service to perform web search. You need to sign up for an API key and add it to your `.env` file. You can also switch to other web search APIs by changing the `search_engine_query` function in `mfcl_eval/eval_checker/multi_turn_eval/func_source_code/web_search.py`.
 
 ---
 
@@ -182,18 +157,18 @@ IDs to run:
 
 > Note: When using `--run-ids`, the `--test-category` flag is ignored.
 
-A sample file is provided at `bfcl_eval/test_case_ids_to_generate.json.example`; **copy it to your project root** so the CLI can pick it up regardless of your working directory:
+A sample file is provided at `mfcl_eval/test_case_ids_to_generate.json.example`; **copy it to your project root** so the CLI can pick it up regardless of your working directory:
 
 **For editable installations:**
 
 ```bash
-cp bfcl_eval/test_case_ids_to_generate.json.example ./test_case_ids_to_generate.json
+cp mfcl_eval/test_case_ids_to_generate.json.example ./test_case_ids_to_generate.json
 ```
 
 **For PyPI installations:**
 
 ```bash
-cp $(python -c "import bfcl_eval, pathlib; print(pathlib.Path(bfcl_eval.__path__[0]) / 'test_case_ids_to_generate.json.example')") $MFCL_PROJECT_ROOT/test_case_ids_to_generate.json
+cp $(python -c "import mfcl_eval, pathlib; print(pathlib.Path(mfcl_eval.__path__[0]) / 'test_case_ids_to_generate.json.example')") $MFCL_PROJECT_ROOT/test_case_ids_to_generate.json
 ```
 
 Once `--run-ids` is provided only the IDs listed in the JSON will be evaluated.
@@ -250,7 +225,7 @@ LOCAL_SERVER_PORT=1053
 For those who prefer using script execution instead of the CLI, you can run the following command:
 
 ```bash
-python -m bfcl_eval.openfunctions_evaluation --model MODEL_NAME --test-category TEST_CATEGORY
+python -m mfcl_eval.openfunctions_evaluation --model MODEL_NAME --test-category TEST_CATEGORY
 ```
 
 When specifying multiple models or test categories, separate them with **spaces**, not commas. All other flags mentioned earlier are compatible with the script execution method as well.
@@ -300,7 +275,7 @@ Mkae sure you also set `WANDB_MFCL_PROJECT=ENTITY:PROJECT` in `.env`.
 For those who prefer using script execution instead of the CLI, you can run the following command:
 
 ```bash
-python -m bfcl_eval.eval_checker.eval_runner --model MODEL_NAME --test-category TEST_CATEGORY
+python -m mfcl_eval.eval_checker.eval_runner --model MODEL_NAME --test-category TEST_CATEGORY
 ```
 
 When specifying multiple models or test categories, separate them with **spaces**, not commas. All other flags mentioned earlier are compatible with the script execution method as well.
@@ -309,9 +284,9 @@ When specifying multiple models or test categories, separate them with **spaces*
 
 We welcome contributions! To add a new model:
 
-1. Review `bfcl_eval/model_handler/base_handler.py` and/or `bfcl_eval/model_handler/local_inference/base_oss_handler.py` (if your model is hosted locally).
+1. Review `mfcl_eval/model_handler/base_handler.py` and/or `mfcl_eval/model_handler/local_inference/base_oss_handler.py` (if your model is hosted locally).
 2. Implement a new handler class for your model.
-3. Update `bfcl_eval/constants/model_config.py`.
+3. Update `mfcl_eval/constants/model_config.py`.
 4. Submit a Pull Request.
 
 For detailed steps, please see the [Contributing Guide](./CONTRIBUTING.md).
