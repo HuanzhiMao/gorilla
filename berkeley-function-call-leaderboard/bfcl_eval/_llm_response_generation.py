@@ -31,7 +31,7 @@ def get_args():
     # Refer to model_choice for supported models.
     parser.add_argument("--model", type=str, default="gorilla-openfunctions-v2", nargs="+")
     # Refer to test_categories for supported categories.
-    parser.add_argument("--test-category", type=str, default="all", nargs="+")
+    parser.add_argument("--test-category", type=str, default="multi_turn_base", nargs="+")
 
     # Parameters for the model that you want to test.
     parser.add_argument("--temperature", type=float, default=0.001)
