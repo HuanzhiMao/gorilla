@@ -1,0 +1,405 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.6" />
+    <title>MFCL Vision • Tool Use for Visual Reasoning</title>
+
+    <!-- Match BFCL/Gorilla house style dependencies -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro"
+    />
+    <link rel="stylesheet" href="../assets/css/blog.css" />
+    <link rel="stylesheet" href="../assets/css/api-explorer.css" />
+    <link rel="stylesheet" href="../assets/css/common-styles.css" />
+    <link rel="stylesheet" href="../assets/css/Highlight-Clean-leaderboard.css" />
+    <link rel="stylesheet" href="../assets/css/model_info_dashboard.css" />
+    <link rel="stylesheet" href="../assets/css/contact.css" />
+
+    <style>
+      /* Bars to separate titles in nav bar */
+      .navbar a:not(:last-child)::after {
+        content: "|";
+        margin: 0 10px;
+        color: #000;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: white;
+        width: auto;
+        padding: 20px;
+      }
+
+      .highlight-clean-blog {
+        color: #313437;
+        background-color: #fff;
+        padding: 50px 0;
+      }
+
+      .blog-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .blog-post {
+        margin: 20px;
+        padding: 20px;
+        width: auto;
+        max-width: 1000px;
+        justify-content: center;
+      }
+
+      .blog-title {
+        color: #055ada;
+        text-align: center;
+        line-height: 1.3;
+      }
+
+      .authors-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .authors-container .author {
+        display: inline-block;
+        margin: 5px 10px;
+        text-align: center;
+        white-space: nowrap;
+        font-size: 16px;
+        color: #1e90ff;
+      }
+
+      .blog-post code {
+        background-color: #eee;
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+
+      .blog-post img {
+        display: block;
+        margin: 0 auto;
+        max-width: 80%;
+        text-align: center;
+      }
+
+      .box-index {
+        position: fixed;
+        top: 50%;
+        left: 0px;
+        transform: translateY(-50%);
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 170px;
+      }
+
+      .box-index h3 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+      }
+
+      .box-index ul {
+        list-style-type: disc;
+        padding: 0;
+        margin: 0;
+      }
+
+      .box-index ul li {
+        margin-bottom: 10px;
+      }
+
+      .box-index ul li a {
+        text-decoration: none;
+        color: #333;
+      }
+
+      .box-index ul li a:hover {
+        color: #1e90ff;
+      }
+
+      .callout {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 20px 0;
+      }
+
+      .mono-block {
+        background-color: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+        display: block;
+      }
+
+      .mono-block p {
+        color: green;
+        font-family: "Roboto Mono", monospace;
+        margin: 0;
+        font-size: 14px;
+        white-space: pre-line;
+      }
+
+      pre#citation_block {
+        white-space: pre-wrap;
+        width: 100%;
+        overflow-x: auto;
+        background-color: #f4f4f4;
+        color: #333;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+
+      @media screen and (max-width: 1000px) {
+        .blog-post {
+          padding: 10px;
+          max-width: 90%;
+        }
+        .blog-post img {
+          max-width: 90%;
+        }
+        .box-index {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+      <a href="/index.html">Home</a>
+      <a href="/blog.html">Blogs</a>
+      <a href="/leaderboard.html">BFCL Leaderboard</a>
+    </div>
+
+    <div class="highlight-clean-blog" style="padding-bottom: 10px">
+      <h1 class="text-center" style="padding-bottom: 10px">
+        🦍 Gorilla: Large Language Model Connected with Massive APIs
+      </h1>
+
+      <!-- Left-side index (fixed) -->
+      <div class="box-index">
+        <h3>MFCL Vision (v5)</h3>
+        <ul>
+          <li><a href="#intro">Introduction</a></li>
+          <li><a href="#motivation">Motivation</a></li>
+          <li><a href="#dataset">Dataset Construction</a></li>
+          <li><a href="#evaluation">Evaluation & Grading</a></li>
+          <li><a href="#failure-modes">Failure Modes</a></li>
+          <li><a href="#results">Results Snapshot</a></li>
+          <li><a href="#resources">Resources</a></li>
+          <li><a href="#citation">Citation</a></li>
+        </ul>
+      </div>
+
+      <div class="blog-container">
+        <div class="blog-post">
+          <h2 class="blog-title text-center">
+            MFCL Vision • Benchmarking Tool Use<br />
+            for Visual Reasoning Tasks
+          </h2>
+
+          <div class="col-md-12">
+            <h4 class="text-center" style="margin: 0">
+              <br />
+              <div class="authors-container">
+                <a class="author" href="#" onclick="return false;">Huanzhi Mao<sup>*</sup></a>
+                <a class="author" href="#" onclick="return false;">Jad Bendarkawi<sup>*</sup></a>
+                <a class="author" href="#" onclick="return false;">Evan Turner<sup>*</sup></a>
+                <a class="author" href="#" onclick="return false;">Ritesh Chavan<sup>*</sup></a>
+                <a class="author" href="#" onclick="return false;">Kevin Zhu</a>
+              </div>
+              <br />
+            </h4>
+          </div>
+
+          <b
+            ><i style="font-size: 1em"
+              >Release date: 2025-XX-XX. Last updated: 2025-XX-XX.
+              <a href="#" onclick="return false;">[Change Log]</a></i
+            ></b
+          >
+
+          <!-- Intro -->
+          <h2 id="intro" style="margin-top: 28px">1. Introduction</h2>
+          <p>
+            As multimodal LLMs become tool-using agents, the field still lacks a standardized metric
+            for translating visual inputs into correct tool invocations. MFCL Vision targets this gap
+            by evaluating the full perception-to-tool-use loop on image-conditioned tasks that require
+            external web search to succeed.
+          </p>
+
+          <div class="callout">
+            <strong>One-liner:</strong>
+            MFCL Vision is a large-scale benchmark for vision-based function calling with controlled
+            visual perturbations and an exact-match automatic grader.
+          </div>
+
+          <!-- Motivation -->
+          <h2 id="motivation">2. Motivation</h2>
+          <p>
+            MFCL Vision is built around expert-verified image–query tasks that stress realistic visual grounding:
+            models must synthesize user intent with image evidence, then use external web search to retrieve
+            up-to-date facts.
+          </p>
+
+          <h4>Design principles</h4>
+          <ol>
+            <li><strong>Salient visual cues:</strong> images contain visible hints (text, objects, layout) to seed the first search step.</li>
+            <li><strong>Dependence on external evidence:</strong> queries require web search (no collapse into pure OCR/object recognition).</li>
+            <li><strong>Dependence on image context:</strong> image disambiguates the query; without it, the question is unanswerable.</li>
+            <li><strong>Human solvability:</strong> a non-expert can solve each task with standard web search.</li>
+          </ol>
+
+          <!-- Optional figure placeholders (keep paths consistent with your repo) -->
+          <div style="text-align: center; margin: 20px 0">
+            <img
+              src="../assets/img/mfcl_vision_example_entry.png"
+              alt="Example MFCL Vision Entry (placeholder)"
+              style="max-width: 85%; height: auto"
+            />
+            <div style="text-align: center; font-size: 0.95em; color: #555; margin-top: 6px">
+              Figure 1 (placeholder): Example MFCL Vision dataset entry.
+            </div>
+          </div>
+
+          <!-- Dataset Construction -->
+          <h2 id="dataset">3. Dataset Construction</h2>
+          <p>
+            Each MFCL Vision task pairs (1) a textual user query, (2) an accompanying image,
+            (3) a web-derived ground-truth answer, and (4) a human-produced reasoning trace for
+            error analysis. Tasks are designed to require multi-step information seeking: extracting
+            a concrete visual clue, converting it into a targeted query, and validating results.
+          </p>
+
+          <div class="mono-block">
+            <p>
+Task format (conceptual):
+- user_query: "..."
+- image: (RGB)
+- gold_answer: "..."
+- trace: (human reasoning + tool-call rationale)
+            </p>
+          </div>
+
+          <p>
+            In the broader MFCL framework, the vision suite is curated to go beyond “general VQA” by
+            enforcing tool dependence and by perturbing images (crops/resizes, grayscale/color shifts,
+            edge transforms, partial occlusion) to stress robustness.
+          </p>
+
+          <!-- Evaluation -->
+          <h2 id="evaluation">4. Evaluation & Grading</h2>
+          <p>
+            MFCL Vision uses an automatic grader with exact-match scoring on the final answer field.
+            This avoids brittle LLM-judge behavior and isolates errors in perception, reasoning, and formatting.
+          </p>
+
+          <div class="callout">
+            <p style="margin-bottom: 10px"><strong>Key evaluation idea:</strong></p>
+            <ul style="margin-bottom: 0">
+              <li><strong>Controlled perturbations</strong> (crop/resize/color/edges) test robustness of visual grounding.</li>
+              <li><strong>Exact-match grading</strong> provides deterministic scoring without relying on a judge model.</li>
+            </ul>
+          </div>
+
+          <!-- Failure Modes -->
+          <h2 id="failure-modes">5. Failure Modes</h2>
+          <p>
+            MFCL Vision is diagnostic: beyond accuracy, it surfaces where the perception-to-tool-use pipeline breaks.
+            Common failure modes include:
+          </p>
+
+          <ol>
+            <li>
+              <strong>Visual Reasoning Errors:</strong> misunderstanding spatial relations or missing key text.
+              <ul>
+                <li><strong>Subset Confusion:</strong> missing/hallucinating items in crowded scenes.</li>
+                <li><strong>Myopia:</strong> over-focusing on foreground details while ignoring critical background cues.</li>
+              </ul>
+            </li>
+            <li><strong>Avoiding Tool Use:</strong> guessing or refusing instead of searching.</li>
+            <li><strong>Poor Keyword Selection:</strong> issuing vague queries rather than extracting specific clues.</li>
+            <li><strong>Over-Reliance on Query Text:</strong> ignoring image evidence and reusing only the user prompt.</li>
+            <li><strong>Abandoning Leads:</strong> stopping after the first plausible hit without validating alternatives.</li>
+          </ol>
+
+          <div style="text-align: center; margin: 20px 0">
+            <img
+              src="../assets/img/mfcl_vision_error_distribution.png"
+              alt="Error Type Distribution (placeholder)"
+              style="max-width: 85%; height: auto"
+            />
+            <div style="text-align: center; font-size: 0.95em; color: #555; margin-top: 6px">
+              Figure 2 (placeholder): Error type distribution across models.
+            </div>
+          </div>
+
+          <!-- Results (no tables) -->
+          <h2 id="results">6. Results Snapshot</h2>
+          <p>
+            Two high-level takeaways that tend to be stable across models:
+          </p>
+          <ul>
+            <li>
+              <strong>Edge transforms are especially damaging:</strong> edge detection suppresses fine-grained anchors
+              (small text/logos), reducing the model’s ability to form specific search queries.
+            </li>
+            <li>
+              <strong>Color ablations shift strategy:</strong> reduced color fidelity can act as an uncertainty cue,
+              sometimes nudging models away from “guess-only” behavior toward tool use.
+            </li>
+          </ul>
+
+          <!-- Resources -->
+          <h2 id="resources">7. Resources</h2>
+          <ul>
+            <li><strong>Dataset:</strong> (add link)</li>
+            <li><strong>Code:</strong> (add link)</li>
+            <li><strong>Paper:</strong> (add link)</li>
+            <li><strong>Contact:</strong> (add link)</li>
+          </ul>
+
+          <!-- Citation -->
+          <h2 id="citation">8. Citation</h2>
+          <p>If you would like to cite MFCL Vision, use:</p>
+
+          <pre id="citation_block"><code>
+@misc{mfclvision2025,
+  title   = {MFCL Vision: Benchmarking Tool Use in Multimodal Large Language Models for Visual Reasoning Tasks},
+  author  = {Mao, Huanzhi and Bendarkawi, Jad and Turner, Evan and Chavan, Ritesh and Zhu, Kevin},
+  year    = {2025},
+  note    = {NeurIPS Poster / Draft Manuscript},
+}</code></pre>
+
+          <div>
+            <p>
+              We hope you enjoyed this post. Join the discussion on
+              <a href="#" onclick="return false;">Discord</a>,
+              <a href="#" onclick="return false;">Twitter (#GorillaLLM)</a>,
+              and <a href="#" onclick="return false;">GitHub</a>.
+            </p>
+          </div>
+        </div>
+        <br />
+      </div>
+    </div>
+  </body>
+</html>
+```
