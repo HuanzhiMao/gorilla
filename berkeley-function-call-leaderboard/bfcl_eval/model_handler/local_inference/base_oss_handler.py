@@ -164,7 +164,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
                         for lora_module in lora_modules:
                             cmd.extend(["--lora-modules", lora_module])
  
-                    print(f"Starting vLLM server with command: {' '.join(cmd)}")
+                    print(f"🚀Starting vLLM server with command: \"{' '.join(cmd)}\"")
                     
                     process = subprocess.Popen(
                         cmd,
@@ -200,6 +200,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
 
             # Wait for the server to be ready
             server_ready = False
+            print("Waiting for server to be ready... (this may take a few minutes)")
             while not server_ready:
                 # Check if the process has terminated unexpectedly
                 if not skip_server_setup and process.poll() is not None:
@@ -217,7 +218,6 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
                         server_ready = True
                         print("server is ready!")
                 except requests.exceptions.ConnectionError:
-                    print("Waiting for server to be ready...")
                     # If the connection is not ready, wait and try again
                     time.sleep(1)
 
