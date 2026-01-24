@@ -71,8 +71,7 @@ include = ["bfcl_eval*"]
 Repository = "https://github.com/ShishirPatil/gorilla/tree/main/berkeley-function-call-leaderboard"
 
 [project.optional-dependencies]
-oss_eval_vllm = ["vllm==0.8.5"]
-oss_eval_sglang = ["sglang[all]"]
+oss_eval_vllm = ["vllm"]
 wandb = ["wandb==0.18.5"]
 
 [tool.setuptools_scm]
