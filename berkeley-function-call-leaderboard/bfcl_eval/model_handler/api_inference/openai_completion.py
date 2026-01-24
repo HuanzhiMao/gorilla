@@ -29,7 +29,17 @@ class OpenAICompletionsHandler(BaseHandler):
     ) -> None:
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_style = ModelStyle.OPENAI_COMPLETIONS
-        self.client = OpenAI(**self._build_client_kwargs())
+        self._client = None
+
+    @property
+    def client(self):
+        if self._client is None:
+            self._client = OpenAI(**self._build_client_kwargs())
+        return self._client
+
+    @client.setter
+    def client(self, value):
+        self._client = value
 
     def _build_client_kwargs(self):
         """Collect OpenAI client keyword arguments from environment variables, but only

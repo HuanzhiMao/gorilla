@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 import requests
+from rich.panel import p
 from bfcl_eval.constants.eval_config import LOCAL_SERVER_PORT
 from bfcl_eval.model_handler.api_inference.openai_completion import (
     OpenAICompletionsHandler,
@@ -140,8 +141,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
                                 "Function calling models require a supported vLLM tool call parser. "
                                 "Set VLLM_TOOL_CALL_PARSER or update the model handler."
                             )
-                    process = subprocess.Popen(
-                        [
+                    cmd = [
                             "vllm",
                             "serve",
                             str(self.model_path_or_id),
@@ -155,32 +155,20 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
                             str(gpu_memory_utilization),
                             "--trust-remote-code",
                         ]
-                        + (
-                            [
-                                "--enable-auto-tool-choice",
-                                "--tool-call-parser",
-                                tool_call_parser,
-                            ]
-                            if tool_call_parser
-                            else []
-                        )
-                        + (["--enable-lora"] if enable_lora else [])
-                        + (
-                            ["--max-lora-rank", str(max_lora_rank)]
-                            if max_lora_rank is not None
-                            else []
-                        )
-                        + (
-                            sum(
-                                [
-                                    ["--lora-modules", lora_module]
-                                    for lora_module in lora_modules
-                                ],
-                                [],
-                            )
-                            if lora_modules
-                            else []
-                        ),
+                    if tool_call_parser:
+                        cmd.extend(["--enable-auto-tool-choice", "--tool-call-parser", tool_call_parser])
+                    if enable_lora:
+                        cmd.append("--enable-lora")
+                    if max_lora_rank is not None:
+                        cmd.extend(["--max-lora-rank", str(max_lora_rank)])
+                    if lora_modules:
+                        for lora_module in lora_modules:
+                            cmd.extend(["--lora-modules", lora_module])
+ 
+                    print(f"Starting vLLM server with command: {' '.join(cmd)}")
+                    
+                    process = subprocess.Popen(
+                        cmd,
                         stdout=subprocess.PIPE,  # Capture stdout
                         stderr=subprocess.PIPE,  # Capture stderr
                         text=True,  # To get the output as text instead of bytes
@@ -230,6 +218,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
                         server_ready = True
                         print("server is ready!")
                 except requests.exceptions.ConnectionError:
+                    print("Waiting for server to be ready...")
                     # If the connection is not ready, wait and try again
                     time.sleep(1)
 
