@@ -28,6 +28,11 @@ class LlamaHandler(OSSHandler):
     ) -> None:
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_name_huggingface = model_name.replace("-FC", "")
+        if self.is_fc_model:
+            if "Llama-4" in model_name:
+                self.tool_call_parser = "llama4_pythonic"
+            else:
+                self.tool_call_parser = "llama3_json"
 
     @override
     def _format_prompt(self, messages, function):

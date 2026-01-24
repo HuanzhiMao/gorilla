@@ -18,6 +18,7 @@ class GraniteFunctionCallingHandler(OSSHandler):
         **kwargs,
     ) -> None:
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        self.tool_call_parser = "granite-20b-fc"
 
     @override
     def _format_prompt(self, messages, function):
@@ -57,6 +58,8 @@ class GraniteFunctionCallingHandler(OSSHandler):
 
     @override
     def decode_ast(self, result, language, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_ast(result, language, has_tool_call_tag)
         decoded_outputs = []
         result = [
             call.strip()
@@ -83,6 +86,8 @@ class GraniteFunctionCallingHandler(OSSHandler):
 
     @override
     def decode_execute(self, result, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_execute(result, has_tool_call_tag)
         decoded_outputs = []
         result = [
             call.strip()

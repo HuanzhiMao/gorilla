@@ -31,26 +31,20 @@ from bfcl_eval.model_handler.api_inference.qwen import (
 )
 from bfcl_eval.model_handler.api_inference.nanbeige import NanbeigeAPIHandler
 from bfcl_eval.model_handler.api_inference.writer import WriterHandler
-from bfcl_eval.model_handler.local_inference.arch import ArchHandler
 from bfcl_eval.model_handler.local_inference.bielik import BielikHandler
-from bfcl_eval.model_handler.local_inference.bitagent import BitAgentHandler
 from bfcl_eval.model_handler.local_inference.deepseek_reasoning import (
     DeepseekReasoningHandler,
 )
-from bfcl_eval.model_handler.local_inference.falcon_fc import Falcon3FCHandler
 from bfcl_eval.model_handler.local_inference.gemma import GemmaHandler
 from bfcl_eval.model_handler.local_inference.functiongemma import FunctionGemmaHandler
-from bfcl_eval.model_handler.local_inference.glm import GLMHandler
 from bfcl_eval.model_handler.local_inference.granite import (
     GraniteFunctionCallingHandler,
 )
 from bfcl_eval.model_handler.local_inference.granite_3 import Granite3FCHandler
 from bfcl_eval.model_handler.local_inference.granite_4 import Granite4FCHandler
-from bfcl_eval.model_handler.local_inference.hammer import HammerHandler
 from bfcl_eval.model_handler.local_inference.llama import LlamaHandler
 from bfcl_eval.model_handler.local_inference.llama_3_1 import LlamaHandler_3_1
 from bfcl_eval.model_handler.local_inference.minicpm import MiniCPMHandler
-from bfcl_eval.model_handler.local_inference.minicpm_fc import MiniCPMFCHandler
 from bfcl_eval.model_handler.local_inference.mistral_fc import MistralFCHandler
 from bfcl_eval.model_handler.local_inference.phi import PhiHandler
 from bfcl_eval.model_handler.local_inference.phi_fc import PhiFCHandler
@@ -59,14 +53,12 @@ from bfcl_eval.model_handler.local_inference.quick_testing_oss import (
 )
 from bfcl_eval.model_handler.local_inference.qwen import QwenHandler
 from bfcl_eval.model_handler.local_inference.qwen_fc import QwenFCHandler
-from bfcl_eval.model_handler.local_inference.nanbeige_fc import NanbeigeFCHandler
 from bfcl_eval.model_handler.local_inference.salesforce_llama import (
     SalesforceLlamaHandler,
 )
 from bfcl_eval.model_handler.local_inference.salesforce_qwen import (
     SalesforceQwenHandler,
 )
-from bfcl_eval.model_handler.local_inference.think_agent import ThinkAgentHandler
 
 # -----------------------------------------------------------------------------
 # A mapping of model identifiers to their respective model configurations.
@@ -1524,66 +1516,6 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
     ),
-    "MadeAgents/Hammer2.1-7b": ModelConfig(
-        model_name="MadeAgents/Hammer2.1-7b",
-        display_name="Hammer2.1-7b (FC)",
-        url="https://huggingface.co/MadeAgents/Hammer2.1-7b",
-        org="MadeAgents",
-        license="cc-by-nc-4.0",
-        model_handler=HammerHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "MadeAgents/Hammer2.1-3b": ModelConfig(
-        model_name="MadeAgents/Hammer2.1-3b",
-        display_name="Hammer2.1-3b (FC)",
-        url="https://huggingface.co/MadeAgents/Hammer2.1-3b",
-        org="MadeAgents",
-        license="qwen-research",
-        model_handler=HammerHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "MadeAgents/Hammer2.1-1.5b": ModelConfig(
-        model_name="MadeAgents/Hammer2.1-1.5b",
-        display_name="Hammer2.1-1.5b (FC)",
-        url="https://huggingface.co/MadeAgents/Hammer2.1-1.5b",
-        org="MadeAgents",
-        license="cc-by-nc-4.0",
-        model_handler=HammerHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "MadeAgents/Hammer2.1-0.5b": ModelConfig(
-        model_name="MadeAgents/Hammer2.1-0.5b",
-        display_name="Hammer2.1-0.5b (FC)",
-        url="https://huggingface.co/MadeAgents/Hammer2.1-0.5b",
-        org="MadeAgents",
-        license="cc-by-nc-4.0",
-        model_handler=HammerHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "THUDM/glm-4-9b-chat": ModelConfig(
-        model_name="THUDM/glm-4-9b-chat",
-        display_name="GLM-4-9b-Chat (FC)",
-        url="https://huggingface.co/THUDM/glm-4-9b-chat",
-        org="THUDM",
-        license="glm-4",
-        model_handler=GLMHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=True,
-    ),
     "Qwen/Qwen3-0.6B-FC": ModelConfig(
         model_name="Qwen/Qwen3-0.6B",
         display_name="Qwen3-0.6B (FC)",
@@ -1800,18 +1732,6 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "openbmb/MiniCPM3-4B-FC": ModelConfig(
-        model_name="openbmb/MiniCPM3-4B",
-        display_name="MiniCPM3-4B-FC (FC)",
-        url="https://huggingface.co/openbmb/MiniCPM3-4B",
-        org="openbmb",
-        license="Apache-2.0",
-        model_handler=MiniCPMFCHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=True,
-    ),
     "watt-ai/watt-tool-8B": ModelConfig(
         model_name="watt-ai/watt-tool-8B",
         display_name="watt-tool-8B (FC)",
@@ -1872,54 +1792,6 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "tiiuae/Falcon3-10B-Instruct-FC": ModelConfig(
-        model_name="tiiuae/Falcon3-10B-Instruct",
-        display_name="Falcon3-10B-Instruct (FC)",
-        url="https://huggingface.co/tiiuae/Falcon3-10B-Instruct",
-        org="TII UAE",
-        license="falcon-llm-license",
-        model_handler=Falcon3FCHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "tiiuae/Falcon3-7B-Instruct-FC": ModelConfig(
-        model_name="tiiuae/Falcon3-7B-Instruct",
-        display_name="Falcon3-7B-Instruct (FC)",
-        url="https://huggingface.co/tiiuae/Falcon3-7B-Instruct",
-        org="TII UAE",
-        license="falcon-llm-license",
-        model_handler=Falcon3FCHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "tiiuae/Falcon3-3B-Instruct-FC": ModelConfig(
-        model_name="tiiuae/Falcon3-3B-Instruct",
-        display_name="Falcon3-3B-Instruct (FC)",
-        url="https://huggingface.co/tiiuae/Falcon3-3B-Instruct",
-        org="TII UAE",
-        license="falcon-llm-license",
-        model_handler=Falcon3FCHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "tiiuae/Falcon3-1B-Instruct-FC": ModelConfig(
-        model_name="tiiuae/Falcon3-1B-Instruct",
-        display_name="Falcon3-1B-Instruct (FC)",
-        url="https://huggingface.co/tiiuae/Falcon3-1B-Instruct",
-        org="TII UAE",
-        license="falcon-llm-license",
-        model_handler=Falcon3FCHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
     "uiuc-convai/CoALM-8B": ModelConfig(
         model_name="uiuc-convai/CoALM-8B",
         display_name="CoALM-8B",
@@ -1956,54 +1828,6 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "katanemo/Arch-Agent-1.5B": ModelConfig(
-        model_name="katanemo/Arch-Agent-1.5B",
-        display_name="Arch-Agent-1.5B",
-        url="https://huggingface.co/katanemo/Arch-Agent-1.5B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "katanemo/Arch-Agent-3B": ModelConfig(
-        model_name="katanemo/Arch-Agent-3B",
-        display_name="Arch-Agent-3B",
-        url="https://huggingface.co/katanemo/Arch-Agent-3B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "katanemo/Arch-Agent-7B": ModelConfig(
-        model_name="katanemo/Arch-Agent-7B",
-        display_name="Arch-Agent-7B",
-        url="https://huggingface.co/katanemo/Arch-Agent-7B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "katanemo/Arch-Agent-32B": ModelConfig(
-        model_name="katanemo/Arch-Agent-32B",
-        display_name="Arch-Agent-32B",
-        url="https://huggingface.co/katanemo/Arch-Agent-32B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
     "BitAgent/BitAgent-8B": ModelConfig(
         model_name="BitAgent/BitAgent-8B",
         display_name="BitAgent-8B",
@@ -2016,30 +1840,6 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "BitAgent/BitAgent-Bounty-8B": ModelConfig(
-        model_name="BitAgent/BitAgent-Bounty-8B",
-        display_name="BitAgent-Bounty-8B",
-        url="https://huggingface.co/BitAgent/BitAgent-Bounty-8B",
-        org="Bittensor",
-        license="Apache-2.0",
-        model_handler=BitAgentHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "ThinkAgents/ThinkAgent-1B": ModelConfig(
-        model_name="ThinkAgents/ThinkAgent-1B",
-        display_name="ThinkAgent-1B (FC)",
-        url="https://huggingface.co/ThinkAgents/ThinkAgent-1B",
-        org="ThinkAgents",
-        license="apache-2.0",
-        model_handler=ThinkAgentHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
     "phronetic-ai/RZN-T": ModelConfig(
         model_name="phronetic-ai/RZN-T",
         display_name="RZN-T (Prompt)",
@@ -2050,18 +1850,6 @@ local_inference_model_map = {
         input_price=None,
         output_price=None,
         is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "Nanbeige/Nanbeige4-3B-Thinking-2511": ModelConfig(
-        model_name="Nanbeige/Nanbeige4-3B-Thinking-2511",
-        display_name="Nanbeige4-3B-Thinking-2511 (FC)",
-        url="https://huggingface.co/Nanbeige/Nanbeige4-3B-Thinking-2511",
-        org="Nanbeige",
-        license="apache-2.0",
-        model_handler=NanbeigeFCHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
         underscore_to_dot=False,
     ),
 }

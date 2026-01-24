@@ -24,6 +24,7 @@ class LlamaHandler_3_1(OSSHandler):
     ) -> None:
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_name_huggingface = model_name.replace("-FC", "")
+        self.tool_call_parser = "llama3_json"
 
     @override
     def _format_prompt(self, messages, function):
@@ -190,6 +191,8 @@ class LlamaHandler_3_1(OSSHandler):
 
     @override
     def decode_ast(self, result, language, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_ast(result, language, has_tool_call_tag)
         result = result.replace("<|python_tag|>", "")
         # Llama sometimes separates the function calls with `;` and sometimes with `,`
         if ";" in result:
@@ -216,6 +219,8 @@ class LlamaHandler_3_1(OSSHandler):
 
     @override
     def decode_execute(self, result, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_execute(result, has_tool_call_tag)
         result = result.replace("<|python_tag|>", "")
         # Llama sometimes separates the function calls with `;` and sometimes with `,`
         if ";" in result:

@@ -1,6 +1,6 @@
 # Table of Supported Models
 
-Below is a comprehensive table of models supported for running leaderboard evaluations. Each model entry indicates whether it supports native Function Calling (FC) or requires a special prompt format to generate function calls. Models marked with `💻` are intended to be hosted locally (using vllm or sglang), while models without the `💻` icon are accessed via API calls. To quickly see all available models, you can also run the `bfcl models` command.
+Below is a comprehensive table of models supported for running leaderboard evaluations. Each model entry indicates whether it supports native Function Calling (FC) or requires a special prompt format to generate function calls. Models marked with `💻` are intended to be hosted locally (using vLLM), while models without the `💻` icon are accessed via API calls. To quickly see all available models, you can also run the `bfcl models` command.
 
 ## Function Calling (FC) vs. Prompt Mode
 
@@ -19,10 +19,8 @@ For model names containing `{...}`, multiple versions are available. For example
 | Amazon-Nova-2-Lite-v1:0                | Function Calling | Amazon         | nova-2-lite-v1.0                                            |
 | Amazon-Nova-Micro-v1:0                 | Function Calling | Amazon         | nova-micro-v1.0                                             |
 | Amazon-Nova-Pro-v1:0                   | Function Calling | Amazon         | nova-pro-v1.0                                               |
-| Arch-Agent-{1.5B,3B,7B,32B}            | Function Calling | Self-hosted 💻 | katanemo/Arch-Agent-{1.5B,3B,7B,32B}                        |
 | Bielik-11B-v2.3-Instruct               | Prompt           | Self-hosted 💻 | speakleash/Bielik-11B-v2.3-Instruct                         |
 | BitAgent-8B                            | Prompt           | Self-hosted 💻 | BitAgent/BitAgent-8B                                        |
-| BitAgent-Bounty-8B                     | Function Calling | Self-hosted 💻 | BitAgent/BitAgent-Bounty-8B                                 |
 | claude-3.5-haiku-20241022              | Function Calling | Anthropic      | claude-haiku-4-5-20251001-FC                                |
 | claude-3.5-haiku-20241022              | Prompt           | Anthropic      | claude-haiku-4-5-20251001                                   |
 | Claude-Opus-4.5-20251101               | Function Calling | Anthropic      | claude-opus-4-5-20251101-FC                                 |
@@ -39,7 +37,6 @@ For model names containing `{...}`, multiple versions are available. For example
 | DeepSeek-V3.2-Exp (Prompt + Thinking)  | Prompt           | DeepSeek       | DeepSeek-V3.2-Exp-thinking                                  |
 | DM-Cito-32B-v1                         | Prompt           | Mininglamp     | DM-Cito-32B-v1                                              |
 | DM-Cito-8B-v3                          | Prompt           | Mininglamp     | DM-Cito-8B-v3                                               |
-| Falcon3-{1B,3B,7B,10B}-Instruct        | Function Calling | Self-hosted 💻 | tiiuae/Falcon3-{1B,3B,7B,10B}-Instruct-FC                   |
 | FireFunction-v2                        | Function Calling | Fireworks      | firefunction-v2-FC                                          |
 | Functionary-Medium-v3.1                | Function Calling | MeetKai        | meetkai/functionary-medium-v3.1-FC                          |
 | Functionary-Small-v3.1                 | Function Calling | MeetKai        | meetkai/functionary-small-v3.1-FC                           |
@@ -51,7 +48,6 @@ For model names containing `{...}`, multiple versions are available. For example
 | Gemini-3-Pro-Preview                   | Prompt           | Google         | gemini-3-pro-preview                                        |
 | Gemma-3-{1b,4b,12b,27b}-it             | Prompt           | Self-hosted 💻 | google/gemma-3-{1b,4b,12b,27b}-it                           |
 | FunctionGemma-270m-it                  | Function Calling | Self-hosted 💻 | google/functiongemma-270m-it-FC                             |
-| GLM-4-9b-Chat                          | Function Calling | Self-hosted 💻 | THUDM/glm-4-9b-chat                                         |
 | GLM-4.5                                | Function Calling | Zhipu AI       | glm-4.5-FC                                                  |
 | GLM-4.5-Air                            | Function Calling | Zhipu AI       | glm-4.5-air-FC                                              |
 | GLM-4.6                                | Function Calling | Zhipu AI       | glm-4.6-FC                                                  |
@@ -82,7 +78,6 @@ For model names containing `{...}`, multiple versions are available. For example
 | Grok-4-1-fast-non-reasoning            | Function Calling | xAI            | grok-4-1-fast-non-reasoning-FC                              |
 | Grok-4-1-fast-reasoning                | Function Calling | xAI            | grok-4-1-fast-reasoning-FC                                  |
 | Haha-7B                                | Prompt           | Self-hosted 💻 | ZJared/Haha-7B                                              |
-| Hammer2.1-{0.5b,1.5b,3b,7b}            | Function Calling | Self-hosted 💻 | MadeAgents/Hammer2.1-{0.5b,1.5b,3b,7b}                      |
 | ling-lite-v1.5                         | Prompt           | Ling           | Ling/ling-lite-v1.5                                         |
 | Llama-3.1-{8B,70B}-Instruct            | Function Calling | Self-hosted 💻 | meta-llama/Llama-3.1-{8B,70B}-Instruct-FC                   |
 | Llama-3.1-{8B,70B}-Instruct            | Prompt           | Self-hosted 💻 | meta-llama/Llama-3.1-{8B,70B}-Instruct                      |
@@ -96,7 +91,6 @@ For model names containing `{...}`, multiple versions are available. For example
 | Llama-4-Scout-17B-16E-Instruct         | Function Calling | Novita AI      | meta-llama/llama-4-scout-17b-16e-instruct-FC-novita         |
 | Llama-4-Scout-17B-16E-Instruct         | Function Calling | Self-hosted 💻 | meta-llama/Llama-4-Scout-17B-16E-Instruct-FC                |
 | MiniCPM3-4B                            | Prompt           | Self-hosted 💻 | openbmb/MiniCPM3-4B                                         |
-| MiniCPM3-4B-FC                         | Function Calling | Self-hosted 💻 | openbmb/MiniCPM3-4B-FC                                      |
 | Ministral-8B-Instruct-2410             | Prompt           | Self-hosted 💻 | mistralai/Ministral-8B-Instruct-2410                        |
 | mistral-large-2411                     | Function Calling | Mistral AI     | mistral-large-2411-FC                                       |
 | mistral-large-2411                     | Prompt           | Mistral AI     | mistral-large-2411                                          |
@@ -107,7 +101,6 @@ For model names containing `{...}`, multiple versions are available. For example
 | Moonshotai-Kimi-K2-Instruct            | Function Calling | MoonshotAI     | kimi-k2-0905-preview-FC                                     |
 | Moonshotai-Kimi-K2-Instruct            | Prompt           | MoonshotAI     | kimi-k2-0905-preview                                        |
 | Nanbeige3.5-Pro-Thinking               | Function Calling | Nanbeige       | Nanbeige3.5-Pro-Thinking-FC                                 |
-| Nanbeige4-3B-Thinking-2511             | Function Calling | Self-hosted 💻 | Nanbeige/Nanbeige4-3B-Thinking-2511                         |
 | Nemotron-4-340b-instruct               | Prompt           | NVIDIA         | nvidia/nemotron-4-340b-instruct                             |
 | o3-2025-04-16                          | Function Calling | OpenAI         | o3-2025-04-16-FC                                            |
 | o3-2025-04-16                          | Prompt           | OpenAI         | o3-2025-04-16                                               |
@@ -141,7 +134,6 @@ For model names containing `{...}`, multiple versions are available. For example
 | QwQ-32B                                | Prompt           | Qwen           | qwq-32b                                                     |
 | RZN-T                                  | Prompt           | Self-hosted 💻 | phronetic-ai/RZN-T                                          |
 | Sky-T1-32B-Preview                     | Prompt           | Self-hosted 💻 | NovaSky-AI/Sky-T1-32B-Preview                               |
-| ThinkAgent-1B                          | Function Calling | Self-hosted 💻 | ThinkAgents/ThinkAgent-1B                                   |
 | ToolACE-2-8B                           | Prompt           | Self-hosted 💻 | Team-ACE/ToolACE-2-8B                                       |
 | watt-tool-{8B,70B}                     | Prompt           | Self-hosted 💻 | watt-ai/watt-tool-{8B,70B}                                  |
 | xiaoming-14B                           | Function Calling | Mininglamp     | xiaoming-14B                                                |

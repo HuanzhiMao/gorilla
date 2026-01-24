@@ -19,9 +19,12 @@ class QwenFCHandler(OSSHandler):
     ) -> None:
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_name_huggingface = model_name
+        self.tool_call_parser = "qwen3_xml"
 
     @override
     def decode_ast(self, result, language, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_ast(result, language, has_tool_call_tag)
         # Model response is of the form:
         # "<tool_call>\n{\"name\": \"spotify.play\", \"arguments\": {\"artist\": \"Taylor Swift\", \"duration\": 20}}\n</tool_call>\n<tool_call>\n{\"name\": \"spotify.play\", \"arguments\": {\"artist\": \"Maroon 5\", \"duration\": 15}}\n</tool_call>"
         tool_calls = self._extract_tool_calls(result)
@@ -34,6 +37,8 @@ class QwenFCHandler(OSSHandler):
 
     @override
     def decode_execute(self, result, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_execute(result, has_tool_call_tag)
         tool_calls = self._extract_tool_calls(result)
         if type(tool_calls) != list or any(type(item) != dict for item in tool_calls):
             raise ValueError(f"Model did not return a list of function calls: {result}")

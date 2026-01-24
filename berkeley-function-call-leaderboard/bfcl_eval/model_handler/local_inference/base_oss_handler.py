@@ -3,23 +3,23 @@ import subprocess
 import threading
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 import requests
-from bfcl_eval.constants.enums import ModelStyle
 from bfcl_eval.constants.eval_config import LOCAL_SERVER_PORT
-from bfcl_eval.model_handler.base_handler import BaseHandler
+from bfcl_eval.model_handler.api_inference.openai_completion import (
+    OpenAICompletionsHandler,
+)
 from bfcl_eval.model_handler.utils import (
     default_decode_ast_prompting,
     default_decode_execute_prompting,
     system_prompt_pre_processing_chat_model,
 )
-from bfcl_eval.utils import contain_multi_turn_interaction
 from openai import OpenAI
 from overrides import EnforceOverrides, final, override
 
 
-class OSSHandler(BaseHandler, EnforceOverrides):
+class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
     def __init__(
         self,
         model_name,
@@ -31,8 +31,8 @@ class OSSHandler(BaseHandler, EnforceOverrides):
     ) -> None:
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_name_huggingface = model_name
-        self.model_style = ModelStyle.OSSMODEL
         self.dtype = dtype
+        self.tool_call_parser = None
 
         # Will be overridden in batch_inference method
         # Used to indicate where the tokenizer and config should be loaded from
@@ -49,27 +49,69 @@ class OSSHandler(BaseHandler, EnforceOverrides):
         self.client = OpenAI(base_url=self.base_url, api_key=self.api_key)
 
     @override
-    def inference(
-        self,
-        test_entry: dict,
-        include_input_log: bool,
-        exclude_state_log: bool,
-    ):
-        # TODO: Let oss model support FC methods as well, depends on their model type
-        if contain_multi_turn_interaction(test_entry["id"]):
-            return self.inference_multi_turn_prompting(
-                test_entry, include_input_log, exclude_state_log
-            )
-        else:
-            return self.inference_single_turn_prompting(test_entry, include_input_log)
-
-    @override
     def decode_ast(self, result, language, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_ast(result, language, has_tool_call_tag)
         return default_decode_ast_prompting(result, language, has_tool_call_tag)
 
     @override
     def decode_execute(self, result, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_execute(result, has_tool_call_tag)
         return default_decode_execute_prompting(result, has_tool_call_tag)
+
+    def _resolve_model_name(self) -> str:
+        return self.model_path_or_id or self.model_name_huggingface
+
+    def _build_extra_body(self) -> dict:
+        extra_body = {}
+        if hasattr(self, "stop_token_ids"):
+            extra_body["stop_token_ids"] = self.stop_token_ids
+        if hasattr(self, "skip_special_tokens"):
+            extra_body["skip_special_tokens"] = self.skip_special_tokens
+        return extra_body
+
+    def _resolve_tool_call_parser(self) -> str | None:
+        return os.getenv("VLLM_TOOL_CALL_PARSER", self.tool_call_parser)
+
+    @override
+    def _query_FC(self, inference_data: dict):
+        message: list[dict] = inference_data["message"]
+        tools = inference_data["tools"]
+        inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
+
+        kwargs = {
+            "messages": message,
+            "model": self._resolve_model_name(),
+            "temperature": self.temperature,
+            "store": False,
+        }
+
+        if len(tools) > 0:
+            kwargs["tools"] = tools
+            kwargs["tool_choice"] = "auto"
+
+        extra_body = self._build_extra_body()
+        if extra_body:
+            kwargs["extra_body"] = extra_body
+
+        return self.generate_with_backoff(**kwargs)
+
+    @override
+    def _query_prompting(self, inference_data: dict):
+        inference_data["inference_input_log"] = {"message": repr(inference_data["message"])}
+
+        kwargs = {
+            "messages": inference_data["message"],
+            "model": self._resolve_model_name(),
+            "temperature": self.temperature,
+            "store": False,
+        }
+        extra_body = self._build_extra_body()
+        if extra_body:
+            kwargs["extra_body"] = extra_body
+
+        return self.generate_with_backoff(**kwargs)
 
     @final
     def spin_up_local_server(
@@ -160,6 +202,14 @@ class OSSHandler(BaseHandler, EnforceOverrides):
         try:
             if not skip_server_setup:
                 if backend == "vllm":
+                    tool_call_parser = None
+                    if self.is_fc_model:
+                        tool_call_parser = self._resolve_tool_call_parser()
+                        if not tool_call_parser:
+                            raise ValueError(
+                                "Function calling models require a supported vLLM tool call parser. "
+                                "Set VLLM_TOOL_CALL_PARSER or update the model handler."
+                            )
                     process = subprocess.Popen(
                         [
                             "vllm",
@@ -175,6 +225,11 @@ class OSSHandler(BaseHandler, EnforceOverrides):
                             str(gpu_memory_utilization),
                             "--trust-remote-code",
                         ]
+                        + (
+                            ["--enable-auto-tool-choice", "--tool-call-parser", tool_call_parser]
+                            if tool_call_parser
+                            else []
+                        )
                         + (["--enable-lora"] if enable_lora else [])
                         + (
                             ["--max-lora-rank", str(max_lora_rank)]
@@ -189,29 +244,6 @@ class OSSHandler(BaseHandler, EnforceOverrides):
                             if lora_modules
                             else []
                         ),
-                        stdout=subprocess.PIPE,  # Capture stdout
-                        stderr=subprocess.PIPE,  # Capture stderr
-                        text=True,  # To get the output as text instead of bytes
-                    )
-                elif backend == "sglang":
-
-                    process = subprocess.Popen(
-                        [
-                            "python",
-                            "-m",
-                            "sglang.launch_server",
-                            "--model-path",
-                            str(self.model_path_or_id),
-                            "--port",
-                            str(self.local_server_port),
-                            "--dtype",
-                            str(self.dtype),
-                            "--tp",
-                            str(num_gpus),
-                            "--mem-fraction-static",
-                            str(gpu_memory_utilization),
-                            "--trust-remote-code",
-                        ],
                         stdout=subprocess.PIPE,  # Capture stdout
                         stderr=subprocess.PIPE,  # Capture stderr
                         text=True,  # To get the output as text instead of bytes
@@ -304,65 +336,6 @@ class OSSHandler(BaseHandler, EnforceOverrides):
 
     #### Prompting methods ####
 
-    def _format_prompt(self, messages, function):
-        """
-        Manually apply the chat template to construct the formatted prompt.
-        This way, we can have full control over the final formatted prompt and is generally recommended for advanced use cases.
-        """
-        raise NotImplementedError(
-            "OSS Models should implement their own prompt formatting."
-        )
-
-    @override
-    def _query_prompting(self, inference_data: dict):
-        # We use the OpenAI Completions API
-        function: list[dict] = inference_data["function"]
-        message: list[dict] = inference_data["message"]
-
-        formatted_prompt: str = self._format_prompt(message, function)
-        inference_data["inference_input_log"] = {"formatted_prompt": formatted_prompt}
-
-        # Tokenize the formatted prompt to get token count
-        input_token_count = len(self.tokenizer.tokenize(formatted_prompt))
-
-        # Determine the number of tokens to request. Cap it at 4096 if the model has a larger limit.
-        if self.max_context_length < input_token_count + 2:
-            # If the prompt is already at the max length, just request 1000 token, we will get an error anyway
-            leftover_tokens_count = 1000
-        else:
-            leftover_tokens_count = min(
-                4096,
-                self.max_context_length - input_token_count - 2,
-            )
-
-        extra_body = {}
-        if hasattr(self, "stop_token_ids"):
-            extra_body["stop_token_ids"] = self.stop_token_ids
-        if hasattr(self, "skip_special_tokens"):
-            extra_body["skip_special_tokens"] = self.skip_special_tokens
-
-        start_time = time.time()
-        if len(extra_body) > 0:
-            api_response = self.client.completions.create(
-                model=self.model_path_or_id,
-                temperature=self.temperature,
-                prompt=formatted_prompt,
-                max_tokens=leftover_tokens_count,
-                extra_body=extra_body,
-                timeout=72000,  # Avoid timeout errors
-            )
-        else:
-            api_response = self.client.completions.create(
-                model=self.model_path_or_id,
-                temperature=self.temperature,
-                prompt=formatted_prompt,
-                max_tokens=leftover_tokens_count,
-                timeout=72000,  # Avoid timeout errors
-            )
-        end_time = time.time()
-
-        return api_response, end_time - start_time
-
     @override
     def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
         functions: list = test_entry["function"]
@@ -372,52 +345,4 @@ class OSSHandler(BaseHandler, EnforceOverrides):
             test_entry["question"][0], functions, test_entry_id
         )
 
-        return {"message": [], "function": functions}
-
-    @override
-    def _parse_query_response_prompting(self, api_response: Any) -> dict:
-        return {
-            "model_responses": api_response.choices[0].text,
-            "input_token": api_response.usage.prompt_tokens,
-            "output_token": api_response.usage.completion_tokens,
-        }
-
-    @override
-    def add_first_turn_message_prompting(
-        self, inference_data: dict, first_turn_message: list[dict]
-    ) -> dict:
-        inference_data["message"].extend(first_turn_message)
-        return inference_data
-
-    @override
-    def _add_next_turn_user_message_prompting(
-        self, inference_data: dict, user_message: list[dict]
-    ) -> dict:
-        inference_data["message"].extend(user_message)
-        return inference_data
-
-    @override
-    def _add_assistant_message_prompting(
-        self, inference_data: dict, model_response_data: dict
-    ) -> dict:
-        inference_data["message"].append(
-            {"role": "assistant", "content": model_response_data["model_responses"]}
-        )
-        return inference_data
-
-    @override
-    def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
-    ) -> dict:
-        for execution_result, decoded_model_response in zip(
-            execution_results, model_response_data["model_responses_decoded"]
-        ):
-            inference_data["message"].append(
-                {
-                    "role": "tool",
-                    "name": decoded_model_response,
-                    "content": execution_result,
-                }
-            )
-
-        return inference_data
+        return {"message": []}

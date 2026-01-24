@@ -15,6 +15,7 @@ class SalesforceQwenHandler(OSSHandler):
         **kwargs,
     ) -> None:
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        self.tool_call_parser = "xlam"
 
     @override
     def _format_prompt(self, messages, function):
@@ -69,6 +70,8 @@ class SalesforceQwenHandler(OSSHandler):
 
     @override
     def decode_ast(self, result, language, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_ast(result, language, has_tool_call_tag)
         # result = result.replace("<|python_tag|>", "")
         try:
             # Parse the JSON array of function calls
@@ -89,6 +92,8 @@ class SalesforceQwenHandler(OSSHandler):
 
     @override
     def decode_execute(self, result, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_execute(result, has_tool_call_tag)
         try:
             function_calls = json.loads(result)
             if not isinstance(function_calls, list):

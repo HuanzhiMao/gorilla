@@ -27,6 +27,7 @@ class PhiFCHandler(OSSHandler):
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_name_huggingface = model_name
         self.is_fc_model = True
+        self.tool_call_parser = "phi4mini"
 
     @override
     def _format_prompt(self, messages, function):
@@ -90,6 +91,8 @@ class PhiFCHandler(OSSHandler):
 
     @override
     def decode_ast(self, result, language, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_ast(result, language, has_tool_call_tag)
         # The input is already a list of dictionaries, so no need to decode
         # `[{func1:{param1:val1,...}},{func2:{param2:val2,...}}]`
         if type(result) != list or any(type(item) != dict for item in result):
@@ -98,6 +101,8 @@ class PhiFCHandler(OSSHandler):
 
     @override
     def decode_execute(self, result, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_execute(result, has_tool_call_tag)
         if type(result) != list or any(type(item) != dict for item in result):
             raise ValueError(f"Model did not return a list of function calls: {result}")
         return convert_to_function_call(result)

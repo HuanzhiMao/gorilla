@@ -56,6 +56,7 @@ class FunctionGemmaHandler(OSSHandler):
         **kwargs,
     ) -> None:
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        self.tool_call_parser = "functiongemma"
 
     def _escape(self, content: Any) -> str:
         """Helper to wrap content in escape tags."""
@@ -362,11 +363,15 @@ class FunctionGemmaHandler(OSSHandler):
 
     @override
     def decode_ast(self, result, language, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_ast(result, language, has_tool_call_tag)
         parsed_calls = self._parse_functiongemma_response(result)
         return [{name: args} for name, args in parsed_calls]
 
     @override
     def decode_execute(self, result, has_tool_call_tag):
+        if self.is_fc_model:
+            return super().decode_execute(result, has_tool_call_tag)
         parsed_calls = self._parse_functiongemma_response(result)
         execution_list = []
         for func_name, args_dict in parsed_calls:

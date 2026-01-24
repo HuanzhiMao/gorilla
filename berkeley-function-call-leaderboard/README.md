@@ -80,22 +80,11 @@ pip install bfcl-eval  # Be careful not to confuse with the unrelated `bfcl` pro
 
 ### Extra Dependencies for Self-Hosted Models
 
-For locally hosted models, choose one of the following backends, ensuring you have the right GPU and OS setup:
+For locally hosted models, we currently support vLLM:
 
-`sglang` is *much faster* than `vllm` in our specific multi-turn use case, but it only supports newer GPUs with SM 80+ (Ampere etc).
-If you are using an older GPU (T4/V100), you should use `vllm` instead as it supports a much wider range of GPUs.
-
-**Using `vllm`:**
 ```bash
 pip install -e .[oss_eval_vllm]
 ```
-
-**Using `sglang`:**
-```bash
-pip install -e .[oss_eval_sglang]
-```
-
-*Optional:* If using `sglang`, we recommend installing `flashinfer` for speedups. Find instructions [here](https://docs.flashinfer.ai/installation.html).
 
 ### Configuring Project Root Directory
 
@@ -220,7 +209,7 @@ bfcl generate --model MODEL_NAME --test-category TEST_CATEGORY --num-threads 1
 bfcl generate \
   --model MODEL_NAME \
   --test-category TEST_CATEGORY \
-  --backend {sglang|vllm} \
+  --backend vllm \
   --num-gpus 1 \
   --gpu-memory-utilization 0.9 \
   --local-model-path /path/to/base/model \
@@ -229,7 +218,7 @@ bfcl generate \
   --lora-modules module1="/path/to/lora/adapter1" module2="/path/to/lora/adapter2" # ← optional
 ```
 
-- Choose your backend using `--backend sglang` or `--backend vllm`. The default backend is `vllm`.
+- The vLLM backend is supported via `--backend vllm` (default).
 - Control GPU usage by adjusting `--num-gpus` (default `1`, relevant for multi-GPU tensor parallelism) and `--gpu-memory-utilization` (default `0.9`), which can help avoid out-of-memory errors.
 - `--local-model-path` (optional): Point this flag at a directory that already contains the model's files (`config.json`, tokenizer, weights, etc.). Use it only when you've pre-downloaded the model and the weights live somewhere other than the default `$HF_HOME` cache.
 - `--enable-lora` (optional): Enable LoRA for the vLLM backend. This flag is required to use LoRA modules. This only works when backend is `vllm`.
@@ -238,7 +227,7 @@ bfcl generate \
 
 ##### For Pre-existing OpenAI-compatible Endpoints
 
-If you have a server already running (e.g., vLLM in a SLURM cluster), you can bypass the vLLM/sglang setup phase and directly generate responses by using the `--skip-server-setup` flag:
+If you have a server already running (e.g., vLLM in a SLURM cluster), you can bypass the vLLM setup phase and directly generate responses by using the `--skip-server-setup` flag:
 
 ```bash
 bfcl generate --model MODEL_NAME --test-category TEST_CATEGORY --skip-server-setup
