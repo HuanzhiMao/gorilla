@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Optional
 
 import requests
-from rich.panel import p
 from bfcl_eval.constants.eval_config import LOCAL_SERVER_PORT
 from bfcl_eval.model_handler.api_inference.openai_completion import (
     OpenAICompletionsHandler,
