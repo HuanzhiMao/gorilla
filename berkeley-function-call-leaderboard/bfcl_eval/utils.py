@@ -1,11 +1,11 @@
+import base64
+import hashlib
 import json
 import os
-import hashlib
 import re
 from copy import deepcopy
 from pathlib import Path
 from threading import Lock
-from filelock import FileLock
 from typing import Union
 
 from bfcl_eval.constants.category_mapping import *
@@ -17,6 +17,7 @@ from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.executable_backend_config import (
     MULTI_TURN_FUNC_DOC_FILE_MAPPING,
 )
+from filelock import FileLock
 
 _FILE_LOCK_REGISTRY: dict[str, FileLock] = {}
 _FILE_LOCK_REGISTRY_LOCK = Lock()
@@ -192,6 +193,12 @@ def load_test_entries_from_id_file(id_file_path: Path) -> tuple[list[str], list[
 
 
 #### Predicate functions to check the test category ####
+def is_vision(test_category: str) -> bool:
+    # @HuanzhiMao fixme
+    # return True
+    return "vision" in test_category
+
+
 def is_format_sensitivity(test_category: str) -> bool:
     return "format_sensitivity" in test_category
 
@@ -269,7 +276,11 @@ def is_sql(test_category):
 
 
 def contain_multi_turn_interaction(test_category):
-    return is_multi_turn(test_category) or is_agentic(test_category)
+    return (
+        is_multi_turn(test_category)
+        or is_agentic(test_category)
+        or is_vision(test_category)
+    )
 
 
 def get_general_grouping(test_id: str) -> str:
@@ -283,7 +294,9 @@ def get_general_grouping(test_id: str) -> str:
     • agentic: categories in AGENTIC_CATEGORY
     • format_sensitivity: the format sensitivity test categories
     """
-    if is_format_sensitivity(test_id):
+    if is_vision(test_id):
+        return "vision"
+    elif is_format_sensitivity(test_id):
         return "format_sensitivity"
     elif is_non_live(test_id):
         return "non_live"
@@ -410,7 +423,12 @@ def load_dataset_entry(
     If `contain_prereq` is True, it will include the pre-requisite entries for the memory test categories.
     If `include_language_specific_hint` is True, it will include the language-specific hint for the function description (for Java, JavaScript, and Python).
     """
-    if is_format_sensitivity(test_category):
+    if is_vision(test_category):
+        # Vision categories
+        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_vision_base.json")
+        all_entries = load_vision_test_cases(all_entries, test_category)
+
+    elif is_format_sensitivity(test_category):
         # Format sensitivity categories
         all_entries = load_format_sensitivity_test_cases()
 
@@ -460,7 +478,7 @@ def load_ground_truth_entry(test_category: str) -> list[dict]:
         return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_{test_category}.json")
 
 
-def write_list_of_dicts_to_file(filename, data, subdir=None, use_lock: bool = True) -> None:
+def write_list_of_dicts_to_file(filename, data, subdir=None) -> None:
     """
     Write a list of dictionaries to a file.
     If `subdir` is provided, the file will be written to the subdirectory.
@@ -472,22 +490,13 @@ def write_list_of_dicts_to_file(filename, data, subdir=None, use_lock: bool = Tr
         # Construct the full path to the file
         filename = os.path.join(subdir, os.path.basename(filename))
 
-    abs_filename = os.path.abspath(filename)
-
-    def _write_entries(output_path: str):
-        """Internal helper that performs the actual write operation."""
-        with open(output_path, "w", encoding="utf-8") as f:
-            for i, entry in enumerate(data):
-                # Go through each key-value pair in the dictionary to make sure the values are JSON serializable
-                entry = make_json_serializable(entry)
-                json_str = json.dumps(entry, ensure_ascii=False) + "\n"
-                f.write(json_str)
-
-    if use_lock:
-        with _get_file_lock(abs_filename):
-            _write_entries(abs_filename)
-    else:
-        _write_entries(abs_filename)
+    # Write the list of dictionaries to the file in JSON format
+    with open(filename, "w", encoding="utf-8") as f:
+        for i, entry in enumerate(data):
+            # Go through each key-value pair in the dictionary to make sure the values are JSON serializable
+            entry = make_json_serializable(entry)
+            json_str = json.dumps(entry, ensure_ascii=False) + "\n"
+            f.write(json_str)
 
 
 def make_json_serializable(value):
@@ -546,6 +555,8 @@ def sort_key(entry):
     # Hopefully the prereq entries are done by now
     elif is_memory(test_category):
         priority = 4
+    elif is_vision(test_category):
+        priority = 5
 
     return (priority, test_category, int(index))
 
@@ -619,9 +630,9 @@ def is_empty_output(decoded_output):
 
 
 def _get_language_specific_hint(test_category):
-    if is_java(test_category):
+    if test_category == "java":
         return " Note that the provided function is in Java 8 SDK syntax."
-    elif is_js(test_category):
+    elif test_category == "javascript":
         return " Note that the provided function is in JavaScript syntax."
     else:
         return " Note that the provided function is in Python 3 syntax."
@@ -774,7 +785,8 @@ def populate_test_cases_with_predefined_functions(test_cases: list[dict]) -> lis
     Multi-turn and Agentic test cases don't have the function doc in the prompt. We need to add them here.
     """
     for entry in test_cases:
-        if not is_multi_turn(entry["id"]) and not is_agentic(entry["id"]):
+        # @HuanzhiMao double check this
+        if not contain_multi_turn_interaction(entry["id"]):
             continue
         involved_classes = entry["involved_classes"]
         entry["function"] = []
@@ -962,3 +974,52 @@ def get_all_format_sensitivity_configs() -> list[str]:
     )
 
     return all_configs
+
+
+#### Utils for Vision ####
+
+
+def load_vision_test_cases(all_entries: list[dict], test_category: str) -> list[dict]:
+    result = []
+    for entry in all_entries:
+        # @HuanzhiMao fixme, maybe optimize the dataset structure
+        user_query = entry["question"][0][0]["content"]
+        image_file_name = entry["image_file_name"]
+        if test_category == "vision_crop_169":
+            image_file_name = image_file_name.replace(".jpeg", "_169.jpeg")
+        elif test_category == "vision_crop_43":
+            image_file_name = image_file_name.replace(".jpeg", "_43.jpeg")
+        elif test_category == "vision_resize_169":
+            image_file_name = image_file_name.replace(".jpeg", "_resize_169.jpeg")
+        elif test_category == "vision_resize_43":
+            image_file_name = image_file_name.replace(".jpeg", "_resize_43.jpeg")
+        elif test_category == "vision_bw":
+            image_file_name = image_file_name.replace(".jpeg", "_bw.jpeg")
+        elif test_category == "vision_edge":
+            image_file_name = image_file_name.replace(".jpeg", "_edge.jpeg")
+        elif test_category == "vision_rg":
+            image_file_name = image_file_name.replace(".jpeg", "_rg.jpeg")
+        image_path = IMAGE_PATH / image_file_name
+        with open(image_path, "rb") as image_file:
+            image_bytes = image_file.read()
+        image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+
+        temp = {}
+        temp["involved_classes"] = ["VisionSearchAPI"]
+        temp["id"] = entry["id"].replace("vision_base", test_category)
+        temp["question"] = [
+            [
+                {
+                    "role": "user",
+                    "content": user_query,
+                    "image_content": {
+                        "image_base64": image_base64,
+                        "image_bytes": image_bytes,
+                        "image_path": str(image_path),
+                        "type": "image/jpeg",
+                    },
+                },
+            ]
+        ]
+        result.append(temp)
+    return result

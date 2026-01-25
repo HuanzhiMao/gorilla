@@ -189,6 +189,24 @@ class BaseHandler:
                     }
                 ]
 
+
+            current_turn_response = []
+            
+            current_turn_message_for_logging = deepcopy(current_turn_message)
+            if is_vision(test_category):
+                for message in current_turn_message_for_logging:
+                    if "image_content" in message:
+                        del message["image_content"]["image_bytes"]
+                        del message["image_content"]["image_base64"]
+                        
+            current_turn_inference_log: list[dict] = {
+                "begin_of_turn_query": current_turn_message_for_logging
+            }
+            current_turn_input_token_count: list[float] = []
+            current_turn_output_token_count: list[float] = []
+            current_turn_latency: list[float] = []
+            current_turn_reasoning_content = []
+
             if turn_idx == 0:
                 inference_data = self.add_first_turn_message_FC(
                     inference_data, current_turn_message
@@ -197,16 +215,8 @@ class BaseHandler:
                 inference_data = self._add_next_turn_user_message_FC(
                     inference_data, current_turn_message
                 )
-
-            current_turn_response = []
-            current_turn_inference_log: list[dict] = {
-                "begin_of_turn_query": current_turn_message
-            }
-            current_turn_input_token_count: list[float] = []
-            current_turn_output_token_count: list[float] = []
-            current_turn_latency: list[float] = []
-            current_turn_reasoning_content = []
-
+                
+                
             count = 0
             while True:
                 print("-" * 100)
@@ -259,9 +269,7 @@ class BaseHandler:
 
                 # Try decoding the model response
                 try:
-                    decoded_model_responses = self.decode_execute(
-                        model_responses, has_tool_call_tag=False
-                    )
+                    decoded_model_responses = self.decode_execute(model_responses, has_tool_call_tag=False)
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",
@@ -481,6 +489,25 @@ class BaseHandler:
                     }
                 ]
 
+
+            current_turn_response = []
+            current_turn_reasoning_content = []
+            
+            current_turn_message_for_logging = deepcopy(current_turn_message)
+            if is_vision(test_category):
+                for message in current_turn_message_for_logging:
+                    if "image_content" in message:
+                        del message["image_content"]["image_bytes"]
+                        del message["image_content"]["image_base64"]
+                        
+            current_turn_inference_log: list[dict] = {
+                "begin_of_turn_query": current_turn_message_for_logging
+            }
+
+            current_turn_input_token_count: list[float] = []
+            current_turn_output_token_count: list[float] = []
+            current_turn_latency: list[float] = []
+
             if turn_idx == 0:
                 inference_data = self.add_first_turn_message_prompting(
                     inference_data, current_turn_message
@@ -489,16 +516,8 @@ class BaseHandler:
                 inference_data = self._add_next_turn_user_message_prompting(
                     inference_data, current_turn_message
                 )
-
-            current_turn_response = []
-            current_turn_reasoning_content = []
-            current_turn_inference_log: list[dict] = {
-                "begin_of_turn_query": current_turn_message
-            }
-            current_turn_input_token_count: list[float] = []
-            current_turn_output_token_count: list[float] = []
-            current_turn_latency: list[float] = []
-
+                
+                
             count = 0
             while True:
                 print("-" * 100)
@@ -550,9 +569,7 @@ class BaseHandler:
 
                 # Try decoding the model response
                 try:
-                    decoded_model_responses = self.decode_execute(
-                        model_responses, has_tool_call_tag=False
-                    )
+                    decoded_model_responses = self.decode_execute(model_responses, has_tool_call_tag=False)
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",

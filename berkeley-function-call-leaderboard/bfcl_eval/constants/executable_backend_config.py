@@ -11,6 +11,7 @@ MULTI_TURN_FUNC_DOC_FILE_MAPPING = {
     "MemoryAPI_kv": "memory_kv.json",
     "MemoryAPI_vector": "memory_vector.json",
     "MemoryAPI_rec_sum": "memory_rec_sum.json",
+    "VisionSearchAPI": "vision_web_search.json",
 }
 
 BACKEND_PATH_PREFIX = "bfcl_eval.eval_checker.multi_turn_eval.func_source_code"
@@ -29,11 +30,13 @@ CLASS_FILE_PATH_MAPPING = {
     "MemoryAPI_kv": f"{BACKEND_PATH_PREFIX}.memory_kv",
     "MemoryAPI_vector": f"{BACKEND_PATH_PREFIX}.memory_vector",
     "MemoryAPI_rec_sum": f"{BACKEND_PATH_PREFIX}.memory_rec_sum",
+    "VisionSearchAPI": f"{BACKEND_PATH_PREFIX}.vision_web_search",
 }
 
 # These classes are stateless and do not require any initial configuration
 STATELESS_CLASSES = [
     "MathAPI",
+    "VisionSearchAPI",
 ]
 
 # These classes are stateful, but their state is either too verbose to include in the inference log or doesn't provide meaningful insights

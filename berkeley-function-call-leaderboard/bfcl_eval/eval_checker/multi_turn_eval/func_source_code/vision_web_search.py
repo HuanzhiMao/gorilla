@@ -1,47 +1,18 @@
 import os
 import random
 import time
+import base64
 from typing import Optional
-from urllib.parse import urlparse
 
 import html2text
 import requests
 from bs4 import BeautifulSoup
 from serpapi import GoogleSearch
 
-ERROR_TEMPLATES = [
-    "503 Server Error: Service Unavailable for url: {url}",
-    "429 Client Error: Too Many Requests for url: {url}",
-    "403 Client Error: Forbidden for url: {url}",
-    (
-        "HTTPSConnectionPool(host='{host}', port=443): Max retries exceeded with url: {path} "
-        "(Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x{id1:x}>, "
-        "'Connection to {host} timed out. (connect timeout=5)'))"
-    ),
-    "HTTPSConnectionPool(host='{host}', port=443): Read timed out. (read timeout=5)",
-    (
-        "Max retries exceeded with url: {path} "
-        "(Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x{id2:x}>: "
-        "Failed to establish a new connection: [Errno -2] Name or service not known'))"
-    ),
-]
 
-
-class WebSearchAPI:
+class VisionSearchAPI:
     def __init__(self):
         self._api_description = "This tool belongs to the Web Search API category. It provides functions to search the web and browse search results."
-        self.show_snippet = True
-        # Note: The following two random generators are used to simulate random errors, but that feature is not currently used
-        # This one used to determine if we should simulate a random error
-        # Outcome (True means simulate error): [True, False, True, True, False, True, True, True, False, False, True, True, False, True, False, False, False, False, False, True]
-        self._random = random.Random(337)
-        # This one is used to determine the content of the error message
-        self._rng = random.Random(1053)
-
-    def _load_scenario(self, initial_config: dict, long_context: bool = False):
-        # We don't care about the long_context parameter here
-        # It's there to match the signature of functions in the multi-turn evaluation code
-        self.show_snippet = initial_config["show_snippet"]
 
     def search_engine_query(
         self,
@@ -166,12 +137,33 @@ class WebSearchAPI:
                     print(error_block)
                     return {"error": str(e)}
 
-            # SerpAPI sometimes returns the error in the payload instead of raising
-            if "error" in search_results and "429" in str(search_results["error"]):
+            # Handle cases where SerpAPI returns an "error" key in the payload.
+            # If the error indicates that DuckDuckGo simply found no results for the query, we
+            # treat this as a normal (non-exceptional) outcome and return an empty list so the
+            # caller can decide how to proceed.  For all other error messages – or if the
+            # expected "organic_results" field is missing – we assume this is a transient
+            # issue (e.g., rate-limited) and retry with exponential back-off.
+
+            if "error" in search_results and (
+                isinstance(search_results["error"], str)
+                and "hasn't returned any results" in search_results["error"]
+            ):
+                # Nothing found – return empty result set immediately.
+                return (
+                    "Error: The search engine hasn't returned any results for this query."
+                )
+            if "error" in search_results and (
+                isinstance(search_results["error"], str)
+                and "Unsupported" in search_results["error"]
+            ):
+                # Unsupported parameter
+                return search_results['error']
+
+            if "error" in search_results or "organic_results" not in search_results:
                 wait_time = backoff + random.uniform(0, backoff)
                 error_block = (
                     "*" * 100
-                    + f"\n❗️❗️ [WebSearchAPI] Received 429 from SerpAPI. The number of requests sent using this API key exceeds the hourly throughput limit OR your account has run out of searches. Retrying in {wait_time:.1f} seconds…"
+                    + f"\n❗️❗️ [WebSearchAPI] Received error from SerpAPI. Retrying in {wait_time:.1f} seconds… {str(search_results)}"
                     + "*" * 100
                 )
                 print(error_block)
@@ -181,32 +173,23 @@ class WebSearchAPI:
 
             break  # Success – no rate-limit error detected
 
-        # @HuanzhiMao fix this
-        if "organic_results" not in search_results:
-            return {
-                "error": "Failed to retrieve the search results from server. Please try again later."
-            }
+        # if "organic_results" not in search_results:
+        #     return {
+        #         "error": "Failed to retrieve the search results from server. Please try again later."
+        #     }
 
         search_results = search_results["organic_results"]
 
         # Convert the search results to the desired format
         results = []
         for result in search_results[:max_results]:
-            if self.show_snippet:
-                results.append(
-                    {
-                        "title": result["title"],
-                        "href": result["link"],
-                        "body": result["snippet"],
-                    }
-                )
-            else:
-                results.append(
-                    {
-                        "title": result["title"],
-                        "href": result["link"],
-                    }
-                )
+            results.append(
+                {
+                    "title": result["title"],
+                    "href": result["link"],
+                    "body": result["snippet"],
+                }
+            )
 
         return results
 
@@ -251,11 +234,6 @@ class WebSearchAPI:
             response = requests.get(url, headers=headers, timeout=20, allow_redirects=True)
             response.raise_for_status()
 
-            # Note: Un-comment this when we want to simulate a random error
-            # Flip a coin to simulate a random error
-            # if self._random.random() < 0.95:
-            #     return {"error": self._fake_requests_get_error_msg(url)}
-
             # Process the response based on the mode
             if mode == "raw":
                 return {"content": response.text}
@@ -281,20 +259,42 @@ class WebSearchAPI:
         except Exception as e:
             return {"error": f"An error occurred while fetching {url}: {str(e)}"}
 
-    def _fake_requests_get_error_msg(self, url: str) -> str:
-        """
-        Return a realistic‑looking requests/urllib3 error message.
-        """
-        parsed = urlparse(url)
+    # def fetch_image_base64(self, image_url: str) -> dict:
+    #     """Fetch an image from a URL and return its Base64-encoded representation.
 
-        context = {
-            "url": url,
-            "host": parsed.hostname or "unknown",
-            "path": parsed.path or "/",
-            "id1": self._rng.randrange(0x10000000, 0xFFFFFFFF),
-            "id2": self._rng.randrange(0x10000000, 0xFFFFFFFF),
-        }
+    #     Args:
+    #         image_url (str): Publicly accessible URL pointing to an image (jpg, png, gif, etc.). It must start with 'http://' or 'https://'.
 
-        template = self._rng.choice(ERROR_TEMPLATES)
+    #     Returns:
+    #         dict: {
+    #             "content": <base64 str>
+    #         } on success or {
+    #             "error": <error str>
+    #         } on failure.
+    #     """
 
-        return template.format(**context)
+    #     if not image_url.startswith(("http://", "https://")):
+    #         return {"error": f"Invalid URL: {image_url}"}
+
+    #     try:
+    #         headers = {
+    #             "User-Agent": (
+    #                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    #                 "AppleWebKit/537.36 (KHTML, like Gecko) "
+    #                 "Chrome/112.0.0.0 Safari/537.36"
+    #             )
+    #         }
+    #         response = requests.get(image_url, headers=headers, timeout=20, allow_redirects=True)
+    #         response.raise_for_status()
+
+    #         # Ensure content-type is image/*
+    #         content_type = response.headers.get("Content-Type", "")
+    #         if not content_type.startswith("image/"):
+    #             return {"error": f"URL does not point to an image. Content-Type: {content_type}"}
+
+    #         encoded_string = base64.b64encode(response.content).decode("utf-8")
+    #         return {"content": encoded_string}
+
+    #     except Exception as e:
+    #         return {"error": f"An error occurred while fetching {image_url}: {str(e)}"}
+
