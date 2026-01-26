@@ -22,6 +22,8 @@ from google.genai.types import (
     Part,
     ThinkingConfig,
     Tool,
+    FunctionResponsePart,
+    FunctionResponseBlob,
 )
 
 
@@ -191,12 +193,26 @@ class GeminiHandler(BaseHandler):
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
         for message in first_turn_message:
+            if "image_content" in message:
+                parts = []
+                parts.append(Part(text=message["content"]))
+                for image_content in message["image_content"]:
+                    parts.append(
+                        Part.from_bytes(
+                            data=image_content["image_bytes"],
+                            mime_type=image_content["type"],
+                        )
+                    )
+
+                del message["image_content"]
+
+            else:
+                parts = [Part(text=message["content"])]
+
             inference_data["message"].append(
                 Content(
                     role=message["role"],
-                    parts=[
-                        Part(text=message["content"]),
-                    ],
+                    parts=parts,
                 )
             )
         return inference_data
@@ -226,14 +242,30 @@ class GeminiHandler(BaseHandler):
         for execution_result, tool_call_func_name in zip(
             execution_results, model_response_data["tool_call_func_names"]
         ):
-            tool_response_parts.append(
-                Part.from_function_response(
-                    name=tool_call_func_name,
-                    response={
-                        "result": execution_result,
-                    },
+            if execution_result["result_type"] == "text":
+                tool_response_parts.append(
+                    Part.from_function_response(
+                        name=tool_call_func_name,
+                        response={
+                            "result": execution_result,
+                        },
+                    )
                 )
-            )
+            elif execution_result["result_type"] == "image":
+                tool_response_parts.append(
+                    Part.from_function_response(
+                        name=tool_call_func_name,
+                        response={},
+                        parts=[
+                            FunctionResponsePart(
+                                inline_data=FunctionResponseBlob(
+                                    data=execution_result["result"]["image_bytes"],
+                                    mime_type=execution_result["result"]["type"],
+                                ),
+                            )
+                        ],
+                    )
+                )
 
         tool_response_content = Content(role="user", parts=tool_response_parts)
         inference_data["message"].append(tool_response_content)
