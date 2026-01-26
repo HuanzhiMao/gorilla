@@ -1,0 +1,1 @@
+{"name": "fetch_image", "description": "This tool belongs to the street view API, which allows users to fetch an image. You must call this function.", "parameters": {"type": "dict", "properties": {}}, "required": []}

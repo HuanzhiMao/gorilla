@@ -105,3 +105,9 @@ You have access to an advanced memory system, which is persistent across multipl
 Here is the content of your memory system from previous interactions:
 {memory_content}
 """
+
+
+
+#### Vision Prompts ####
+
+VISION_TOOL_RESPONSE_TEXT_PROMPT = "This tool returns an image as its response. The image will be provided in the next user message."

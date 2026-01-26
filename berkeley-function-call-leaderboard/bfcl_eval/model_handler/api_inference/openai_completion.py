@@ -3,9 +3,10 @@ import os
 import time
 from typing import Any
 
+from bfcl_eval.constants.default_prompts import VISION_TOOL_RESPONSE_TEXT_PROMPT
+from bfcl_eval.constants.enums import ModelStyle
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
-from bfcl_eval.constants.enums import ModelStyle
 from bfcl_eval.model_handler.utils import (
     convert_to_function_call,
     convert_to_tool,
@@ -79,6 +80,7 @@ class OpenAICompletionsHandler(BaseHandler):
     @retry_with_backoff(error_type=RateLimitError)
     def generate_with_backoff(self, **kwargs):
         start_time = time.time()
+        # print(kwargs)
         api_response = self.client.chat.completions.create(**kwargs)
         end_time = time.time()
 
@@ -142,14 +144,31 @@ class OpenAICompletionsHandler(BaseHandler):
     def add_first_turn_message_FC(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
+        for message in first_turn_message:
+            if "image_content" in message:
+                image_content_list = message["image_content"]
+                new_content = []
+                new_content.append({"type": "text", "text": message["content"]})
+                for image_content in image_content_list:
+                    new_content.append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:{image_content['type']};base64,{image_content['image_base64']}"
+                            },
+                        }
+                    )
+                message["content"] = new_content
+                del message["image_content"]
+            else:
+                message["content"] = [{"type": "text", "text": message["content"]}]
         inference_data["message"].extend(first_turn_message)
         return inference_data
 
     def _add_next_turn_user_message_FC(
         self, inference_data: dict, user_message: list[dict]
     ) -> dict:
-        inference_data["message"].extend(user_message)
-        return inference_data
+        return self.add_first_turn_message_FC(inference_data, user_message)
 
     def _add_assistant_message_FC(
         self, inference_data: dict, model_response_data: dict
@@ -165,16 +184,39 @@ class OpenAICompletionsHandler(BaseHandler):
         execution_results: list[str],
         model_response_data: dict,
     ) -> dict:
+        # @HuanzhiMao FIXME: might need to turn this into constants
+        user_role_image_message = {
+            "role": "user",
+            "content": "The user gives no new instructions. ",
+            "image_content": [],
+        }
         # Add the execution results to the current round result, one at a time
         for execution_result, tool_call_id in zip(
             execution_results, model_response_data["tool_call_ids"]
         ):
-            tool_message = {
-                "role": "tool",
-                "content": execution_result,
-                "tool_call_id": tool_call_id,
-            }
-            inference_data["message"].append(tool_message)
+            if execution_result["result_type"] == "text":
+                tool_message = {
+                    "role": "tool",
+                    "content": execution_result["result"],
+                    "tool_call_id": tool_call_id,
+                }
+                inference_data["message"].append(tool_message)
+            elif execution_result["result_type"] == "image":
+                user_role_image_message[
+                    "content"
+                ] += f"Tool response for tool call id {tool_call_id} is an image, attached below. "
+                user_role_image_message["image_content"].append(execution_result["result"])
+                tool_message = {
+                    "role": "tool",
+                    "content": VISION_TOOL_RESPONSE_TEXT_PROMPT,
+                    "tool_call_id": tool_call_id,
+                }
+                inference_data["message"].append(tool_message)
+
+        if len(user_role_image_message["image_content"]) > 0:
+            inference_data = self._add_next_turn_user_message_FC(
+                inference_data, [user_role_image_message]
+            )
 
         return inference_data
 
@@ -256,6 +298,23 @@ class OpenAICompletionsHandler(BaseHandler):
     def add_first_turn_message_prompting(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
+        for message in first_turn_message:
+            if "image_content" in message:
+                image_content_list = message["image_content"]
+                new_content = []
+                for image_content in image_content_list:
+                    new_content.append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:{image_content['type']};base64,{image_content['image_base64']}"
+                            },
+                        }
+                    )
+                new_content.append({"type": "text", "text": message["content"]})
+                message["content"] = new_content
+                del message["image_content"]
+
         inference_data["message"].extend(first_turn_message)
         return inference_data
 

@@ -3,11 +3,13 @@ import importlib
 import inspect
 import json
 import re
+from unittest import result
 
 from bfcl_eval.constants.executable_backend_config import (
     CLASS_FILE_PATH_MAPPING,
     STATELESS_CLASSES,
 )
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code import ImageResult
 
 
 def execute_multi_turn_func_call(
@@ -29,11 +31,9 @@ def execute_multi_turn_func_call(
     involved_instances = {}
     for class_name in involved_classes:
         module_name = CLASS_FILE_PATH_MAPPING[class_name]
-        # TODO: Handler the model name issue from handler more elegantly
-        instance_name = (
-            f"{model_name}_{test_entry_id}_{class_name}_instance"
-        )
-        instance_name = re.sub(r'[-./]', '_', instance_name)
+        # TODO: Handle the model name issue from handler more elegantly
+        instance_name = f"{model_name}_{test_entry_id}_{class_name}_instance"
+        instance_name = re.sub(r"[-./]", "_", instance_name)
         if instance_name not in globals():
             module = importlib.import_module(module_name)
             class_ = getattr(module, class_name)
@@ -67,7 +67,7 @@ def execute_multi_turn_func_call(
 
         # Evaluate the function call
         try:
-            # We need to make a copy here because otherwise the `eval(func_call)` would error. 
+            # We need to make a copy here because otherwise the `eval(func_call)` would error.
             func_call_copy = func_call
             # Before calling `eval`, we need to make sure that the function call is safe
             # We do so by checking if the function is `kill` or `exit`, etc.
@@ -77,25 +77,51 @@ def execute_multi_turn_func_call(
             # Situation where the function call is a method call
             if "." in func_call_copy:
                 func_call_copy = func_call_copy.split(".")[1]
-            if func_call_copy in ["kill", "exit", "quit", "remove", "unlink", "popen", "Popen", "run"]:
+            if func_call_copy.lower() in [
+                "kill",
+                "exit",
+                "quit",
+                "remove",
+                "unlink",
+                "popen",
+                "run",
+            ]:
                 raise Exception(f"Function call {func_call_copy} is not allowed.")
 
             func_call_result = eval(func_call)
+            # @HuanzhiMao FIXME: Use enum for this
+            result_type = "text"
 
-            if type(func_call_result) == str:
-                pass
-            elif type(func_call_result) == dict:
-                # Some function returns a object instance, which is not serializable
-                try:
-                    func_call_result = json.dumps(func_call_result)
-                except:
-                    func_call_result = str(func_call_result)
+            # Every result should be a dict with "result" and "result_type" keys
+            # @HuanzhiMao FIXME: Maybe we should use a more elegant way to handle this
+            if isinstance(func_call_result, ImageResult):
+                result_type = "image"
+                func_call_result = func_call_result.to_dict()
             else:
-                func_call_result = str(func_call_result)
+                if type(func_call_result) == str:
+                    pass
+                elif type(func_call_result) == dict:
+                    # Check if this is an image result (has _type: "image")
+                    # Image results are kept as JSON for special handling by model handlers
+                    try:
+                        func_call_result = json.dumps(func_call_result)
+                    except:
+                        func_call_result = str(func_call_result)
+                else:
+                    func_call_result = str(func_call_result)
 
-            execution_results.append(func_call_result)
+            # @HuanzhiMao FIXME: update all related code for this new format
+            execution_results.append(
+                {
+                    "result": func_call_result,
+                    "result_type": result_type,
+                }
+            )
         except Exception as e:
-            execution_results.append(f"Error during execution: {str(e)}")
+            execution_results.append({
+                "result": f"Error during execution: {str(e)}",
+                "result_type": "text",
+            })
 
     return execution_results, involved_instances
 
