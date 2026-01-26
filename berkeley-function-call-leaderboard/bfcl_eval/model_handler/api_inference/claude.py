@@ -55,7 +55,10 @@ class ClaudeHandler(BaseHandler):
             function_call = convert_to_function_call(result)
             return function_call
 
-    @retry_with_backoff(error_type=RateLimitError, error_message_pattern=r".*Your credit balance is too low.*")
+    @retry_with_backoff(
+        error_type=RateLimitError,
+        error_message_pattern=r".*Your credit balance is too low.*",
+    )
     def generate_with_backoff(self, **kwargs):
         start_time = time.time()
         api_response = self.client.messages.create(**kwargs)
@@ -69,7 +72,7 @@ class ClaudeHandler(BaseHandler):
         """
         if "claude-opus-4-5-20251101" in self.model_name:
             return 64000
-        elif "claude-sonnet-4-5-20250929" in self.model_name:  
+        elif "claude-sonnet-4-5-20250929" in self.model_name:
             return 64000
         elif "claude-haiku-4-5-20251001" in self.model_name:
             return 64000
@@ -182,17 +185,31 @@ class ClaudeHandler(BaseHandler):
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
         for message in first_turn_message:
-            message["content"] = [{"type": "text", "text": message["content"]}]
-        inference_data["message"].extend(first_turn_message)
+            if "image_content" in message:
+                new_content = []
+                new_content.append({"type": "text", "text": message["content"]})
+                for image_content in message["image_content"]:
+                    new_content.append(
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "data": image_content["image_base64"],
+                                "media_type": image_content["type"],
+                            },
+                        }
+                    )
+                del message["image_content"]
+                message["content"] = new_content
+            else:
+                message["content"] = [{"type": "text", "text": message["content"]}]
+            inference_data["message"].append(message)
         return inference_data
 
     def _add_next_turn_user_message_FC(
         self, inference_data: dict, user_message: list[dict]
     ) -> dict:
-        for message in user_message:
-            message["content"] = [{"type": "text", "text": message["content"]}]
-        inference_data["message"].extend(user_message)
-        return inference_data
+        return self.add_first_turn_message_FC(inference_data, user_message)
 
     def _add_assistant_message_FC(
         self, inference_data: dict, model_response_data: dict
@@ -219,13 +236,31 @@ class ClaudeHandler(BaseHandler):
         for execution_result, tool_call_id in zip(
             execution_results, model_response_data["tool_call_ids"]
         ):
-            tool_message["content"].append(
-                {
-                    "type": "tool_result",
-                    "content": execution_result,
-                    "tool_use_id": tool_call_id,
-                }
-            )
+            if execution_result["result_type"] == "text":
+                tool_message["content"].append(
+                    {
+                        "type": "tool_result",
+                        "content": execution_result,
+                        "tool_use_id": tool_call_id,
+                    }
+                )
+            elif execution_result["result_type"] == "image":
+                tool_message["content"].append(
+                    {
+                        "type": "tool_result",
+                        "content": [
+                            {
+                                "type": "image",
+                                "source": {
+                                    "type": "base64",
+                                    "data": execution_result["result"]["image_base64"],
+                                    "media_type": execution_result["result"]["type"],
+                                },
+                            }
+                        ],
+                        "tool_use_id": tool_call_id,
+                    }
+                )
 
         inference_data["message"].append(tool_message)
 
