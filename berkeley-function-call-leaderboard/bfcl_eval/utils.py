@@ -478,7 +478,7 @@ def load_ground_truth_entry(test_category: str) -> list[dict]:
         return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_{test_category}.json")
 
 
-def write_list_of_dicts_to_file(filename, data, subdir=None) -> None:
+def write_list_of_dicts_to_file(filename, data, subdir=None, use_lock: bool = True) -> None:
     """
     Write a list of dictionaries to a file.
     If `subdir` is provided, the file will be written to the subdirectory.
@@ -490,13 +490,22 @@ def write_list_of_dicts_to_file(filename, data, subdir=None) -> None:
         # Construct the full path to the file
         filename = os.path.join(subdir, os.path.basename(filename))
 
-    # Write the list of dictionaries to the file in JSON format
-    with open(filename, "w", encoding="utf-8") as f:
-        for i, entry in enumerate(data):
-            # Go through each key-value pair in the dictionary to make sure the values are JSON serializable
-            entry = make_json_serializable(entry)
-            json_str = json.dumps(entry, ensure_ascii=False) + "\n"
-            f.write(json_str)
+    abs_filename = os.path.abspath(filename)
+
+    def _write_entries(output_path: str):
+        """Internal helper that performs the actual write operation."""
+        with open(output_path, "w", encoding="utf-8") as f:
+            for i, entry in enumerate(data):
+                # Go through each key-value pair in the dictionary to make sure the values are JSON serializable
+                entry = make_json_serializable(entry)
+                json_str = json.dumps(entry, ensure_ascii=False) + "\n"
+                f.write(json_str)
+
+    if use_lock:
+        with _get_file_lock(abs_filename):
+            _write_entries(abs_filename)
+    else:
+        _write_entries(abs_filename)
 
 
 def make_json_serializable(value):
