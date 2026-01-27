@@ -980,7 +980,7 @@ def get_all_format_sensitivity_configs() -> list[str]:
 
 
 def load_vision_test_cases(all_entries: list[dict], test_category: str) -> list[dict]:
-    return [{"id": "vision_base_0", "question": [[{"role": "user", "content": "You must call the fetch_image function to fetch an image and tell me what's in the image."}]], "function": [], "involved_classes": ["StreetViewAPI"]}]
+    # return [{"id": "vision_base_0", "question": [[{"role": "user", "content": "You must call the fetch_image function to fetch an image and tell me what's in the image."}]], "function": [], "involved_classes": ["StreetViewAPI"]}]
     result = []
     for entry in all_entries:
         # @HuanzhiMao fixme, maybe optimize the dataset structure
