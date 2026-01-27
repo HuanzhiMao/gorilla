@@ -196,8 +196,8 @@ class BaseHandler:
             if is_vision(test_category):
                 for message in current_turn_message_for_logging:
                     if "image_content" in message:
-                        del message["image_content"]["image_bytes"]
-                        del message["image_content"]["image_base64"]
+                        del message["image_content"][0]["image_bytes"]
+                        del message["image_content"][0]["image_base64"]
                         
             current_turn_inference_log: list[dict] = {
                 "begin_of_turn_query": current_turn_message_for_logging
