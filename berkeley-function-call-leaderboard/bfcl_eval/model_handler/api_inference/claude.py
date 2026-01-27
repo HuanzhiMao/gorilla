@@ -240,7 +240,7 @@ class ClaudeHandler(BaseHandler):
                 tool_message["content"].append(
                     {
                         "type": "tool_result",
-                        "content": execution_result,
+                        "content": execution_result["result"],
                         "tool_use_id": tool_call_id,
                     }
                 )

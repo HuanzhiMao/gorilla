@@ -2,8 +2,8 @@ import copy
 import importlib
 import inspect
 import json
+import keyword
 import re
-from unittest import result
 
 from bfcl_eval.constants.executable_backend_config import (
     CLASS_FILE_PATH_MAPPING,
@@ -31,9 +31,8 @@ def execute_multi_turn_func_call(
     involved_instances = {}
     for class_name in involved_classes:
         module_name = CLASS_FILE_PATH_MAPPING[class_name]
-        # TODO: Handle the model name issue from handler more elegantly
         instance_name = f"{model_name}_{test_entry_id}_{class_name}_instance"
-        instance_name = re.sub(r"[-./]", "_", instance_name)
+        instance_name = _sanitize_class_instance_name(instance_name)
         if instance_name not in globals():
             module = importlib.import_module(module_name)
             class_ = getattr(module, class_name)
@@ -118,12 +117,32 @@ def execute_multi_turn_func_call(
                 }
             )
         except Exception as e:
-            execution_results.append({
-                "result": f"Error during execution: {str(e)}",
-                "result_type": "text",
-            })
+            raise e
+            execution_results.append(
+                {
+                    "result": f"Error during execution: {str(e)}",
+                    "result_type": "text",
+                }
+            )
 
     return execution_results, involved_instances
+
+
+def _sanitize_class_instance_name(name: str) -> str:
+    # Replace any non-word char with underscore. \w includes Unicode letters/digits/underscore.
+    name = re.sub(r"\W", "_", name, flags=re.UNICODE)
+
+    # Identifiers can't start with a digit, and can't be empty
+    if not name:
+        raise ValueError(f"Invalid identifier for class instance name: {name}")
+    if name[0].isdigit():
+        name = "_" + name
+
+    # Can't be a keyword
+    if keyword.iskeyword(name):
+        name += "_"
+
+    return name
 
 
 def is_empty_execute_response(input_list: list):

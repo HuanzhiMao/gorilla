@@ -247,7 +247,7 @@ class GeminiHandler(BaseHandler):
                     Part.from_function_response(
                         name=tool_call_func_name,
                         response={
-                            "result": execution_result,
+                            "result": execution_result["result"],
                         },
                     )
                 )
