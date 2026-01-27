@@ -116,6 +116,30 @@ class ModelConfig:
 
 # Inference through API calls
 api_inference_model_map = {
+    "claude-opus-4-1-20250805-FC": ModelConfig(
+        model_name="claude-opus-4-1-20250805",
+        display_name="Claude-Opus-4-1-20250805 (FC)",
+        url="https://www.anthropic.com/news/claude-4",
+        org="Anthropic",
+        license="Proprietary",
+        model_handler=ClaudeHandler,
+        input_price=15,
+        output_price=75,
+        is_fc_model=True,
+        underscore_to_dot=True,
+    ),
+    "gemini-2.5-pro-FC": ModelConfig(
+        model_name="gemini-2.5-pro",
+        display_name="Gemini-2.5-Pro (FC)",
+        url="https://deepmind.google/technologies/gemini/pro/",
+        org="Google",
+        license="Proprietary",
+        model_handler=GeminiHandler,
+        input_price=1.5,
+        output_price=10,
+        is_fc_model=True,
+        underscore_to_dot=True,
+    ),
     "gpt-5-2025-08-07-FC": ModelConfig(
         model_name="gpt-5-2025-08-07",
         display_name="GPT-5-2025-08-07 (FC)",

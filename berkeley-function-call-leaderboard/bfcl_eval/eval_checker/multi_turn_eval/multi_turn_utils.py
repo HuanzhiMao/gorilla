@@ -117,7 +117,7 @@ def execute_multi_turn_func_call(
                 }
             )
         except Exception as e:
-            raise e
+            # raise e
             execution_results.append(
                 {
                     "result": f"Error during execution: {str(e)}",
