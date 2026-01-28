@@ -53,7 +53,7 @@ VISION_CATEGORY = [
     # "vision_edge",
     # "vision_rg",
     "geogesser_type1",
-    # "geogesser_type2",
+    "geogesser_type2",
     # "geogesser_type3",
 ]
 

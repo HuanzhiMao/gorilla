@@ -18,7 +18,7 @@ class StreetViewAPI:
 
         self._base_url = os.getenv("GEOGUESSR_SERVER_URL", "http://127.0.0.1:8000")
         self._session = requests.Session()
-        self._timeout = (3.05, 30)
+        self._timeout = (15, 6000)  # (connect timeout, read timeout)
         # The client only retains the session identifier. All other state lives
         # on the server and can be fetched via GET /state when needed.
         self.session_id: Optional[str] = None

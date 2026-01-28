@@ -56,3 +56,8 @@ OMIT_STATE_INFO_CLASSES = [
 UPDATED_TOOL_LIST_CLASSES = [
     "StreetViewAPI",
 ]
+
+# These classes need to be closed after the evaluation is complete
+END_SESSION_AFTER_EVAL_CLASSES = [
+    "StreetViewAPI",
+]
