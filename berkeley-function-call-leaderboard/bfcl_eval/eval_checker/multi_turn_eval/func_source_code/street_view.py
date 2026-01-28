@@ -190,7 +190,9 @@ class StreetViewAPI:
     # ------------------------------------------------------------------
 
     def capture_view(self) -> Dict[str, Any]:
-        """Capture the current panorama image. Returns an image of the current panorama."""
+        """
+        Capture the current panorama image. Returns an image of the current panorama.
+        """
         result = self._call("POST", "/capture/view")
         return ImageResult(
             image_base64=result.get("image_base64", ""), mime_type="image/jpeg"
@@ -201,59 +203,100 @@ class StreetViewAPI:
     # ------------------------------------------------------------------
 
     def move_north(self) -> Dict[str, Any]:
-        """Move to the adjacent panorama in the North direction."""
+        """
+        Move to the adjacent panorama in the North direction.
+
+        Returns:
+            status (bool): True if the operation is successful, False otherwise.
+        """
         result = self._call("POST", "/move/north")
         self.available_moves = result.get("available_moves", [])
-        return None
+        return {"status": "success"}
 
     def move_northeast(self) -> Dict[str, Any]:
-        """Move to the adjacent panorama in the Northeast direction."""
+        """
+        Move to the adjacent panorama in the Northeast direction.
+
+        Returns:
+            status (bool): True if the operation is successful, False otherwise.
+        """
         result = self._call("POST", "/move/northeast")
         self.available_moves = result.get("available_moves", [])
-        return None
+        return {"status": "success"}
 
     def move_east(self) -> Dict[str, Any]:
-        """Move to the adjacent panorama in the East direction."""
+        """
+        Move to the adjacent panorama in the East direction.
+
+        Returns:
+            status (bool): True if the operation is successful, False otherwise.
+        """
         result = self._call("POST", "/move/east")
         self.available_moves = result.get("available_moves", [])
-        return None
+        return {"status": "success"}
 
     def move_southeast(self) -> Dict[str, Any]:
-        """Move to the adjacent panorama in the Southeast direction."""
+        """
+        Move to the adjacent panorama in the Southeast direction.
+
+        Returns:
+            status (bool): True if the operation is successful, False otherwise.
+        """
         result = self._call("POST", "/move/southeast")
         self.available_moves = result.get("available_moves", [])
-        return None
+        return {"status": "success"}
 
     def move_south(self) -> Dict[str, Any]:
-        """Move to the adjacent panorama in the South direction."""
+        """
+        Move to the adjacent panorama in the South direction.
+
+        Returns:
+            status (bool): True if the operation is successful, False otherwise.
+        """
         result = self._call("POST", "/move/south")
         self.available_moves = result.get("available_moves", [])
-        return None
+        return {"status": "success"}
 
     def move_southwest(self) -> Dict[str, Any]:
-        """Move to the adjacent panorama in the Southwest direction."""
+        """
+        Move to the adjacent panorama in the Southwest direction.
+
+        Returns:
+            status (bool): True if the operation is successful, False otherwise.
+        """
         result = self._call("POST", "/move/southwest")
         self.available_moves = result.get("available_moves", [])
-        return None
+        return {"status": "success"}
 
     def move_west(self) -> Dict[str, Any]:
-        """Move to the adjacent panorama in the West direction."""
+        """
+        Move to the adjacent panorama in the West direction.
+
+        Returns:
+            status (bool): True if the operation is successful, False otherwise.
+        """
         result = self._call("POST", "/move/west")
         self.available_moves = result.get("available_moves", [])
-        return None
+        return {"status": "success"}
 
     def move_northwest(self) -> Dict[str, Any]:
-        """Move to the adjacent panorama in the Northwest direction."""
+        """
+        Move to the adjacent panorama in the Northwest direction.
+
+        Returns:
+            status (bool): True if the operation is successful, False otherwise.
+        """
         result = self._call("POST", "/move/northwest")
         self.available_moves = result.get("available_moves", [])
-        return None
+        return {"status": "success"}
 
     # ------------------------------------------------------------------
     # Scroll (camera rotation)
     # ------------------------------------------------------------------
 
     def scroll_left(self, deg: float) -> Dict[str, Any]:
-        """Rotate the camera view to the left (counter-clockwise). Returns an image of the view.
+        """
+        Rotate the camera view to the left (counter-clockwise). Returns an image of the view.
 
         Args:
             deg (float): Degrees to rotate left. Positive value expected; negative values are treated as their absolute value.
@@ -263,7 +306,8 @@ class StreetViewAPI:
         return self.capture_view()
 
     def scroll_right(self, deg: float) -> Dict[str, Any]:
-        """Rotate the camera view to the right (clockwise). Returns an image of the view.
+        """
+        Rotate the camera view to the right (clockwise). Returns an image of the view.
 
         Args:
             deg (float): Degrees to rotate right. Positive value expected; negative values are treated as their absolute value.
@@ -273,7 +317,8 @@ class StreetViewAPI:
         return self.capture_view()
 
     def scroll_up(self, deg: float) -> Dict[str, Any]:
-        """Tilt the camera view upward. Returns an image of the view.
+        """
+        Tilt the camera view upward. Returns an image of the view.
 
         Args:
             deg (float): Degrees to tilt up. Clamped so the resulting pitch does not exceed 90.
@@ -283,7 +328,8 @@ class StreetViewAPI:
         return self.capture_view()
 
     def scroll_down(self, deg: float) -> Dict[str, Any]:
-        """Tilt the camera view downward. Returns an image of the view.
+        """
+        Tilt the camera view downward. Returns an image of the view.
 
         Args:
             deg (float): Degrees to tilt down. Clamped so the resulting pitch does not go below -90.
@@ -297,7 +343,8 @@ class StreetViewAPI:
     # ------------------------------------------------------------------
 
     def zoom_in(self, delta: float) -> Dict[str, Any]:
-        """Zoom the camera view in (increase magnification). Returns an image of the view.
+        """
+        Zoom the camera view in (increase magnification). Returns an image of the view.
 
         Args:
             delta (float): Zoom increment to add. Positive value expected; negative values are treated as their absolute value.
@@ -307,7 +354,8 @@ class StreetViewAPI:
         return self.capture_view()
 
     def zoom_out(self, delta: float) -> Dict[str, Any]:
-        """Zoom the camera view out (decrease magnification). Returns an image of the view.
+        """
+        Zoom the camera view out (decrease magnification). Returns an image of the view.
 
         Args:
             delta (float): Zoom decrement to subtract. Positive value expected; negative values are treated as their absolute value. The resulting zoom level is clamped at 0.
