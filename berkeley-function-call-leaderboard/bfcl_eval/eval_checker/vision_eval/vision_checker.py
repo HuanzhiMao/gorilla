@@ -57,7 +57,8 @@ def extract_coordinates_from_response(response: str) -> tuple[float, float] | No
         - "78.2259, 15.6486"
         - "I do not know" -> returns None
     """
-    assert isinstance(response, str), "Response must be a string"
+    if not isinstance(response, str):
+        response = str(response)
     
     # Match coordinate pattern: optional parens, lat, lon
     pattern = r"\(?([+-]?\d+\.?\d*)\s*,\s*([+-]?\d+\.?\d*)\)?"
