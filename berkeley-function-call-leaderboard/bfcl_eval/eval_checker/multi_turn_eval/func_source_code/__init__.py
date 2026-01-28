@@ -17,9 +17,18 @@ class ImageResult:
             return ImageResult(base64_data, "image/jpeg")
     """
     
-    def __init__(self, image_bytes: bytes, mime_type: str = "image/jpeg"):
-        self.image_bytes = image_bytes
-        self.image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+    def __init__(self, image_base64: str="", image_bytes: bytes=b"", mime_type: str = "image/jpeg"):
+        if image_base64 and image_bytes:
+            self.image_base64 = image_base64
+            self.image_bytes = image_bytes
+        elif image_base64:
+            self.image_base64 = image_base64
+            self.image_bytes = base64.b64decode(image_base64)
+        elif image_bytes:
+            self.image_bytes = image_bytes
+            self.image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+        else:
+            raise ValueError("Either image_base64 or image_bytes must be provided")
         
         self.type = mime_type
     

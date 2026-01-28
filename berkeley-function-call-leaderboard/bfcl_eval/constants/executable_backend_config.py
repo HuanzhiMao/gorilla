@@ -39,7 +39,7 @@ CLASS_FILE_PATH_MAPPING = {
 STATELESS_CLASSES = [
     "MathAPI",
     "VisionSearchAPI",
-    "StreetViewAPI",
+    # "StreetViewAPI",
 ]
 
 # These classes are stateful, but their state is either too verbose to include in the inference log or doesn't provide meaningful insights

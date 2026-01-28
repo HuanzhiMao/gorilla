@@ -684,7 +684,24 @@ def evaluate_task(
         test_category, include_prereq=False, include_language_specific_hint=False
     )
 
-    if is_relevance_or_irrelevance(test_category):
+    if is_vision(test_category):
+            # if len(model_result) != len(possible_answer):
+            #     print(f"NOOOOOOOOOOOOOOOOOOOOOOOO model: {model_name} doesn't have all the answers, {len(model_result)} != {len(possible_answer)}")
+            #     return leaderboard_table
+        possible_answer = load_ground_truth_entry("vision_base")
+
+        # Vision is using the same substring matching logic as agentic categories
+        accuracy, total_count = agentic_runner(
+            handler,
+            model_result,
+            prompt,
+            possible_answer,
+            model_name,
+            test_category,
+            score_dir,
+        )
+
+    elif is_relevance_or_irrelevance(test_category):
         prompt, _ = _subset_entries_by_model_ids(
             model_result, prompt, None, allow_missing=allow_missing
         )
@@ -880,7 +897,7 @@ if __name__ == "__main__":
         "--test-category",
         nargs="+",
         type=str,
-        default="all",
+        default="vision",
         help="A list of test categories to run the evaluation on",
     )
     parser.add_argument(

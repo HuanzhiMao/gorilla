@@ -220,6 +220,8 @@ def function_to_json(func) -> str:
     # Always include 'required', even if it's empty
     json_representation["parameters"]["required"] = required_params
 
+    if len(json_representation["response"]["properties"]) == 0:
+        del json_representation["response"]
     return json.dumps(json_representation)
 
 # PROOF OF CONCEPT TEST

@@ -1,0 +1,80 @@
+{"id": "geogesser_type2_0", "ground_truth": ["Seaboard Ave NE", "Seaboard Avenue NorthEast", "Seaboard Avenue NE", "Seaboard Ave Northeast", "Seaboard Ave", "Seaboard Ave ne", "Seaboard Avenue ne", "Seaboard Avenue Northeast"]}
+{"id": "geogesser_type2_1", "ground_truth": ["San Francisco St", "San Francisco Street"]}
+{"id": "geogesser_type2_2", "ground_truth": ["Creek Dr", "Creek Drive"]}
+{"id": "geogesser_type2_3", "ground_truth": ["Abbey Ln", "Abbey Lane"]}
+{"id": "geogesser_type2_4", "ground_truth": ["Park Ln Circle", "Park Lane Circle", "Park Ln Cir", "Park Lane Cir", "24 Park Lane Circle"]}
+{"id": "geogesser_type2_5", "ground_truth": ["S Constitution Dr", "South Constitution Drive", "S Constitution Drive", "South Constitution Dr"]}
+{"id": "geogesser_type2_6", "ground_truth": ["N Damen Ave", "North Damen Avenue", "N Damen Avenue", "North Damen Ave"]}
+{"id": "geogesser_type2_7", "ground_truth": ["Paradise Rd", "Paradise Road"]}
+{"id": "geogesser_type2_8", "ground_truth": ["Staropetrovskiy Proyezd", "Staropetrovskiy Proyezd St", "Staropetrovskiy Proyezd Street"]}
+{"id": "geogesser_type2_9", "ground_truth": ["Jl. Mampang Prapatan XV", "Jalan Mampang Prapatan XV", "Jl. Mampang Prapatan XV Street", "Jalan Mampang Prapatan XV St", "Jl. Mampang Prapatan XV Street", "Jalan Mampang Prapatan XV Street"]}
+{"id": "geogesser_type2_10", "ground_truth": ["P. O. Hviezdoslava", "Pavol Országh Hviezdoslava", "Pavol Országh Hviezdoslava", "Pavol Orszagh Hviezdoslava"]}
+{"id": "geogesser_type2_11", "ground_truth": ["Dunedin"]}
+{"id": "geogesser_type2_12", "ground_truth": ["Tromsø", "Tromso"]}
+{"id": "geogesser_type2_13", "ground_truth": ["Ushuaia"]}
+{"id": "geogesser_type2_14", "ground_truth": ["Cheyenne"]}
+{"id": "geogesser_type2_15", "ground_truth": ["Oakland"]}
+{"id": "geogesser_type2_16", "ground_truth": ["Palo Alto"]}
+{"id": "geogesser_type2_17", "ground_truth": ["Berlin"]}
+{"id": "geogesser_type2_18", "ground_truth": ["Brussels"]}
+{"id": "geogesser_type2_19", "ground_truth": ["Lesotho"]}
+{"id": "geogesser_type2_20", "ground_truth": ["Valenje"]}
+{"id": "geogesser_type2_21", "ground_truth": ["Ridderkerk"]}
+{"id": "geogesser_type2_22", "ground_truth": ["Zwijndrecht"]}
+{"id": "geogesser_type2_23", "ground_truth": ["Vlore"]}
+{"id": "geogesser_type2_24", "ground_truth": ["Esperance"]}
+{"id": "geogesser_type2_25", "ground_truth": ["Treinta y Tres"]}
+{"id": "geogesser_type2_26", "ground_truth": ["Siem Reap", "Krong Siem Reap"]}
+{"id": "geogesser_type2_27", "ground_truth": ["Sylhet"]}
+{"id": "geogesser_type2_28", "ground_truth": ["Silivri"]}
+{"id": "geogesser_type2_29", "ground_truth": ["Morley"]}
+{"id": "geogesser_type2_30", "ground_truth": ["Karaisen"]}
+{"id": "geogesser_type2_31", "ground_truth": ["Tunis"]}
+{"id": "geogesser_type2_32", "ground_truth": ["Khon Kaen"]}
+{"id": "geogesser_type2_33", "ground_truth": ["Ojiya"]}
+{"id": "geogesser_type2_34", "ground_truth": ["London"]}
+{"id": "geogesser_type2_35", "ground_truth": ["Kapa'a"]}
+{"id": "geogesser_type2_36", "ground_truth": ["Samobor"]}
+{"id": "geogesser_type2_37", "ground_truth": ["Tsukuba"]}
+{"id": "geogesser_type2_38", "ground_truth": ["Hong Kong"]}
+{"id": "geogesser_type2_39", "ground_truth": ["Ha Giang", "Hà Giang"]}
+{"id": "geogesser_type2_40", "ground_truth": ["Ohio"]}
+{"id": "geogesser_type2_41", "ground_truth": ["Virginia"]}
+{"id": "geogesser_type2_42", "ground_truth": ["Ontario"]}
+{"id": "geogesser_type2_43", "ground_truth": ["Saskatchewan"]}
+{"id": "geogesser_type2_44", "ground_truth": ["north rhine-westphalia", "N Rhine-Westphalia", "North Rhine-Westphalia", "n rhine-westphalia"]}
+{"id": "geogesser_type2_45", "ground_truth": ["Queensland"]}
+{"id": "geogesser_type2_46", "ground_truth": ["New South Wales"]}
+{"id": "geogesser_type2_47", "ground_truth": ["Santa Fe"]}
+{"id": "geogesser_type2_48", "ground_truth": ["Iowa"]}
+{"id": "geogesser_type2_49", "ground_truth": ["Michigan"]}
+{"id": "geogesser_type2_50", "ground_truth": ["Kenya"]}
+{"id": "geogesser_type2_51", "ground_truth": ["Estonia"]}
+{"id": "geogesser_type2_52", "ground_truth": ["Chile"]}
+{"id": "geogesser_type2_53", "ground_truth": ["Hungary"]}
+{"id": "geogesser_type2_54", "ground_truth": ["Japan"]}
+{"id": "geogesser_type2_55", "ground_truth": ["Nigeria"]}
+{"id": "geogesser_type2_56", "ground_truth": ["Poland"]}
+{"id": "geogesser_type2_57", "ground_truth": ["Laos"]}
+{"id": "geogesser_type2_58", "ground_truth": ["Albania"]}
+{"id": "geogesser_type2_59", "ground_truth": ["Mexico"]}
+{"id": "geogesser_type2_60", "ground_truth": ["Singapore"]}
+{"id": "geogesser_type2_61", "ground_truth": ["Czech Republic", "Czechia"]}
+{"id": "geogesser_type2_62", "ground_truth": ["Botswana"]}
+{"id": "geogesser_type2_63", "ground_truth": ["Dominican Republic"]}
+{"id": "geogesser_type2_64", "ground_truth": ["Indonesia"]}
+{"id": "geogesser_type2_65", "ground_truth": ["Mongolia"]}
+{"id": "geogesser_type2_66", "ground_truth": ["Iceland"]}
+{"id": "geogesser_type2_67", "ground_truth": ["Singapore"]}
+{"id": "geogesser_type2_68", "ground_truth": ["Taiwan"]}
+{"id": "geogesser_type2_69", "ground_truth": ["South Korea", "Korea"]}
+{"id": "geogesser_type2_70", "ground_truth": ["Oman"]}
+{"id": "geogesser_type2_71", "ground_truth": ["Turkey"]}
+{"id": "geogesser_type2_72", "ground_truth": ["Serbia"]}
+{"id": "geogesser_type2_73", "ground_truth": ["Kazakhstan"]}
+{"id": "geogesser_type2_74", "ground_truth": ["Kandy"]}
+{"id": "geogesser_type2_75", "ground_truth": ["Russia"]}
+{"id": "geogesser_type2_76", "ground_truth": ["Las Mercedes"]}
+{"id": "geogesser_type2_77", "ground_truth": ["Kigali"]}
+{"id": "geogesser_type2_78", "ground_truth": ["Jordan"]}
+{"id": "geogesser_type2_79", "ground_truth": ["Mississippi"]}
