@@ -624,6 +624,7 @@ def vision_geogesser_runner(
 
     # save_eval_results compute the average accuracy, but it's the same formaula as calculating the average score, so we can use it here.
     # It's just that the `correct_count` field in the header would be strange.
+    total_score = total_score / 5000
     return save_eval_results(
         result, total_score, model_result, test_category, model_name, score_dir
     )
@@ -817,15 +818,26 @@ def evaluate_task(
 
     if is_geogesser(test_category):
         possible_answer = load_ground_truth_entry(test_category)
-        accuracy, total_count = vision_checker(
-            handler,
-            model_result,
-            prompt,
-            possible_answer,
-            model_name,
-            test_category,
-            score_dir,
-        )
+        if "type1" in test_category:
+            accuracy, total_count = vision_geogesser_runner(
+                handler,
+                model_result,
+                prompt,
+                possible_answer,
+                model_name,
+                test_category,
+                score_dir,
+            )
+        else:
+            accuracy, total_count = agentic_runner(
+                handler,
+                model_result,
+                prompt,
+                possible_answer,
+                model_name,
+                test_category,
+                score_dir,
+            )
 
     elif is_vision(test_category):
         # @HuanzhiMao FIXME
