@@ -441,6 +441,11 @@ def load_dataset_entry(
         all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_vision_base.json")
         all_entries = load_vision_test_cases(all_entries, test_category)
 
+    elif is_geogesser(test_category):
+        # Geogesser categories
+        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{test_category}.json")
+        all_entries = process_geogesser_test_case(all_entries)
+
     elif is_format_sensitivity(test_category):
         # Format sensitivity categories
         all_entries = load_format_sensitivity_test_cases()
@@ -609,6 +614,7 @@ def update_available_tool_list_in_test_case(
                 getattr(class_instance, "_get_updated_tool_list")
             )
             available_tool_names = class_instance._get_updated_tool_list()
+            print(f"Available tool names: {available_tool_names}")
             backend_func_docs = load_file(
                 MULTI_TURN_FUNC_DOC_PATH / MULTI_TURN_FUNC_DOC_FILE_MAPPING[class_name]
             )
@@ -618,14 +624,14 @@ def update_available_tool_list_in_test_case(
 
             # Remove all tools tied to this backend from test_entry["function"]
             test_entry["function"] = [
-                tool for tool in test_entry["function"]
+                tool
+                for tool in test_entry["function"]
                 if tool["name"] not in backend_tool_names
             ]
 
             # Add back only the tools that are still available (name exists in updated_tool_list)
             updated_tool_docs = [
-                tool for tool in backend_func_docs
-                if tool["name"] in available_tool_names
+                tool for tool in backend_func_docs if tool["name"] in available_tool_names
             ]
             test_entry["function"].extend(updated_tool_docs)
 

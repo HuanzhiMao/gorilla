@@ -1,5 +1,7 @@
 import json
 import os
+from pickle import NONE
+from tkinter import NO
 from typing import Any, Dict, List, Optional
 import requests
 from bfcl_eval.eval_checker.multi_turn_eval.func_source_code import ImageResult
@@ -202,117 +204,117 @@ class StreetViewAPI:
         """Move to the adjacent panorama in the North direction."""
         result = self._call("POST", "/move/north")
         self.available_moves = result.get("available_moves", [])
-        return result
+        return None
 
     def move_northeast(self) -> Dict[str, Any]:
         """Move to the adjacent panorama in the Northeast direction."""
         result = self._call("POST", "/move/northeast")
         self.available_moves = result.get("available_moves", [])
-        return result
+        return None
 
     def move_east(self) -> Dict[str, Any]:
         """Move to the adjacent panorama in the East direction."""
         result = self._call("POST", "/move/east")
         self.available_moves = result.get("available_moves", [])
-        return result
+        return None
 
     def move_southeast(self) -> Dict[str, Any]:
         """Move to the adjacent panorama in the Southeast direction."""
         result = self._call("POST", "/move/southeast")
         self.available_moves = result.get("available_moves", [])
-        return result
+        return None
 
     def move_south(self) -> Dict[str, Any]:
         """Move to the adjacent panorama in the South direction."""
         result = self._call("POST", "/move/south")
         self.available_moves = result.get("available_moves", [])
-        return result
+        return None
 
     def move_southwest(self) -> Dict[str, Any]:
         """Move to the adjacent panorama in the Southwest direction."""
         result = self._call("POST", "/move/southwest")
         self.available_moves = result.get("available_moves", [])
-        return result
+        return None
 
     def move_west(self) -> Dict[str, Any]:
         """Move to the adjacent panorama in the West direction."""
         result = self._call("POST", "/move/west")
         self.available_moves = result.get("available_moves", [])
-        return result
+        return None
 
     def move_northwest(self) -> Dict[str, Any]:
         """Move to the adjacent panorama in the Northwest direction."""
         result = self._call("POST", "/move/northwest")
         self.available_moves = result.get("available_moves", [])
-        return result
+        return None
 
     # ------------------------------------------------------------------
     # Scroll (camera rotation)
     # ------------------------------------------------------------------
 
     def scroll_left(self, deg: float) -> Dict[str, Any]:
-        """Rotate the camera view to the left (counter-clockwise).
+        """Rotate the camera view to the left (counter-clockwise). Returns an image of the view.
 
         Args:
             deg (float): Degrees to rotate left. Positive value expected; negative values are treated as their absolute value.
         """
         result = self._call("POST", "/scroll/left", {"delta": deg})
         self.available_moves = result.get("available_moves", [])
-        return result
+        return self.capture_view()
 
     def scroll_right(self, deg: float) -> Dict[str, Any]:
-        """Rotate the camera view to the right (clockwise).
+        """Rotate the camera view to the right (clockwise). Returns an image of the view.
 
         Args:
             deg (float): Degrees to rotate right. Positive value expected; negative values are treated as their absolute value.
         """
         result = self._call("POST", "/scroll/right", {"delta": deg})
         self.available_moves = result.get("available_moves", [])
-        return result
+        return self.capture_view()
 
     def scroll_up(self, deg: float) -> Dict[str, Any]:
-        """Tilt the camera view upward.
+        """Tilt the camera view upward. Returns an image of the view.
 
         Args:
             deg (float): Degrees to tilt up. Clamped so the resulting pitch does not exceed 90.
         """
         result = self._call("POST", "/scroll/up", {"delta": deg})
         self.available_moves = result.get("available_moves", [])
-        return result
+        return self.capture_view()
 
     def scroll_down(self, deg: float) -> Dict[str, Any]:
-        """Tilt the camera view downward.
+        """Tilt the camera view downward. Returns an image of the view.
 
         Args:
             deg (float): Degrees to tilt down. Clamped so the resulting pitch does not go below -90.
         """
         result = self._call("POST", "/scroll/down", {"delta": deg})
         self.available_moves = result.get("available_moves", [])
-        return result
+        return self.capture_view()
 
     # ------------------------------------------------------------------
     # Zoom
     # ------------------------------------------------------------------
 
     def zoom_in(self, delta: float) -> Dict[str, Any]:
-        """Zoom the camera view in (increase magnification).
+        """Zoom the camera view in (increase magnification). Returns an image of the view.
 
         Args:
             delta (float): Zoom increment to add. Positive value expected; negative values are treated as their absolute value.
         """
         result = self._call("POST", "/zoom/in", {"delta": delta})
         self.available_moves = result.get("available_moves", [])
-        return result
+        return self.capture_view()
 
     def zoom_out(self, delta: float) -> Dict[str, Any]:
-        """Zoom the camera view out (decrease magnification).
+        """Zoom the camera view out (decrease magnification). Returns an image of the view.
 
         Args:
             delta (float): Zoom decrement to subtract. Positive value expected; negative values are treated as their absolute value. The resulting zoom level is clamped at 0.
         """
         result = self._call("POST", "/zoom/out", {"delta": delta})
         self.available_moves = result.get("available_moves", [])
-        return result
+        return self.capture_view()
 
     # ------------------------------------------------------------------
     # Session Control

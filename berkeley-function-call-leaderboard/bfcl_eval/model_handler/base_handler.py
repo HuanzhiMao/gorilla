@@ -200,11 +200,12 @@ class BaseHandler:
             current_turn_response = []
             
             current_turn_message_for_logging = deepcopy(current_turn_message)
-            if is_vision(test_category):
+            if contain_vision_task(test_category):
                 for message in current_turn_message_for_logging:
                     if "image_content" in message:
-                        del message["image_content"][0]["image_bytes"]
-                        del message["image_content"][0]["image_base64"]
+                        for image_content in message["image_content"]:
+                            del image_content["image_bytes"]
+                            del image_content["image_base64"]
                         
             current_turn_inference_log: list[dict] = {
                 "begin_of_turn_query": current_turn_message_for_logging
@@ -326,12 +327,25 @@ class BaseHandler:
                 )
 
                 for execution_result in execution_results:
-                    current_step_inference_log.append(
-                        {
-                            "role": "tool",
-                            "content": execution_result,
-                        }
-                    )
+                    # @HuanzhiMao FIXME: Update for prompting method as well.
+                    if execution_result["result_type"] == "image":
+                        current_step_inference_log.append(
+                            {
+                                "role": "tool",
+                                "content": "This is an image result. Removed for logging purpose.",
+                            }
+                        )
+                    else:
+                        current_turn_execution_result_for_logging = deepcopy(execution_result)
+                        
+                        if "image_base64" in current_turn_execution_result_for_logging["result"]:
+                            print("11111111")
+                        current_step_inference_log.append(
+                            {
+                                "role": "tool",
+                                "content": current_turn_execution_result_for_logging["result"],
+                            }
+                        )
 
                 count += 1
                 # Force quit after too many steps
