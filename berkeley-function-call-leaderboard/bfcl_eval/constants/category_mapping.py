@@ -43,7 +43,7 @@ WEB_SEARCH_CATEGORY = [
     "web_search_no_snippet",
 ]
 VISION_CATEGORY = [
-    "vision_base",
+    # "vision_base",
     # @HuanzhiMao FIXME: uncomment these
     # "vision_crop_169",
     # "vision_crop_43",
@@ -52,6 +52,9 @@ VISION_CATEGORY = [
     # "vision_bw",
     # "vision_edge",
     # "vision_rg",
+    "geogesser_type1",
+    # "geogesser_type2",
+    # "geogesser_type3",
 ]
 
 MEMORY_CATEGORY = [f"memory_{backend}" for backend in ALL_AVAILABLE_MEMORY_BACKENDS]

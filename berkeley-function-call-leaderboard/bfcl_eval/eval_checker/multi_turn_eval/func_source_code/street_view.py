@@ -127,36 +127,18 @@ class StreetViewAPI:
             return False
         return (self._base_url, self.session_id) == (value._base_url, value.session_id)
 
-    # def get_state(self) -> Dict[str, Any]:
-    #     """Return the server state snapshot for the current session.
-
-    #     If the client is not connected yet, returns only ``{"session_id": None}``.
-    #     """
-    #     if not self.session_id:
-    #         return {"session_id": None}
-    #     return self._call("GET", "/state")
-
-    # def get_state_json(self) -> str:
-    #     """Return the local cached state as a JSON string.
-
-    #     Returns:
-    #         state_json (str): JSON-serialised cached state dictionary.
-    #     """
-    #     return json.dumps(self.get_state(), default=str)
+    def _get_updated_tool_list(self) -> List[str]:
+        return self.available_moves
 
     # ------------------------------------------------------------------
     # Core Connection / Setup
     # ------------------------------------------------------------------
 
-    def _connect_host(
-        self, api_key: Optional[str] = None, session_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+    def _connect_host(self, session_id: Optional[str] = None) -> Dict[str, Any]:
         """
         Start a Street View host session on the server.
 
         Args:
-            api_key (Optional[str]): Google Maps API key. The server falls
-                back to its own ``GOOGLE_MAPS_API_KEY`` env var when ``None``.
             session_id (Optional[str]): Desired session identifier. The server
                 generates one automatically when ``None``.
 
@@ -164,8 +146,8 @@ class StreetViewAPI:
             - session_id (str): Assigned session identifier.
         """
         body: Dict[str, Any] = {}
-        if api_key:
-            body["api_key"] = api_key
+        if os.getenv("GOOGLE_MAPS_API_KEY"):
+            body["api_key"] = os.getenv("GOOGLE_MAPS_API_KEY")
         if session_id:
             body["session_id"] = session_id
         result = self._call("POST", "/connect", body)

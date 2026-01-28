@@ -194,9 +194,21 @@ def load_test_entries_from_id_file(id_file_path: Path) -> tuple[list[str], list[
 
 #### Predicate functions to check the test category ####
 def is_vision(test_category: str) -> bool:
-    # @HuanzhiMao fixme
-    # return True
+    """
+    Check if the test category is a vision category (eg, vision_base, vision_rg, etc.). This doesn't include the geogesser categories.
+    """
     return "vision" in test_category
+
+
+def is_geogesser(test_category: str) -> bool:
+    return "geogesser" in test_category
+
+
+def contain_vision_task(test_category: str) -> bool:
+    """
+    Check if the test category requires a vision task (eg, vision_base, geogesser_type1, etc.).
+    """
+    return is_vision(test_category) or is_geogesser(test_category)
 
 
 def is_format_sensitivity(test_category: str) -> bool:
@@ -279,7 +291,7 @@ def contain_multi_turn_interaction(test_category):
     return (
         is_multi_turn(test_category)
         or is_agentic(test_category)
-        or is_vision(test_category)
+        or contain_vision_task(test_category)
     )
 
 
@@ -294,7 +306,7 @@ def get_general_grouping(test_id: str) -> str:
     • agentic: categories in AGENTIC_CATEGORY
     • format_sensitivity: the format sensitivity test categories
     """
-    if is_vision(test_id):
+    if contain_vision_task(test_id):
         return "vision"
     elif is_format_sensitivity(test_id):
         return "format_sensitivity"
@@ -564,7 +576,7 @@ def sort_key(entry):
     # Hopefully the prereq entries are done by now
     elif is_memory(test_category):
         priority = 4
-    elif is_vision(test_category):
+    elif contain_vision_task(test_category):
         priority = 5
 
     return (priority, test_category, int(index))
@@ -1023,14 +1035,33 @@ def load_vision_test_cases(all_entries: list[dict], test_category: str) -> list[
                     "role": "user",
                     "content": user_query,
                     # @HuanzhiMao FIXME: update all handler for this new format
-                    "image_content": [{
-                        "image_base64": image_base64,
-                        "image_bytes": image_bytes,
-                        "image_path": str(image_path),
-                        "type": "image/jpeg",
-                    }],
+                    "image_content": [
+                        {
+                            "image_base64": image_base64,
+                            "image_bytes": image_bytes,
+                            "image_path": str(image_path),
+                            "type": "image/jpeg",
+                        }
+                    ],
                 },
             ]
         ]
         result.append(temp)
     return result
+
+
+def process_geogesser_test_case(test_cases: list[dict]) -> list[dict]:
+    """
+    Geogesser test cases need to have a specific response format. We add this to the user query here.
+    """
+    for entry in test_cases:
+        if is_geogesser(entry["id"]):
+            entry["question"][0].insert(
+                0,
+                {
+                    "role": "system",
+                    "content": ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
+                },
+            )
+
+    return test_cases
