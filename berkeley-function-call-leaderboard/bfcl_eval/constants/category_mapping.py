@@ -54,7 +54,7 @@ VISION_CATEGORY = [
     # "vision_rg",
     "geogesser_type1",
     "geogesser_type2",
-    # "geogesser_type3",
+    "geogesser_type3",
 ]
 
 MEMORY_CATEGORY = [f"memory_{backend}" for backend in ALL_AVAILABLE_MEMORY_BACKENDS]
