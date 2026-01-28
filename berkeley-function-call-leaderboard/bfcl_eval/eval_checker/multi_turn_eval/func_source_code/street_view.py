@@ -20,7 +20,7 @@ class StreetViewAPI:
         # The client only retains the session identifier. All other state lives
         # on the server and can be fetched via GET /state when needed.
         self.session_id: Optional[str] = None
-        self.available_moves: List[str] = []
+        self.available_moves: List[str] = None
 
     # ------------------------------------------------------------------
     #  helper functions

@@ -13,6 +13,7 @@ from bfcl_eval.constants.eval_config import RESULT_PATH
 from bfcl_eval.constants.executable_backend_config import (
     OMIT_STATE_INFO_CLASSES,
     STATELESS_CLASSES,
+    UPDATED_TOOL_LIST_CLASSES,
 )
 from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     execute_multi_turn_func_call,
@@ -172,6 +173,12 @@ class BaseHandler:
         all_multi_turn_messages: list[list[dict]] = test_entry["question"]
         for turn_idx, current_turn_message in enumerate(all_multi_turn_messages):
             current_turn_message: list[dict]
+            
+            if any(class_name in UPDATED_TOOL_LIST_CLASSES for class_name in involved_classes):
+                previous_num=len(test_entry["function"])
+                test_entry = update_available_tool_list_in_test_case(test_entry, involved_instances)
+                self._compile_tools(inference_data, test_entry)
+                print(f"Updated tool list in test entry: {previous_num} -> {len(test_entry["function"])}")
 
             if str(turn_idx) in holdout_function:
                 test_entry["function"].extend(holdout_function[str(turn_idx)])

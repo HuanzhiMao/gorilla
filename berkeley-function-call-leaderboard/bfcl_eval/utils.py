@@ -16,6 +16,7 @@ from bfcl_eval.constants.default_prompts import (
 from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.executable_backend_config import (
     MULTI_TURN_FUNC_DOC_FILE_MAPPING,
+    UPDATED_TOOL_LIST_CLASSES,
 )
 from filelock import FileLock
 
@@ -593,6 +594,42 @@ def filter_entries_by_id(
 
     reference_ids = {entry["id"] for entry in reference_entries}
     return [entry for entry in candidate_entries if entry["id"] in reference_ids]
+
+
+def update_available_tool_list_in_test_case(
+    test_entry: dict, involved_instances: dict
+) -> dict:
+    """
+    Update the available tool list in the test entry.
+    """
+
+    for class_name, class_instance in involved_instances.items():
+        if class_name in UPDATED_TOOL_LIST_CLASSES:
+            assert hasattr(class_instance, "_get_updated_tool_list") and callable(
+                getattr(class_instance, "_get_updated_tool_list")
+            )
+            available_tool_names = class_instance._get_updated_tool_list()
+            backend_func_docs = load_file(
+                MULTI_TURN_FUNC_DOC_PATH / MULTI_TURN_FUNC_DOC_FILE_MAPPING[class_name]
+            )
+
+            # Get all tool names for this backend
+            backend_tool_names = {tool["name"] for tool in backend_func_docs}
+
+            # Remove all tools tied to this backend from test_entry["function"]
+            test_entry["function"] = [
+                tool for tool in test_entry["function"]
+                if tool["name"] not in backend_tool_names
+            ]
+
+            # Add back only the tools that are still available (name exists in updated_tool_list)
+            updated_tool_docs = [
+                tool for tool in backend_func_docs
+                if tool["name"] in available_tool_names
+            ]
+            test_entry["function"].extend(updated_tool_docs)
+
+    return test_entry
 
 
 #### Helper functions to check the output format ####

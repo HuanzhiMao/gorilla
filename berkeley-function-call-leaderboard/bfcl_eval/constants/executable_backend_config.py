@@ -51,3 +51,8 @@ OMIT_STATE_INFO_CLASSES = [
     "WebSearchAPI",
     "StreetViewAPI",
 ]
+
+# These classes might update their available tool list during runtime, after each action.
+UPDATED_TOOL_LIST_CLASSES = [
+    "StreetViewAPI",
+]
