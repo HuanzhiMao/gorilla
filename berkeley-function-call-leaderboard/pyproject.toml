@@ -48,7 +48,8 @@ dependencies = [
     "sentence-transformers>=2.7.0",
     "faiss-cpu",
     "networkx==3.3",
-    "filelock==3.20.0"
+    "filelock==3.20.0",
+    "geopy"
 ]
 
 [project.scripts]

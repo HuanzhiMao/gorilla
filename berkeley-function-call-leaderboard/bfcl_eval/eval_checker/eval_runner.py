@@ -15,6 +15,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_checker import (
 from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     is_empty_execute_response,
 )
+from bfcl_eval.eval_checker.vision_eval.vision_checker import vision_checker
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.utils import parse_prompt_variation_params
 from bfcl_eval.utils import *
@@ -67,6 +68,94 @@ def _subset_entries_by_model_ids(
                 filtered_ground_truth_entries.append(ground_truth_entries[idx])
 
     return filtered_prompt_entries, filtered_ground_truth_entries
+
+
+def _evaluate_single_vision_geogesser_entry(
+    handler: BaseHandler,
+    index,
+    model_result_list,
+    possible_answer_item,
+    prompt_entry,
+    model_name,
+    test_category,
+):
+    """Helper method to process a single vision geogesser entry."""
+    # Remove the function doc from the score file for better readability
+    if "function" in prompt_entry:
+        del prompt_entry["function"]
+
+    # Vision geogesser test is a single-turn test, so the model result should be a list of one element
+    if type(model_result_list) != list or len(model_result_list) != 1:
+        return {
+            "id": index,
+            "model_name": model_name,
+            "test_category": test_category,
+            "valid": False,
+            "error": {
+                "error_message": [
+                    "Error during inference phase. Model did not output a list of model responses."
+                ],
+                "error_type": "vision_geogesser:inference_error",
+            },
+            "prompt": prompt_entry,
+            "model_result": model_result_list,
+            "possible_answer": possible_answer_item,
+        }
+
+    # Try decoding the model results into executable function calls
+    # Note: We only care about the last non-function-call message, which should fail to get decoded.
+    # We don't care about the function calls in the middle of the conversation.
+    # We only check if the expected answer is mentioned in the last message.
+    # decode_execute returns a list of strings
+    model_result_list_decoded: list[list[str]] = []
+    last_unsuccessful_decoding_message = None
+
+    for model_result_item in model_result_list[0]:
+        # model_result_item is per step
+        try:
+            decoded_result: list[str] = handler.decode_execute(
+                model_result_item, has_tool_call_tag=False
+            )
+            if is_empty_execute_response(decoded_result):
+                last_unsuccessful_decoding_message = model_result_item
+                continue
+            model_result_list_decoded.append(decoded_result)
+        except Exception as e:
+            last_unsuccessful_decoding_message = model_result_item
+            continue
+
+    if not last_unsuccessful_decoding_message:
+        return {
+            "id": index,
+            "model_name": model_name,
+            "test_category": test_category,
+            "valid": False,
+            "error": {
+                "error_message": [
+                    "Cannot find the last chat message that is not a function call."
+                ],
+                "error_type": "vision_geogesser:no_last_message",
+            },
+            "prompt": prompt_entry,
+            "model_result": model_result_list,
+            "model_result_decoded": model_result_list_decoded,
+            "possible_answer": possible_answer_item,
+        }
+
+    # Check if the model output contains the expected answer
+    accuracy_checker_result = vision_checker(
+        last_unsuccessful_decoding_message,
+        possible_answer_item,
+    )
+
+    accuracy_checker_result["model_name"] = model_name
+    accuracy_checker_result["test_category"] = test_category
+    accuracy_checker_result["prompt"] = prompt_entry["question"]
+    accuracy_checker_result["model_result_raw"] = model_result_list
+    accuracy_checker_result["last_non_fc_message"] = last_unsuccessful_decoding_message
+    accuracy_checker_result["possible_answer"] = possible_answer_item
+
+    return accuracy_checker_result
 
 
 def _evaluate_single_agentic_entry(
@@ -372,7 +461,7 @@ def _evaluate_single_ast_entry(
         possible_answer_item,
         language,
         # format sensitivity has parallel, multiple cases which is encoded in index
-        test_category if test_category != 'format_sensitivity' else index.split(':')[-1],
+        test_category if test_category != "format_sensitivity" else index.split(":")[-1],
         model_name,
     )
 
@@ -495,6 +584,48 @@ def format_sensitivity_runner(
         model_name,
         score_dir,
         extra_header_fields=extra_header_fields,
+    )
+
+
+def vision_geogesser_runner(
+    handler: BaseHandler,
+    model_result,
+    prompt,
+    possible_answer,
+    model_name,
+    test_category,
+    score_dir,
+):
+    assert (
+        len(model_result) == len(prompt) == len(possible_answer)
+    ), f"The length of the model result ({len(model_result)}) does not match the length of the prompt ({len(prompt)}) or possible answer ({len(possible_answer)}). Please check the input files for completeness."
+
+    result = []
+    total_score = 0
+    for i in range(len(model_result)):
+        index = model_result[i]["id"]
+        model_result_list = model_result[i]["result"]
+        possible_answer_item = possible_answer[i]["ground_truth"]
+        test_entry = prompt[i]
+
+        entry_result = _evaluate_single_vision_geogesser_entry(
+            handler,
+            index,
+            model_result_list,
+            possible_answer_item,
+            test_entry,
+            model_name,
+            test_category,
+        )
+
+        total_score += entry_result["score"]
+        entry_result["inference_log"] = model_result[i].get("inference_log", "")
+        result.append(entry_result)
+
+    # save_eval_results compute the average accuracy, but it's the same formaula as calculating the average score, so we can use it here.
+    # It's just that the `correct_count` field in the header would be strange.
+    return save_eval_results(
+        result, total_score, model_result, test_category, model_name, score_dir
     )
 
 
@@ -684,10 +815,20 @@ def evaluate_task(
         test_category, include_prereq=False, include_language_specific_hint=False
     )
 
-    if is_vision(test_category):
-            # if len(model_result) != len(possible_answer):
-            #     print(f"NOOOOOOOOOOOOOOOOOOOOOOOO model: {model_name} doesn't have all the answers, {len(model_result)} != {len(possible_answer)}")
-            #     return leaderboard_table
+    if is_geogesser(test_category):
+        possible_answer = load_ground_truth_entry(test_category)
+        accuracy, total_count = vision_checker(
+            handler,
+            model_result,
+            prompt,
+            possible_answer,
+            model_name,
+            test_category,
+            score_dir,
+        )
+
+    elif is_vision(test_category):
+        # @HuanzhiMao FIXME
         possible_answer = load_ground_truth_entry("vision_base")
 
         # Vision is using the same substring matching logic as agentic categories
