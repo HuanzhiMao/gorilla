@@ -614,7 +614,6 @@ def update_available_tool_list_in_test_case(
                 getattr(class_instance, "_get_updated_tool_list")
             )
             available_tool_names = class_instance._get_updated_tool_list()
-            print(f"Available tool names: {available_tool_names}")
             backend_func_docs = load_file(
                 MULTI_TURN_FUNC_DOC_PATH / MULTI_TURN_FUNC_DOC_FILE_MAPPING[class_name]
             )

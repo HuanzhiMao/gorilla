@@ -17,7 +17,7 @@ license = { "text" = "Apache 2.0" }
 dependencies = [
     "requests",
     "tqdm",
-    "numpy==1.26.4",
+    "numpy",
     "pandas",
     "huggingface_hub",
     "pydantic>=2.8.2",
@@ -43,8 +43,10 @@ dependencies = [
     "html2text",
     "rank_bm25==0.2.2",
     "google-search-results",
+    # "sentence-transformers>=2.7.0",
+    # "faiss-cpu==1.11.0",
     "sentence-transformers>=2.7.0",
-    "faiss-cpu==1.11.0",
+    "faiss-cpu",
     "networkx==3.3",
     "filelock==3.20.0"
 ]
