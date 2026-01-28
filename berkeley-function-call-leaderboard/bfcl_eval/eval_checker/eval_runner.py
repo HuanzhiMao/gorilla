@@ -88,6 +88,7 @@ def _evaluate_single_vision_geogesser_entry(
     if type(model_result_list) != list or len(model_result_list) != 1:
         return {
             "id": index,
+            "score": 0.0,
             "model_name": model_name,
             "test_category": test_category,
             "valid": False,
@@ -127,6 +128,7 @@ def _evaluate_single_vision_geogesser_entry(
     if not last_unsuccessful_decoding_message:
         return {
             "id": index,
+            "score": 0.0,
             "model_name": model_name,
             "test_category": test_category,
             "valid": False,
@@ -947,6 +949,9 @@ def runner(
 
         model_name = subdir.relative_to(result_dir).name
         if model_names is not None and model_name not in model_names:
+            continue
+        
+        if "grok" in model_name or "gemini" in model_name:
             continue
 
         model_name_escaped = model_name.replace("_", "/")
