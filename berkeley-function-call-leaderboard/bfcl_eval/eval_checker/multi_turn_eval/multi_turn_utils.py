@@ -87,7 +87,6 @@ def execute_multi_turn_func_call(
             ]:
                 raise Exception(f"Function call {func_call_copy} is not allowed.")
 
-            print("func_call: ", func_call)
             func_call_result = eval(func_call)
             # @HuanzhiMao FIXME: Use enum for this
             result_type = "text"

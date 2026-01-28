@@ -336,14 +336,10 @@ class BaseHandler:
                             }
                         )
                     else:
-                        current_turn_execution_result_for_logging = deepcopy(execution_result)
-                        
-                        if "image_base64" in current_turn_execution_result_for_logging["result"]:
-                            print("11111111")
                         current_step_inference_log.append(
                             {
                                 "role": "tool",
-                                "content": current_turn_execution_result_for_logging["result"],
+                                "content": execution_result["result"],
                             }
                         )
 
