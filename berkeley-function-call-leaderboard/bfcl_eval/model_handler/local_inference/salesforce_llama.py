@@ -15,7 +15,6 @@ class SalesforceLlamaHandler(OSSHandler):
         **kwargs,
     ) -> None:
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
-        self.tool_call_parser = "xlam"
 
     # @override
     # def _format_prompt(self, messages, function):

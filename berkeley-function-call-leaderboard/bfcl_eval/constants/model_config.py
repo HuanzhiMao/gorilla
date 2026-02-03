@@ -121,7 +121,7 @@ class OSSModelConfig(ModelConfig):
     """
 
     vllm_tool_call_parser: Optional[str] = None
-    vllm_serve_args: list[str] = field(default_factory=list)
+    vllm_extra_serve_args: list[str] = field(default_factory=list)
 
 
 # Inference through API calls
@@ -1246,7 +1246,8 @@ api_inference_model_map = {
 
 # Inference through local hosting
 local_inference_model_map = {
-    "deepseek-ai/DeepSeek-R1": ModelConfig(
+    # FIXME, check
+    "deepseek-ai/DeepSeek-R1": OSSModelConfig(
         model_name="deepseek-ai/DeepSeek-R1",
         display_name="DeepSeek-R1 (Prompt) (Local)",
         url="https://huggingface.co/deepseek-ai/DeepSeek-R1",
@@ -1257,6 +1258,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        # vllm_tool_call_parser="deepseek_v3",
     ),
     "google/gemma-3-1b-it": ModelConfig(
         model_name="google/gemma-3-1b-it",
@@ -1306,7 +1308,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "google/functiongemma-270m-it-FC": ModelConfig(
+    "google/functiongemma-270m-it-FC": OSSModelConfig(
         model_name="google/functiongemma-270m-it",
         display_name="FunctionGemma-270m-it (FC)",
         url="https://ai.google.dev/gemma/docs/functiongemma",
@@ -1317,8 +1319,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="functiongemma",
     ),
-    "meta-llama/Llama-3.1-8B-Instruct-FC": ModelConfig(
+    "meta-llama/Llama-3.1-8B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.1-8B-Instruct",
         display_name="Llama-3.1-8B-Instruct (FC)",
         url="https://llama.meta.com/llama3",
@@ -1329,20 +1332,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-3.1-8B-Instruct": ModelConfig(
-        model_name="meta-llama/Llama-3.1-8B-Instruct",
-        display_name="Llama-3.1-8B-Instruct (Prompt)",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "meta-llama/Llama-3.1-70B-Instruct-FC": ModelConfig(
+    "meta-llama/Llama-3.1-70B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.1-70B-Instruct",
         display_name="Llama-3.1-70B-Instruct (FC)",
         url="https://llama.meta.com/llama3",
@@ -1353,20 +1345,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-3.1-70B-Instruct": ModelConfig(
-        model_name="meta-llama/Llama-3.1-70B-Instruct",
-        display_name="Llama-3.1-70B-Instruct (Prompt)",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "meta-llama/Llama-3.2-1B-Instruct-FC": ModelConfig(
+    "meta-llama/Llama-3.2-1B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.2-1B-Instruct",
         display_name="Llama-3.2-1B-Instruct (FC)",
         url="https://llama.meta.com/llama3",
@@ -1377,8 +1358,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-3.2-3B-Instruct-FC": ModelConfig(
+    "meta-llama/Llama-3.2-3B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.2-3B-Instruct",
         display_name="Llama-3.2-3B-Instruct (FC)",
         url="https://llama.meta.com/llama3",
@@ -1389,8 +1371,10 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-3.3-70B-Instruct-FC": ModelConfig(
+    # FIXME, check
+    "meta-llama/Llama-3.3-70B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.3-70B-Instruct",
         display_name="Llama-3.3-70B-Instruct (FC)",
         url="https://llama.meta.com/llama3",
@@ -1401,8 +1385,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-4-Scout-17B-16E-Instruct-FC": ModelConfig(
+    "meta-llama/Llama-4-Scout-17B-16E-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-4-Scout-17B-16E-Instruct",
         display_name="Llama-4-Scout-17B-16E-Instruct (FC)",
         url="https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
@@ -1413,8 +1398,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama4_pythonic",
     ),
-    "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC": ModelConfig(
+    "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC": OSSModelConfig(
         model_name="meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
         display_name="Llama-4-Maverick-17B-128E-Instruct-FP8 (FC)",
         url="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
@@ -1425,8 +1411,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama4_pythonic",
     ),
-    "Salesforce/Llama-xLAM-2-70b-fc-r": ModelConfig(
+    "Salesforce/Llama-xLAM-2-70b-fc-r": OSSModelConfig(
         model_name="Salesforce/Llama-xLAM-2-70b-fc-r",
         display_name="xLAM-2-70b-fc-r (FC)",
         url="https://huggingface.co/Salesforce/Llama-xLAM-2-70b-fc-r",
@@ -1437,8 +1424,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="xlam",
     ),
-    "Salesforce/Llama-xLAM-2-8b-fc-r": ModelConfig(
+    "Salesforce/Llama-xLAM-2-8b-fc-r": OSSModelConfig(
         model_name="Salesforce/Llama-xLAM-2-8b-fc-r",
         display_name="xLAM-2-8b-fc-r (FC)",
         url="https://huggingface.co/Salesforce/Llama-xLAM-2-8b-fc-r",
@@ -1449,8 +1437,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="xlam",
     ),
-    "Salesforce/xLAM-2-32b-fc-r": ModelConfig(
+    "Salesforce/xLAM-2-32b-fc-r": OSSModelConfig(
         model_name="Salesforce/xLAM-2-32b-fc-r",
         display_name="xLAM-2-32b-fc-r (FC)",
         url="https://huggingface.co/Salesforce/xLAM-2-32b-fc-r",
@@ -1461,8 +1450,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="xlam",
     ),
-    "Salesforce/xLAM-2-3b-fc-r": ModelConfig(
+    "Salesforce/xLAM-2-3b-fc-r": OSSModelConfig(
         model_name="Salesforce/xLAM-2-3b-fc-r",
         display_name="xLAM-2-3b-fc-r (FC)",
         url="https://huggingface.co/Salesforce/xLAM-2-3b-fc-r",
@@ -1473,8 +1463,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="xlam",
     ),
-    "Salesforce/xLAM-2-1b-fc-r": ModelConfig(
+    "Salesforce/xLAM-2-1b-fc-r": OSSModelConfig(
         model_name="Salesforce/xLAM-2-1b-fc-r",
         display_name="xLAM-2-1b-fc-r (FC)",
         url="https://huggingface.co/Salesforce/xLAM-2-1b-fc-r",
@@ -1485,6 +1476,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="xlam",
     ),
     "mistralai/Ministral-8B-Instruct-2410": ModelConfig(
         model_name="mistralai/Ministral-8B-Instruct-2410",
@@ -1522,6 +1514,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
+    # FIXME, check
     "microsoft/Phi-4-mini-instruct-FC": ModelConfig(
         model_name="microsoft/Phi-4-mini-instruct",
         display_name="Phi-4-mini-instruct (FC)",
@@ -1534,7 +1527,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "ibm-granite/granite-3.2-8b-instruct": ModelConfig(
+    "ibm-granite/granite-3.2-8b-instruct": OSSModelConfig(
         model_name="ibm-granite/granite-3.2-8b-instruct",
         display_name="Granite-3.2-8B-Instruct (FC)",
         url="https://huggingface.co/ibm-granite/granite-3.2-8b-instruct",
@@ -1570,7 +1563,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "ibm-granite/granite-20b-functioncalling": ModelConfig(
+    "ibm-granite/granite-20b-functioncalling": OSSModelConfig(
         model_name="ibm-granite/granite-20b-functioncalling",
         display_name="Granite-20b-FunctionCalling (FC)",
         url="https://huggingface.co/ibm-granite/granite-20b-functioncalling",
@@ -1581,6 +1574,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
+        vllm_tool_call_parser="granite-20b-fc",
     ),
     "MadeAgents/Hammer2.1-7b": ModelConfig(
         model_name="MadeAgents/Hammer2.1-7b",
