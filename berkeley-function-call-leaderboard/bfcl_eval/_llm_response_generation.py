@@ -17,7 +17,7 @@ from bfcl_eval.constants.eval_config import (
     RESULT_PATH,
     TEST_IDS_TO_GENERATE_PATH,
 )
-from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING
+from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING, OSSModelConfig
 from bfcl_eval.eval_checker.eval_runner_helper import load_file
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.local_inference.base_oss_handler import OSSHandler
@@ -89,6 +89,11 @@ def build_handler(model_name, temperature):
         registry_name=model_name,
         is_fc_model=config.is_fc_model,
     )
+    # If this is a locally hosted OSS model, pass any vLLM-specific config
+    # through to the handler instance.
+    if isinstance(config, OSSModelConfig) and isinstance(handler, OSSHandler):
+        handler.tool_call_parser = config.vllm_tool_call_parser
+        handler.vllm_serve_args = list(config.vllm_serve_args)
     return handler
 
 

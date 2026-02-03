@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from bfcl_eval.model_handler.api_inference.claude import ClaudeHandler
@@ -112,6 +112,16 @@ class ModelConfig:
 
     # True if this model does not allow '.' in function names
     underscore_to_dot: bool = False
+
+
+@dataclass
+class OSSModelConfig(ModelConfig):
+    """
+    OSS model configuration, carrying additional vLLM-specific settings.
+    """
+
+    vllm_tool_call_parser: Optional[str] = None
+    vllm_serve_args: list[str] = field(default_factory=list)
 
 
 # Inference through API calls
