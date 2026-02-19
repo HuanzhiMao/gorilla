@@ -841,7 +841,7 @@ def evaluate_task(
                 score_dir,
             )
 
-    elif is_vision(test_category):
+    elif is_vision_web_search(test_category):
         # @HuanzhiMao FIXME
         possible_answer = load_ground_truth_entry("vision_base")
 

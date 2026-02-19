@@ -518,7 +518,7 @@ class BaseHandler:
             current_turn_reasoning_content = []
 
             current_turn_message_for_logging = deepcopy(current_turn_message)
-            if is_vision(test_category):
+            if is_vision_web_search(test_category):
                 for message in current_turn_message_for_logging:
                     if "image_content" in message:
                         del message["image_content"]["image_bytes"]

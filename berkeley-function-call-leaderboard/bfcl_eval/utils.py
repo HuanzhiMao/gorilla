@@ -12,6 +12,7 @@ from bfcl_eval.constants.category_mapping import *
 from bfcl_eval.constants.default_prompts import (
     ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
     DEFAULT_SYSTEM_PROMPT_FORMAT,
+    SYSTEM_PROMPT_FOR_AUDIO_AGENT,
 )
 from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.executable_backend_config import (
@@ -205,11 +206,11 @@ def contain_audio_task(test_category):
     return is_audio(test_category)
 
 
-def is_vision(test_category: str) -> bool:
+def is_vision_web_search(test_category: str) -> bool:
     """
-    Check if the test category is a vision category (eg, vision_base, vision_rg, etc.). This doesn't include the geogesser categories.
+    Check if the test category is a vision web search category (eg, vision_web_search_base, vision_web_search_rg, etc.).
     """
-    return "vision" in test_category
+    return "vision_web_search" in test_category
 
 
 def is_geogesser(test_category: str) -> bool:
@@ -218,9 +219,9 @@ def is_geogesser(test_category: str) -> bool:
 
 def contain_vision_task(test_category: str) -> bool:
     """
-    Check if the test category requires a vision task (eg, vision_base, geogesser_type1, etc.).
+    Check if the test category requires a vision task (eg, vision_web_search_base, geogesser_type1, etc.).
     """
-    return is_vision(test_category) or is_geogesser(test_category)
+    return is_vision_web_search(test_category) or is_geogesser(test_category)
 
 
 def is_format_sensitivity(test_category: str) -> bool:
@@ -320,34 +321,6 @@ def get_modality(test_category: str) -> str:
         return "text"
 
 
-# @HuanzhiMao FIXME: not used currently
-def get_general_grouping(test_id: str) -> str:
-    """
-    Map a specific test category (e.g. "simple", "live_simple", "multi_turn_base")
-    to one of the 5 high-level groups used for organizing result / score files:
-
-    • non_live: categories in NON_LIVE_CATEGORY
-    • live: categories in LIVE_CATEGORY
-    • multi_turn: categories in MULTI_TURN_CATEGORY
-    • agentic: categories in AGENTIC_CATEGORY
-    • format_sensitivity: the format sensitivity test categories
-    """
-    if contain_vision_task(test_id):
-        return "vision"
-    elif is_format_sensitivity(test_id):
-        return "format_sensitivity"
-    elif is_non_live(test_id):
-        return "non_live"
-    elif is_live(test_id):
-        return "live"
-    elif is_multi_turn(test_id):
-        return "multi_turn"
-    elif is_agentic(test_id):
-        return "agentic"
-    else:
-        raise ValueError(f"Invalid test category: {test_id}")
-
-
 def get_directory_structure_by_id(test_id: str) -> str:
     """
     Get the directory for result/score files for a test entry.
@@ -441,38 +414,46 @@ def load_dataset_entry(
     If `contain_prereq` is True, it will include the pre-requisite entries for the memory test categories.
     If `include_language_specific_hint` is True, it will include the language-specific hint for the function description (for Java, JavaScript, and Python).
     """
-    if is_vision(test_category):
-        # Vision categories
-        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_vision_base.json")
-        all_entries = load_vision_test_cases(all_entries, test_category)
-
-    elif is_geogesser(test_category):
-        # Geogesser categories
+    if contain_audio_task(test_category):
+        # Audio categories
         all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{test_category}.json")
-        all_entries = process_geogesser_test_case(all_entries)
+        all_entries = process_audio_test_case(all_entries)
 
-    elif is_format_sensitivity(test_category):
-        # Format sensitivity categories
-        all_entries = load_format_sensitivity_test_cases()
+    elif contain_vision_task(test_category):
+        if is_vision_web_search(test_category):
+            # Vision categories
+            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_vision_base.json")
+            all_entries = process_vision_test_cases(all_entries, test_category)
 
-    elif is_web_search(test_category):
-        # Web search categories
-        file_name = f"{VERSION_PREFIX}_web_search.json"
-        all_entries = load_file(PROMPT_PATH / file_name)
-        all_entries = process_web_search_test_case(all_entries, test_category)
-
-    elif is_memory(test_category):
-        # Memory categories
-        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_memory.json")
-        for scenario in MEMORY_SCENARIO_NAME:
-            all_entries = process_memory_test_case(
-                all_entries, test_category, scenario, include_prereq=include_prereq
-            )
+        elif is_geogesser(test_category):
+            # Geogesser categories
+            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{test_category}.json")
+            all_entries = process_geogesser_test_case(all_entries)
 
     else:
-        # All other categories, we don't need any special handling
-        file_name = f"{VERSION_PREFIX}_{test_category}.json"
-        all_entries = load_file(PROMPT_PATH / file_name)
+        # Text categories
+
+        if is_format_sensitivity(test_category):
+            # Format sensitivity categories
+            all_entries = load_format_sensitivity_test_cases()
+
+        elif is_web_search(test_category):
+            # Web search categories
+            file_name = f"{VERSION_PREFIX}_web_search.json"
+            all_entries = load_file(PROMPT_PATH / file_name)
+            all_entries = process_web_search_test_case(all_entries, test_category)
+
+        elif is_memory(test_category):
+            # Memory categories
+            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_memory.json")
+            for scenario in MEMORY_SCENARIO_NAME:
+                all_entries = process_memory_test_case(
+                    all_entries, test_category, scenario, include_prereq=include_prereq
+                )
+
+        else:
+            # All other categories, we don't need any special handling
+            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{test_category}.json")
 
     all_entries = process_agentic_test_case(all_entries)
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
@@ -1047,7 +1028,7 @@ def get_all_format_sensitivity_configs() -> list[str]:
 #### Utils for Vision ####
 
 
-def load_vision_test_cases(all_entries: list[dict], test_category: str) -> list[dict]:
+def process_vision_test_cases(all_entries: list[dict], test_category: str) -> list[dict]:
     # return [{"id": "vision_base_0", "question": [[{"role": "user", "content": "You must call the fetch_image function to fetch an image and tell me what's in the image."}]], "function": [], "involved_classes": ["StreetViewAPI"]}]
     result = []
     for entry in all_entries:
@@ -1112,3 +1093,118 @@ def process_geogesser_test_case(test_cases: list[dict]) -> list[dict]:
             )
 
     return test_cases
+
+
+#### Audio helper methods ####
+
+
+def load_audio(path: str) -> bytes:
+    """Load audio file from disk given a prefix of the filename.
+
+    The provided *path* is expected to be only a prefix of the actual filename that
+    lives inside the ``AUDIO_FILE_PATH`` directory (e.g. ``live_simple_0-0-0_openai``)
+    while the real file might be something like
+    ``live_simple_0-0-0_openai_audio_mumbling_background_noise_mosquito_db-5_network_cut_n10.mp3``.
+
+    We search for files whose names start with the given prefix and ensure exactly
+    one match is found.
+    """
+
+    # Ensure we are only dealing with the filename part in case a path is passed in
+    prefix = Path(path).name.split(".")[0]  # Strip any possible directories
+
+    # Perform prefix matching recursively inside AUDIO_FILE_PATH and its sub-directories
+    candidates = [p for p in AUDIO_FILE_PATH.rglob(f"{prefix}*.*") if p.is_file()]
+
+    if not candidates:
+        raise FileNotFoundError(
+            f"No audio file found in '{AUDIO_FILE_PATH}' with prefix '{prefix}'."
+        )
+    if len(candidates) > 1:
+        raise RuntimeError(
+            "Multiple audio files match the given prefix "
+            f"'{prefix}': {[c.name for c in candidates]}"
+        )
+
+    audio_path = candidates[0]
+    with open(audio_path, "rb") as f:
+        return f.read()
+
+
+def audio_to_base64(data: bytes) -> str:
+    return base64.b64encode(data).decode("utf-8")
+
+
+def process_audio_test_case(
+    test_cases: list[dict], use_audio_input: bool = False
+) -> list[dict]:
+    """
+    This function loads the audio query content from the path specified in the test entry.
+    """
+    for entry in test_cases:
+        for turn in entry["question"]:
+            for msg in turn:
+                if msg["role"] != "user":
+                    continue
+
+                assert (
+                    "audio_path" in msg
+                ), f"Audio path should be specified in the test entry: {entry['id']}"
+
+                if use_audio_input:
+                    msg["audio_content"] = load_audio(msg["audio_path"])
+                    # msg["audio_format"] = "wav"
+                    del msg["content"]
+                else:
+                    # FIXME: uncomment this to determine which text to use
+                    # msg["content"] = msg["transcript"]
+                    # msg["content"] = msg["asr_output_openai"]
+                    # msg["content"] = msg["asr_output_elevenlabs"]
+                    msg["original_content"] = msg["content"]
+                    msg["content"] = msg["asr_output_deepgram"]
+
+                del msg["transcript"]
+                del msg["audio_path"]
+                del msg["asr_output_openai"]
+                del msg["asr_output_elevenlabs"]
+                del msg["asr_output_deepgram"]
+        # Merge any existing system prompts with the default audio agent prompt.
+        combined_prompts: list[str] = [SYSTEM_PROMPT_FOR_AUDIO_AGENT]
+
+        # Collect contents of all existing system messages across all turns and remove them.
+        for turn in entry["question"]:
+            for idx in reversed(range(len(turn))):
+                if turn[idx].get("role") == "system":
+                    content = turn[idx].get("content", "")
+                    if (
+                        content not in combined_prompts
+                    ):  # avoid duplicate if same as default
+                        combined_prompts.append(content)
+                    del turn[idx]
+
+        merged_system_prompt = "\n\n".join(combined_prompts)
+
+        # Insert the merged system prompt at the very beginning of the conversation.
+        entry["question"][0].insert(
+            0,
+            {
+                "role": "system",
+                "content": merged_system_prompt,
+            },
+        )
+
+    return test_cases
+
+
+def query_contains_audio_input(message: dict) -> bool:
+    """Return True iff the message is a user message that carries raw audio."""
+
+    assert type(message) == dict, "Message should be a dict"
+
+    contains_audio = "audio_content" in message
+
+    # If audio is present, it must come from the user.
+    if contains_audio and message.get("role") != "user":
+        raise ValueError("Audio input should only appear in user messages")
+
+    return contains_audio
