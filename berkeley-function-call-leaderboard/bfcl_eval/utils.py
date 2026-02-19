@@ -194,6 +194,17 @@ def load_test_entries_from_id_file(id_file_path: Path) -> tuple[list[str], list[
 
 
 #### Predicate functions to check the test category ####
+def is_audio(test_category):
+    return "audio" in test_category
+
+
+def contain_audio_task(test_category):
+    """
+    Check if the test category requires an audio task.
+    """
+    return is_audio(test_category)
+
+
 def is_vision(test_category: str) -> bool:
     """
     Check if the test category is a vision category (eg, vision_base, vision_rg, etc.). This doesn't include the geogesser categories.
@@ -296,6 +307,20 @@ def contain_multi_turn_interaction(test_category):
     )
 
 
+def get_modality(test_category: str) -> str:
+    """
+    Return the top-level modality folder for a test category or test entry ID.
+    Currently supports: "text", "vision", "audio".
+    """
+    if contain_vision_task(test_category):
+        return "vision"
+    elif contain_audio_task(test_category):
+        return "audio"
+    else:
+        return "text"
+
+
+# @HuanzhiMao FIXME: not used currently
 def get_general_grouping(test_id: str) -> str:
     """
     Map a specific test category (e.g. "simple", "live_simple", "multi_turn_base")
@@ -323,56 +348,36 @@ def get_general_grouping(test_id: str) -> str:
         raise ValueError(f"Invalid test category: {test_id}")
 
 
-# not used currently
-def get_sub_grouping(test_id: str) -> str:
-    """
-    Get the sub-grouping of a test category.
-    For memory test categories, it returns the memory backend type.
-    For all other test categories, it returns None.
-    """
-    if is_memory(test_id):
-        return os.path.join(
-            "memory",
-            extract_memory_backend_type(
-                extract_test_category_from_id(test_id, remove_prereq=True)
-            ),
-        )
-    else:
-        return None
-
-
 def get_directory_structure_by_id(test_id: str) -> str:
     """
-    Get the directory structure for a test entry.
-    For memory test categories, it returns the general grouping and sub-grouping. Eg. "agentic/memory_kv"
-    For all other test categories, it returns the general grouping only. Eg. "non_live"
+    Get the directory for result/score files for a test entry.
     """
-    group = get_general_grouping(test_id)
-
-    if is_memory(test_id):
-        return os.path.join(
-            group,
-            "memory",
-            extract_memory_backend_type(
-                extract_test_category_from_id(test_id, remove_prereq=True)
-            ),
-        )
-    else:
-        return group
+    return get_directory_structure_by_category(extract_test_category_from_id(test_id))
 
 
 def get_directory_structure_by_category(test_category: str) -> str:
     """
-    Get the directory structure for a test category.
-    For memory test categories, it returns the general grouping and sub-grouping. Eg. "agentic/memory_kv"
-    For all other test categories, it returns the general grouping only. Eg. "non_live"
+    Get the directory structurefor result/score files for a test category.
     """
-    group = get_general_grouping(test_category)
+    return get_modality(test_category)
 
-    if is_memory(test_category):
-        return os.path.join(group, "memory", extract_memory_backend_type(test_category))
-    else:
-        return group
+
+def get_memory_artifact_dir_by_id(test_id: str) -> str:
+    """
+    Get the directory for memory artifacts (snapshots, pre-req checkpoints) for a test entry.
+    Returns a path like "text/_memory_artifacts/kv".
+    """
+    return get_memory_artifact_dir_by_category(extract_test_category_from_id(test_id))
+
+
+def get_memory_artifact_dir_by_category(test_category: str) -> str:
+    """
+    Get the directory for memory artifacts (snapshots, pre-req checkpoints) for a test category.
+    Returns a path like "text/_memory_artifacts/kv".
+    """
+    dir_structure = get_directory_structure_by_category(test_category)
+    backend_type = extract_memory_backend_type(test_category)
+    return os.path.join(dir_structure, "_memory_artifacts", backend_type)
 
 
 #### Helper functions to load/write the dataset files ####
