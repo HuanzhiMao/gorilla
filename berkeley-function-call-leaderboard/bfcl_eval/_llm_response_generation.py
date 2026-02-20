@@ -32,18 +32,18 @@ class Args(argparse.Namespace):
     temperature: float
     include_input_log: bool
     exclude_state_log: bool
-    num_threads: Optional[int]
+    num_threads: int
     num_gpus: int
     backend: str
     gpu_memory_utilization: float
-    result_dir: Path
+    result_dir: Path | None
     run_ids: bool
     allow_overwrite: bool
     skip_server_setup: bool
-    local_model_path: Optional[str]
-    lora_modules: Optional[list[str]]
+    local_model_path: str | None
+    lora_modules: list[str] | None
     enable_lora: bool
-    max_lora_rank: Optional[int]
+    max_lora_rank: int | None
 
 
 def get_args() -> Args:
