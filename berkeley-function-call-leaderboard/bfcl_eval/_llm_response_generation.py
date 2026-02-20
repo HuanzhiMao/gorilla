@@ -10,7 +10,6 @@ from collections import defaultdict
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from copy import deepcopy
 from pathlib import Path
-from typing import Optional
 
 from bfcl_eval.constants.eval_config import (
     PROJECT_ROOT,
