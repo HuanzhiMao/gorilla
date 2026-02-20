@@ -2229,7 +2229,7 @@ third_party_inference_model_map = {
 }
 
 
-MODEL_CONFIG_MAPPING = {
+MODEL_CONFIG_MAPPING: dict[str, ModelConfig] = {
     **api_inference_model_map,
     **local_inference_model_map,
     **third_party_inference_model_map,

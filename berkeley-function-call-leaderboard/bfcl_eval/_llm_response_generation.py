@@ -83,7 +83,7 @@ def get_args() -> Args:
         type=str,
         default=None,
         nargs="*",
-        help="Specify the path to the LoRA modules for vLLM backend in name=\"path\" format. Can be specified multiple times.",
+        help='Specify the path to the LoRA modules for vLLM backend in name="path" format. Can be specified multiple times.',
     )
     parser.add_argument(
         "--enable-lora",
@@ -137,7 +137,9 @@ def get_involved_test_entries(test_category_args, run_ids):
     )
 
 
-def collect_test_cases(args: Args, model_name, all_test_categories, all_test_entries_involved):
+def collect_test_cases(
+    args: Args, model_name, all_test_categories, all_test_entries_involved
+):
     model_name_dir = model_name.replace("/", "_")
     model_result_dir = args.result_dir / model_name_dir
 
@@ -171,7 +173,9 @@ def collect_test_cases(args: Args, model_name, all_test_categories, all_test_ent
 
         if is_memory(test_category):
             # We also need to special handle the pre-requisite entries and the snapshot result for memory test cases
-            snapshot_folder = model_result_dir / get_memory_artifact_dir_by_category(test_category)
+            snapshot_folder = model_result_dir / get_memory_artifact_dir_by_category(
+                test_category
+            )
             if snapshot_folder.exists():
                 if not args.allow_overwrite:
                     pass
@@ -419,26 +423,31 @@ def main(args: Args):
     else:
         tqdm.write(f"Running full test cases for categories: {all_test_categories}.")
 
-    if any(is_format_sensitivity(test_category) for test_category in all_test_categories):
-        for model_name in args.model:
-            if MODEL_CONFIG_MAPPING[model_name].is_fc_model:
+    skip_rules = [
+        (
+            is_format_sensitivity,
+            lambda cfg: cfg.is_fc_model,
+            "`Format sensitivity` test cases are only supported for prompting (non-FC) models.",
+        ),
+        (
+            contain_native_audio_input,
+            lambda cfg: not cfg.supports_audio_input,
+            "`True audio` test cases are only supported for models that support native audio input.",
+        ),
+        (
+            contain_vision_input,
+            lambda cfg: not cfg.supports_vision_input,
+            "`Vision` test cases are only supported for models that support vision/image input.",
+        ),
+    ]
+    for category_check, should_skip, reason in skip_rules:
+        skipped_categories = [tc for tc in all_test_categories if category_check(tc)]
+        if skipped_categories:
+            skipped_models = [m for m in args.model if should_skip(MODEL_CONFIG_MAPPING[m])]
+            if skipped_models:
                 tqdm.write(
-                    "⚠️ Warning: Format sensitivity test cases are only supported for prompting (non-FC) models. "
-                    f"Since {model_name} is a FC model based on its config, the format sensitivity test cases will be skipped."
+                    f"⚠️ Warning: {reason} Skipping categories {', '.join(skipped_categories)} for models: {', '.join(skipped_models)}"
                 )
-    if any(contain_audio_task(test_category) for test_category in all_test_categories):
-        for model_name in args.model:
-            if (
-                args.use_audio_input
-                and not MODEL_CONFIG_MAPPING[model_name].supports_audio_input
-            ):
-                raise ValueError(f"Model {model_name} does not support native audio input.")
-
-            # if args.use_audio_input and not model_name.startswith("audio:"):
-            #     raise ValueError(
-            #         f"Model {model_name} should not be used with the --use-audio-input flag. Please use the `audio:` prefix for models that support native audio input. For example, use `audio:gemini-2.5-pro-Audio-FC` instead of `gemini-2.5-pro-Audio-FC`."
-            #     )
-
 
     if args.result_dir is not None:
         args.result_dir = PROJECT_ROOT / args.result_dir
