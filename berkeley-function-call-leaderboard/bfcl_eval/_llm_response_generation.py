@@ -436,7 +436,7 @@ def main(args: Args):
         ),
         (
             contain_vision_input,
-            lambda cfg: not cfg.supports_vision_input,
+            lambda cfg: not cfg.supports_image_input,
             "`Vision` test cases are only supported for models that support vision/image input.",
         ),
     ]

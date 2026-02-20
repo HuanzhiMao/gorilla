@@ -7,7 +7,7 @@ from bfcl_eval.constants.default_prompts import (
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING,
 )
-from bfcl_eval.constants.enums import ModelStyle, ReturnFormat
+from bfcl_eval.constants.enums import ModelStyle, ResultType, ReturnFormat
 from bfcl_eval.constants.eval_config import (
     MAXIMUM_CLARIFICATION_LIMIT,
     MAXIMUM_STEP_LIMIT,

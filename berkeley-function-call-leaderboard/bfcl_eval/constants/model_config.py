@@ -93,7 +93,7 @@ class ModelConfig:
         is_fc_model (bool): True if this model is used in Function-Calling mode, otherwise False for Prompt-based mode.
         underscore_to_dot (bool): True if model does not support '.' in function names, in which case we will replace '.' with '_'. Currently this only matters for checker.  TODO: We should let the tool compilation step also take this into account.
         supports_audio_input (bool): True if the model supports native audio input. Required for true audio tasks.
-        supports_vision_input (bool): True if the model supports vision/image input. Required for vision tasks.
+        supports_image_input (bool): True if the model supports vision/image input. Required for vision tasks.
 
     """
 
@@ -119,7 +119,7 @@ class ModelConfig:
     supports_audio_input: bool = False
     
     # True if the model supports vision/image input. Required for vision tasks.
-    supports_vision_input: bool = False
+    supports_image_input: bool = False
 
 
 @dataclass
@@ -146,10 +146,10 @@ api_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "DeepSeek-V3.2-Exp": ModelConfig(
+    "DeepSeek-V3.2": ModelConfig(
         model_name="deepseek-chat",
-        display_name="DeepSeek-V3.2-Exp (Prompt)",
-        url="https://api-docs.deepseek.com/news/news250528",
+        display_name="DeepSeek-V3.2 (Prompt)",
+        url="https://api-docs.deepseek.com/news/news251201",
         org="DeepSeek",
         license="MIT",
         model_handler=DeepSeekAPIHandler,
@@ -158,10 +158,10 @@ api_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "DeepSeek-V3.2-Exp-FC": ModelConfig(
+    "DeepSeek-V3.2-FC": ModelConfig(
         model_name="deepseek-chat",
-        display_name="DeepSeek-V3.2-Exp (FC)",
-        url="https://api-docs.deepseek.com/news/news250528",
+        display_name="DeepSeek-V3.2 (FC)",
+        url="https://api-docs.deepseek.com/news/news251201",
         org="DeepSeek",
         license="MIT",
         model_handler=DeepSeekAPIHandler,
@@ -170,10 +170,10 @@ api_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
     ),
-    "DeepSeek-V3.2-Exp-thinking": ModelConfig(
+    "DeepSeek-V3.2-FC-thinking": ModelConfig(
         model_name="deepseek-reasoner",
-        display_name="DeepSeek-V3.2-Exp (Prompt + Thinking)",
-        url="https://api-docs.deepseek.com/news/news250528",
+        display_name="DeepSeek-V3.2-FC-thinking (FC + Thinking)",
+        url="https://api-docs.deepseek.com/news/news251201",
         org="DeepSeek",
         license="MIT",
         model_handler=DeepSeekAPIHandler,
@@ -193,6 +193,7 @@ api_inference_model_map = {
         output_price=14,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-5.2-2025-12-11": ModelConfig(
         model_name="gpt-5.2-2025-12-11",
@@ -205,6 +206,7 @@ api_inference_model_map = {
         output_price=14,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_vision_input=True,
     ),
     "gpt-5-mini-2025-08-07-FC": ModelConfig(
         model_name="gpt-5-mini-2025-08-07",
@@ -217,6 +219,7 @@ api_inference_model_map = {
         output_price=2,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-5-mini-2025-08-07": ModelConfig(
         model_name="gpt-5-mini-2025-08-07",
@@ -229,6 +232,7 @@ api_inference_model_map = {
         output_price=2,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-5-nano-2025-08-07-FC": ModelConfig(
         model_name="gpt-5-nano-2025-08-07",
@@ -241,6 +245,7 @@ api_inference_model_map = {
         output_price=0.4,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-5-nano-2025-08-07": ModelConfig(
         model_name="gpt-5-nano-2025-08-07",
@@ -253,6 +258,7 @@ api_inference_model_map = {
         output_price=0.4,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4.1-2025-04-14-FC": ModelConfig(
         model_name="gpt-4.1-2025-04-14",
@@ -265,6 +271,7 @@ api_inference_model_map = {
         output_price=8,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-4.1-2025-04-14": ModelConfig(
         model_name="gpt-4.1-2025-04-14",
@@ -277,6 +284,7 @@ api_inference_model_map = {
         output_price=8,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4.1-mini-2025-04-14-FC": ModelConfig(
         model_name="gpt-4.1-mini-2025-04-14",
@@ -289,6 +297,7 @@ api_inference_model_map = {
         output_price=1.6,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-4.1-mini-2025-04-14": ModelConfig(
         model_name="gpt-4.1-mini-2025-04-14",
@@ -301,6 +310,7 @@ api_inference_model_map = {
         output_price=1.6,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4.1-nano-2025-04-14-FC": ModelConfig(
         model_name="gpt-4.1-nano-2025-04-14",
@@ -313,6 +323,7 @@ api_inference_model_map = {
         output_price=0.4,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-4.1-nano-2025-04-14": ModelConfig(
         model_name="gpt-4.1-nano-2025-04-14",
@@ -325,6 +336,7 @@ api_inference_model_map = {
         output_price=0.4,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4o-2024-11-20": ModelConfig(
         model_name="gpt-4o-2024-11-20",
@@ -337,6 +349,7 @@ api_inference_model_map = {
         output_price=10,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4o-2024-11-20-FC": ModelConfig(
         model_name="gpt-4o-2024-11-20",
@@ -349,6 +362,7 @@ api_inference_model_map = {
         output_price=10,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-4o-mini-2024-07-18": ModelConfig(
         model_name="gpt-4o-mini-2024-07-18",
@@ -361,6 +375,7 @@ api_inference_model_map = {
         output_price=0.6,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4o-mini-2024-07-18-FC": ModelConfig(
         model_name="gpt-4o-mini-2024-07-18",
@@ -373,6 +388,7 @@ api_inference_model_map = {
         output_price=0.6,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "o3-2025-04-16": ModelConfig(
         model_name="o3-2025-04-16",
@@ -385,6 +401,7 @@ api_inference_model_map = {
         output_price=8,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "o3-2025-04-16-FC": ModelConfig(
         model_name="o3-2025-04-16",
@@ -397,6 +414,7 @@ api_inference_model_map = {
         output_price=8,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "o4-mini-2025-04-16": ModelConfig(
         model_name="o4-mini-2025-04-16",
@@ -409,6 +427,7 @@ api_inference_model_map = {
         output_price=4.40,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "o4-mini-2025-04-16-FC": ModelConfig(
         model_name="o4-mini-2025-04-16",
@@ -421,11 +440,12 @@ api_inference_model_map = {
         output_price=4.40,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
-    "claude-opus-4-5-20251101": ModelConfig(
-        model_name="claude-opus-4-5-20251101",
-        display_name="Claude-Opus-4-5-20251101 (Prompt)",
-        url="https://www.anthropic.com/news/claude-4",
+    "claude-opus-4-6": ModelConfig(
+        model_name="claude-opus-4-6",
+        display_name="Claude-Opus-4-6 (Prompt)",
+        url="https://www.anthropic.com/news/claude-opus-4-6",
         org="Anthropic",
         license="Proprietary",
         model_handler=ClaudeHandler,
@@ -433,11 +453,12 @@ api_inference_model_map = {
         output_price=25,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
-    "claude-opus-4-5-20251101-FC": ModelConfig(
-        model_name="claude-opus-4-5-20251101",
-        display_name="Claude-Opus-4-5-20251101 (FC)",
-        url="https://www.anthropic.com/news/claude-4",
+    "claude-opus-4-6-FC": ModelConfig(
+        model_name="claude-opus-4-6",
+        display_name="Claude-Opus-4-6 (FC)",
+        url="https://www.anthropic.com/news/claude-opus-4-6",
         org="Anthropic",
         license="Proprietary",
         model_handler=ClaudeHandler,
@@ -445,11 +466,12 @@ api_inference_model_map = {
         output_price=25,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
-    "claude-sonnet-4-5-20250929": ModelConfig(
-        model_name="claude-sonnet-4-5-20250929",
-        display_name="Claude-Sonnet-4-5-20250929 (Prompt)",
-        url="https://www.anthropic.com/news/claude-sonnet-4-5",
+    "claude-sonnet-4-6": ModelConfig(
+        model_name="claude-sonnet-4-6",
+        display_name="Claude-Sonnet-4-6 (Prompt)",
+        url="https://www.anthropic.com/news/claude-sonnet-4-6",
         org="Anthropic",
         license="Proprietary",
         model_handler=ClaudeHandler,
@@ -457,11 +479,12 @@ api_inference_model_map = {
         output_price=15,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
-    "claude-sonnet-4-5-20250929-FC": ModelConfig(
-        model_name="claude-sonnet-4-5-20250929",
-        display_name="Claude-Sonnet-4-5-20250929 (FC)",
-        url="https://www.anthropic.com/news/claude-sonnet-4-5",
+    "claude-sonnet-4-6-FC": ModelConfig(
+        model_name="claude-sonnet-4-6",
+        display_name="Claude-Sonnet-4-6 (FC)",
+        url="https://www.anthropic.com/news/claude-sonnet-4-6",
         org="Anthropic",
         license="Proprietary",
         model_handler=ClaudeHandler,
@@ -469,6 +492,7 @@ api_inference_model_map = {
         output_price=15,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "claude-haiku-4-5-20251001": ModelConfig(
         model_name="claude-haiku-4-5-20251001",
@@ -481,6 +505,7 @@ api_inference_model_map = {
         output_price=4,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "claude-haiku-4-5-20251001-FC": ModelConfig(
         model_name="claude-haiku-4-5-20251001",
@@ -493,7 +518,9 @@ api_inference_model_map = {
         output_price=4,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
+    # @HuanzhiMao FIXME: update all following models. double check
     "nova-pro-v1.0": ModelConfig(
         model_name="us.amazon.nova-pro-v1:0",
         display_name="Amazon-Nova-Pro-v1:0 (FC)",

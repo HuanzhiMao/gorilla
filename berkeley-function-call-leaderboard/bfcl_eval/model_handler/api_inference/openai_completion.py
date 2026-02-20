@@ -4,7 +4,7 @@ import time
 from typing import Any
 
 from bfcl_eval.constants.default_prompts import VISION_TOOL_RESPONSE_TEXT_PROMPT
-from bfcl_eval.constants.enums import ModelStyle
+from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.utils import (
@@ -194,14 +194,14 @@ class OpenAICompletionsHandler(BaseHandler):
         for execution_result, tool_call_id in zip(
             execution_results, model_response_data["tool_call_ids"]
         ):
-            if execution_result["result_type"] == "text":
+            if execution_result["result_type"] == ResultType.TEXT:
                 tool_message = {
                     "role": "tool",
                     "content": execution_result["result"],
                     "tool_call_id": tool_call_id,
                 }
                 inference_data["message"].append(tool_message)
-            elif execution_result["result_type"] == "image":
+            elif execution_result["result_type"] == ResultType.IMAGE:
                 user_role_image_message[
                     "content"
                 ] += f"Tool response for tool call id {tool_call_id} is an image, attached below. "

@@ -48,4 +48,12 @@ class Modality(Enum):
     VISION = "vision"
     TRUE_AUDIO = "true_audio"
     TEXT_AUDIO = "text_audio"
+
+
+class ResultType(str, Enum):
+    """
+    ResultType indicates the type of content returned from function execution.
+    """
+    TEXT = "text"
+    IMAGE = "image"
     

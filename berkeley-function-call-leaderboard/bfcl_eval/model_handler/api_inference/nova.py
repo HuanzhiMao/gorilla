@@ -5,7 +5,7 @@ from typing import Any
 import boto3
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
-from bfcl_eval.constants.enums import ModelStyle
+from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.model_handler.utils import (
     combine_consecutive_user_prompts,
     convert_to_function_call,
@@ -188,7 +188,7 @@ class NovaHandler(BaseHandler):
         for execution_result, tool_call_id in zip(
             execution_results, model_response_data["tool_call_ids"]
         ):
-            if execution_result["result_type"] == "text":
+            if execution_result["result_type"] == ResultType.TEXT:
                 tool_message["content"].append(
                     {
                         "toolResult": {
@@ -197,7 +197,7 @@ class NovaHandler(BaseHandler):
                         }
                     }
                 )
-            elif execution_result["result_type"] == "image":
+            elif execution_result["result_type"] == ResultType.IMAGE:
                 tool_message["content"].append(
                     {
                         "toolResult": {

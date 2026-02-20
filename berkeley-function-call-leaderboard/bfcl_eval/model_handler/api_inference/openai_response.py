@@ -2,9 +2,9 @@ import json
 import os
 import time
 
+from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
-from bfcl_eval.constants.enums import ModelStyle
 from bfcl_eval.model_handler.utils import (
     convert_to_function_call,
     convert_to_tool,
@@ -218,13 +218,13 @@ class OpenAIResponsesHandler(BaseHandler):
         for execution_result, tool_call_id in zip(
             execution_results, model_response_data["tool_call_ids"]
         ):
-            if execution_result["result_type"] == "text":
+            if execution_result["result_type"] == ResultType.TEXT:
                 tool_message = {
                     "type": "function_call_output",
                     "call_id": tool_call_id,
                     "output": execution_result["result"],
                 }
-            elif execution_result["result_type"] == "image":
+            elif execution_result["result_type"] == ResultType.IMAGE:
                 image_content = execution_result["result"]
                 tool_message = {
                     "type": "function_call_output",

@@ -5,7 +5,7 @@ from typing import Any
 
 from anthropic import Anthropic, RateLimitError
 from anthropic.types import TextBlock, ToolUseBlock
-from bfcl_eval.constants.enums import ModelStyle
+from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.utils import (
@@ -70,14 +70,13 @@ class ClaudeHandler(BaseHandler):
         """
         max_tokens is required to be set when querying, so we default to the model's max tokens
         """
-        if "claude-opus-4-5-20251101" in self.model_name:
-            return 64000
-        elif "claude-sonnet-4-5-20250929" in self.model_name:
+        if "claude-opus-4-6" in self.model_name:
+            return 128000
+        elif "claude-sonnet-4-6" in self.model_name:
             return 64000
         elif "claude-haiku-4-5-20251001" in self.model_name:
             return 64000
         else:
-            return 32000
             raise ValueError(f"Unsupported model: {self.model_name}")
 
     #### FC methods ####
@@ -237,7 +236,7 @@ class ClaudeHandler(BaseHandler):
         for execution_result, tool_call_id in zip(
             execution_results, model_response_data["tool_call_ids"]
         ):
-            if execution_result["result_type"] == "text":
+            if execution_result["result_type"] == ResultType.TEXT:
                 tool_message["content"].append(
                     {
                         "type": "tool_result",
@@ -245,7 +244,7 @@ class ClaudeHandler(BaseHandler):
                         "tool_use_id": tool_call_id,
                     }
                 )
-            elif execution_result["result_type"] == "image":
+            elif execution_result["result_type"] == ResultType.IMAGE:
                 tool_message["content"].append(
                     {
                         "type": "tool_result",

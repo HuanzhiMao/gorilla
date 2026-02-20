@@ -4,7 +4,7 @@ from typing import Any
 
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
-from bfcl_eval.constants.enums import ModelStyle
+from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.model_handler.utils import (
     convert_to_tool,
     default_decode_ast_prompting,
@@ -242,7 +242,7 @@ class GeminiHandler(BaseHandler):
         for execution_result, tool_call_func_name in zip(
             execution_results, model_response_data["tool_call_func_names"]
         ):
-            if execution_result["result_type"] == "text":
+            if execution_result["result_type"] == ResultType.TEXT:
                 tool_response_parts.append(
                     Part.from_function_response(
                         name=tool_call_func_name,
@@ -251,7 +251,7 @@ class GeminiHandler(BaseHandler):
                         },
                     )
                 )
-            elif execution_result["result_type"] == "image":
+            elif execution_result["result_type"] == ResultType.IMAGE:
                 tool_response_parts.append(
                     Part.from_function_response(
                         name=tool_call_func_name,

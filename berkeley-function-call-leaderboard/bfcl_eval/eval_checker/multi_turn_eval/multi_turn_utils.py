@@ -9,6 +9,7 @@ from bfcl_eval.constants.executable_backend_config import (
     CLASS_FILE_PATH_MAPPING,
     STATELESS_CLASSES,
 )
+from bfcl_eval.constants.enums import ResultType
 from bfcl_eval.eval_checker.multi_turn_eval.func_source_code import ImageResult
 
 
@@ -22,7 +23,29 @@ def execute_multi_turn_func_call(
     is_evaL_run: bool = False,
 ) -> tuple[list[str], dict]:
     """
-    TODO: Add docstring
+    Execute a list of function calls against dynamically loaded class instances.
+
+    For each class in `involved_classes`, this function loads (or reuses) a unique class instance,
+    configures it with `initial_config`, and maps its public methods by name. Each string in
+    `func_call_list` is then resolved to the appropriate instance and evaluated via `eval()`.
+
+    Instances are cached in `globals()` keyed by model name, test entry ID, and class name,
+    so subsequent turns reuse the same stateful instances.
+
+    Args:
+        func_call_list: A list of function call strings to execute (e.g. ["get_weather(city='SF')"]).
+        initial_config: A dict mapping class names to their initial scenario configuration.
+        involved_classes: A list of class name strings to instantiate and expose methods from.
+        model_name: The model name, used as part of the instance cache key.
+        test_entry_id: The test entry ID, used as part of the instance cache key.
+        long_context: Whether to load the scenario in long-context mode.
+        is_evaL_run: If True, appends "_eval" to the model name for cache isolation.
+
+    Returns:
+        A tuple of (execution_results, involved_instances) where:
+        - execution_results is a list of dicts, each with "result" (str or dict) and
+          "result_type" (ResultType.TEXT or ResultType.IMAGE).
+        - involved_instances is a dict mapping class names to their instantiated objects.
     """
     if is_evaL_run:
         model_name += "_eval"
@@ -88,13 +111,12 @@ def execute_multi_turn_func_call(
                 raise Exception(f"Function call {func_call_copy} is not allowed.")
 
             func_call_result = eval(func_call)
-            # @HuanzhiMao FIXME: Use enum for this
-            result_type = "text"
+            result_type = ResultType.TEXT
 
             # Every result should be a dict with "result" and "result_type" keys
             # @HuanzhiMao FIXME: Maybe we should use a more elegant way to handle this
             if isinstance(func_call_result, ImageResult):
-                result_type = "image"
+                result_type = ResultType.IMAGE
                 func_call_result = func_call_result.to_dict()
             else:
                 if type(func_call_result) == str:
@@ -121,7 +143,7 @@ def execute_multi_turn_func_call(
             execution_results.append(
                 {
                     "result": f"Error during execution: {str(e)}",
-                    "result_type": "text",
+                    "result_type": ResultType.TEXT,
                 }
             )
 
