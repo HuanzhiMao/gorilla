@@ -6,10 +6,13 @@ from bfcl_eval.constants.category_mapping import VERSION_PREFIX
 from bfcl_eval.constants.default_prompts import (
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING,
-    MAXIMUM_STEP_LIMIT,
 )
 from bfcl_eval.constants.enums import ModelStyle, ReturnFormat
-from bfcl_eval.constants.eval_config import RESULT_PATH
+from bfcl_eval.constants.eval_config import (
+    MAXIMUM_CLARIFICATION_LIMIT,
+    MAXIMUM_STEP_LIMIT,
+    RESULT_PATH,
+)
 from bfcl_eval.constants.executable_backend_config import (
     END_SESSION_AFTER_EVAL_CLASSES,
     OMIT_STATE_INFO_CLASSES,
@@ -20,7 +23,11 @@ from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     execute_multi_turn_func_call,
     is_empty_execute_response,
 )
-from bfcl_eval.model_handler.utils import add_memory_instruction_system_prompt
+from bfcl_eval.model_handler.utils import (
+    add_memory_instruction_system_prompt,
+    check_for_clarification,
+    extract_clarification_context,
+)
 from bfcl_eval.utils import *
 from overrides import final
 
@@ -78,20 +85,14 @@ class BaseHandler:
         # FC model
         # TODO: Let all models have the is_fc_model attribute and remove the "FC" check
         if "FC" in self.registry_name or self.is_fc_model:
-            if contain_multi_turn_interaction(test_entry["id"]):
-                return self.inference_multi_turn_FC(
-                    test_entry, include_input_log, exclude_state_log
-                )
-            else:
-                return self.inference_single_turn_FC(test_entry, include_input_log)
+            return self.inference_multi_turn_FC(
+                test_entry, include_input_log, exclude_state_log
+            )
         # Prompting model
         else:
-            if contain_multi_turn_interaction(test_entry["id"]):
-                return self.inference_multi_turn_prompting(
-                    test_entry, include_input_log, exclude_state_log
-                )
-            else:
-                return self.inference_single_turn_prompting(test_entry, include_input_log)
+            return self.inference_multi_turn_prompting(
+                test_entry, include_input_log, exclude_state_log
+            )
 
     @final
     def inference_multi_turn_FC(
@@ -101,9 +102,11 @@ class BaseHandler:
         exclude_state_log: bool,
     ) -> tuple[list[list], dict]:
         initial_config: dict = test_entry.get("initial_config", {})
-        involved_classes: list = test_entry["involved_classes"]
+        involved_classes: list = test_entry.get("involved_classes", [])
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
+        # Only for audio tasks, we allow the model to ask for clarification.
+        could_allow_clarification: bool = test_entry.get("could_allow_clarification", False)
 
         # This is only for the miss function category
         # A mapping from turn index to function to holdout
@@ -199,8 +202,6 @@ class BaseHandler:
                     }
                 ]
 
-            current_turn_response = []
-
             current_turn_message_for_logging = deepcopy(current_turn_message)
             if contain_vision_task(test_category):
                 for message in current_turn_message_for_logging:
@@ -209,6 +210,7 @@ class BaseHandler:
                             del image_content["image_bytes"]
                             del image_content["image_base64"]
 
+            current_turn_response = []
             current_turn_inference_log: list[dict] = {
                 "begin_of_turn_query": current_turn_message_for_logging
             }
@@ -216,6 +218,10 @@ class BaseHandler:
             current_turn_output_token_count: list[float] = []
             current_turn_latency: list[float] = []
             current_turn_reasoning_content = []
+
+            allowed_clarifications, original_user_request, last_user_message_asr_output = (
+                self._extract_clarification_context(current_turn_message)
+            )
 
             if turn_idx == 0:
                 inference_data = self.add_first_turn_message_FC(
@@ -227,10 +233,13 @@ class BaseHandler:
                 )
 
             count = 0
+            clarification_count = 0
+
             while True:
+                # @HuanzhiMao FIXME: check if allow clarification
                 print("-" * 100)
                 print(
-                    f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {count}"
+                    f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {count}, Clarification Count: {clarification_count}"
                 )
                 current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
@@ -276,11 +285,14 @@ class BaseHandler:
 
                 current_step_inference_log.append(log_entry)
 
-                # Try decoding the model response
+                count += 1
+
+                # Try decoding the model response into executable function calls
+                decoded_model_responses = None
+                has_function_calls = False
+
                 try:
-                    decoded_model_responses = self.decode_execute(
-                        model_responses, has_tool_call_tag=False
-                    )
+                    decoded_model_responses = self.decode_execute(model_responses)
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",
@@ -288,75 +300,134 @@ class BaseHandler:
                             "model_response_decoded": decoded_model_responses,
                         }
                     )
+                    # @HuanzhiMao double check if this is necessary
+                    model_responses = decoded_model_responses
 
                     if is_empty_execute_response(decoded_model_responses):
-                        print("Empty response from the model. Proceed to next turn.")
                         current_step_inference_log.append(
                             {
                                 "role": "handler_log",
-                                "content": f"Empty response from the model. Proceed to next turn.",
+                                "content": "Empty response from the model.",
                                 "model_response_decoded": decoded_model_responses,
+                            }
+                        )
+                    else:
+                        has_function_calls = True
+
+                except Exception as e:
+                    current_step_inference_log.append(
+                        {
+                            "role": "handler_log",
+                            "content": "Error decoding the model response.",
+                            "model_response": model_responses,
+                            "error": str(e),
+                        }
+                    )
+
+                # Path 1: Model produced function calls → execute them
+                if has_function_calls:
+                    # If it's a single-turn entry, we don't need to execute the function calls. The eval stops here.
+                    if not contain_multi_turn_interaction(test_entry_id):
+                        break
+
+                    # Obtain the execution results
+
+                    execution_results, involved_instances = execute_multi_turn_func_call(
+                        decoded_model_responses,
+                        initial_config,
+                        involved_classes,
+                        self.model_name_underline_replaced,
+                        test_entry_id,
+                        long_context=(
+                            "long_context" in test_category or "composite" in test_category
+                        ),
+                        is_evaL_run=False,
+                    )
+
+                    # Add the execution results to the chat history for the next turn
+                    inference_data = self._add_execution_results_FC(
+                        inference_data, execution_results, model_response_data
+                    )
+
+                    for execution_result in execution_results:
+                        # @HuanzhiMao FIXME: Update for prompting method as well.
+                        if execution_result["result_type"] == "image":
+                            current_step_inference_log.append(
+                                {
+                                    "role": "tool",
+                                    "content": "This is an image result. Removed for logging purpose.",
+                                }
+                            )
+                        else:
+                            current_step_inference_log.append(
+                                {
+                                    "role": "tool",
+                                    "content": execution_result["result"],
+                                }
+                            )
+
+                    # If the model has taken too many steps, we force it to quit.
+                    if count > MAXIMUM_STEP_LIMIT:
+                        force_quit = True
+                        current_step_inference_log.append(
+                            {
+                                "role": "handler_log",
+                                "content": f"Model has been forced to quit after {MAXIMUM_STEP_LIMIT} steps.",
                             }
                         )
                         break
 
-                except Exception as e:
-                    print("Failed to decode the model response. Proceed to next turn.")
-                    current_step_inference_log.append(
-                        {
-                            "role": "handler_log",
-                            "content": f"Error decoding the model response. Proceed to next turn.",
-                            "error": str(e),
-                        }
+                    continue
+
+                # Path 2: No function calls → if model is allowed to ask clarification, check if model is asking a valid clarification.
+                elif could_allow_clarification:
+                    is_clarification, clarification_content = check_for_clarification(
+                        model_response=model_responses,
+                        allowed_clarifications=allowed_clarifications,
+                        original_user_request=original_user_request,
+                        asr_output=last_user_message_asr_output,
                     )
-                    break
 
-                # Obtain the execution results
-                execution_results, involved_instances = execute_multi_turn_func_call(
-                    decoded_model_responses,
-                    initial_config,
-                    involved_classes,
-                    self.model_name_underline_replaced,
-                    test_entry_id,
-                    long_context=(
-                        "long_context" in test_category or "composite" in test_category
-                    ),
-                    is_evaL_run=False,
-                )
+                    if is_clarification:
+                        clarification_count += 1
+                        if clarification_count > MAXIMUM_CLARIFICATION_LIMIT:
+                            force_quit = True
+                            current_step_inference_log.append(
+                                {
+                                    "role": "handler_log",
+                                    "content": f"Model has been forced to quit after {MAXIMUM_CLARIFICATION_LIMIT} clarifications. Way too many clarifications than needed.",
+                                }
+                            )
+                            break
 
-                # Add the execution results to the chat history for the next turn
-                inference_data = self._add_execution_results_FC(
-                    inference_data, execution_results, model_response_data
-                )
-
-                for execution_result in execution_results:
-                    # @HuanzhiMao FIXME: Update for prompting method as well.
-                    if execution_result["result_type"] == "image":
+                        inference_data = self._add_next_turn_user_message_FC(
+                            inference_data,
+                            [{"role": "user", "content": clarification_content}],
+                        )
                         current_step_inference_log.append(
                             {
-                                "role": "tool",
-                                "content": "This is an image result. Removed for logging purpose.",
+                                "role": "handler_log:answer_clarification",
+                                "content": "Model asked a clarification matching an allowed topic. Responding and continuing the current turn's step loop.",
+                                "model_response": model_responses,
+                                "allowed_clarifications": allowed_clarifications,
+                                "clarification_message": clarification_content,
                             }
                         )
+                        continue
                     else:
                         current_step_inference_log.append(
                             {
-                                "role": "tool",
-                                "content": execution_result["result"],
+                                "role": "handler_log:no_clarification",
+                                "content": "Clarification is enabled, but model response did not match any allowed clarification topic. Proceed to next turn.",
+                                "model_response": model_responses,
+                                "allowed_clarifications": allowed_clarifications,
                             }
                         )
 
-                count += 1
-                # Force quit after too many steps
-                if count > MAXIMUM_STEP_LIMIT:
-                    force_quit = True
-                    current_step_inference_log.append(
-                        {
-                            "role": "handler_log",
-                            "content": f"Model has been forced to quit after {MAXIMUM_STEP_LIMIT} steps.",
-                        }
-                    )
+                    break
 
+                # Path 3: No function calls, not allowed to ask clarification → done with this turn
+                else:
                     break
 
             # Add to the total list
@@ -823,12 +894,13 @@ class BaseHandler:
         file_entries = {}
         for entry in entries_to_write:
             test_category = extract_test_category_from_id(entry["id"])
-            # Determine the high-level grouping folder (non_live, live, etc.)
+            # Determine the high-level grouping folder (text, vision, true_audio, text_audio)
             group_dir_name = get_directory_structure_by_id(entry["id"])
             group_dir_path = model_result_dir / group_dir_name
             group_dir_path.mkdir(parents=True, exist_ok=True)
 
-            file_path = group_dir_path / f"{VERSION_PREFIX}_{test_category}_result.json"
+            base_category = get_base_category(test_category)
+            file_path = group_dir_path / f"{VERSION_PREFIX}_{base_category}_result.json"
             file_entries.setdefault(file_path, []).append(entry)
 
         for file_path, entries in file_entries.items():

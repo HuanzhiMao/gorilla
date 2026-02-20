@@ -1,6 +1,3 @@
-MAXIMUM_STEP_LIMIT = 40
-
-
 #### System Prompts for Chat Models ####
 
 

@@ -463,7 +463,7 @@ def _evaluate_single_ast_entry(
         possible_answer_item,
         language,
         # format sensitivity has parallel, multiple cases which is encoded in index
-        test_category if test_category != "format_sensitivity" else index.split(":")[-1],
+        test_category if not is_format_sensitivity(test_category) else extract_test_category_from_id(index.split("|")[-1]),
         model_name,
     )
 
@@ -512,10 +512,10 @@ def format_sensitivity_runner(
         possible_answer_item = possible_answer[i]["ground_truth"]
 
         assert (
-            ":" in index and len(index.split(":")) == 3
-        ), f"Test entry ID {index} should contain exactly two colons, since they are supposed to be the format sensitivity ids."
+            "|" in index and len(index.split("|")) == 2
+        ), f"Test entry ID {index} should contain exactly two pipe characters, since they are supposed to be the format sensitivity ids."
 
-        format_sensitivity_config = index.split(":")[1]
+        format_sensitivity_config = index.split("|")[1]
         (
             return_format,
             has_tool_call_tag,
@@ -628,7 +628,7 @@ def vision_geogesser_runner(
     # It's just that the `correct_count` field in the header would be strange.
     total_score = total_score / 5000
     return save_eval_results(
-        result, total_score, model_result, test_category, model_name, score_dir
+        result, total_score, model_result, test_category, model_name, score_dir,
     )
 
 
@@ -670,7 +670,7 @@ def agentic_runner(
             result.append(entry_result)
 
     return save_eval_results(
-        result, correct_count, model_result, test_category, model_name, score_dir
+        result, correct_count, model_result, test_category, model_name, score_dir,
     )
 
 
@@ -712,12 +712,12 @@ def multi_turn_runner(
             result.append(entry_result)
 
     return save_eval_results(
-        result, correct_count, model_result, test_category, model_name, score_dir
+        result, correct_count, model_result, test_category, model_name, score_dir,
     )
 
 
 def relevance_file_runner(
-    handler: BaseHandler, model_result, prompt, model_name, test_category, score_dir
+    handler: BaseHandler, model_result, prompt, model_name, test_category, score_dir,
 ):
     # This function serves for both relevance and irrelevance tests, which share the exact opposite logic.
     # If `test_category` is "irrelevance", the model is expected to output no function call.
@@ -740,7 +740,7 @@ def relevance_file_runner(
             result.append(entry_result)
 
     return save_eval_results(
-        result, correct_count, model_result, test_category, model_name, score_dir
+        result, correct_count, model_result, test_category, model_name, score_dir,
     )
 
 
@@ -794,7 +794,7 @@ def ast_file_runner(
             result.append(entry_result)
 
     return save_eval_results(
-        result, correct_count, model_result, test_category, model_name, score_dir
+        result, correct_count, model_result, test_category, model_name, score_dir,
     )
 
 
@@ -843,7 +843,7 @@ def evaluate_task(
 
     elif is_vision_web_search(test_category):
         # @HuanzhiMao FIXME
-        possible_answer = load_ground_truth_entry("vision_base")
+        possible_answer = load_ground_truth_entry("vision:vision_base")
 
         # Vision is using the same substring matching logic as agentic categories
         accuracy, total_count = agentic_runner(
@@ -862,7 +862,7 @@ def evaluate_task(
         )
 
         accuracy, total_count = relevance_file_runner(
-            handler, model_result, prompt, model_name, test_category, score_dir
+            handler, model_result, prompt, model_name, test_category, score_dir,
         )
 
     else:
@@ -960,7 +960,10 @@ def runner(
 
         # Find and process all result JSON files recursively in the subdirectory
         for model_result_json in subdir.rglob(RESULT_FILE_PATTERN):
-            test_category = extract_test_category(model_result_json)
+            base_category = extract_test_category(model_result_json)
+            # Reconstruct the full prefixed category name from the directory structure
+            modality = detect_modality_from_path(model_result_json, subdir)
+            test_category = f"{modality}:{base_category}"
             if test_category not in test_categories:
                 continue
 
@@ -1033,14 +1036,16 @@ def main(model, test_categories, result_dir, score_dir, partial_eval: bool = Fal
     )
 
     print(
-        f"🏁 Evaluation completed. See {score_dir / 'data_overall.csv'} for overall evaluation results on BFCL V4."
+        f"🏁 Evaluation completed. See {score_dir / 'data_overall.csv'} for cross-modality overall results on BFCL V4."
     )
     if partial_eval:
         print(
             "⚠️  Partial evaluation for a single category is enabled (--partial-run flag is set). Accuracy scores are computed only on the subset of entries present in the model result files, which may differ from a full evaluation and from the official leaderboard score."
         )
     print(
-        f"See {score_dir / 'data_live.csv'}, {score_dir / 'data_non_live.csv'}, {score_dir / 'data_multi_turn.csv'}, {score_dir / 'data_agentic.csv'} and {score_dir / 'data_format_sensitivity.csv'} for detailed evaluation results on each sub-section categories respectively."
+        f"See {score_dir / 'data_text_overall.csv'} for text modality details, "
+        f"{score_dir / 'data_true_audio_overall.csv'} and {score_dir / 'data_text_audio_overall.csv'} for audio, "
+        f"and {score_dir / 'data_vision_overall.csv'} for vision."
     )
 
 

@@ -113,6 +113,9 @@ class ModelConfig:
     # True if this model does not allow '.' in function names
     underscore_to_dot: bool = False
 
+    # True if the model supports native audio input.
+    supports_audio_input: bool = False
+
 
 @dataclass
 class OSSModelConfig(ModelConfig):

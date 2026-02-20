@@ -19,6 +19,7 @@ from bfcl_eval.constants.executable_backend_config import (
     MULTI_TURN_FUNC_DOC_FILE_MAPPING,
     UPDATED_TOOL_LIST_CLASSES,
 )
+from bfcl_eval.constants.enums import Modality
 from filelock import FileLock
 
 _FILE_LOCK_REGISTRY: dict[str, FileLock] = {}
@@ -45,6 +46,48 @@ def _get_file_lock(filepath: str) -> FileLock:
 
 #### Helper functions to extract/parse/complete test category from different formats ####
 
+# Category names use the format "modality:base_name", e.g. "text:simple_python",
+# "vision:geogesser_type1", "true_audio:simple_python", "text_audio:simple_python".
+# File names do NOT include the modality prefix — the directory structure handles it.
+
+
+# @HuanzhiMao FIXME: remove extra safety check
+def parse_full_category(full_category: str) -> tuple[Modality, str]:
+    """Parse a modality-prefixed category into (modality, base_name).
+
+    Example: "text:simple_python" → (Modality.TEXT, "simple_python")
+    """
+    assert (
+        ":" in full_category
+    ), f"Category {full_category} is not a modality-prefixed category."
+    modality, _, base_category = full_category.partition(":")
+    return Modality(modality), base_category
+
+
+def get_base_category(full_category: str) -> str:
+    """Strip the modality prefix from a category name.
+
+    Example: "text:simple_python" → "simple_python"
+    """
+    assert (
+        ":" in full_category
+    ), f"Category {full_category} is not a modality-prefixed category."
+    modality, _, base_category = full_category.partition(":")
+    assert (
+        Modality(modality) in ALL_MODALITIES
+    ), f"Modality {modality} is not a valid modality."
+    return base_category
+
+
+def get_category_modality(full_category: str) -> Modality:
+    """Extract the modality from a prefixed category name.
+
+    Example: "text:simple_python" → Modality.TEXT
+    """
+    modality = Modality(full_category.split(":")[0])
+    assert modality in ALL_MODALITIES, f"Modality {modality} is not a valid modality."
+    return modality
+
 
 def extract_test_category(input_string: Union[str, Path], raise_error: bool = True) -> str:
     """
@@ -67,16 +110,23 @@ def extract_test_category(input_string: Union[str, Path], raise_error: bool = Tr
 
 def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = False) -> str:
     """
-    Extract the test category from the test entry ID.
+    Extract the test category (including modality prefix) from the test entry ID.
 
-    If `remove_prereq` is True, it will remove the "_prereq" suffix from the test category, only relevant for memory test categories.
-    Memory test categories never contain the "_prereq" suffix, but those are added to differentiate the normal memory test cases from the pre-requisite test cases.
+    Examples:
+        "text:simple_python_5" → "text:simple_python"
+        "text:format_sensitivity_0|prompt_config|text:live_simple_23" → "text:format_sensitivity"
+        "text:memory_kv_prereq_0" (without remove_prereq=True) → "text:memory_kv_prereq"
+        "text:memory_kv_prereq_0" (with remove_prereq=True) → "text:memory_kv"
+
+    If `remove_prereq` is True, it will remove the "_prereq" suffix from the test category,
+    only relevant for memory test categories.
     """
     if remove_prereq:
         test_entry_id = test_entry_id.replace("_prereq", "")
-    # For format sensitivity test cases, the test entry id is in the form of "format_sensitivity_0:prompt_format:live_simple_23-5-1", where the second part is the original test entry id
-    if ":" in test_entry_id:
-        test_entry_id = test_entry_id.split(":")[0]
+    # Format sensitivity IDs use "|" as separator:
+    # Example: "text:format_sensitivity_0|prompt_config|text:live_simple_23"
+    if "|" in test_entry_id:
+        test_entry_id = test_entry_id.split("|")[0]
 
     return test_entry_id.rsplit("_", 1)[0]
 
@@ -84,26 +134,28 @@ def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = Fals
 def extract_prompt_format_from_id(test_entry_id: str) -> str:
     """
     Extract the prompt format from the test entry ID.
+    Format sensitivity IDs use "|" as separator.
+    Example: "text:format_sensitivity_0|prompt_config|text:live_simple_23" → "prompt_config"
     """
-    if ":" not in test_entry_id:
+    if "|" not in test_entry_id:
         return DEFAULT_SYSTEM_PROMPT_FORMAT
     else:
+        # @HuanzhiMao doublecheck
         assert (
-            len(test_entry_id.split(":")) == 3
-        ), f"Test entry ID {test_entry_id} should contain exactly two colons, since they are supposed to be the format sensitivity ids."
-        return test_entry_id.split(":")[1]
+            len(test_entry_id.split("|")) == 2
+        ), f"Test entry ID {test_entry_id} should contain exactly two pipes, since they are supposed to be the format sensitivity ids."
+        return test_entry_id.split("|")[1]
 
 
 def extract_memory_backend_type(test_category):
     """
     This function extracts the memory backend type from the test category.
-    The test category should be in the form of `memory_kv` or `memory_vector`, etc.
+    The test category should be in the form of `text:memory_kv` or `text:memory_vector`, etc.
     """
     if not is_memory(test_category):
         raise ValueError(f"Test category {test_category} is not a memory category.")
 
-    # Split the test category by underscores and extract the backend type
-    return test_category[len("memory_") :]
+    return test_category.split("memory_")[1]
 
 
 def find_file_by_category(
@@ -140,18 +192,19 @@ def get_file_name_by_category(
 ) -> str:
     """
     Get the file name for a given test category.
-    By default, it returns the file name with the suffix ".json".
-    If `is_result_file` is True, it returns the file name with the suffix "_result.json".
-    If `is_score_file` is True, it returns the file name with the suffix "_score.json".
+    Uses the base category name (without modality prefix) for the file name,
+    since modality is encoded in the directory structure, not the file name.
     """
     assert not (is_result_file and is_score_file), "Cannot be both result and score file."
 
+    base_category = get_base_category(test_category)
+
     if is_result_file:
-        file_name = f"{VERSION_PREFIX}_{test_category}_result.json"
+        file_name = f"{VERSION_PREFIX}_{base_category}_result.json"
     elif is_score_file:
-        file_name = f"{VERSION_PREFIX}_{test_category}_score.json"
+        file_name = f"{VERSION_PREFIX}_{base_category}_score.json"
     else:
-        file_name = f"{VERSION_PREFIX}_{test_category}.json"
+        file_name = f"{VERSION_PREFIX}_{base_category}.json"
 
     return file_name
 
@@ -308,31 +361,28 @@ def contain_multi_turn_interaction(test_category):
     )
 
 
-def get_modality(test_category: str) -> str:
-    """
-    Return the top-level modality folder for a test category or test entry ID.
-    Currently supports: "text", "vision", "audio".
-    """
-    if contain_vision_task(test_category):
-        return "vision"
-    elif contain_audio_task(test_category):
-        return "audio"
-    else:
-        return "text"
-
-
 def get_directory_structure_by_id(test_id: str) -> str:
     """
-    Get the directory for result/score files for a test entry.
+    Get the modality directory for result/score files for a test entry.
+    Extracts the modality prefix from the test entry ID.
     """
-    return get_directory_structure_by_category(extract_test_category_from_id(test_id))
+    return get_category_modality(extract_test_category_from_id(test_id))
 
 
 def get_directory_structure_by_category(test_category: str) -> str:
     """
-    Get the directory structurefor result/score files for a test category.
+    Get the modality directory for result/score files for a test category.
     """
-    return get_modality(test_category)
+    return get_category_modality(test_category)
+
+
+def detect_modality_from_path(file_path: Path, model_dir: Path) -> str:
+    """
+    Detect the modality from a result/score file's parent directory.
+    e.g., model_dir/text_audio/BFCL_v4_simple_python_result.json → 'text_audio'
+    """
+    relative = file_path.relative_to(model_dir)
+    return relative.parts[0]
 
 
 def get_memory_artifact_dir_by_id(test_id: str) -> str:
@@ -410,24 +460,26 @@ def load_dataset_entry(
 ) -> list[dict]:
     """
     This function retrieves the dataset entry for a given test category.
-    The input should not be a test category goup, but a specific test category.
-    If `contain_prereq` is True, it will include the pre-requisite entries for the memory test categories.
-    If `include_language_specific_hint` is True, it will include the language-specific hint for the function description (for Java, JavaScript, and Python).
+    The test_category must be a modality-prefixed category (e.g., "text:simple_python").
+    File paths use the base category name; entry IDs are prefixed with the modality at the end.
     """
+    modality = get_category_modality(test_category)
+    base_category = get_base_category(test_category)
+
     if contain_audio_task(test_category):
         # Audio categories
-        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{test_category}.json")
-        all_entries = process_audio_test_case(all_entries)
+        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{base_category}.json")
+        all_entries = process_audio_test_case(all_entries, modality=modality)
 
     elif contain_vision_task(test_category):
         if is_vision_web_search(test_category):
             # Vision categories
             all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_vision_base.json")
-            all_entries = process_vision_test_cases(all_entries, test_category)
+            all_entries = process_vision_test_cases(all_entries, base_category)
 
         elif is_geogesser(test_category):
             # Geogesser categories
-            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{test_category}.json")
+            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{base_category}.json")
             all_entries = process_geogesser_test_case(all_entries)
 
     else:
@@ -441,19 +493,20 @@ def load_dataset_entry(
             # Web search categories
             file_name = f"{VERSION_PREFIX}_web_search.json"
             all_entries = load_file(PROMPT_PATH / file_name)
-            all_entries = process_web_search_test_case(all_entries, test_category)
+            all_entries = process_web_search_test_case(all_entries, base_category)
 
         elif is_memory(test_category):
             # Memory categories
+            # pass base category so ID replacements stay prefix-free
             all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_memory.json")
             for scenario in MEMORY_SCENARIO_NAME:
                 all_entries = process_memory_test_case(
-                    all_entries, test_category, scenario, include_prereq=include_prereq
+                    all_entries, base_category, scenario, include_prereq=include_prereq
                 )
 
         else:
             # All other categories, we don't need any special handling
-            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{test_category}.json")
+            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{base_category}.json")
 
     all_entries = process_agentic_test_case(all_entries)
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
@@ -461,25 +514,42 @@ def load_dataset_entry(
     if include_language_specific_hint:
         all_entries = add_language_specific_hint_to_function_doc(all_entries)
 
+    # Prefix all entry IDs with the modality
+    for entry in all_entries:
+        entry["id"] = f"{modality}:{entry['id']}"
+
     return all_entries
 
 
 def load_ground_truth_entry(test_category: str) -> list[dict]:
     """
     This function retrieves the ground truth entry for a given test category.
-    The input should not be a test category goup, but a specific test category.
+    The test_category must be a modality-prefixed category (e.g., "text:simple_python").
+    Entry IDs are prefixed with the modality to match the corresponding dataset entries.
     """
+    modality = get_category_modality(test_category)
+    base_category = get_base_category(test_category)
+
     if is_format_sensitivity(test_category):
+        # Format sensitivity ground truth handles its own ID construction;
+        # it calls load_ground_truth_entry() for inner categories which already prefix.
         return load_format_sensitivity_ground_truth_entry()
 
     elif is_memory(test_category):
-        return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_memory.json")
+        entries = load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_memory.json")
 
     elif is_web_search(test_category):
-        return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_web_search.json")
+        entries = load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_web_search.json")
 
     else:
-        return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_{test_category}.json")
+        entries = load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_{base_category}.json")
+
+    # Prefix all entry IDs with the modality to match dataset entries
+    for entry in entries:
+        if "id" in entry:
+            entry["id"] = f"{modality}:{entry['id']}"
+
+    return entries
 
 
 def write_list_of_dicts_to_file(filename, data, subdir=None, use_lock: bool = True) -> None:
@@ -953,7 +1023,7 @@ def load_format_sensitivity_test_cases() -> list[dict]:
     for entry in all_test_entries_involved:
         for config in all_configs:
             entry_copy = deepcopy(entry)
-            entry_copy["id"] = f"format_sensitivity_{index}:{config}:{entry_copy['id']}"
+            entry_copy["id"] = f"format_sensitivity_{index}|{config}|{entry_copy['id']}"
 
             all_format_sensitivity_test_cases.append(entry_copy)
             index += 1
@@ -1135,9 +1205,7 @@ def audio_to_base64(data: bytes) -> str:
     return base64.b64encode(data).decode("utf-8")
 
 
-def process_audio_test_case(
-    test_cases: list[dict], use_audio_input: bool = False
-) -> list[dict]:
+def process_audio_test_case(test_cases: list[dict], modality: Modality) -> list[dict]:
     """
     This function loads the audio query content from the path specified in the test entry.
     """
@@ -1151,11 +1219,14 @@ def process_audio_test_case(
                     "audio_path" in msg
                 ), f"Audio path should be specified in the test entry: {entry['id']}"
 
-                if use_audio_input:
+                if modality == Modality.TRUE_AUDIO:
                     msg["audio_content"] = load_audio(msg["audio_path"])
                     # msg["audio_format"] = "wav"
                     del msg["content"]
                 else:
+                    assert (
+                        modality == Modality.TEXT_AUDIO
+                    ), f"Modality {modality} is not a valid modality for audio test cases."
                     # FIXME: uncomment this to determine which text to use
                     # msg["content"] = msg["transcript"]
                     # msg["content"] = msg["asr_output_openai"]
@@ -1192,6 +1263,8 @@ def process_audio_test_case(
                 "content": merged_system_prompt,
             },
         )
+
+        entry["could_allow_clarification"] = True
 
     return test_cases
 

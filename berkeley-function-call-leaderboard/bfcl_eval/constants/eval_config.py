@@ -5,6 +5,10 @@ from bfcl_eval.constants.category_mapping import VERSION_PREFIX
 LOCAL_SERVER_PORT = 1053
 LOCAL_SERVER_MAX_CONCURRENT_REQUEST = 100
 
+# @HuanzhiMao different limit for different modalities?
+MAXIMUM_STEP_LIMIT = 40
+MAXIMUM_CLARIFICATION_LIMIT = 15
+
 # Price got from Lambda Cloud, 23.92 per hour for 8x H100, on-demand pay as you go total price
 # Reference: https://lambda.ai/pricing
 H100_X8_PRICE_PER_HOUR = 23.92
