@@ -9,6 +9,7 @@ import traceback
 from collections import defaultdict
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from copy import deepcopy
+from pathlib import Path
 from typing import Optional
 
 from bfcl_eval.constants.eval_config import (
@@ -25,7 +26,27 @@ from bfcl_eval.utils import *
 from tqdm import tqdm
 
 
-def get_args():
+class Args(argparse.Namespace):
+    model: list[str]
+    test_category: list[str]
+    temperature: float
+    include_input_log: bool
+    exclude_state_log: bool
+    num_threads: Optional[int]
+    num_gpus: int
+    backend: str
+    gpu_memory_utilization: float
+    result_dir: Path
+    run_ids: bool
+    allow_overwrite: bool
+    skip_server_setup: bool
+    local_model_path: Optional[str]
+    lora_modules: Optional[list[str]]
+    enable_lora: bool
+    max_lora_rank: Optional[int]
+
+
+def get_args() -> Args:
     parser = argparse.ArgumentParser()
     # Refer to model_choice for supported models.
     parser.add_argument("--model", type=str, default="gorilla-openfunctions-v2", nargs="+")
@@ -39,6 +60,7 @@ def get_args():
     parser.add_argument("--num-threads", required=False, type=int)
     parser.add_argument("--num-gpus", default=1, type=int)
     parser.add_argument("--backend", default="vllm", type=str, choices=["vllm"])
+    # @HuanzhiMao TODO: A single --extra-vllm-args CLI flag?
     parser.add_argument("--gpu-memory-utilization", default=0.9, type=float)
     parser.add_argument("--result-dir", default=None, type=str)
     parser.add_argument("--run-ids", action="store_true", default=False)
@@ -75,7 +97,7 @@ def get_args():
         default=None,
         help="Specify the maximum LoRA rank for vLLM backend.",
     )
-    args = parser.parse_args()
+    args: Args = parser.parse_args()  # type: ignore[assignment]
     print(f"Parsed arguments: {args}")
 
     return args
@@ -115,7 +137,7 @@ def get_involved_test_entries(test_category_args, run_ids):
     )
 
 
-def collect_test_cases(args, model_name, all_test_categories, all_test_entries_involved):
+def collect_test_cases(args: Args, model_name, all_test_categories, all_test_entries_involved):
     model_name_dir = model_name.replace("/", "_")
     model_result_dir = args.result_dir / model_name_dir
 
@@ -225,7 +247,7 @@ def multi_threaded_inference(handler, test_case, include_input_log, exclude_stat
     return result_to_write
 
 
-def generate_results(args, model_name, test_cases_total):
+def generate_results(args: Args, model_name, test_cases_total):
     handler = build_handler(model_name, args.temperature)
 
     if isinstance(handler, OSSHandler):
@@ -361,7 +383,7 @@ def generate_results(args, model_name, test_cases_total):
             handler.shutdown_local_server()
 
 
-def main(args):
+def main(args: Args):
 
     # Note: The following environment variables are needed for the memory vector store implementation
     # Otherwise you get segfault or huggingface tokenizer warnings
@@ -390,6 +412,7 @@ def main(args):
                 "• For officially supported models, please refer to `SUPPORTED_MODELS.md`.\n"
                 "• For running new models, please refer to `README.md` and `CONTRIBUTING.md`."
             )
+    # @HuanzhiMao TODO: get the progress bar to work properly
     tqdm.write(f"Generating results for {args.model}")
     if args.run_ids:
         tqdm.write("Running specific test cases. Ignoring `--test-category` argument.")
@@ -403,6 +426,19 @@ def main(args):
                     "⚠️ Warning: Format sensitivity test cases are only supported for prompting (non-FC) models. "
                     f"Since {model_name} is a FC model based on its config, the format sensitivity test cases will be skipped."
                 )
+    if any(contain_audio_task(test_category) for test_category in all_test_categories):
+        for model_name in args.model:
+            if (
+                args.use_audio_input
+                and not MODEL_CONFIG_MAPPING[model_name].supports_audio_input
+            ):
+                raise ValueError(f"Model {model_name} does not support native audio input.")
+
+            # if args.use_audio_input and not model_name.startswith("audio:"):
+            #     raise ValueError(
+            #         f"Model {model_name} should not be used with the --use-audio-input flag. Please use the `audio:` prefix for models that support native audio input. For example, use `audio:gemini-2.5-pro-Audio-FC` instead of `gemini-2.5-pro-Audio-FC`."
+            #     )
+
 
     if args.result_dir is not None:
         args.result_dir = PROJECT_ROOT / args.result_dir

@@ -92,6 +92,8 @@ class ModelConfig:
         output_price (Optional[float]): USD per million output tokens (None for open source models).
         is_fc_model (bool): True if this model is used in Function-Calling mode, otherwise False for Prompt-based mode.
         underscore_to_dot (bool): True if model does not support '.' in function names, in which case we will replace '.' with '_'. Currently this only matters for checker.  TODO: We should let the tool compilation step also take this into account.
+        supports_audio_input (bool): True if the model supports native audio input. Required for true audio tasks.
+        supports_vision_input (bool): True if the model supports vision/image input. Required for vision tasks.
 
     """
 
@@ -113,8 +115,11 @@ class ModelConfig:
     # True if this model does not allow '.' in function names
     underscore_to_dot: bool = False
 
-    # True if the model supports native audio input.
+    # True if the model supports native audio input. Required for true audio tasks.
     supports_audio_input: bool = False
+    
+    # True if the model supports vision/image input. Required for vision tasks.
+    supports_vision_input: bool = False
 
 
 @dataclass

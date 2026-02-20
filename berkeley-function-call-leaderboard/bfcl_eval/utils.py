@@ -248,15 +248,21 @@ def load_test_entries_from_id_file(id_file_path: Path) -> tuple[list[str], list[
 
 
 #### Predicate functions to check the test category ####
-def is_audio(test_category):
+
+
+def is_true_audio(test_category):
     return "audio" in test_category
 
 
-def contain_audio_task(test_category):
+def is_text_audio(test_category):
+    return "text_audio" in test_category
+
+
+def contain_native_audio_input(test_category):
     """
-    Check if the test category requires an audio task.
+    Check if the test category requires a native audio input.
     """
-    return is_audio(test_category)
+    return is_true_audio(test_category)
 
 
 def is_vision_web_search(test_category: str) -> bool:
@@ -270,10 +276,14 @@ def is_geogesser(test_category: str) -> bool:
     return "geogesser" in test_category
 
 
-def contain_vision_task(test_category: str) -> bool:
+def contain_vision_input(test_category: str) -> bool:
     """
-    Check if the test category requires a vision task (eg, vision_web_search_base, geogesser_type1, etc.).
+    Check if the test category requires a vision input (eg, vision_web_search_base, geogesser_type1, etc.).
     """
+    return is_vision_web_search(test_category) or is_geogesser(test_category)
+
+
+def is_vision(test_category: str) -> bool:
     return is_vision_web_search(test_category) or is_geogesser(test_category)
 
 
@@ -281,8 +291,9 @@ def is_format_sensitivity(test_category: str) -> bool:
     return "format_sensitivity" in test_category
 
 
+# @HuanzhiMao TODO: rename this?
 def is_web_search(test_category):
-    return "web_search" in test_category
+    return "web_search" in test_category and not is_vision_web_search(test_category)
 
 
 def is_memory(test_category):
@@ -357,7 +368,7 @@ def contain_multi_turn_interaction(test_category):
     return (
         is_multi_turn(test_category)
         or is_agentic(test_category)
-        or contain_vision_task(test_category)
+        or contain_vision_input(test_category)
     )
 
 
@@ -466,16 +477,16 @@ def load_dataset_entry(
     modality = get_category_modality(test_category)
     base_category = get_base_category(test_category)
 
-    if contain_audio_task(test_category):
-        # Audio categories
+    if modality in [Modality.TRUE_AUDIO, Modality.TEXT_AUDIO]:
+        # True Audio or Text Audio categories
         all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{base_category}.json")
         all_entries = process_audio_test_case(all_entries, modality=modality)
 
-    elif contain_vision_task(test_category):
+    elif modality is Modality.VISION:
         if is_vision_web_search(test_category):
-            # Vision categories
+            # Vision Web Search categories
             all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_vision_base.json")
-            all_entries = process_vision_test_cases(all_entries, base_category)
+            all_entries = process_vision_web_search_test_cases(all_entries, base_category)
 
         elif is_geogesser(test_category):
             # Geogesser categories
@@ -483,6 +494,7 @@ def load_dataset_entry(
             all_entries = process_geogesser_test_case(all_entries)
 
     else:
+        assert modality is Modality.TEXT, f"Invalid modality: {modality}"
         # Text categories
 
         if is_format_sensitivity(test_category):
@@ -529,6 +541,8 @@ def load_ground_truth_entry(test_category: str) -> list[dict]:
     """
     modality = get_category_modality(test_category)
     base_category = get_base_category(test_category)
+
+    # @HuanzhiMao FIXME: add support for audio and vision
 
     if is_format_sensitivity(test_category):
         # Format sensitivity ground truth handles its own ID construction;
@@ -638,7 +652,7 @@ def sort_key(entry):
     # Hopefully the prereq entries are done by now
     elif is_memory(test_category):
         priority = 4
-    elif contain_vision_task(test_category):
+    elif contain_vision_input(test_category):
         priority = 5
 
     return (priority, test_category, int(index))
@@ -1098,7 +1112,9 @@ def get_all_format_sensitivity_configs() -> list[str]:
 #### Utils for Vision ####
 
 
-def process_vision_test_cases(all_entries: list[dict], test_category: str) -> list[dict]:
+def process_vision_web_search_test_cases(
+    all_entries: list[dict], test_category: str
+) -> list[dict]:
     # return [{"id": "vision_base_0", "question": [[{"role": "user", "content": "You must call the fetch_image function to fetch an image and tell me what's in the image."}]], "function": [], "involved_classes": ["StreetViewAPI"]}]
     result = []
     for entry in all_entries:
