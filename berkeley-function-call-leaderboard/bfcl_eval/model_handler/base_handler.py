@@ -203,7 +203,7 @@ class BaseHandler:
                 ]
 
             current_turn_message_for_logging = deepcopy(current_turn_message)
-            if contain_vision_task(test_category):
+            if contain_vision_input(test_category):
                 for message in current_turn_message_for_logging:
                     if "image_content" in message:
                         for image_content in message["image_content"]:
@@ -218,10 +218,6 @@ class BaseHandler:
             current_turn_output_token_count: list[float] = []
             current_turn_latency: list[float] = []
             current_turn_reasoning_content = []
-
-            allowed_clarifications, original_user_request, last_user_message_asr_output = (
-                self._extract_clarification_context(current_turn_message)
-            )
 
             if turn_idx == 0:
                 inference_data = self.add_first_turn_message_FC(
@@ -239,11 +235,11 @@ class BaseHandler:
                 # @HuanzhiMao FIXME: check if allow clarification
                 print("-" * 100)
                 print(
-                    f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {count}, Clarification Count: {clarification_count}"
+                    f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {step_count}, Clarification Count: {clarification_count}"
                 )
                 current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
-                current_turn_inference_log[f"step_{count}"] = current_step_inference_log
+                current_turn_inference_log[f"step_{step_count}"] = current_step_inference_log
 
                 api_response, query_latency = self._query_FC(inference_data)
 
@@ -285,14 +281,25 @@ class BaseHandler:
 
                 current_step_inference_log.append(log_entry)
 
-                count += 1
+                step_count += 1
+
+                # For single-turn entries that don't allow clarification,
+                # we don't need to decode or execute function calls.
+                # The eval will handle decoding separately.
+                if (
+                    not contain_multi_turn_interaction(test_entry_id)
+                    and not could_allow_clarification
+                ):
+                    break
 
                 # Try decoding the model response into executable function calls
                 decoded_model_responses = None
                 has_function_calls = False
 
                 try:
-                    decoded_model_responses = self.decode_execute(model_responses)
+                    decoded_model_responses = self.decode_execute(
+                        model_responses, has_tool_call_tag=False
+                    )
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",
@@ -326,12 +333,11 @@ class BaseHandler:
 
                 # Path 1: Model produced function calls → execute them
                 if has_function_calls:
-                    # If it's a single-turn entry, we don't need to execute the function calls. The eval stops here.
+                    # If it's a single-turn entry, we don't need to execute the function calls. The generation stops here.
                     if not contain_multi_turn_interaction(test_entry_id):
                         break
 
                     # Obtain the execution results
-
                     execution_results, involved_instances = execute_multi_turn_func_call(
                         decoded_model_responses,
                         initial_config,
@@ -367,7 +373,7 @@ class BaseHandler:
                             )
 
                     # If the model has taken too many steps, we force it to quit.
-                    if count > MAXIMUM_STEP_LIMIT:
+                    if step_count > MAXIMUM_STEP_LIMIT:
                         force_quit = True
                         current_step_inference_log.append(
                             {
@@ -381,6 +387,12 @@ class BaseHandler:
 
                 # Path 2: No function calls → if model is allowed to ask clarification, check if model is asking a valid clarification.
                 elif could_allow_clarification:
+                    (
+                        allowed_clarifications,
+                        original_user_request,
+                        last_user_message_asr_output,
+                    ) = self._extract_clarification_context(current_turn_message)
+
                     is_clarification, clarification_content = check_for_clarification(
                         model_response=model_responses,
                         allowed_clarifications=allowed_clarifications,
@@ -612,15 +624,15 @@ class BaseHandler:
                     inference_data, current_turn_message
                 )
 
-            count = 0
+            step_count = 0
             while True:
                 print("-" * 100)
                 print(
-                    f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {count}"
+                    f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {step_count}"
                 )
                 current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
-                current_turn_inference_log[f"step_{count}"] = current_step_inference_log
+                current_turn_inference_log[f"step_{step_count}"] = current_step_inference_log
 
                 api_response, query_latency = self._query_prompting(inference_data)
 
@@ -723,9 +735,9 @@ class BaseHandler:
                         }
                     )
 
-                count += 1
+                step_count += 1
                 # Force quit after too many steps
-                if count > MAXIMUM_STEP_LIMIT:
+                if step_count > MAXIMUM_STEP_LIMIT:
                     force_quit = True
                     current_step_inference_log.append(
                         {

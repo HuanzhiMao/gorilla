@@ -126,7 +126,6 @@ def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = Fals
     # Example: "text:format_sensitivity_0|prompt_config|text:live_simple_23"
     if "|" in test_entry_id:
         test_entry_id = test_entry_id.split("|")[0]
-
     return test_entry_id.rsplit("_", 1)[0]
 
 
@@ -376,14 +375,14 @@ def get_directory_structure_by_id(test_id: str) -> str:
     Get the modality directory for result/score files for a test entry.
     Extracts the modality prefix from the test entry ID.
     """
-    return get_category_modality(extract_test_category_from_id(test_id))
+    return get_category_modality(test_id).value
 
 
 def get_directory_structure_by_category(test_category: str) -> str:
     """
     Get the modality directory for result/score files for a test category.
     """
-    return get_category_modality(test_category)
+    return get_category_modality(test_category).value
 
 
 def detect_modality_from_path(file_path: Path, model_dir: Path) -> str:
@@ -484,7 +483,8 @@ def load_dataset_entry(
     elif modality is Modality.VISION:
         if is_vision_web_search(test_category):
             # Vision Web Search categories
-            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_vision_base.json")
+            # All categories share the same prompt file
+            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_vision_web_search_base.json")
             all_entries = process_vision_web_search_test_cases(all_entries, base_category)
 
         elif is_geogesser(test_category):
@@ -529,7 +529,7 @@ def load_dataset_entry(
 
     # Prefix all entry IDs with the modality
     for entry in all_entries:
-        entry["id"] = f"{modality}:{entry['id']}"
+        entry["id"] = f"{modality.value}:{entry['id']}"
 
     return all_entries
 
@@ -627,7 +627,7 @@ def sort_key(entry):
 
     In either case, the universal index is enough to sort the entries.
     """
-    entry_id = entry["id"].split(":")[0]
+    entry_id = entry["id"].split(":")[-1]
     parts = entry_id.rsplit("_", 1)
     test_category, index = parts[0], parts[1]
     # This handles the case where the index is in the form TestCategory_Index-FuncDocSubIndex-PromptSubIndex
@@ -1119,7 +1119,7 @@ def process_vision_web_search_test_cases(
     # return [{"id": "vision_base_0", "question": [[{"role": "user", "content": "You must call the fetch_image function to fetch an image and tell me what's in the image."}]], "function": [], "involved_classes": ["StreetViewAPI"]}]
     result = []
     for entry in all_entries:
-        # @HuanzhiMao fixme, maybe optimize the dataset structure
+        # @HuanzhiMao FIXME, maybe optimize the dataset structure
         user_query = entry["question"][0][0]["content"]
         image_file_name = entry["image_file_name"]
         if test_category == "vision_crop_169":
@@ -1143,7 +1143,7 @@ def process_vision_web_search_test_cases(
 
         temp = {}
         temp["involved_classes"] = ["VisionSearchAPI"]
-        temp["id"] = entry["id"].replace("vision_base", test_category)
+        temp["id"] = entry["id"].replace("vision_web_search_base", test_category)
         temp["question"] = [
             [
                 {
