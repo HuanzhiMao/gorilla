@@ -97,7 +97,7 @@ def get_args() -> Args:
         help="Specify the maximum LoRA rank for vLLM backend.",
     )
     args: Args = parser.parse_args()  # type: ignore[assignment]
-    print(f"Parsed arguments: {args}")
+    print(f"\n\n🚀 Parsed arguments: {args}\n\n")
 
     return args
 

@@ -74,7 +74,7 @@ def get_base_category(full_category: str) -> str:
     ), f"Category {full_category} is not a modality-prefixed category."
     modality, _, base_category = full_category.partition(":")
     assert (
-        Modality(modality) in ALL_MODALITIES
+        modality in Modality._value2member_map_
     ), f"Modality {modality} is not a valid modality."
     return base_category
 
@@ -85,7 +85,6 @@ def get_category_modality(full_category: str) -> Modality:
     Example: "text:simple_python" → Modality.TEXT
     """
     modality = Modality(full_category.split(":")[0])
-    assert modality in ALL_MODALITIES, f"Modality {modality} is not a valid modality."
     return modality
 
 
@@ -216,7 +215,7 @@ def parse_test_category_argument(test_category_args: list[str]) -> list[str]:
         if test_category in TEST_COLLECTION_MAPPING:
             for test_name in TEST_COLLECTION_MAPPING[test_category]:
                 test_name_total.add(test_name)
-        elif test_category in ALL_CATEGORIES:
+        elif test_category in ALL_MODALITY_CATEGORIES:
             test_name_total.add(test_category)
         else:
             # Invalid test category name
@@ -492,6 +491,8 @@ def load_dataset_entry(
             # Geogesser categories
             all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{base_category}.json")
             all_entries = process_geogesser_test_case(all_entries)
+        else:
+            raise ValueError(f"Invalid vision category: {test_category}")
 
     else:
         assert modality is Modality.TEXT, f"Invalid modality: {modality}"

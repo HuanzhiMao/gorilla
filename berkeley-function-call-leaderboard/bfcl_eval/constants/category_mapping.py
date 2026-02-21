@@ -62,14 +62,14 @@ NON_SCORING_CATEGORY = ["text:format_sensitivity"]
 #### Vision Modality ####
 
 VISION_WEB_SEARCH_CATEGORY = [
-    "vision:web_search_base",
-    "vision:web_search_crop_169",
-    "vision:web_search_crop_43",
-    "vision:web_search_resize_169",
-    "vision:web_search_resize_43",
-    "vision:web_search_bw",
-    "vision:web_search_edge",
-    "vision:web_search_rg",
+    "vision:vision_web_search_base",
+    "vision:vision_web_search_crop_169",
+    "vision:vision_web_search_crop_43",
+    "vision:vision_web_search_resize_169",
+    "vision:vision_web_search_resize_43",
+    "vision:vision_web_search_bw",
+    "vision:vision_web_search_edge",
+    "vision:vision_web_search_rg",
 ]
 
 VISION_GEOGESSER_CATEGORY = [
