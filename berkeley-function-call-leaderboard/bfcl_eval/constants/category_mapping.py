@@ -38,16 +38,6 @@ TEXT_WEB_SEARCH_CATEGORY = [
     "text:web_search_base",
     "text:web_search_no_snippet",
 ]
-VISION_WEB_SEARCH_CATEGORY = [
-    "vision:web_search_base",
-    "vision:web_search_crop_169",
-    "vision:web_search_crop_43",
-    "vision:web_search_resize_169",
-    "vision:web_search_resize_43",
-    "vision:web_search_bw",
-    "vision:web_search_edge",
-    "vision:web_search_rg",
-]
 
 ALL_AVAILABLE_MEMORY_BACKENDS = [
     "kv",
@@ -70,6 +60,17 @@ TEXT_AGENTIC_CATEGORY = TEXT_MEMORY_CATEGORY + TEXT_WEB_SEARCH_CATEGORY
 NON_SCORING_CATEGORY = ["text:format_sensitivity"]
 
 #### Vision Modality ####
+
+VISION_WEB_SEARCH_CATEGORY = [
+    "vision:web_search_base",
+    "vision:web_search_crop_169",
+    "vision:web_search_crop_43",
+    "vision:web_search_resize_169",
+    "vision:web_search_resize_43",
+    "vision:web_search_bw",
+    "vision:web_search_edge",
+    "vision:web_search_rg",
+]
 
 VISION_GEOGESSER_CATEGORY = [
     "vision:geogesser_type1",

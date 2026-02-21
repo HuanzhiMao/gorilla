@@ -206,7 +206,7 @@ api_inference_model_map = {
         output_price=14,
         is_fc_model=False,
         underscore_to_dot=False,
-        supports_vision_input=True,
+        supports_image_input=True,
     ),
     "gpt-5-mini-2025-08-07-FC": ModelConfig(
         model_name="gpt-5-mini-2025-08-07",
