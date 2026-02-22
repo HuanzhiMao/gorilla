@@ -1,7 +1,8 @@
 from keyword import kwlist
 
 from bfcl_eval._llm_response_generation import parse_test_category_argument
-from bfcl_eval.constants.eval_config import POSSIBLE_ANSWER_PATH, TEXT_DATASET_PATH
+from bfcl_eval.constants.eval_config import MODALITY_POSSIBLE_ANSWER_PATH, TEXT_DATASET_PATH
+from bfcl_eval.constants.enums import Modality
 from bfcl_eval.utils import (
     is_executable,
     is_java,
@@ -48,7 +49,7 @@ for test_category, file_path in zip(test_categories_total, test_filename_total):
     ):
         continue
 
-    ground_truth_data = load_file(POSSIBLE_ANSWER_PATH / file_path)
+    ground_truth_data = load_file(MODALITY_POSSIBLE_ANSWER_PATH[Modality.TEXT] / file_path)
     for ground_truth_entry in ground_truth_data:
         for ground_truth in ground_truth_entry["ground_truth"]:
             ground_truth: dict
@@ -66,7 +67,7 @@ for test_category, file_path in zip(test_categories_total, test_filename_total):
                 else:
                     properties[param_name] = param_description
             ground_truth[function_name] = properties
-    write_list_of_dicts_to_file(file_path, ground_truth_data, subdir=POSSIBLE_ANSWER_PATH)
+    write_list_of_dicts_to_file(file_path, ground_truth_data, subdir=MODALITY_POSSIBLE_ANSWER_PATH[Modality.TEXT])
 
 print("The following entries have illegal parameter names and has been fixed:")
 print(entry_id_with_problem)

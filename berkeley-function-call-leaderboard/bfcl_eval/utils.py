@@ -534,6 +534,7 @@ def load_dataset_entry(
     return all_entries
 
 
+# @HuanzhiMao FIXME: Add support for audio and vision
 def load_ground_truth_entry(test_category: str) -> list[dict]:
     """
     This function retrieves the ground truth entry for a given test category.
@@ -542,8 +543,7 @@ def load_ground_truth_entry(test_category: str) -> list[dict]:
     """
     modality = get_category_modality(test_category)
     base_category = get_base_category(test_category)
-
-    # @HuanzhiMao FIXME: add support for audio and vision
+    ground_truth_dir = MODALITY_POSSIBLE_ANSWER_PATH[modality]
 
     if is_format_sensitivity(test_category):
         # Format sensitivity ground truth handles its own ID construction;
@@ -551,13 +551,13 @@ def load_ground_truth_entry(test_category: str) -> list[dict]:
         return load_format_sensitivity_ground_truth_entry()
 
     elif is_memory(test_category):
-        entries = load_file(POSSIBLE_ANSWER_PATH / "memory.json")
+        entries = load_file(ground_truth_dir / "memory.json")
 
     elif is_web_search(test_category):
-        entries = load_file(POSSIBLE_ANSWER_PATH / "web_search.json")
+        entries = load_file(ground_truth_dir / "web_search.json")
 
     else:
-        entries = load_file(POSSIBLE_ANSWER_PATH / f"{base_category}.json")
+        entries = load_file(ground_truth_dir / f"{base_category}.json")
 
     # Prefix all entry IDs with the modality to match dataset entries
     for entry in entries:

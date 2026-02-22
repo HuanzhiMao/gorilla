@@ -49,6 +49,14 @@ MODALITY_DATASET_PATH = {
 
 MULTI_TURN_FUNC_DOC_PATH = DATA_FOLDER_PATH / "multi_turn_func_doc"
 POSSIBLE_ANSWER_PATH = DATA_FOLDER_PATH / "possible_answer"
+
+# Mapping from modality value to the directory containing its ground truth JSONs.
+MODALITY_POSSIBLE_ANSWER_PATH = {
+    Modality.TEXT: POSSIBLE_ANSWER_PATH / "text",
+    Modality.VISION: POSSIBLE_ANSWER_PATH / "vision",
+    Modality.TRUE_AUDIO: POSSIBLE_ANSWER_PATH / "audio",
+    Modality.TEXT_AUDIO: POSSIBLE_ANSWER_PATH / "audio",
+}
 MEMORY_PREREQ_CONVERSATION_PATH = TEXT_DATASET_PATH / "memory_prereq_conversation"
 UTILS_PATH = PACKAGE_ROOT / "scripts"
 FORMAT_SENSITIVITY_IDS_PATH = TEXT_DATASET_PATH / "format_sensitivity.json"
