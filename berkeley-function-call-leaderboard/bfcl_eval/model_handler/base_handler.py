@@ -2,7 +2,6 @@ import json
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
-from bfcl_eval.constants.category_mapping import VERSION_PREFIX
 from bfcl_eval.constants.default_prompts import (
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING,
@@ -912,7 +911,7 @@ class BaseHandler:
             group_dir_path.mkdir(parents=True, exist_ok=True)
 
             base_category = get_base_category(test_category)
-            file_path = group_dir_path / f"{VERSION_PREFIX}_{base_category}_result.json"
+            file_path = group_dir_path / f"{base_category}_result.json"
             file_entries.setdefault(file_path, []).append(entry)
 
         for file_path, entries in file_entries.items():

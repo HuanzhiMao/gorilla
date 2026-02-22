@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from bfcl_eval.constants.category_mapping import VERSION_PREFIX
+from bfcl_eval.constants.enums import Modality
 
 LOCAL_SERVER_PORT = 1053
 LOCAL_SERVER_MAX_CONCURRENT_REQUEST = 100
@@ -30,15 +30,31 @@ TEST_IDS_TO_GENERATE_PATH = PROJECT_ROOT / "test_case_ids_to_generate.json"
 # Directory that stores all lock files (kept out of the results tree)
 LOCK_DIR = PROJECT_ROOT / ".file_locks"
 
-PROMPT_PATH = PACKAGE_ROOT / "data"
-IMAGE_PATH = PROMPT_PATH / "images"
-MULTI_TURN_FUNC_DOC_PATH = PROMPT_PATH / "multi_turn_func_doc"
-POSSIBLE_ANSWER_PATH = PROMPT_PATH / "possible_answer"
-MEMORY_PREREQ_CONVERSATION_PATH = PROMPT_PATH / "memory_prereq_conversation"
-UTILS_PATH = PACKAGE_ROOT / "scripts"
-FORMAT_SENSITIVITY_IDS_PATH = PROMPT_PATH / f"{VERSION_PREFIX}_format_sensitivity.json"
+DATA_FOLDER_PATH = PACKAGE_ROOT / "data"
+TEXT_DATASET_PATH = DATA_FOLDER_PATH / "text"
+VISION_DATASET_PATH = DATA_FOLDER_PATH / "vision"
+AUDIO_DATASET_PATH = DATA_FOLDER_PATH / "audio"
 
-RESULT_FILE_PATTERN = f"{VERSION_PREFIX}_*_result.json"
+IMAGE_PATH = VISION_DATASET_PATH / "images"
+AUDIO_FILE_PATH = AUDIO_DATASET_PATH / "audio_recording"
+
+# Mapping from modality value to the directory containing its test-case JSONs.
+MODALITY_DATASET_PATH = {
+    Modality.TEXT: TEXT_DATASET_PATH,
+    Modality.VISION: VISION_DATASET_PATH,
+    # Both True Audio and Text Audio modalities use the same dataset
+    Modality.TRUE_AUDIO: AUDIO_DATASET_PATH,
+    Modality.TEXT_AUDIO: AUDIO_DATASET_PATH,
+}
+
+MULTI_TURN_FUNC_DOC_PATH = DATA_FOLDER_PATH / "multi_turn_func_doc"
+POSSIBLE_ANSWER_PATH = DATA_FOLDER_PATH / "possible_answer"
+MEMORY_PREREQ_CONVERSATION_PATH = DATA_FOLDER_PATH / "memory_prereq_conversation"
+UTILS_PATH = PACKAGE_ROOT / "scripts"
+FORMAT_SENSITIVITY_IDS_PATH = TEXT_DATASET_PATH / "format_sensitivity.json"
+
+RESULT_FILE_PATTERN = "*_result.json"
+SCORE_FILE_PATTERN = "*_score.json"
 
 RED_FONT = "\033[91m"
 RESET = "\033[0m"

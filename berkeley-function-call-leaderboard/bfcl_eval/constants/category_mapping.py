@@ -1,5 +1,3 @@
-VERSION_PREFIX = "BFCL_v4"
-
 
 #### Text Modality ####
 

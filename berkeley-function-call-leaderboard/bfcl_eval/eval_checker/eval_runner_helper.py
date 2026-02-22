@@ -5,10 +5,10 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from bfcl_eval.constants.category_mapping import VERSION_PREFIX
+
 from bfcl_eval.constants.column_headers import *
 from bfcl_eval.constants.eval_config import *
-from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING
+from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING, SCORE_FILE_PATTERN
 from bfcl_eval.utils import *
 
 
@@ -184,7 +184,7 @@ def save_eval_results(
         header.update(extra_header_fields)
 
     result.insert(0, header)
-    output_file_name = f"{VERSION_PREFIX}_{test_category}_score.json"
+    output_file_name = f"{test_category}_score.json"
     output_file_dir = (
         score_dir / model_name / get_directory_structure_by_category(test_category)
     )
@@ -215,7 +215,11 @@ def get_cost_latency_info(model_name, cost_data, latency_data):
         total_latency_hours = total_latency_seconds / 3600
 
         # Divide by 100 since we are doing 100x parallel inference; this is an approximation to the GPU up-time.
-        cost = total_latency_hours * H100_X8_PRICE_PER_HOUR / LOCAL_SERVER_MAX_CONCURRENT_REQUEST
+        cost = (
+            total_latency_hours
+            * H100_X8_PRICE_PER_HOUR
+            / LOCAL_SERVER_MAX_CONCURRENT_REQUEST
+        )
         cost = round(cost, 2)
 
     # Calculate latency statistics for ALL models (both API and local)
@@ -686,8 +690,7 @@ def update_leaderboard_table_with_local_score_file(
     for subdir in subdirs:
         model_name = subdir.relative_to(score_path).name
         # Find and process all score JSON files recursively in the subdirectory
-        pattern = f"{VERSION_PREFIX}_*_score.json"
-        for model_score_json in subdir.rglob(pattern):
+        for model_score_json in subdir.rglob(SCORE_FILE_PATTERN):
             metadata = load_file(model_score_json)[0]
             test_category = extract_test_category(model_score_json)
             if model_name not in leaderboard_table:

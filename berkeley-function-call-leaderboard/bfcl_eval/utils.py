@@ -92,8 +92,8 @@ def extract_test_category(input_string: Union[str, Path], raise_error: bool = Tr
     """
     Extract the test category from a given file name. If category cannot be extracted, and the flag is not set, then raise an error.
     """
-    input_string = str(input_string)
-    pattern = rf".*{VERSION_PREFIX}_(\w+?)(?:_score|_result)?\.json"
+    input_string = Path(input_string).name
+    pattern = r"^(\w+?)(?:_score|_result)?\.json$"
     match = re.search(pattern, input_string)
 
     # Check if there's a match and extract the captured group
@@ -198,11 +198,11 @@ def get_file_name_by_category(
     base_category = get_base_category(test_category)
 
     if is_result_file:
-        file_name = f"{VERSION_PREFIX}_{base_category}_result.json"
+        file_name = f"{base_category}_result.json"
     elif is_score_file:
-        file_name = f"{VERSION_PREFIX}_{base_category}_score.json"
+        file_name = f"{base_category}_score.json"
     else:
-        file_name = f"{VERSION_PREFIX}_{base_category}.json"
+        file_name = f"{base_category}.json"
 
     return file_name
 
@@ -388,7 +388,7 @@ def get_directory_structure_by_category(test_category: str) -> str:
 def detect_modality_from_path(file_path: Path, model_dir: Path) -> str:
     """
     Detect the modality from a result/score file's parent directory.
-    e.g., model_dir/text_audio/BFCL_v4_simple_python_result.json → 'text_audio'
+    e.g., model_dir/text_audio/simple_python_result.json → 'text_audio'
     """
     relative = file_path.relative_to(model_dir)
     return relative.parts[0]
@@ -474,22 +474,23 @@ def load_dataset_entry(
     """
     modality = get_category_modality(test_category)
     base_category = get_base_category(test_category)
+    modality_path = MODALITY_DATASET_PATH[modality]
 
     if modality in [Modality.TRUE_AUDIO, Modality.TEXT_AUDIO]:
         # True Audio or Text Audio categories
-        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{base_category}.json")
+        all_entries = load_file(modality_path / f"{base_category}.json")
         all_entries = process_audio_test_case(all_entries, modality=modality)
 
     elif modality is Modality.VISION:
         if is_vision_web_search(test_category):
             # Vision Web Search categories
             # All categories share the same prompt file
-            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_vision_web_search_base.json")
+            all_entries = load_file(modality_path / "vision_web_search_base.json")
             all_entries = process_vision_web_search_test_cases(all_entries, base_category)
 
         elif is_geogesser(test_category):
             # Geogesser categories
-            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{base_category}.json")
+            all_entries = load_file(modality_path / f"{base_category}.json")
             all_entries = process_geogesser_test_case(all_entries)
         else:
             raise ValueError(f"Invalid vision category: {test_category}")
@@ -504,14 +505,13 @@ def load_dataset_entry(
 
         elif is_web_search(test_category):
             # Web search categories
-            file_name = f"{VERSION_PREFIX}_web_search.json"
-            all_entries = load_file(PROMPT_PATH / file_name)
+            all_entries = load_file(modality_path / "web_search.json")
             all_entries = process_web_search_test_case(all_entries, base_category)
 
         elif is_memory(test_category):
             # Memory categories
             # pass base category so ID replacements stay prefix-free
-            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_memory.json")
+            all_entries = load_file(modality_path / "memory.json")
             for scenario in MEMORY_SCENARIO_NAME:
                 all_entries = process_memory_test_case(
                     all_entries, base_category, scenario, include_prereq=include_prereq
@@ -519,7 +519,7 @@ def load_dataset_entry(
 
         else:
             # All other categories, we don't need any special handling
-            all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_{base_category}.json")
+            all_entries = load_file(modality_path / f"{base_category}.json")
 
     all_entries = process_agentic_test_case(all_entries)
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
@@ -551,13 +551,13 @@ def load_ground_truth_entry(test_category: str) -> list[dict]:
         return load_format_sensitivity_ground_truth_entry()
 
     elif is_memory(test_category):
-        entries = load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_memory.json")
+        entries = load_file(POSSIBLE_ANSWER_PATH / "memory.json")
 
     elif is_web_search(test_category):
-        entries = load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_web_search.json")
+        entries = load_file(POSSIBLE_ANSWER_PATH / "web_search.json")
 
     else:
-        entries = load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_{base_category}.json")
+        entries = load_file(POSSIBLE_ANSWER_PATH / f"{base_category}.json")
 
     # Prefix all entry IDs with the modality to match dataset entries
     for entry in entries:

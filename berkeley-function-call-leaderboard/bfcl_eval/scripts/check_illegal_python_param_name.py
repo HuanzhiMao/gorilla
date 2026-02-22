@@ -1,7 +1,7 @@
 from keyword import kwlist
 
 from bfcl_eval._llm_response_generation import parse_test_category_argument
-from bfcl_eval.constants.eval_config import POSSIBLE_ANSWER_PATH, PROMPT_PATH
+from bfcl_eval.constants.eval_config import POSSIBLE_ANSWER_PATH, TEXT_DATASET_PATH
 from bfcl_eval.utils import (
     is_executable,
     is_java,
@@ -23,7 +23,7 @@ for test_category, file_path in zip(test_categories_total, test_filename_total):
     # We only care about Python test cases; Java and JavaScript test cases have different rules
     if is_java(test_category) or is_js(test_category):
         continue
-    dataset_data = load_file(PROMPT_PATH / file_path)
+    dataset_data = load_file(TEXT_DATASET_PATH / file_path)
     for test_entry in dataset_data:
         for function in test_entry["function"]:
             if "parameters" in function and "properties" in function["parameters"]:
@@ -40,7 +40,7 @@ for test_category, file_path in zip(test_categories_total, test_filename_total):
                     else:
                         properties[param_name] = param_description
                 function["parameters"]["properties"] = properties
-    write_list_of_dicts_to_file(file_path, dataset_data, subdir=PROMPT_PATH)
+    write_list_of_dicts_to_file(file_path, dataset_data, subdir=TEXT_DATASET_PATH)
 
     if (
         is_executable(test_category)
