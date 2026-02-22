@@ -54,14 +54,14 @@ class LlamaHandler(OSSHandler):
 
     @override
     def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         for execution_result in execution_results:
             # Llama uses the `ipython` role for execution results
             inference_data["message"].append(
                 {
                     "role": "ipython",
-                    "content": execution_result,
+                    "content": execution_result["result"],
                 }
             )
 

@@ -136,7 +136,7 @@ class MistralHandler(BaseHandler):
         return inference_data
 
     def _add_execution_results_FC(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         for execution_result, func_name, tool_call_id in zip(
             execution_results,
@@ -146,7 +146,7 @@ class MistralHandler(BaseHandler):
             tool_message = {
                 "role": "tool",
                 "name": func_name,
-                "content": execution_result,
+                "content": execution_result["result"],
                 "tool_call_id": tool_call_id,
             }
             inference_data["message"].append(tool_message)
@@ -203,7 +203,7 @@ class MistralHandler(BaseHandler):
         return inference_data
 
     def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         formatted_results_message = format_execution_results_prompting(
             inference_data, execution_results, model_response_data

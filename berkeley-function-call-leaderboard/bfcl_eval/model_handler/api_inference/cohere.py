@@ -259,7 +259,7 @@ class CohereHandler(BaseHandler):
         return inference_data
 
     def _add_execution_results_FC(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         if execution_results:
             # non-empty execution_results, the last turn of inference_data["chat_turns"] must be a tool use turn
@@ -278,17 +278,18 @@ class CohereHandler(BaseHandler):
                 inference_data["chat_turns"][-1].tool_calls, execution_results
             ):
                 tool_call_id = tool_call.id
+                result_str = execution_result["result"]
                 try:
-                    tool_execution_result = ast.literal_eval(execution_result)
+                    tool_execution_result = ast.literal_eval(result_str)
                 except:
-                    tool_execution_result = execution_result
+                    tool_execution_result = result_str
                 if isinstance(tool_execution_result, dict):
                     if "id" in tool_execution_result:
                         tool_execution_result["ID"] = tool_execution_result["id"]
                         del tool_execution_result["id"]
                     result_to_render = json.dumps(tool_execution_result)
                 else:
-                    result_to_render = execution_result
+                    result_to_render = result_str
                 one_tool_call_output = cohere.ToolChatMessageV2(
                     tool_call_id=tool_call_id,
                     content=[

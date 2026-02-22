@@ -177,7 +177,7 @@ class NovaHandler(BaseHandler):
     def _add_execution_results_FC(
         self,
         inference_data: dict,
-        execution_results: list[str],
+        execution_results: list[dict],
         model_response_data: dict,
     ) -> dict:
         # Nova use the `user` role for the tool result message

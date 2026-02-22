@@ -230,7 +230,7 @@ class MistralFCHandler(OSSHandler):
 
     @override
     def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         for execution_result, tool_call_id in zip(
             execution_results, model_response_data["tool_call_ids"]
@@ -239,7 +239,7 @@ class MistralFCHandler(OSSHandler):
                 {
                     "role": "tool",
                     "tool_call_id": tool_call_id,
-                    "content": execution_result,
+                    "content": execution_result["result"],
                 }
             )
 
