@@ -211,7 +211,7 @@ class OpenAIResponsesHandler(BaseHandler):
     def _add_execution_results_FC(
         self,
         inference_data: dict,
-        execution_results: list[str],
+        execution_results: list[dict],
         model_response_data: dict,
     ) -> dict:
         # Add the execution results to the current round result, one at a time
@@ -342,7 +342,7 @@ class OpenAIResponsesHandler(BaseHandler):
     def _add_execution_results_prompting(
         self,
         inference_data: dict,
-        execution_results: list[str],
+        execution_results: list[dict],
         model_response_data: dict,
     ) -> dict:
         formatted_results_message = format_execution_results_prompting(

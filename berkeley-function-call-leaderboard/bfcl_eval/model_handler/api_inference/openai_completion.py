@@ -181,7 +181,7 @@ class OpenAICompletionsHandler(BaseHandler):
     def _add_execution_results_FC(
         self,
         inference_data: dict,
-        execution_results: list[str],
+        execution_results: list[dict],
         model_response_data: dict,
     ) -> dict:
         # @HuanzhiMao FIXME: might need to turn this into constants
@@ -333,7 +333,7 @@ class OpenAICompletionsHandler(BaseHandler):
         return inference_data
 
     def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         formatted_results_message = format_execution_results_prompting(
             inference_data, execution_results, model_response_data

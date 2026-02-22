@@ -22,7 +22,7 @@ def multi_turn_checker(
     test_entry_id: str = test_entry["id"]
     test_category: str = test_entry_id.rsplit("_", 1)[0]
     execution_results: list[dict] = []
-    all_turn_model_execution_results: list[str] = []
+    all_turn_model_execution_results: list[dict] = []
 
     # First execute all the function calls
     for turn_index, single_turn_ground_truth_list in enumerate(

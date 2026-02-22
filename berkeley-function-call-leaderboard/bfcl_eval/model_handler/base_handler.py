@@ -1027,7 +1027,7 @@ class BaseHandler:
         raise NotImplementedError
 
     def _add_execution_results_FC(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         """
         Add the execution results to the chat history to prepare for the next turn of query.
@@ -1109,7 +1109,7 @@ class BaseHandler:
         raise NotImplementedError
 
     def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         """
         Add the execution results to the chat history to prepare for the next turn of query.

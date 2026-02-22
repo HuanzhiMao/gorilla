@@ -454,7 +454,7 @@ def extract_last_user_message(prompts: list[dict], user_role_name: str = "user")
 
 
 def format_execution_results_prompting(
-    inference_data: dict, execution_results: list[str], model_response_data: dict
+    inference_data: dict, execution_results: list[dict], model_response_data: dict
 ) -> str:
     # Add the execution results to one single user message
     tool_results = []
@@ -462,7 +462,7 @@ def format_execution_results_prompting(
         execution_results, model_response_data["model_responses_decoded"]
     ):
         tool_results.append(
-            {"role": "tool", "name": decoded_model_response, "content": execution_result}
+            {"role": "tool", "name": decoded_model_response, "content": execution_result["result"]}
         )
 
     return repr(tool_results)

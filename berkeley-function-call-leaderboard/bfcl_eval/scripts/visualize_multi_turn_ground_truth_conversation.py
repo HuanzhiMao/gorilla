@@ -12,8 +12,8 @@ from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     STATELESS_CLASSES,
     execute_multi_turn_func_call,
 )
-
-test_categories_total = parse_test_category_argument(["multi_turn"])
+from bfcl_eval.constants.category_mapping import TEXT_MULTI_TURN_CATEGORY
+test_categories_total = parse_test_category_argument(["text_multi_turn"])
 
 for test_category in test_categories_total:
     dataset_data = load_dataset_entry(test_category)
@@ -79,10 +79,11 @@ for test_category in test_categories_total:
             for ground_truth, execution_result in zip(
                 single_turn_ground_truth, execution_results
             ):
+                result_content = execution_result["result"]
                 try:
-                    execution_result_copy = json.loads(execution_result)
+                    execution_result_copy = json.loads(result_content)
                 except Exception as e:
-                    execution_result_copy = execution_result
+                    execution_result_copy = result_content
                     pass
 
                 if (
@@ -96,7 +97,7 @@ for test_category in test_categories_total:
                 ):
                     print("------")
                     print(test_entry["id"])
-                    print(execution_result)
+                    print(result_content)
                     # raise Exception("Ground truth should not have error in execution")
 
                 current_turn_inference_log.append(
@@ -105,7 +106,7 @@ for test_category in test_categories_total:
                 current_turn_inference_log.append(
                     {
                         "role": "tool",
-                        "content": execution_result,
+                        "content": result_content,
                     }
                 )
 

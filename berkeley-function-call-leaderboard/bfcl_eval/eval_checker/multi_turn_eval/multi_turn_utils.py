@@ -21,7 +21,7 @@ def execute_multi_turn_func_call(
     test_entry_id: str,
     long_context: bool = False,
     is_evaL_run: bool = False,
-) -> tuple[list[str], dict]:
+) -> tuple[list[dict], dict]:
     """
     Execute a list of function calls against dynamically loaded class instances.
 
