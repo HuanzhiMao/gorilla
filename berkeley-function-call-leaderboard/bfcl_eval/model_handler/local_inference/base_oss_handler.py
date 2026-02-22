@@ -170,11 +170,19 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
  
                     print(f"🚀Starting vLLM server with command: \"{' '.join(cmd)}\"")
                     
+                    # @HuanzhiMao FIXME: test this
+                    # Build a clean env so the parent's restricted threading
+                    # settings (OMP_NUM_THREADS=1, etc.) don't throttle vLLM.
+                    env = os.environ.copy()
+                    for var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "TOKENIZERS_PARALLELISM"):
+                        env.pop(var, None)
+
                     process = subprocess.Popen(
                         cmd,
                         stdout=subprocess.PIPE,  # Capture stdout
                         stderr=subprocess.PIPE,  # Capture stderr
                         text=True,  # To get the output as text instead of bytes
+                        env=env,
                     )
                 else:
                     raise ValueError(f"Backend {backend} is not supported.")
@@ -276,6 +284,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
 
         return {"message": []}
 
+    # @HuanzhiMao FIXME: remove this
     def _format_prompt(self, messages, function):
         """
         Manually apply the chat template to construct the formatted prompt.
