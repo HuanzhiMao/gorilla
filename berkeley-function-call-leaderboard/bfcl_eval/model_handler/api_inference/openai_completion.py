@@ -141,6 +141,7 @@ class OpenAICompletionsHandler(BaseHandler):
             "output_token": api_response.usage.completion_tokens,
         }
 
+    # @HuanzhiMao FIXME: add support for audio and vision
     def add_first_turn_message_FC(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
