@@ -117,7 +117,7 @@ class ModelConfig:
 
     # True if the model supports native audio input. Required for true audio tasks.
     supports_audio_input: bool = False
-    
+
     # True if the model supports vision/image input. Required for vision tasks.
     supports_image_input: bool = False
 
@@ -2227,4 +2227,19 @@ MODEL_CONFIG_MAPPING: dict[str, ModelConfig] = {
 }
 
 # Uncomment to get the supported_models.py file contents
-# print(repr(list(MODEL_CONFIG_MAPPING.keys())))
+all_model_list = []
+true_audio_model_list = []
+vision_model_list = []
+for key, config in MODEL_CONFIG_MAPPING.items():
+    if config.supports_audio_input:
+        true_audio_model_list.append(key)
+    if config.supports_image_input:
+        vision_model_list.append(key)
+    all_model_list.append(key)
+
+print("Text supported models:")
+print(repr(all_model_list))
+print("True audio supported models:")
+print(repr(true_audio_model_list))
+print("Vision supported models:")
+print(repr(vision_model_list))
