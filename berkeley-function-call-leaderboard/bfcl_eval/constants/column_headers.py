@@ -126,9 +126,9 @@ COLUMNS_VISION_OVERALL = [
     "Rank",
     "Model",
     "Vision Overall Acc",
-    "Geogesser Type 1",
-    "Geogesser Type 2",
-    "Geogesser Type 3",
+    "geoguessr Type 1",
+    "geoguessr Type 2",
+    "geoguessr Type 3",
 ]
 
 #### Master Cross-Modality Overall ####

@@ -70,7 +70,7 @@ def _subset_entries_by_model_ids(
     return filtered_prompt_entries, filtered_ground_truth_entries
 
 
-def _evaluate_single_vision_geogesser_entry(
+def _evaluate_single_vision_geoguessr_entry(
     handler: BaseHandler,
     index,
     model_result_list,
@@ -79,12 +79,12 @@ def _evaluate_single_vision_geogesser_entry(
     model_name,
     test_category,
 ):
-    """Helper method to process a single vision geogesser entry."""
+    """Helper method to process a single vision geoguessr entry."""
     # Remove the function doc from the score file for better readability
     if "function" in prompt_entry:
         del prompt_entry["function"]
 
-    # Vision geogesser test is a single-turn test, so the model result should be a list of one element
+    # Vision geoguessr test is a single-turn test, so the model result should be a list of one element
     if type(model_result_list) != list or len(model_result_list) != 1:
         return {
             "id": index,
@@ -96,7 +96,7 @@ def _evaluate_single_vision_geogesser_entry(
                 "error_message": [
                     "Error during inference phase. Model did not output a list of model responses."
                 ],
-                "error_type": "vision_geogesser:inference_error",
+                "error_type": "vision_geoguessr:inference_error",
             },
             "prompt": prompt_entry,
             "model_result": model_result_list,
@@ -136,7 +136,7 @@ def _evaluate_single_vision_geogesser_entry(
                 "error_message": [
                     "Cannot find the last chat message that is not a function call."
                 ],
-                "error_type": "vision_geogesser:no_last_message",
+                "error_type": "vision_geoguessr:no_last_message",
             },
             "prompt": prompt_entry,
             "model_result": model_result_list,
@@ -589,7 +589,7 @@ def format_sensitivity_runner(
     )
 
 
-def vision_geogesser_runner(
+def vision_geoguessr_runner(
     handler: BaseHandler,
     model_result,
     prompt,
@@ -610,7 +610,7 @@ def vision_geogesser_runner(
         possible_answer_item = possible_answer[i]["ground_truth"]
         test_entry = prompt[i]
 
-        entry_result = _evaluate_single_vision_geogesser_entry(
+        entry_result = _evaluate_single_vision_geoguessr_entry(
             handler,
             index,
             model_result_list,
@@ -818,10 +818,10 @@ def evaluate_task(
         test_category, include_prereq=False, include_language_specific_hint=False
     )
 
-    if is_geogesser(test_category):
+    if is_geoguessr(test_category):
         possible_answer = load_ground_truth_entry(test_category)
         if "type1" in test_category:
-            accuracy, total_count = vision_geogesser_runner(
+            accuracy, total_count = vision_geoguessr_runner(
                 handler,
                 model_result,
                 prompt,

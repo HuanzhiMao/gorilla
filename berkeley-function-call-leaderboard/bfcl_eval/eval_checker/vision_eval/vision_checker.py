@@ -18,7 +18,7 @@ def vision_checker(model_response: str, possible_answer_list: list[str]) -> dict
         return {
             "score": 0.0,
             "error_message": "Could not extract coordinates from model response.",
-            "error_type": "vision_geogesser:coordinate_extraction_failed",
+            "error_type": "vision_geoguessr:coordinate_extraction_failed",
             "details": {
                 "model_coordinate": model_response,
                 "ground_truth_coordinate": possible_answer_list,

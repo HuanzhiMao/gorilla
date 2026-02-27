@@ -47,7 +47,7 @@ def _get_file_lock(filepath: str) -> FileLock:
 #### Helper functions to extract/parse/complete test category from different formats ####
 
 # Category names use the format "modality:base_name", e.g. "text:simple_python",
-# "vision:geogesser_type1", "true_audio:simple_python", "text_audio:simple_python".
+# "vision:geoguessr_type1", "true_audio:simple_python", "text_audio:simple_python".
 # File names do NOT include the modality prefix — the directory structure handles it.
 
 
@@ -270,19 +270,19 @@ def is_vision_web_search(test_category: str) -> bool:
     return "vision_web_search" in test_category
 
 
-def is_geogesser(test_category: str) -> bool:
-    return "geogesser" in test_category
+def is_geoguessr(test_category: str) -> bool:
+    return "geoguessr" in test_category
 
 
 def contain_vision_input(test_category: str) -> bool:
     """
-    Check if the test category requires a vision input (eg, vision_web_search_base, geogesser_type1, etc.).
+    Check if the test category requires a vision input (eg, vision_web_search_base, geoguessr_type1, etc.).
     """
-    return is_vision_web_search(test_category) or is_geogesser(test_category)
+    return is_vision_web_search(test_category) or is_geoguessr(test_category)
 
 
 def is_vision(test_category: str) -> bool:
-    return is_vision_web_search(test_category) or is_geogesser(test_category)
+    return is_vision_web_search(test_category) or is_geoguessr(test_category)
 
 
 def is_format_sensitivity(test_category: str) -> bool:
@@ -488,10 +488,10 @@ def load_dataset_entry(
             all_entries = load_file(modality_path / "vision_web_search_base.json")
             all_entries = process_vision_web_search_test_cases(all_entries, base_category)
 
-        elif is_geogesser(test_category):
-            # Geogesser categories
+        elif is_geoguessr(test_category):
+            # geoguessr categories
             all_entries = load_file(modality_path / f"{base_category}.json")
-            all_entries = process_geogesser_test_case(all_entries)
+            all_entries = process_geoguessr_test_case(all_entries)
         else:
             raise ValueError(f"Invalid vision category: {test_category}")
 
@@ -1165,12 +1165,12 @@ def process_vision_web_search_test_cases(
     return result
 
 
-def process_geogesser_test_case(test_cases: list[dict]) -> list[dict]:
+def process_geoguessr_test_case(test_cases: list[dict]) -> list[dict]:
     """
-    Geogesser test cases need to have a specific response format. We add this to the user query here.
+    geoguessr test cases need to have a specific response format. We add this to the user query here.
     """
     for entry in test_cases:
-        if is_geogesser(entry["id"]):
+        if is_geoguessr(entry["id"]):
             entry["question"][0].insert(
                 0,
                 {
