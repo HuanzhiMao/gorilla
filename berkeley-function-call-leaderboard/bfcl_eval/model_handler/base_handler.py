@@ -238,7 +238,9 @@ class BaseHandler:
                 )
                 current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
-                current_turn_inference_log[f"step_{step_count}"] = current_step_inference_log
+                current_turn_inference_log[f"step_{step_count}"] = (
+                    current_step_inference_log
+                )
 
                 api_response, query_latency = self._query_FC(inference_data)
 
@@ -494,8 +496,10 @@ class BaseHandler:
             "input_token_count": total_input_token_count,
             "output_token_count": total_output_token_count,
             "latency": total_latency,
-            "inference_log": all_inference_log,
         }
+
+        if contain_multi_turn_interaction(test_entry_id):
+            metadata["inference_log"] = all_inference_log
 
         if not all(
             all(content == "" for content in single_turn_reasoning_content)
@@ -631,7 +635,9 @@ class BaseHandler:
                 )
                 current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
-                current_turn_inference_log[f"step_{step_count}"] = current_step_inference_log
+                current_turn_inference_log[f"step_{step_count}"] = (
+                    current_step_inference_log
+                )
 
                 api_response, query_latency = self._query_prompting(inference_data)
 
