@@ -48,7 +48,7 @@ class Args(argparse.Namespace):
 def get_args() -> Args:
     parser = argparse.ArgumentParser()
     # Refer to model_choice for supported models.
-    parser.add_argument("--model", type=str, default="gorilla-openfunctions-v2", nargs="+")
+    parser.add_argument("--model", type=str, required=True, nargs="+")
     # Refer to test_categories for supported categories.
     parser.add_argument("--test-category", type=str, default="vision", nargs="+")
 

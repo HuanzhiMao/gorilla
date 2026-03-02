@@ -95,7 +95,7 @@ def models():
 @cli.command()
 def generate(
     model: List[str] = typer.Option(
-        ["gorilla-openfunctions-v2"], 
+        ...,
         help="A list of model names to generate the llm response. Use commas to separate multiple models.",
         callback=handle_multiple_input
     ),
