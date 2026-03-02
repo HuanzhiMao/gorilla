@@ -4,7 +4,7 @@ from typing import Any
 
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
-from bfcl_eval.constants.enums import ModelStyle
+from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.model_handler.utils import (
     convert_to_tool,
     default_decode_ast_prompting,
@@ -22,6 +22,8 @@ from google.genai.types import (
     Part,
     ThinkingConfig,
     Tool,
+    FunctionResponsePart,
+    FunctionResponseBlob,
 )
 
 
@@ -191,12 +193,26 @@ class GeminiHandler(BaseHandler):
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
         for message in first_turn_message:
+            if "image_content" in message:
+                parts = []
+                parts.append(Part(text=message["content"]))
+                for image_content in message["image_content"]:
+                    parts.append(
+                        Part.from_bytes(
+                            data=image_content["image_bytes"],
+                            mime_type=image_content["type"],
+                        )
+                    )
+
+                del message["image_content"]
+
+            else:
+                parts = [Part(text=message["content"])]
+
             inference_data["message"].append(
                 Content(
                     role=message["role"],
-                    parts=[
-                        Part(text=message["content"]),
-                    ],
+                    parts=parts,
                 )
             )
         return inference_data
@@ -217,7 +233,7 @@ class GeminiHandler(BaseHandler):
     def _add_execution_results_FC(
         self,
         inference_data: dict,
-        execution_results: list[str],
+        execution_results: list[dict],
         model_response_data: dict,
     ) -> dict:
         # Tool response needs to be converted to Content object as well.
@@ -226,14 +242,30 @@ class GeminiHandler(BaseHandler):
         for execution_result, tool_call_func_name in zip(
             execution_results, model_response_data["tool_call_func_names"]
         ):
-            tool_response_parts.append(
-                Part.from_function_response(
-                    name=tool_call_func_name,
-                    response={
-                        "result": execution_result,
-                    },
+            if execution_result["result_type"] == ResultType.TEXT:
+                tool_response_parts.append(
+                    Part.from_function_response(
+                        name=tool_call_func_name,
+                        response={
+                            "result": execution_result["result"],
+                        },
+                    )
                 )
-            )
+            elif execution_result["result_type"] == ResultType.IMAGE:
+                tool_response_parts.append(
+                    Part.from_function_response(
+                        name=tool_call_func_name,
+                        response={},
+                        parts=[
+                            FunctionResponsePart(
+                                inline_data=FunctionResponseBlob(
+                                    data=execution_result["result"]["image_bytes"],
+                                    mime_type=execution_result["result"]["type"],
+                                ),
+                            )
+                        ],
+                    )
+                )
 
         tool_response_content = Content(role="user", parts=tool_response_parts)
         inference_data["message"].append(tool_response_content)
@@ -346,7 +378,7 @@ class GeminiHandler(BaseHandler):
         return inference_data
 
     def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         formatted_results_message = format_execution_results_prompting(
             inference_data, execution_results, model_response_data

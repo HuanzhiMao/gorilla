@@ -39,3 +39,21 @@ class ReturnFormat(Enum):
     JSON = "json"
     VERBOSE_XML = "verbose_xml"
     CONCISE_XML = "concise_xml"
+
+class Modality(Enum):
+    """
+    The test case can be one of the following modalities:
+    """
+    TEXT = "text"
+    VISION = "vision"
+    TRUE_AUDIO = "true_audio"
+    TEXT_AUDIO = "text_audio"
+
+
+class ResultType(str, Enum):
+    """
+    ResultType indicates the type of content returned from function execution.
+    """
+    TEXT = "text"
+    IMAGE = "image"
+    

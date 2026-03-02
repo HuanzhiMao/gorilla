@@ -3,6 +3,7 @@ import builtins
 import copy
 import json
 import operator
+import os
 import re
 from functools import reduce
 from typing import TYPE_CHECKING, Callable, List, Optional, Type, Union
@@ -18,6 +19,7 @@ from bfcl_eval.model_handler.parser.xml_parser import (
     parse_verbose_xml_function_call,
 )
 from bfcl_eval.utils import *
+from openai import OpenAI
 from tenacity import (
     retry,
     retry_if_exception_message,
@@ -452,7 +454,7 @@ def extract_last_user_message(prompts: list[dict], user_role_name: str = "user")
 
 
 def format_execution_results_prompting(
-    inference_data: dict, execution_results: list[str], model_response_data: dict
+    inference_data: dict, execution_results: list[dict], model_response_data: dict
 ) -> str:
     # Add the execution results to one single user message
     tool_results = []
@@ -460,7 +462,7 @@ def format_execution_results_prompting(
         execution_results, model_response_data["model_responses_decoded"]
     ):
         tool_results.append(
-            {"role": "tool", "name": decoded_model_response, "content": execution_result}
+            {"role": "tool", "name": decoded_model_response, "content": execution_result["result"]}
         )
 
     return repr(tool_results)
@@ -919,3 +921,143 @@ def parse_prompt_variation_params(input_str: str) -> tuple[str, bool, str, str, 
         prompt_format,
         prompt_style,
     )
+
+
+# @HuanzhiMao
+# Utils for Audio
+
+def extract_clarification_context(
+        turn_messages: list[dict],
+    ) -> tuple[dict, str, str]:
+    """
+    Extract and remove clarification metadata from the last message in the turn.
+
+    These fields are test-harness metadata that should not be forwarded to the
+    model, so they are popped in place.
+
+    Returns:
+        (allowed_clarifications, original_user_request, asr_output)
+    """
+    last_message = turn_messages[-1]
+    allowed_clarifications = last_message.pop("clarifications", {})
+    original_user_request = last_message.pop("original_content", "")
+    asr_output = last_message.get("content", "")
+    return allowed_clarifications, original_user_request, asr_output
+    
+def check_for_clarification(
+    model_response: str,
+    allowed_clarifications: dict[str, str],
+    original_user_request: str,
+    asr_output: str,
+) -> tuple[bool, str]:
+    if not original_user_request or not asr_output:
+        return False, ""
+
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+    user_prompt = """
+You are a judge for an audio-chat scenario where a user speaks and an ASR system transcribes their speech for the assistant. The assistant only sees text (the ASR transcript), which is likely to contain transcription errors.
+
+You are given:
+- intended_request: the user's original, ground-truth intent.
+- asr_text: the ASR-transcribed text the assistant saw.
+- allowed_clarifications: a set of fields with canonical spellings/values the user can confirm (e.g., names, IDs, emails, dates, numbers).
+- assistant_message: the assistant's latest message.
+
+Your job: decide whether assistant_message is a clarifying question specifically about spelling/verification of intent or exact strings/values that could plausibly be misheard (e.g., names, organizations, emails, serials/IDs, numbers, dates, addresses, SKUs). Do not allow general follow-ups (preference, steps to proceed, etc.).
+
+Decision rules:
+1. Classify the message as a spelling confirmation only if it explicitly asks to verify the exact spelling/format/value of one or more items (e.g., “Is it Mikaela or Michaela?”, “Can you spell the email?”, “Is the order number A1B-52?”).
+2. The request must be reasonable given the ASR risk (i.e., the item is a proper noun, key value, or easily misheard token relevant to the task).
+3. To approve (allowed=true), all the topics the assistant asks to confirm must be present in allowed_clarifications. If any requested item is absent or ambiguous, set allowed=false.
+4. Output only a JSON object with two fields:
+- allowed: boolean
+- message: string (a concise simulated user reply only when allowed=true; otherwise empty "").
+5. When allowed=true, compose message by supplying only the requested values with correct spelling/format from allowed_clarifications. Keep it brief (one short sentence or a compact list). Do not include extra commentary, JSON, or fields the assistant didn't request.
+6. If the assistant's message is not a confirmation request, touches topics outside spelling/format/intent verification, or requests values not available in allowed_clarifications, return allowed=false with message="".
+
+Edge cases:
+- If the assistant mixes spelling confirmation with unrelated questions, treat it as not allowed unless the spelling part stands alone and you can fully answer it from allowed_clarifications.
+- Treat homophones and near-matches as spelling checks (e.g., “Brian/Bryan”, “Steven/Stephen”, letters vs. digits).
+- Normalize case/diacritics but preserve canonical spelling in the final answer.
+- Never reveal intended_request verbatim; only return the specific confirmed values.\n\n\n\n
+    """
+
+    # print(f"model_response: {model_response}")
+    if not type(model_response) == str:
+        model_response = str(model_response)
+
+    user_prompt += (
+        "The user's original intended request is:\n"
+        + original_user_request
+        + "\n\n"
+        + "The ASR-transcribed output is:\n"
+        + asr_output
+        + "\n\n"
+        + "assistant_message:\n"
+        + model_response
+        + "\n\n"
+        + "allowed_clarifications (topic -> answer):\n"
+        + json.dumps(allowed_clarifications, indent=4)
+    )
+
+    response = client.chat.completions.create(
+        # model="o4-mini-2025-04-16",
+        model="o3-2025-04-16",
+        messages=[
+            {"role": "user", "content": user_prompt},
+        ],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "clarification_decision",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "allowed": {"type": "boolean"},
+                        "message": {"type": "string"},
+                    },
+                    "required": ["allowed", "message"],
+                },
+            },
+        },
+        # temperature=0,
+    )
+
+    msg = response.choices[0].message
+    if msg.content is not None:
+        content = msg.content.strip()
+    else:
+        print("❌" * 100)
+        print(f"msg: {msg}")
+        print("*" * 100)
+        content = ""
+
+    try:
+        payload = json.loads(content)
+        is_allowed = bool(payload.get("allowed", False))
+        simulated_message = payload.get("message", "")
+    except:
+        print("Error parsing the response from the model.", content)
+        # If the assistant returns malformed output, treat as not allowed.
+        is_allowed = False
+        simulated_message = ""
+
+    if not is_allowed:
+        pass
+        # print("-" * 100)
+        # print(f"original_user_request: {original_user_request}")
+        # print(f"asr_output: {asr_output}")
+        # print(f"allowed_clarifications: {allowed_clarifications}")
+        # print(f"❌ model_response: {model_response}")
+    else:
+        print("-" * 100)
+        print(f"original_user_request: {original_user_request}")
+        print(f"asr_output: {asr_output}")
+        print(f"allowed_clarifications: {allowed_clarifications}")
+        print(f"✅ model_response: {model_response}")
+        print(f"simulated_message: {simulated_message}")
+
+    return is_allowed, simulated_message

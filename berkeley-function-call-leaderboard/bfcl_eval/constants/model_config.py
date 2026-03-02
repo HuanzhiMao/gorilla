@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from bfcl_eval.model_handler.api_inference.claude import ClaudeHandler
@@ -93,6 +93,8 @@ class ModelConfig:
         output_price (Optional[float]): USD per million output tokens (None for open source models).
         is_fc_model (bool): True if this model is used in Function-Calling mode, otherwise False for Prompt-based mode.
         underscore_to_dot (bool): True if model does not support '.' in function names, in which case we will replace '.' with '_'. Currently this only matters for checker.  TODO: We should let the tool compilation step also take this into account.
+        supports_audio_input (bool): True if the model supports native audio input. Required for true audio tasks.
+        supports_image_input (bool): True if the model supports vision/image input. Required for vision tasks.
 
     """
 
@@ -114,6 +116,27 @@ class ModelConfig:
     # True if this model does not allow '.' in function names
     underscore_to_dot: bool = False
 
+    # True if the model supports native audio input. Required for true audio tasks.
+    supports_audio_input: bool = False
+
+    # True if the model supports vision/image input. Required for vision tasks.
+    supports_image_input: bool = False
+
+
+@dataclass
+class OSSModelConfig(ModelConfig):
+    """
+    OSS model configuration, carrying additional vLLM-specific settings.
+    Attributes:
+        vllm_tool_call_parser: The tool call parser to use for the model.
+        vllm_reasoning_parser: The reasoning parser to use for the model.
+        vllm_extra_serve_args: Extra serve arguments to pass to the vllm engine.
+    """
+
+    vllm_tool_call_parser: Optional[str] = None
+    vllm_reasoning_parser: Optional[str] = None
+    vllm_extra_serve_args: list[str] = field(default_factory=list)
+
 
 # Inference through API calls
 api_inference_model_map = {
@@ -129,10 +152,10 @@ api_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "DeepSeek-V3.2-Exp": ModelConfig(
+    "DeepSeek-V3.2": ModelConfig(
         model_name="deepseek-chat",
-        display_name="DeepSeek-V3.2-Exp (Prompt)",
-        url="https://api-docs.deepseek.com/news/news250528",
+        display_name="DeepSeek-V3.2 (Prompt)",
+        url="https://api-docs.deepseek.com/news/news251201",
         org="DeepSeek",
         license="MIT",
         model_handler=DeepSeekAPIHandler,
@@ -141,10 +164,10 @@ api_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "DeepSeek-V3.2-Exp-FC": ModelConfig(
+    "DeepSeek-V3.2-FC": ModelConfig(
         model_name="deepseek-chat",
-        display_name="DeepSeek-V3.2-Exp (FC)",
-        url="https://api-docs.deepseek.com/news/news250528",
+        display_name="DeepSeek-V3.2 (FC)",
+        url="https://api-docs.deepseek.com/news/news251201",
         org="DeepSeek",
         license="MIT",
         model_handler=DeepSeekAPIHandler,
@@ -153,10 +176,10 @@ api_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
     ),
-    "DeepSeek-V3.2-Exp-thinking": ModelConfig(
+    "DeepSeek-V3.2-FC-thinking": ModelConfig(
         model_name="deepseek-reasoner",
-        display_name="DeepSeek-V3.2-Exp (Prompt + Thinking)",
-        url="https://api-docs.deepseek.com/news/news250528",
+        display_name="DeepSeek-V3.2-FC-thinking (FC + Thinking)",
+        url="https://api-docs.deepseek.com/news/news251201",
         org="DeepSeek",
         license="MIT",
         model_handler=DeepSeekAPIHandler,
@@ -176,6 +199,7 @@ api_inference_model_map = {
         output_price=14,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-5.2-2025-12-11": ModelConfig(
         model_name="gpt-5.2-2025-12-11",
@@ -188,6 +212,7 @@ api_inference_model_map = {
         output_price=14,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-5-mini-2025-08-07-FC": ModelConfig(
         model_name="gpt-5-mini-2025-08-07",
@@ -200,6 +225,7 @@ api_inference_model_map = {
         output_price=2,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-5-mini-2025-08-07": ModelConfig(
         model_name="gpt-5-mini-2025-08-07",
@@ -212,6 +238,7 @@ api_inference_model_map = {
         output_price=2,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-5-nano-2025-08-07-FC": ModelConfig(
         model_name="gpt-5-nano-2025-08-07",
@@ -224,6 +251,7 @@ api_inference_model_map = {
         output_price=0.4,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-5-nano-2025-08-07": ModelConfig(
         model_name="gpt-5-nano-2025-08-07",
@@ -236,6 +264,7 @@ api_inference_model_map = {
         output_price=0.4,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4.1-2025-04-14-FC": ModelConfig(
         model_name="gpt-4.1-2025-04-14",
@@ -248,6 +277,7 @@ api_inference_model_map = {
         output_price=8,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-4.1-2025-04-14": ModelConfig(
         model_name="gpt-4.1-2025-04-14",
@@ -260,6 +290,7 @@ api_inference_model_map = {
         output_price=8,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4.1-mini-2025-04-14-FC": ModelConfig(
         model_name="gpt-4.1-mini-2025-04-14",
@@ -272,6 +303,7 @@ api_inference_model_map = {
         output_price=1.6,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-4.1-mini-2025-04-14": ModelConfig(
         model_name="gpt-4.1-mini-2025-04-14",
@@ -284,6 +316,7 @@ api_inference_model_map = {
         output_price=1.6,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4.1-nano-2025-04-14-FC": ModelConfig(
         model_name="gpt-4.1-nano-2025-04-14",
@@ -296,6 +329,7 @@ api_inference_model_map = {
         output_price=0.4,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-4.1-nano-2025-04-14": ModelConfig(
         model_name="gpt-4.1-nano-2025-04-14",
@@ -308,6 +342,7 @@ api_inference_model_map = {
         output_price=0.4,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4o-2024-11-20": ModelConfig(
         model_name="gpt-4o-2024-11-20",
@@ -320,6 +355,7 @@ api_inference_model_map = {
         output_price=10,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4o-2024-11-20-FC": ModelConfig(
         model_name="gpt-4o-2024-11-20",
@@ -332,6 +368,7 @@ api_inference_model_map = {
         output_price=10,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gpt-4o-mini-2024-07-18": ModelConfig(
         model_name="gpt-4o-mini-2024-07-18",
@@ -344,6 +381,7 @@ api_inference_model_map = {
         output_price=0.6,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "gpt-4o-mini-2024-07-18-FC": ModelConfig(
         model_name="gpt-4o-mini-2024-07-18",
@@ -356,6 +394,7 @@ api_inference_model_map = {
         output_price=0.6,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "o3-2025-04-16": ModelConfig(
         model_name="o3-2025-04-16",
@@ -368,6 +407,7 @@ api_inference_model_map = {
         output_price=8,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "o3-2025-04-16-FC": ModelConfig(
         model_name="o3-2025-04-16",
@@ -380,6 +420,7 @@ api_inference_model_map = {
         output_price=8,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "o4-mini-2025-04-16": ModelConfig(
         model_name="o4-mini-2025-04-16",
@@ -392,6 +433,7 @@ api_inference_model_map = {
         output_price=4.40,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "o4-mini-2025-04-16-FC": ModelConfig(
         model_name="o4-mini-2025-04-16",
@@ -404,11 +446,12 @@ api_inference_model_map = {
         output_price=4.40,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
-    "claude-opus-4-5-20251101": ModelConfig(
-        model_name="claude-opus-4-5-20251101",
-        display_name="Claude-Opus-4-5-20251101 (Prompt)",
-        url="https://www.anthropic.com/news/claude-4",
+    "claude-opus-4-6": ModelConfig(
+        model_name="claude-opus-4-6",
+        display_name="Claude-Opus-4-6 (Prompt)",
+        url="https://www.anthropic.com/news/claude-opus-4-6",
         org="Anthropic",
         license="Proprietary",
         model_handler=ClaudeHandler,
@@ -416,11 +459,12 @@ api_inference_model_map = {
         output_price=25,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
-    "claude-opus-4-5-20251101-FC": ModelConfig(
-        model_name="claude-opus-4-5-20251101",
-        display_name="Claude-Opus-4-5-20251101 (FC)",
-        url="https://www.anthropic.com/news/claude-4",
+    "claude-opus-4-6-FC": ModelConfig(
+        model_name="claude-opus-4-6",
+        display_name="Claude-Opus-4-6 (FC)",
+        url="https://www.anthropic.com/news/claude-opus-4-6",
         org="Anthropic",
         license="Proprietary",
         model_handler=ClaudeHandler,
@@ -428,11 +472,12 @@ api_inference_model_map = {
         output_price=25,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
-    "claude-sonnet-4-5-20250929": ModelConfig(
-        model_name="claude-sonnet-4-5-20250929",
-        display_name="Claude-Sonnet-4-5-20250929 (Prompt)",
-        url="https://www.anthropic.com/news/claude-sonnet-4-5",
+    "claude-sonnet-4-6": ModelConfig(
+        model_name="claude-sonnet-4-6",
+        display_name="Claude-Sonnet-4-6 (Prompt)",
+        url="https://www.anthropic.com/news/claude-sonnet-4-6",
         org="Anthropic",
         license="Proprietary",
         model_handler=ClaudeHandler,
@@ -440,11 +485,12 @@ api_inference_model_map = {
         output_price=15,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
-    "claude-sonnet-4-5-20250929-FC": ModelConfig(
-        model_name="claude-sonnet-4-5-20250929",
-        display_name="Claude-Sonnet-4-5-20250929 (FC)",
-        url="https://www.anthropic.com/news/claude-sonnet-4-5",
+    "claude-sonnet-4-6-FC": ModelConfig(
+        model_name="claude-sonnet-4-6",
+        display_name="Claude-Sonnet-4-6 (FC)",
+        url="https://www.anthropic.com/news/claude-sonnet-4-6",
         org="Anthropic",
         license="Proprietary",
         model_handler=ClaudeHandler,
@@ -452,6 +498,7 @@ api_inference_model_map = {
         output_price=15,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "claude-haiku-4-5-20251001": ModelConfig(
         model_name="claude-haiku-4-5-20251001",
@@ -464,6 +511,7 @@ api_inference_model_map = {
         output_price=4,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "claude-haiku-4-5-20251001-FC": ModelConfig(
         model_name="claude-haiku-4-5-20251001",
@@ -476,7 +524,9 @@ api_inference_model_map = {
         output_price=4,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
+    # @HuanzhiMao FIXME: update all following models. double check
     "nova-pro-v1.0": ModelConfig(
         model_name="us.amazon.nova-pro-v1:0",
         display_name="Amazon-Nova-Pro-v1:0 (FC)",
@@ -645,27 +695,27 @@ api_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "gemini-2.5-flash-FC": ModelConfig(
-        model_name="gemini-2.5-flash",
-        display_name="Gemini-2.5-Flash (FC)",
+    "gemini-3-flash-preview-FC": ModelConfig(
+        model_name="gemini-3-flash-preview",
+        display_name="Gemini-3-Flash-Preview (FC)",
         url="https://deepmind.google/technologies/gemini/flash/",
         org="Google",
         license="Proprietary",
         model_handler=GeminiHandler,
-        input_price=0.3,
-        output_price=2.5,
+        input_price=0.5,
+        output_price=3,
         is_fc_model=True,
         underscore_to_dot=True,
     ),
-    "gemini-2.5-flash": ModelConfig(
-        model_name="gemini-2.5-flash",
-        display_name="Gemini-2.5-Flash (Prompt)",
+    "gemini-3-flash-preview": ModelConfig(
+        model_name="gemini-3-flash-preview",
+        display_name="Gemini-3-Flash-Preview (Prompt)",
         url="https://deepmind.google/technologies/gemini/flash/",
         org="Google",
         license="Proprietary",
         model_handler=GeminiHandler,
-        input_price=0.3,
-        output_price=2.5,
+        input_price=0.5,
+        output_price=3,
         is_fc_model=False,
         underscore_to_dot=False,
     ),
@@ -1113,6 +1163,18 @@ api_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
+    "glm-4.6v-FC": ModelConfig(
+        model_name="glm-4.6v",
+        display_name="GLM-4.6v (FC)",
+        url="https://huggingface.co/zai-org/GLM-4.6",
+        org="Zhipu AI",
+        license="MIT",
+        model_handler=GLMAPIHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=True,
+    ),
     "glm-4.6-FC": ModelConfig(
         model_name="glm-4.6",
         display_name="GLM-4.6 (FC thinking)",
@@ -1189,7 +1251,8 @@ api_inference_model_map = {
 
 # Inference through local hosting
 local_inference_model_map = {
-    "deepseek-ai/DeepSeek-R1": ModelConfig(
+    # FIXME, check
+    "deepseek-ai/DeepSeek-R1": OSSModelConfig(
         model_name="deepseek-ai/DeepSeek-R1",
         display_name="DeepSeek-R1 (Prompt) (Local)",
         url="https://huggingface.co/deepseek-ai/DeepSeek-R1",
@@ -1200,6 +1263,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        # vllm_tool_call_parser="deepseek_v3",
     ),
     "google/gemma-3-1b-it": ModelConfig(
         model_name="google/gemma-3-1b-it",
@@ -1249,7 +1313,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "google/functiongemma-270m-it-FC": ModelConfig(
+    "google/functiongemma-270m-it-FC": OSSModelConfig(
         model_name="google/functiongemma-270m-it",
         display_name="FunctionGemma-270m-it (FC)",
         url="https://ai.google.dev/gemma/docs/functiongemma",
@@ -1260,8 +1324,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="functiongemma",
     ),
-    "meta-llama/Llama-3.1-8B-Instruct-FC": ModelConfig(
+    "meta-llama/Llama-3.1-8B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.1-8B-Instruct",
         display_name="Llama-3.1-8B-Instruct (FC)",
         url="https://llama.meta.com/llama3",
@@ -1272,20 +1337,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-3.1-8B-Instruct": ModelConfig(
-        model_name="meta-llama/Llama-3.1-8B-Instruct",
-        display_name="Llama-3.1-8B-Instruct (Prompt)",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "meta-llama/Llama-3.1-70B-Instruct-FC": ModelConfig(
+    "meta-llama/Llama-3.1-70B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.1-70B-Instruct",
         display_name="Llama-3.1-70B-Instruct (FC)",
         url="https://llama.meta.com/llama3",
@@ -1296,20 +1350,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-3.1-70B-Instruct": ModelConfig(
-        model_name="meta-llama/Llama-3.1-70B-Instruct",
-        display_name="Llama-3.1-70B-Instruct (Prompt)",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "meta-llama/Llama-3.2-1B-Instruct-FC": ModelConfig(
+    "meta-llama/Llama-3.2-1B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.2-1B-Instruct",
         display_name="Llama-3.2-1B-Instruct (FC)",
         url="https://llama.meta.com/llama3",
@@ -1320,8 +1363,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-3.2-3B-Instruct-FC": ModelConfig(
+    "meta-llama/Llama-3.2-3B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.2-3B-Instruct",
         display_name="Llama-3.2-3B-Instruct (FC)",
         url="https://llama.meta.com/llama3",
@@ -1332,8 +1376,10 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-3.3-70B-Instruct-FC": ModelConfig(
+    # FIXME, check
+    "meta-llama/Llama-3.3-70B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.3-70B-Instruct",
         display_name="Llama-3.3-70B-Instruct (FC)",
         url="https://llama.meta.com/llama3",
@@ -1344,8 +1390,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-4-Scout-17B-16E-Instruct-FC": ModelConfig(
+    "meta-llama/Llama-4-Scout-17B-16E-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-4-Scout-17B-16E-Instruct",
         display_name="Llama-4-Scout-17B-16E-Instruct (FC)",
         url="https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
@@ -1356,8 +1403,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama4_pythonic",
     ),
-    "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC": ModelConfig(
+    "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC": OSSModelConfig(
         model_name="meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
         display_name="Llama-4-Maverick-17B-128E-Instruct-FP8 (FC)",
         url="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
@@ -1368,8 +1416,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="llama4_pythonic",
     ),
-    "Salesforce/Llama-xLAM-2-70b-fc-r": ModelConfig(
+    "Salesforce/Llama-xLAM-2-70b-fc-r": OSSModelConfig(
         model_name="Salesforce/Llama-xLAM-2-70b-fc-r",
         display_name="xLAM-2-70b-fc-r (FC)",
         url="https://huggingface.co/Salesforce/Llama-xLAM-2-70b-fc-r",
@@ -1380,8 +1429,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="xlam",
     ),
-    "Salesforce/Llama-xLAM-2-8b-fc-r": ModelConfig(
+    "Salesforce/Llama-xLAM-2-8b-fc-r": OSSModelConfig(
         model_name="Salesforce/Llama-xLAM-2-8b-fc-r",
         display_name="xLAM-2-8b-fc-r (FC)",
         url="https://huggingface.co/Salesforce/Llama-xLAM-2-8b-fc-r",
@@ -1392,8 +1442,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="xlam",
     ),
-    "Salesforce/xLAM-2-32b-fc-r": ModelConfig(
+    "Salesforce/xLAM-2-32b-fc-r": OSSModelConfig(
         model_name="Salesforce/xLAM-2-32b-fc-r",
         display_name="xLAM-2-32b-fc-r (FC)",
         url="https://huggingface.co/Salesforce/xLAM-2-32b-fc-r",
@@ -1404,8 +1455,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="xlam",
     ),
-    "Salesforce/xLAM-2-3b-fc-r": ModelConfig(
+    "Salesforce/xLAM-2-3b-fc-r": OSSModelConfig(
         model_name="Salesforce/xLAM-2-3b-fc-r",
         display_name="xLAM-2-3b-fc-r (FC)",
         url="https://huggingface.co/Salesforce/xLAM-2-3b-fc-r",
@@ -1416,8 +1468,9 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="xlam",
     ),
-    "Salesforce/xLAM-2-1b-fc-r": ModelConfig(
+    "Salesforce/xLAM-2-1b-fc-r": OSSModelConfig(
         model_name="Salesforce/xLAM-2-1b-fc-r",
         display_name="xLAM-2-1b-fc-r (FC)",
         url="https://huggingface.co/Salesforce/xLAM-2-1b-fc-r",
@@ -1428,6 +1481,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="xlam",
     ),
     "mistralai/Ministral-8B-Instruct-2410": ModelConfig(
         model_name="mistralai/Ministral-8B-Instruct-2410",
@@ -1465,6 +1519,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
+    # FIXME, check
     "microsoft/Phi-4-mini-instruct-FC": ModelConfig(
         model_name="microsoft/Phi-4-mini-instruct",
         display_name="Phi-4-mini-instruct (FC)",
@@ -1477,7 +1532,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "ibm-granite/granite-3.2-8b-instruct": ModelConfig(
+    "ibm-granite/granite-3.2-8b-instruct": OSSModelConfig(
         model_name="ibm-granite/granite-3.2-8b-instruct",
         display_name="Granite-3.2-8B-Instruct (FC)",
         url="https://huggingface.co/ibm-granite/granite-3.2-8b-instruct",
@@ -1513,7 +1568,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "ibm-granite/granite-20b-functioncalling": ModelConfig(
+    "ibm-granite/granite-20b-functioncalling": OSSModelConfig(
         model_name="ibm-granite/granite-20b-functioncalling",
         display_name="Granite-20b-FunctionCalling (FC)",
         url="https://huggingface.co/ibm-granite/granite-20b-functioncalling",
@@ -1524,6 +1579,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
+        vllm_tool_call_parser="granite-20b-fc",
     ),
     "MadeAgents/Hammer2.1-7b": ModelConfig(
         model_name="MadeAgents/Hammer2.1-7b",
@@ -1585,22 +1641,25 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
     ),
-    "Qwen/Qwen3-0.6B-FC": ModelConfig(
-        model_name="Qwen/Qwen3-0.6B",
-        display_name="Qwen3-0.6B (FC)",
-        url="https://huggingface.co/Qwen/Qwen3-0.6B",
+    "Qwen/Qwen3.5-27B-FC": ModelConfig(
+        model_name="Qwen/Qwen3.5-27B",
+        display_name="Qwen3.5-27B (FC)",
+        url="https://huggingface.co/Qwen/Qwen3.5-27B",
         org="Qwen",
         license="apache-2.0",
         model_handler=QwenFCHandler,
         input_price=None,
         output_price=None,
         is_fc_model=True,
-        underscore_to_dot=False,
+        underscore_to_dot=True,
+        vllm_reasoning_parser="qwen3",
+        vllm_tool_call_parser="qwen3-coder",
+        supports_image_input=True,
     ),
-    "Qwen/Qwen3-0.6B": ModelConfig(
-        model_name="Qwen/Qwen3-0.6B",
-        display_name="Qwen3-0.6B (Prompt)",
-        url="https://huggingface.co/Qwen/Qwen3-0.6B",
+    "Qwen/Qwen3.5-27B": ModelConfig(
+        model_name="Qwen/Qwen3.5-27B",
+        display_name="Qwen3.5-27B (Prompt)",
+        url="https://huggingface.co/Qwen/Qwen3.5-27B",
         org="Qwen",
         license="apache-2.0",
         model_handler=QwenHandler,
@@ -1608,23 +1667,27 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
-    "Qwen/Qwen3-1.7B-FC": ModelConfig(
-        model_name="Qwen/Qwen3-1.7B",
-        display_name="Qwen3-1.7B (FC)",
-        url="https://huggingface.co/Qwen/Qwen3-1.7B",
+    "Qwen/Qwen3.5-35B-A3B-FC": ModelConfig(
+        model_name="Qwen/Qwen3.5-35B-A3B",
+        display_name="Qwen3.5-35B-A3B (FC)",
+        url="https://huggingface.co/Qwen/Qwen3.5-35B-A3B",
         org="Qwen",
         license="apache-2.0",
         model_handler=QwenFCHandler,
         input_price=None,
         output_price=None,
         is_fc_model=True,
-        underscore_to_dot=False,
+        underscore_to_dot=True,
+        vllm_reasoning_parser="qwen3",
+        vllm_tool_call_parser="qwen3-coder",
+        supports_image_input=True,
     ),
-    "Qwen/Qwen3-1.7B": ModelConfig(
-        model_name="Qwen/Qwen3-1.7B",
-        display_name="Qwen3-1.7B (Prompt)",
-        url="https://huggingface.co/Qwen/Qwen3-1.7B",
+    "Qwen/Qwen3.5-35B-A3B": ModelConfig(
+        model_name="Qwen/Qwen3.5-35B-A3B",
+        display_name="Qwen3.5-35B-A3B (Prompt)",
+        url="https://huggingface.co/Qwen/Qwen3.5-35B-A3B",
         org="Qwen",
         license="apache-2.0",
         model_handler=QwenHandler,
@@ -1632,23 +1695,27 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
-    "Qwen/Qwen3-4B-Instruct-2507-FC": ModelConfig(
-        model_name="Qwen/Qwen3-4B-Instruct-2507",
-        display_name="Qwen3-4B-Instruct-2507 (FC)",
-        url="https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507",
+    "Qwen/Qwen3.5-122B-A10B-FC": ModelConfig(
+        model_name="Qwen/Qwen3.5-122B-A10B",
+        display_name="Qwen3.5-122B-A10B (FC)",
+        url="https://huggingface.co/Qwen/Qwen3.5-122B-A10B",
         org="Qwen",
         license="apache-2.0",
         model_handler=QwenFCHandler,
         input_price=None,
         output_price=None,
         is_fc_model=True,
-        underscore_to_dot=False,
+        underscore_to_dot=True,
+        vllm_reasoning_parser="qwen3",
+        vllm_tool_call_parser="qwen3-coder",
+        supports_image_input=True,
     ),
-    "Qwen/Qwen3-4B-Instruct-2507": ModelConfig(
-        model_name="Qwen/Qwen3-4B-Instruct-2507",
-        display_name="Qwen3-4B-Instruct-2507 (Prompt)",
-        url="https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507",
+    "Qwen/Qwen3.5-122B-A10B": ModelConfig(
+        model_name="Qwen/Qwen3.5-122B-A10B",
+        display_name="Qwen3.5-122B-A10B (Prompt)",
+        url="https://huggingface.co/Qwen/Qwen3.5-122B-A10B",
         org="Qwen",
         license="apache-2.0",
         model_handler=QwenHandler,
@@ -1656,23 +1723,27 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
+        supports_image_input=True,
     ),
-    "Qwen/Qwen3-8B-FC": ModelConfig(
-        model_name="Qwen/Qwen3-8B",
-        display_name="Qwen3-8B (FC)",
-        url="https://huggingface.co/Qwen/Qwen3-8B",
+    "Qwen/Qwen3.5-397B-A17B-FC": ModelConfig(
+        model_name="Qwen/Qwen3.5-397B-A17B",
+        display_name="Qwen3.5-397B-A17B (FC)",
+        url="https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
         org="Qwen",
         license="apache-2.0",
         model_handler=QwenFCHandler,
         input_price=None,
         output_price=None,
         is_fc_model=True,
-        underscore_to_dot=False,
+        underscore_to_dot=True,
+        vllm_reasoning_parser="qwen3",
+        vllm_tool_call_parser="qwen3-coder",
+        supports_image_input=True,
     ),
-    "Qwen/Qwen3-8B": ModelConfig(
-        model_name="Qwen/Qwen3-8B",
-        display_name="Qwen3-8B (Prompt)",
-        url="https://huggingface.co/Qwen/Qwen3-8B",
+    "Qwen/Qwen3.5-397B-A17B": ModelConfig(
+        model_name="Qwen/Qwen3.5-397B-A17B",
+        display_name="Qwen3.5-397B-A17B (Prompt)",
+        url="https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
         org="Qwen",
         license="apache-2.0",
         model_handler=QwenHandler,
@@ -1680,102 +1751,7 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
-    ),
-    "Qwen/Qwen3-14B-FC": ModelConfig(
-        model_name="Qwen/Qwen3-14B",
-        display_name="Qwen3-14B (FC)",
-        url="https://huggingface.co/Qwen/Qwen3-14B",
-        org="Qwen",
-        license="apache-2.0",
-        model_handler=QwenFCHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "Qwen/Qwen3-14B": ModelConfig(
-        model_name="Qwen/Qwen3-14B",
-        display_name="Qwen3-14B (Prompt)",
-        url="https://huggingface.co/Qwen/Qwen3-14B",
-        org="Qwen",
-        license="apache-2.0",
-        model_handler=QwenHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "Qwen/Qwen3-32B-FC": ModelConfig(
-        model_name="Qwen/Qwen3-32B",
-        display_name="Qwen3-32B (FC)",
-        url="https://huggingface.co/Qwen/Qwen3-32B",
-        org="Qwen",
-        license="apache-2.0",
-        model_handler=QwenFCHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "Qwen/Qwen3-32B": ModelConfig(
-        model_name="Qwen/Qwen3-32B",
-        display_name="Qwen3-32B (Prompt)",
-        url="https://huggingface.co/Qwen/Qwen3-32B",
-        org="Qwen",
-        license="apache-2.0",
-        model_handler=QwenHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "Qwen/Qwen3-30B-A3B-Instruct-2507-FC": ModelConfig(
-        model_name="Qwen/Qwen3-30B-A3B-Instruct-2507",
-        display_name="Qwen3-30B-A3B-Instruct-2507 (FC)",
-        url="https://huggingface.co/Qwen/Qwen3-30B-A3B-Instruct-2507",
-        org="Qwen",
-        license="apache-2.0",
-        model_handler=QwenFCHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "Qwen/Qwen3-30B-A3B-Instruct-2507": ModelConfig(
-        model_name="Qwen/Qwen3-30B-A3B-Instruct-2507",
-        display_name="Qwen3-30B-A3B-Instruct-2507 (Prompt)",
-        url="https://huggingface.co/Qwen/Qwen3-30B-A3B-Instruct-2507",
-        org="Qwen",
-        license="apache-2.0",
-        model_handler=QwenHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "Qwen/Qwen3-235B-A22B-Instruct-2507-FC": ModelConfig(
-        model_name="Qwen/Qwen3-235B-A22B-Instruct-2507",
-        display_name="Qwen3-235B-A22B-Instruct-2507 (FC)",
-        url="https://huggingface.co/Qwen/Qwen3-235B-A22B-Instruct-2507",
-        org="Qwen",
-        license="apache-2.0",
-        model_handler=QwenFCHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "Qwen/Qwen3-235B-A22B-Instruct-2507": ModelConfig(
-        model_name="Qwen/Qwen3-235B-A22B-Instruct-2507",
-        display_name="Qwen3-235B-A22B-Instruct-2507 (Prompt)",
-        url="https://huggingface.co/Qwen/Qwen3-235B-A22B-Instruct-2507",
-        org="Qwen",
-        license="apache-2.0",
-        model_handler=QwenHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=False,
-        underscore_to_dot=False,
+        supports_image_input=True,
     ),
     "X-Humanoid/Pelican1.0-VL-235B-A22B-FC": ModelConfig(
         model_name="X-Humanoid/Pelican1.0-VL-235B-A22B-FC",
@@ -2096,7 +2072,7 @@ third_party_inference_model_map = {
     # Via Novita AI Endpoint
     "meta-llama/llama-4-maverick-17b-128e-instruct-fp8-novita": ModelConfig(
         model_name="meta-llama/llama-4-maverick-17b-128e-instruct-fp8",
-        display_name="Llama-4-Maverick-17B-128E-Instruct-FP8 (Prompt) (Novita)",
+        display_name="Llama-4-Maverick-17B-128E-Instruct-FP8 (FC) (Novita)",
         url="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
         org="Meta",
         license="Meta Llama 4 Community",
@@ -2194,11 +2170,26 @@ third_party_inference_model_map = {
 }
 
 
-MODEL_CONFIG_MAPPING = {
+MODEL_CONFIG_MAPPING: dict[str, ModelConfig] = {
     **api_inference_model_map,
     **local_inference_model_map,
     **third_party_inference_model_map,
 }
 
 # Uncomment to get the supported_models.py file contents
-# print(repr(list(MODEL_CONFIG_MAPPING.keys())))
+all_model_list = []
+true_audio_model_list = []
+vision_model_list = []
+for key, config in MODEL_CONFIG_MAPPING.items():
+    if config.supports_audio_input:
+        true_audio_model_list.append(key)
+    if config.supports_image_input:
+        vision_model_list.append(key)
+    all_model_list.append(key)
+
+print("Text supported models:")
+print(repr(all_model_list))
+print("True audio supported models:")
+print(repr(true_audio_model_list))
+print("Vision supported models:")
+print(repr(vision_model_list))

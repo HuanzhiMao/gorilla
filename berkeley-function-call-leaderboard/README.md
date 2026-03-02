@@ -151,7 +151,7 @@ For the `web_search` test category, we use the [SerpAPI](https://serpapi.com/) s
 
 #### Selecting Models and Test Categories
 
-- `MODEL_NAME`: For available models, please refer to [SUPPORTED_MODELS.md](./SUPPORTED_MODELS.md). If not specified, the default model `gorilla-openfunctions-v2` is used.
+- `MODEL_NAME`: For available models, please refer to [SUPPORTED_MODELS.md](./SUPPORTED_MODELS.md). This is a required argument.
 - `TEST_CATEGORY`: For available test categories, please refer to [TEST_CATEGORIES.md](./TEST_CATEGORIES.md). If not specified, all categories are included by default.
 
 You can provide multiple models or test categories by separating them with commas. For example:

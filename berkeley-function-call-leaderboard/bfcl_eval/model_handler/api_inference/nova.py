@@ -5,7 +5,7 @@ from typing import Any
 import boto3
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
-from bfcl_eval.constants.enums import ModelStyle
+from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.model_handler.utils import (
     combine_consecutive_user_prompts,
     convert_to_function_call,
@@ -140,17 +140,31 @@ class NovaHandler(BaseHandler):
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
         for message in first_turn_message:
-            message["content"] = [{"text": message["content"]}]
+            if "image_content" in message:
+                new_content = []
+                new_content.append({"text": message["content"]})
+                for image_content in message["image_content"]:
+                    new_content.append(
+                        {
+                            "image": {
+                                "format": image_content["type"].split("/")[-1],
+                                "source": {"bytes": image_content["image_bytes"]},
+                            }
+                        }
+                    )
+                del message["image_content"]
+                message["content"] = new_content
+            else:
+                message["content"] = [{"text": message["content"]}]
+            inference_data["message"].append(message)
+
         inference_data["message"].extend(first_turn_message)
         return inference_data
 
     def _add_next_turn_user_message_FC(
         self, inference_data: dict, user_message: list[dict]
     ) -> dict:
-        for message in user_message:
-            message["content"] = [{"text": message["content"]}]
-        inference_data["message"].extend(user_message)
-        return inference_data
+        return self.add_first_turn_message_FC(inference_data, user_message)
 
     def _add_assistant_message_FC(
         self, inference_data: dict, model_response_data: dict
@@ -163,7 +177,7 @@ class NovaHandler(BaseHandler):
     def _add_execution_results_FC(
         self,
         inference_data: dict,
-        execution_results: list[str],
+        execution_results: list[dict],
         model_response_data: dict,
     ) -> dict:
         # Nova use the `user` role for the tool result message
@@ -174,17 +188,37 @@ class NovaHandler(BaseHandler):
         for execution_result, tool_call_id in zip(
             execution_results, model_response_data["tool_call_ids"]
         ):
-            tool_message["content"].append(
-                {
-                    "toolResult": {
-                        "toolUseId": tool_call_id,
-                        # Nova models supports json or text content
-                        # Our pipeline force execution results to be text for all models
-                        # So we will just use text here to be consistent
-                        "content": [{"text": execution_result}],
+            if execution_result["result_type"] == ResultType.TEXT:
+                tool_message["content"].append(
+                    {
+                        "toolResult": {
+                            "toolUseId": tool_call_id,
+                            "content": [{"text": execution_result["result"]}],
+                        }
                     }
-                }
-            )
+                )
+            elif execution_result["result_type"] == ResultType.IMAGE:
+                tool_message["content"].append(
+                    {
+                        "toolResult": {
+                            "toolUseId": tool_call_id,
+                            "content": [
+                                {
+                                    "image": {
+                                        "format": execution_result["result"]["type"].split(
+                                            "/"
+                                        )[-1],
+                                        "source": {
+                                            "bytes": execution_result["result"][
+                                                "image_bytes"
+                                            ]
+                                        },
+                                    }
+                                }
+                            ],
+                        }
+                    }
+                )
 
         inference_data["message"].append(tool_message)
 

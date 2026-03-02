@@ -1,6 +1,3 @@
-MAXIMUM_STEP_LIMIT = 20
-
-
 #### System Prompts for Chat Models ####
 
 
@@ -76,7 +73,7 @@ DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING = (
     "{functions}\n" + DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC
 )
 
-ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT = """For your final answer to the user, you must respond in this format: {'answer': A short and precise answer to the question, 'context': A brief explanation of how you arrived at this answer or why it is correct}. If you do not know the answer, respond with {'answer': 'I do not know', 'context': 'I do not know'}. If you think the question cannot be properly answered, response with {'answer': 'I cannot answer this question', 'context': A short reason explaining why this question cannot be answered}.
+ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT = """For your final answer to the user, you must respond in this format: {'answer': A short and precise answer to the question, 'context': A brief explanation of how you arrived at this answer or why it is correct}. If you do not know the answer, respond with {'answer': 'I do not know', 'context': A brief explanation of why you think youcannot find the answer}. If you think the question cannot be properly answered, response with {'answer': 'I cannot answer this question', 'context': A short reason explaining why this question cannot be answered}.
 """
 
 MEMORY_AGENT_SETTINGS = {
@@ -104,4 +101,32 @@ You have access to an advanced memory system, which is persistent across multipl
 
 Here is the content of your memory system from previous interactions:
 {memory_content}
+"""
+
+
+
+#### Vision Prompts ####
+
+VISION_TOOL_RESPONSE_TEXT_PROMPT = "This tool returns an image as its response. The image will be provided in the next user message."
+
+
+
+#### Audio Prompts ####
+
+SYSTEM_PROMPT_FOR_AUDIO_AGENT = """You are a voice assistant that interacts with the user exclusively through spoken conversation. You receive user utterances as text transcribed by an upstream ASR system and your replies are delivered to the user through a TTS system. Follow the rules below at all times:
+
+1. Language
+
+* Mirror the user's language. Respond in the same language detected in the transcription.
+
+2. Robustness to ASR Errors (Important)
+
+* Although the upstream ASR system is designed to be robust, it may still make mistakes.
+* Do not trust the transcription text blindly, especially on important information. You should assume the transcript may contain recognition mistakes.
+* If the text appears garbled, double check with the user instead of guessing.
+
+3. Clarity for TTS
+
+* When responding to the user, you should **spell out acronyms** as separate letters with spaces (“A I M L”), and **chunk long numbers** into 2- or 3-digit groups, separated by short pauses (“one-two-three, four-five-six”).
+* Favor spoken-language style: short sentences, everyday vocabulary, and natural contractions.
 """

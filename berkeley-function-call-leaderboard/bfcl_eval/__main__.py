@@ -1,12 +1,11 @@
 import csv
 from datetime import datetime
 import os
-from types import SimpleNamespace
 from typing import List, Optional
 
 import typer
 from importlib.metadata import version as _version
-from bfcl_eval._llm_response_generation import main as generation_main
+from bfcl_eval._llm_response_generation import Args, main as generation_main
 from bfcl_eval.constants.category_mapping import TEST_COLLECTION_MAPPING
 from bfcl_eval.constants.eval_config import (
     DOTENV_PATH,
@@ -96,7 +95,7 @@ def models():
 @cli.command()
 def generate(
     model: List[str] = typer.Option(
-        ["gorilla-openfunctions-v2"], 
+        ...,
         help="A list of model names to generate the llm response. Use commas to separate multiple models.",
         callback=handle_multiple_input
     ),
@@ -121,11 +120,11 @@ def generate(
     num_gpus: int = typer.Option(1, help="The number of GPUs to use."),
     num_threads: Optional[int] = typer.Option(None, help="The number of threads to use."),
     gpu_memory_utilization: float = typer.Option(0.9, help="The GPU memory utilization."),
-    backend: str = typer.Option("sglang", help="The backend to use for the model."),
+    backend: str = typer.Option("vllm", help="The backend to use for the model."),
     skip_server_setup: bool = typer.Option(
         False,
         "--skip-server-setup",
-        help="Skip vLLM/SGLang server setup and use existing endpoint specified by the LOCAL_SERVER_ENDPOINT and LOCAL_SERVER_PORT environment variables.",
+        help="Skip vLLM server setup and use existing endpoint specified by the LOCAL_SERVER_ENDPOINT and LOCAL_SERVER_PORT environment variables.",
     ),
     local_model_path: Optional[str] = typer.Option(
         None,
@@ -168,7 +167,7 @@ def generate(
     Generate the LLM response for one or more models on a test-category (same as openfunctions_evaluation.py).
     """
 
-    args = SimpleNamespace(
+    args = Args(
         model=model,
         test_category=test_category,
         temperature=temperature,

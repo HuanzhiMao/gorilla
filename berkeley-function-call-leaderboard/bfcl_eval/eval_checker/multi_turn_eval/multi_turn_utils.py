@@ -2,12 +2,15 @@ import copy
 import importlib
 import inspect
 import json
+import keyword
 import re
 
 from bfcl_eval.constants.executable_backend_config import (
     CLASS_FILE_PATH_MAPPING,
     STATELESS_CLASSES,
 )
+from bfcl_eval.constants.enums import ResultType
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code import ImageResult
 
 
 def execute_multi_turn_func_call(
@@ -18,9 +21,31 @@ def execute_multi_turn_func_call(
     test_entry_id: str,
     long_context: bool = False,
     is_evaL_run: bool = False,
-) -> tuple[list[str], dict]:
+) -> tuple[list[dict], dict]:
     """
-    TODO: Add docstring
+    Execute a list of function calls against dynamically loaded class instances.
+
+    For each class in `involved_classes`, this function loads (or reuses) a unique class instance,
+    configures it with `initial_config`, and maps its public methods by name. Each string in
+    `func_call_list` is then resolved to the appropriate instance and evaluated via `eval()`.
+
+    Instances are cached in `globals()` keyed by model name, test entry ID, and class name,
+    so subsequent turns reuse the same stateful instances.
+
+    Args:
+        func_call_list: A list of function call strings to execute (e.g. ["get_weather(city='SF')"]).
+        initial_config: A dict mapping class names to their initial scenario configuration.
+        involved_classes: A list of class name strings to instantiate and expose methods from.
+        model_name: The model name, used as part of the instance cache key.
+        test_entry_id: The test entry ID, used as part of the instance cache key.
+        long_context: Whether to load the scenario in long-context mode.
+        is_evaL_run: If True, appends "_eval" to the model name for cache isolation.
+
+    Returns:
+        A tuple of (execution_results, involved_instances) where:
+        - execution_results is a list of dicts, each with "result" (str or dict) and
+          "result_type" (ResultType.TEXT or ResultType.IMAGE).
+        - involved_instances is a dict mapping class names to their instantiated objects.
     """
     if is_evaL_run:
         model_name += "_eval"
@@ -29,11 +54,8 @@ def execute_multi_turn_func_call(
     involved_instances = {}
     for class_name in involved_classes:
         module_name = CLASS_FILE_PATH_MAPPING[class_name]
-        # TODO: Handler the model name issue from handler more elegantly
-        instance_name = (
-            f"{model_name}_{test_entry_id}_{class_name}_instance"
-        )
-        instance_name = re.sub(r'[-./]', '_', instance_name)
+        instance_name = f"{model_name}_{test_entry_id}_{class_name}_instance"
+        instance_name = _sanitize_class_instance_name(instance_name)
         if instance_name not in globals():
             module = importlib.import_module(module_name)
             class_ = getattr(module, class_name)
@@ -67,7 +89,7 @@ def execute_multi_turn_func_call(
 
         # Evaluate the function call
         try:
-            # We need to make a copy here because otherwise the `eval(func_call)` would error. 
+            # We need to make a copy here because otherwise the `eval(func_call)` would error.
             func_call_copy = func_call
             # Before calling `eval`, we need to make sure that the function call is safe
             # We do so by checking if the function is `kill` or `exit`, etc.
@@ -77,27 +99,72 @@ def execute_multi_turn_func_call(
             # Situation where the function call is a method call
             if "." in func_call_copy:
                 func_call_copy = func_call_copy.split(".")[1]
-            if func_call_copy in ["kill", "exit", "quit", "remove", "unlink", "popen", "Popen", "run"]:
+            if func_call_copy.lower() in [
+                "kill",
+                "exit",
+                "quit",
+                "remove",
+                "unlink",
+                "popen",
+                "run",
+            ]:
                 raise Exception(f"Function call {func_call_copy} is not allowed.")
 
             func_call_result = eval(func_call)
+            result_type = ResultType.TEXT
 
-            if type(func_call_result) == str:
-                pass
-            elif type(func_call_result) == dict:
-                # Some function returns a object instance, which is not serializable
-                try:
-                    func_call_result = json.dumps(func_call_result)
-                except:
-                    func_call_result = str(func_call_result)
+            # Every result should be a dict with "result" and "result_type" keys
+            # @HuanzhiMao FIXME: Maybe we should use a more elegant way to handle this
+            if isinstance(func_call_result, ImageResult):
+                result_type = ResultType.IMAGE
+                func_call_result = func_call_result.to_dict()
             else:
-                func_call_result = str(func_call_result)
+                if type(func_call_result) == str:
+                    pass
+                elif type(func_call_result) == dict:
+                    # Check if this is an image result (has _type: "image")
+                    # Image results are kept as JSON for special handling by model handlers
+                    try:
+                        func_call_result = json.dumps(func_call_result)
+                    except:
+                        func_call_result = str(func_call_result)
+                else:
+                    func_call_result = str(func_call_result)
 
-            execution_results.append(func_call_result)
+            # @HuanzhiMao FIXME: update all related code for this new format
+            execution_results.append(
+                {
+                    "result": func_call_result,
+                    "result_type": result_type,
+                }
+            )
         except Exception as e:
-            execution_results.append(f"Error during execution: {str(e)}")
+            # raise e
+            execution_results.append(
+                {
+                    "result": f"Error during execution: {str(e)}",
+                    "result_type": ResultType.TEXT,
+                }
+            )
 
     return execution_results, involved_instances
+
+
+def _sanitize_class_instance_name(name: str) -> str:
+    # Replace any non-word char with underscore. \w includes Unicode letters/digits/underscore.
+    name = re.sub(r"\W", "_", name, flags=re.UNICODE)
+
+    # Identifiers can't start with a digit, and can't be empty
+    if not name:
+        raise ValueError(f"Invalid identifier for class instance name: {name}")
+    if name[0].isdigit():
+        name = "_" + name
+
+    # Can't be a keyword
+    if keyword.iskeyword(name):
+        name += "_"
+
+    return name
 
 
 def is_empty_execute_response(input_list: list):

@@ -103,13 +103,13 @@ class FireworksHandler(OpenAICompletionsHandler):
         return inference_data
 
     def _add_execution_results_FC(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         # Fireworks don’t support parallel and nested function calling, but we still support the code logic here for future use
         for execution_result in execution_results:
             tool_message = {
                 "role": "tool",
-                "content": execution_result,
+                "content": execution_result["result"],
             }
             inference_data["message"].append(tool_message)
 

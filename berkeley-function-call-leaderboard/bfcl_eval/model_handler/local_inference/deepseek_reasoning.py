@@ -130,7 +130,7 @@ class DeepseekReasoningHandler(OSSHandler):
 
     @override
     def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         # Deepseek don't take the tool role; so we use the user role to send the tool output
         tool_message = {
@@ -144,7 +144,7 @@ class DeepseekReasoningHandler(OSSHandler):
                 {
                     "role": "tool",
                     "name": decoded_model_response,
-                    "content": execution_result,
+                    "content": execution_result["result"],
                 }
             )
 

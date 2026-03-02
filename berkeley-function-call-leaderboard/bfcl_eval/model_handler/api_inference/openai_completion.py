@@ -3,9 +3,10 @@ import os
 import time
 from typing import Any
 
+from bfcl_eval.constants.default_prompts import VISION_TOOL_RESPONSE_TEXT_PROMPT
+from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
-from bfcl_eval.constants.enums import ModelStyle
 from bfcl_eval.model_handler.utils import (
     convert_to_function_call,
     convert_to_tool,
@@ -29,7 +30,17 @@ class OpenAICompletionsHandler(BaseHandler):
     ) -> None:
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_style = ModelStyle.OPENAI_COMPLETIONS
-        self.client = OpenAI(**self._build_client_kwargs())
+        self._client = None
+
+    @property
+    def client(self):
+        if self._client is None:
+            self._client = OpenAI(**self._build_client_kwargs())
+        return self._client
+
+    @client.setter
+    def client(self, value):
+        self._client = value
 
     def _build_client_kwargs(self):
         """Collect OpenAI client keyword arguments from environment variables, but only
@@ -69,6 +80,7 @@ class OpenAICompletionsHandler(BaseHandler):
     @retry_with_backoff(error_type=RateLimitError)
     def generate_with_backoff(self, **kwargs):
         start_time = time.time()
+        # print(kwargs)
         api_response = self.client.chat.completions.create(**kwargs)
         end_time = time.time()
 
@@ -129,17 +141,35 @@ class OpenAICompletionsHandler(BaseHandler):
             "output_token": api_response.usage.completion_tokens,
         }
 
+    # @HuanzhiMao FIXME: add support for audio and vision
     def add_first_turn_message_FC(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
+        for message in first_turn_message:
+            if "image_content" in message:
+                image_content_list = message["image_content"]
+                new_content = []
+                new_content.append({"type": "text", "text": message["content"]})
+                for image_content in image_content_list:
+                    new_content.append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:{image_content['type']};base64,{image_content['image_base64']}"
+                            },
+                        }
+                    )
+                message["content"] = new_content
+                del message["image_content"]
+            else:
+                message["content"] = [{"type": "text", "text": message["content"]}]
         inference_data["message"].extend(first_turn_message)
         return inference_data
 
     def _add_next_turn_user_message_FC(
         self, inference_data: dict, user_message: list[dict]
     ) -> dict:
-        inference_data["message"].extend(user_message)
-        return inference_data
+        return self.add_first_turn_message_FC(inference_data, user_message)
 
     def _add_assistant_message_FC(
         self, inference_data: dict, model_response_data: dict
@@ -152,19 +182,42 @@ class OpenAICompletionsHandler(BaseHandler):
     def _add_execution_results_FC(
         self,
         inference_data: dict,
-        execution_results: list[str],
+        execution_results: list[dict],
         model_response_data: dict,
     ) -> dict:
+        # @HuanzhiMao FIXME: might need to turn this into constants
+        user_role_image_message = {
+            "role": "user",
+            "content": "The user gives no new instructions. ",
+            "image_content": [],
+        }
         # Add the execution results to the current round result, one at a time
         for execution_result, tool_call_id in zip(
             execution_results, model_response_data["tool_call_ids"]
         ):
-            tool_message = {
-                "role": "tool",
-                "content": execution_result,
-                "tool_call_id": tool_call_id,
-            }
-            inference_data["message"].append(tool_message)
+            if execution_result["result_type"] == ResultType.TEXT:
+                tool_message = {
+                    "role": "tool",
+                    "content": execution_result["result"],
+                    "tool_call_id": tool_call_id,
+                }
+                inference_data["message"].append(tool_message)
+            elif execution_result["result_type"] == ResultType.IMAGE:
+                user_role_image_message[
+                    "content"
+                ] += f"Tool response for tool call id {tool_call_id} is an image, attached below. "
+                user_role_image_message["image_content"].append(execution_result["result"])
+                tool_message = {
+                    "role": "tool",
+                    "content": VISION_TOOL_RESPONSE_TEXT_PROMPT,
+                    "tool_call_id": tool_call_id,
+                }
+                inference_data["message"].append(tool_message)
+
+        if len(user_role_image_message["image_content"]) > 0:
+            inference_data = self._add_next_turn_user_message_FC(
+                inference_data, [user_role_image_message]
+            )
 
         return inference_data
 
@@ -246,6 +299,23 @@ class OpenAICompletionsHandler(BaseHandler):
     def add_first_turn_message_prompting(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
+        for message in first_turn_message:
+            if "image_content" in message:
+                image_content_list = message["image_content"]
+                new_content = []
+                for image_content in image_content_list:
+                    new_content.append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:{image_content['type']};base64,{image_content['image_base64']}"
+                            },
+                        }
+                    )
+                new_content.append({"type": "text", "text": message["content"]})
+                message["content"] = new_content
+                del message["image_content"]
+
         inference_data["message"].extend(first_turn_message)
         return inference_data
 
@@ -264,7 +334,7 @@ class OpenAICompletionsHandler(BaseHandler):
         return inference_data
 
     def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[str], model_response_data: dict
+        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
         formatted_results_message = format_execution_results_prompting(
             inference_data, execution_results, model_response_data

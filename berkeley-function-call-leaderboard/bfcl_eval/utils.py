@@ -1,22 +1,26 @@
+import base64
+import hashlib
 import json
 import os
-import hashlib
 import re
 from copy import deepcopy
 from pathlib import Path
 from threading import Lock
-from filelock import FileLock
 from typing import Union
 
 from bfcl_eval.constants.category_mapping import *
 from bfcl_eval.constants.default_prompts import (
     ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
     DEFAULT_SYSTEM_PROMPT_FORMAT,
+    SYSTEM_PROMPT_FOR_AUDIO_AGENT,
 )
 from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.executable_backend_config import (
     MULTI_TURN_FUNC_DOC_FILE_MAPPING,
+    UPDATED_TOOL_LIST_CLASSES,
 )
+from bfcl_eval.constants.enums import Modality
+from filelock import FileLock
 
 _FILE_LOCK_REGISTRY: dict[str, FileLock] = {}
 _FILE_LOCK_REGISTRY_LOCK = Lock()
@@ -42,13 +46,54 @@ def _get_file_lock(filepath: str) -> FileLock:
 
 #### Helper functions to extract/parse/complete test category from different formats ####
 
+# Category names use the format "modality:base_name", e.g. "text:simple_python",
+# "vision:geoguessr_type1", "true_audio:simple_python", "text_audio:simple_python".
+# File names do NOT include the modality prefix — the directory structure handles it.
+
+
+# @HuanzhiMao FIXME: remove extra safety check
+def parse_full_category(full_category: str) -> tuple[Modality, str]:
+    """Parse a modality-prefixed category into (modality, base_name).
+
+    Example: "text:simple_python" → (Modality.TEXT, "simple_python")
+    """
+    assert (
+        ":" in full_category
+    ), f"Category {full_category} is not a modality-prefixed category."
+    modality, _, base_category = full_category.partition(":")
+    return Modality(modality), base_category
+
+
+def get_base_category(full_category: str) -> str:
+    """Strip the modality prefix from a category name.
+
+    Example: "text:simple_python" → "simple_python"
+    """
+    assert (
+        ":" in full_category
+    ), f"Category {full_category} is not a modality-prefixed category."
+    modality, _, base_category = full_category.partition(":")
+    assert (
+        modality in Modality._value2member_map_
+    ), f"Modality {modality} is not a valid modality."
+    return base_category
+
+
+def get_category_modality(full_category: str) -> Modality:
+    """Extract the modality from a prefixed category name.
+
+    Example: "text:simple_python" → Modality.TEXT
+    """
+    modality = Modality(full_category.split(":")[0])
+    return modality
+
 
 def extract_test_category(input_string: Union[str, Path], raise_error: bool = True) -> str:
     """
     Extract the test category from a given file name. If category cannot be extracted, and the flag is not set, then raise an error.
     """
-    input_string = str(input_string)
-    pattern = rf".*{VERSION_PREFIX}_(\w+?)(?:_score|_result)?\.json"
+    input_string = Path(input_string).name
+    pattern = r"^(\w+?)(?:_score|_result)?\.json$"
     match = re.search(pattern, input_string)
 
     # Check if there's a match and extract the captured group
@@ -64,43 +109,51 @@ def extract_test_category(input_string: Union[str, Path], raise_error: bool = Tr
 
 def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = False) -> str:
     """
-    Extract the test category from the test entry ID.
+    Extract the test category (including modality prefix) from the test entry ID.
 
-    If `remove_prereq` is True, it will remove the "_prereq" suffix from the test category, only relevant for memory test categories.
-    Memory test categories never contain the "_prereq" suffix, but those are added to differentiate the normal memory test cases from the pre-requisite test cases.
+    Examples:
+        "text:simple_python_5" → "text:simple_python"
+        "text:format_sensitivity_0|prompt_config|text:live_simple_23" → "text:format_sensitivity"
+        "text:memory_kv_prereq_0" (without remove_prereq=True) → "text:memory_kv_prereq"
+        "text:memory_kv_prereq_0" (with remove_prereq=True) → "text:memory_kv"
+
+    If `remove_prereq` is True, it will remove the "_prereq" suffix from the test category,
+    only relevant for memory test categories.
     """
     if remove_prereq:
         test_entry_id = test_entry_id.replace("_prereq", "")
-    # For format sensitivity test cases, the test entry id is in the form of "format_sensitivity_0:prompt_format:live_simple_23-5-1", where the second part is the original test entry id
-    if ":" in test_entry_id:
-        test_entry_id = test_entry_id.split(":")[0]
-
+    # Format sensitivity IDs use "|" as separator:
+    # Example: "text:format_sensitivity_0|prompt_config|text:live_simple_23"
+    if "|" in test_entry_id:
+        test_entry_id = test_entry_id.split("|")[0]
     return test_entry_id.rsplit("_", 1)[0]
 
 
 def extract_prompt_format_from_id(test_entry_id: str) -> str:
     """
     Extract the prompt format from the test entry ID.
+    Format sensitivity IDs use "|" as separator.
+    Example: "text:format_sensitivity_0|prompt_config|text:live_simple_23" → "prompt_config"
     """
-    if ":" not in test_entry_id:
+    if "|" not in test_entry_id:
         return DEFAULT_SYSTEM_PROMPT_FORMAT
     else:
+        # @HuanzhiMao doublecheck
         assert (
-            len(test_entry_id.split(":")) == 3
-        ), f"Test entry ID {test_entry_id} should contain exactly two colons, since they are supposed to be the format sensitivity ids."
-        return test_entry_id.split(":")[1]
+            len(test_entry_id.split("|")) == 2
+        ), f"Test entry ID {test_entry_id} should contain exactly two pipes, since they are supposed to be the format sensitivity ids."
+        return test_entry_id.split("|")[1]
 
 
 def extract_memory_backend_type(test_category):
     """
     This function extracts the memory backend type from the test category.
-    The test category should be in the form of `memory_kv` or `memory_vector`, etc.
+    The test category should be in the form of `text:memory_kv` or `text:memory_vector`, etc.
     """
     if not is_memory(test_category):
         raise ValueError(f"Test category {test_category} is not a memory category.")
 
-    # Split the test category by underscores and extract the backend type
-    return test_category[len("memory_") :]
+    return test_category.split("memory_")[1]
 
 
 def find_file_by_category(
@@ -137,18 +190,19 @@ def get_file_name_by_category(
 ) -> str:
     """
     Get the file name for a given test category.
-    By default, it returns the file name with the suffix ".json".
-    If `is_result_file` is True, it returns the file name with the suffix "_result.json".
-    If `is_score_file` is True, it returns the file name with the suffix "_score.json".
+    Uses the base category name (without modality prefix) for the file name,
+    since modality is encoded in the directory structure, not the file name.
     """
     assert not (is_result_file and is_score_file), "Cannot be both result and score file."
 
+    base_category = get_base_category(test_category)
+
     if is_result_file:
-        file_name = f"{VERSION_PREFIX}_{test_category}_result.json"
+        file_name = f"{base_category}_result.json"
     elif is_score_file:
-        file_name = f"{VERSION_PREFIX}_{test_category}_score.json"
+        file_name = f"{base_category}_score.json"
     else:
-        file_name = f"{VERSION_PREFIX}_{test_category}.json"
+        file_name = f"{base_category}.json"
 
     return file_name
 
@@ -160,7 +214,7 @@ def parse_test_category_argument(test_category_args: list[str]) -> list[str]:
         if test_category in TEST_COLLECTION_MAPPING:
             for test_name in TEST_COLLECTION_MAPPING[test_category]:
                 test_name_total.add(test_name)
-        elif test_category in ALL_CATEGORIES:
+        elif test_category in ALL_MODALITY_CATEGORIES:
             test_name_total.add(test_category)
         else:
             # Invalid test category name
@@ -192,12 +246,52 @@ def load_test_entries_from_id_file(id_file_path: Path) -> tuple[list[str], list[
 
 
 #### Predicate functions to check the test category ####
+
+
+def is_true_audio(test_category):
+    return "audio" in test_category
+
+
+def is_text_audio(test_category):
+    return "text_audio" in test_category
+
+
+def contain_native_audio_input(test_category):
+    """
+    Check if the test category requires a native audio input.
+    """
+    return is_true_audio(test_category)
+
+
+def is_vision_web_search(test_category: str) -> bool:
+    """
+    Check if the test category is a vision web search category (eg, vision_web_search_base, vision_web_search_rg, etc.).
+    """
+    return "vision_web_search" in test_category
+
+
+def is_geoguessr(test_category: str) -> bool:
+    return "geoguessr" in test_category
+
+
+def contain_vision_input(test_category: str) -> bool:
+    """
+    Check if the test category requires a vision input (eg, vision_web_search_base, geoguessr_type1, etc.).
+    """
+    return is_vision_web_search(test_category) or is_geoguessr(test_category)
+
+
+def is_vision(test_category: str) -> bool:
+    return is_vision_web_search(test_category) or is_geoguessr(test_category)
+
+
 def is_format_sensitivity(test_category: str) -> bool:
     return "format_sensitivity" in test_category
 
 
+# @HuanzhiMao TODO: rename this?
 def is_web_search(test_category):
-    return "web_search" in test_category
+    return "web_search" in test_category and not is_vision_web_search(test_category)
 
 
 def is_memory(test_category):
@@ -269,84 +363,53 @@ def is_sql(test_category):
 
 
 def contain_multi_turn_interaction(test_category):
-    return is_multi_turn(test_category) or is_agentic(test_category)
-
-
-def get_general_grouping(test_id: str) -> str:
-    """
-    Map a specific test category (e.g. "simple", "live_simple", "multi_turn_base")
-    to one of the 5 high-level groups used for organizing result / score files:
-
-    • non_live: categories in NON_LIVE_CATEGORY
-    • live: categories in LIVE_CATEGORY
-    • multi_turn: categories in MULTI_TURN_CATEGORY
-    • agentic: categories in AGENTIC_CATEGORY
-    • format_sensitivity: the format sensitivity test categories
-    """
-    if is_format_sensitivity(test_id):
-        return "format_sensitivity"
-    elif is_non_live(test_id):
-        return "non_live"
-    elif is_live(test_id):
-        return "live"
-    elif is_multi_turn(test_id):
-        return "multi_turn"
-    elif is_agentic(test_id):
-        return "agentic"
-    else:
-        raise ValueError(f"Invalid test category: {test_id}")
-
-
-# not used currently
-def get_sub_grouping(test_id: str) -> str:
-    """
-    Get the sub-grouping of a test category.
-    For memory test categories, it returns the memory backend type.
-    For all other test categories, it returns None.
-    """
-    if is_memory(test_id):
-        return os.path.join(
-            "memory",
-            extract_memory_backend_type(
-                extract_test_category_from_id(test_id, remove_prereq=True)
-            ),
-        )
-    else:
-        return None
+    return (
+        is_multi_turn(test_category)
+        or is_agentic(test_category)
+        or contain_vision_input(test_category)
+    )
 
 
 def get_directory_structure_by_id(test_id: str) -> str:
     """
-    Get the directory structure for a test entry.
-    For memory test categories, it returns the general grouping and sub-grouping. Eg. "agentic/memory_kv"
-    For all other test categories, it returns the general grouping only. Eg. "non_live"
+    Get the modality directory for result/score files for a test entry.
+    Extracts the modality prefix from the test entry ID.
     """
-    group = get_general_grouping(test_id)
-
-    if is_memory(test_id):
-        return os.path.join(
-            group,
-            "memory",
-            extract_memory_backend_type(
-                extract_test_category_from_id(test_id, remove_prereq=True)
-            ),
-        )
-    else:
-        return group
+    return get_category_modality(test_id).value
 
 
 def get_directory_structure_by_category(test_category: str) -> str:
     """
-    Get the directory structure for a test category.
-    For memory test categories, it returns the general grouping and sub-grouping. Eg. "agentic/memory_kv"
-    For all other test categories, it returns the general grouping only. Eg. "non_live"
+    Get the modality directory for result/score files for a test category.
     """
-    group = get_general_grouping(test_category)
+    return get_category_modality(test_category).value
 
-    if is_memory(test_category):
-        return os.path.join(group, "memory", extract_memory_backend_type(test_category))
-    else:
-        return group
+
+def detect_modality_from_path(file_path: Path, model_dir: Path) -> str:
+    """
+    Detect the modality from a result/score file's parent directory.
+    e.g., model_dir/text_audio/simple_python_result.json → 'text_audio'
+    """
+    relative = file_path.relative_to(model_dir)
+    return relative.parts[0]
+
+
+def get_memory_artifact_dir_by_id(test_id: str) -> str:
+    """
+    Get the directory for memory artifacts (snapshots, pre-req checkpoints) for a test entry.
+    Returns a path like "text/_memory_artifacts/kv".
+    """
+    return get_memory_artifact_dir_by_category(extract_test_category_from_id(test_id))
+
+
+def get_memory_artifact_dir_by_category(test_category: str) -> str:
+    """
+    Get the directory for memory artifacts (snapshots, pre-req checkpoints) for a test category.
+    Returns a path like "text/_memory_artifacts/kv".
+    """
+    dir_structure = get_directory_structure_by_category(test_category)
+    backend_type = extract_memory_backend_type(test_category)
+    return os.path.join(dir_structure, "_memory_artifacts", backend_type)
 
 
 #### Helper functions to load/write the dataset files ####
@@ -406,32 +469,57 @@ def load_dataset_entry(
 ) -> list[dict]:
     """
     This function retrieves the dataset entry for a given test category.
-    The input should not be a test category goup, but a specific test category.
-    If `contain_prereq` is True, it will include the pre-requisite entries for the memory test categories.
-    If `include_language_specific_hint` is True, it will include the language-specific hint for the function description (for Java, JavaScript, and Python).
+    The test_category must be a modality-prefixed category (e.g., "text:simple_python").
+    File paths use the base category name; entry IDs are prefixed with the modality at the end.
     """
-    if is_format_sensitivity(test_category):
-        # Format sensitivity categories
-        all_entries = load_format_sensitivity_test_cases()
+    modality = get_category_modality(test_category)
+    base_category = get_base_category(test_category)
+    modality_path = MODALITY_DATASET_PATH[modality]
 
-    elif is_web_search(test_category):
-        # Web search categories
-        file_name = f"{VERSION_PREFIX}_web_search.json"
-        all_entries = load_file(PROMPT_PATH / file_name)
-        all_entries = process_web_search_test_case(all_entries, test_category)
+    if modality in [Modality.TRUE_AUDIO, Modality.TEXT_AUDIO]:
+        # True Audio or Text Audio categories
+        all_entries = load_file(modality_path / f"{base_category}.json")
+        all_entries = process_audio_test_case(all_entries, modality=modality)
 
-    elif is_memory(test_category):
-        # Memory categories
-        all_entries = load_file(PROMPT_PATH / f"{VERSION_PREFIX}_memory.json")
-        for scenario in MEMORY_SCENARIO_NAME:
-            all_entries = process_memory_test_case(
-                all_entries, test_category, scenario, include_prereq=include_prereq
-            )
+    elif modality is Modality.VISION:
+        if is_vision_web_search(test_category):
+            # Vision Web Search categories
+            # All categories share the same prompt file
+            all_entries = load_file(modality_path / "vision_web_search_base.json")
+            all_entries = process_vision_web_search_test_cases(all_entries, base_category)
+
+        elif is_geoguessr(test_category):
+            # geoguessr categories
+            all_entries = load_file(modality_path / f"{base_category}.json")
+            all_entries = process_geoguessr_test_case(all_entries)
+        else:
+            raise ValueError(f"Invalid vision category: {test_category}")
 
     else:
-        # All other categories, we don't need any special handling
-        file_name = f"{VERSION_PREFIX}_{test_category}.json"
-        all_entries = load_file(PROMPT_PATH / file_name)
+        assert modality is Modality.TEXT, f"Invalid modality: {modality}"
+        # Text categories
+
+        if is_format_sensitivity(test_category):
+            # Format sensitivity categories
+            all_entries = load_format_sensitivity_test_cases()
+
+        elif is_web_search(test_category):
+            # Web search categories
+            all_entries = load_file(modality_path / "web_search.json")
+            all_entries = process_web_search_test_case(all_entries, base_category)
+
+        elif is_memory(test_category):
+            # Memory categories
+            # pass base category so ID replacements stay prefix-free
+            all_entries = load_file(modality_path / "memory.json")
+            for scenario in MEMORY_SCENARIO_NAME:
+                all_entries = process_memory_test_case(
+                    all_entries, base_category, scenario, include_prereq=include_prereq
+                )
+
+        else:
+            # All other categories, we don't need any special handling
+            all_entries = load_file(modality_path / f"{base_category}.json")
 
     all_entries = process_agentic_test_case(all_entries)
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
@@ -439,25 +527,44 @@ def load_dataset_entry(
     if include_language_specific_hint:
         all_entries = add_language_specific_hint_to_function_doc(all_entries)
 
+    # Prefix all entry IDs with the modality
+    for entry in all_entries:
+        entry["id"] = f"{modality.value}:{entry['id']}"
+
     return all_entries
 
 
+# @HuanzhiMao FIXME: Add support for audio and vision
 def load_ground_truth_entry(test_category: str) -> list[dict]:
     """
     This function retrieves the ground truth entry for a given test category.
-    The input should not be a test category goup, but a specific test category.
+    The test_category must be a modality-prefixed category (e.g., "text:simple_python").
+    Entry IDs are prefixed with the modality to match the corresponding dataset entries.
     """
+    modality = get_category_modality(test_category)
+    base_category = get_base_category(test_category)
+    ground_truth_dir = MODALITY_POSSIBLE_ANSWER_PATH[modality]
+
     if is_format_sensitivity(test_category):
+        # Format sensitivity ground truth handles its own ID construction;
+        # it calls load_ground_truth_entry() for inner categories which already prefix.
         return load_format_sensitivity_ground_truth_entry()
 
     elif is_memory(test_category):
-        return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_memory.json")
+        entries = load_file(ground_truth_dir / "memory.json")
 
     elif is_web_search(test_category):
-        return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_web_search.json")
+        entries = load_file(ground_truth_dir / "web_search.json")
 
     else:
-        return load_file(POSSIBLE_ANSWER_PATH / f"{VERSION_PREFIX}_{test_category}.json")
+        entries = load_file(ground_truth_dir / f"{base_category}.json")
+
+    # Prefix all entry IDs with the modality to match dataset entries
+    for entry in entries:
+        if "id" in entry:
+            entry["id"] = f"{modality}:{entry['id']}"
+
+    return entries
 
 
 def write_list_of_dicts_to_file(filename, data, subdir=None, use_lock: bool = True) -> None:
@@ -520,7 +627,7 @@ def sort_key(entry):
 
     In either case, the universal index is enough to sort the entries.
     """
-    entry_id = entry["id"].split(":")[0]
+    entry_id = entry["id"].split(":")[-1]
     parts = entry_id.rsplit("_", 1)
     test_category, index = parts[0], parts[1]
     # This handles the case where the index is in the form TestCategory_Index-FuncDocSubIndex-PromptSubIndex
@@ -546,6 +653,8 @@ def sort_key(entry):
     # Hopefully the prereq entries are done by now
     elif is_memory(test_category):
         priority = 4
+    elif contain_vision_input(test_category):
+        priority = 5
 
     return (priority, test_category, int(index))
 
@@ -561,6 +670,42 @@ def filter_entries_by_id(
 
     reference_ids = {entry["id"] for entry in reference_entries}
     return [entry for entry in candidate_entries if entry["id"] in reference_ids]
+
+
+def update_available_tool_list_in_test_case(
+    test_entry: dict, involved_instances: dict
+) -> dict:
+    """
+    Update the available tool list in the test entry.
+    """
+
+    for class_name, class_instance in involved_instances.items():
+        if class_name in UPDATED_TOOL_LIST_CLASSES:
+            assert hasattr(class_instance, "_get_updated_tool_list") and callable(
+                getattr(class_instance, "_get_updated_tool_list")
+            )
+            available_tool_names = class_instance._get_updated_tool_list()
+            backend_func_docs = load_file(
+                MULTI_TURN_FUNC_DOC_PATH / MULTI_TURN_FUNC_DOC_FILE_MAPPING[class_name]
+            )
+
+            # Get all tool names for this backend
+            backend_tool_names = {tool["name"] for tool in backend_func_docs}
+
+            # Remove all tools tied to this backend from test_entry["function"]
+            test_entry["function"] = [
+                tool
+                for tool in test_entry["function"]
+                if tool["name"] not in backend_tool_names
+            ]
+
+            # Add back only the tools that are still available (name exists in updated_tool_list)
+            updated_tool_docs = [
+                tool for tool in backend_func_docs if tool["name"] in available_tool_names
+            ]
+            test_entry["function"].extend(updated_tool_docs)
+
+    return test_entry
 
 
 #### Helper functions to check the output format ####
@@ -619,9 +764,9 @@ def is_empty_output(decoded_output):
 
 
 def _get_language_specific_hint(test_category):
-    if is_java(test_category):
+    if test_category == "java":
         return " Note that the provided function is in Java 8 SDK syntax."
-    elif is_js(test_category):
+    elif test_category == "javascript":
         return " Note that the provided function is in JavaScript syntax."
     else:
         return " Note that the provided function is in Python 3 syntax."
@@ -774,7 +919,8 @@ def populate_test_cases_with_predefined_functions(test_cases: list[dict]) -> lis
     Multi-turn and Agentic test cases don't have the function doc in the prompt. We need to add them here.
     """
     for entry in test_cases:
-        if not is_multi_turn(entry["id"]) and not is_agentic(entry["id"]):
+        # @HuanzhiMao double check this
+        if not contain_multi_turn_interaction(entry["id"]):
             continue
         involved_classes = entry["involved_classes"]
         entry["function"] = []
@@ -892,7 +1038,7 @@ def load_format_sensitivity_test_cases() -> list[dict]:
     for entry in all_test_entries_involved:
         for config in all_configs:
             entry_copy = deepcopy(entry)
-            entry_copy["id"] = f"format_sensitivity_{index}:{config}:{entry_copy['id']}"
+            entry_copy["id"] = f"format_sensitivity_{index}|{config}|{entry_copy['id']}"
 
             all_format_sensitivity_test_cases.append(entry_copy)
             index += 1
@@ -962,3 +1108,193 @@ def get_all_format_sensitivity_configs() -> list[str]:
     )
 
     return all_configs
+
+
+#### Utils for Vision ####
+
+
+def process_vision_web_search_test_cases(
+    all_entries: list[dict], test_category: str
+) -> list[dict]:
+    # return [{"id": "vision_base_0", "question": [[{"role": "user", "content": "You must call the fetch_image function to fetch an image and tell me what's in the image."}]], "function": [], "involved_classes": ["StreetViewAPI"]}]
+    result = []
+    for entry in all_entries:
+        # @HuanzhiMao FIXME, maybe optimize the dataset structure
+        user_query = entry["question"][0][0]["content"]
+        image_file_name = entry["image_file_name"]
+        if test_category == "vision_crop_169":
+            image_file_name = image_file_name.replace(".jpeg", "_169.jpeg")
+        elif test_category == "vision_crop_43":
+            image_file_name = image_file_name.replace(".jpeg", "_43.jpeg")
+        elif test_category == "vision_resize_169":
+            image_file_name = image_file_name.replace(".jpeg", "_resize_169.jpeg")
+        elif test_category == "vision_resize_43":
+            image_file_name = image_file_name.replace(".jpeg", "_resize_43.jpeg")
+        elif test_category == "vision_bw":
+            image_file_name = image_file_name.replace(".jpeg", "_bw.jpeg")
+        elif test_category == "vision_edge":
+            image_file_name = image_file_name.replace(".jpeg", "_edge.jpeg")
+        elif test_category == "vision_rg":
+            image_file_name = image_file_name.replace(".jpeg", "_rg.jpeg")
+        image_path = IMAGE_PATH / image_file_name
+        with open(image_path, "rb") as image_file:
+            image_bytes = image_file.read()
+        image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+
+        temp = {}
+        temp["involved_classes"] = ["VisionSearchAPI"]
+        temp["id"] = entry["id"].replace("vision_web_search_base", test_category)
+        temp["question"] = [
+            [
+                {
+                    "role": "user",
+                    "content": user_query,
+                    # @HuanzhiMao FIXME: update all handler for this new format
+                    "image_content": [
+                        {
+                            "image_base64": image_base64,
+                            "image_bytes": image_bytes,
+                            "image_path": str(image_path),
+                            "type": "image/jpeg",
+                        }
+                    ],
+                },
+            ]
+        ]
+        result.append(temp)
+    return result
+
+
+def process_geoguessr_test_case(test_cases: list[dict]) -> list[dict]:
+    """
+    geoguessr test cases need to have a specific response format. We add this to the user query here.
+    """
+    for entry in test_cases:
+        if is_geoguessr(entry["id"]):
+            entry["question"][0].insert(
+                0,
+                {
+                    "role": "system",
+                    "content": ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
+                },
+            )
+
+    return test_cases
+
+
+#### Audio helper methods ####
+
+
+def load_audio(path: str) -> bytes:
+    """Load audio file from disk given a prefix of the filename.
+
+    The provided *path* is expected to be only a prefix of the actual filename that
+    lives inside the ``AUDIO_FILE_PATH`` directory (e.g. ``live_simple_0-0-0_openai``)
+    while the real file might be something like
+    ``live_simple_0-0-0_openai_audio_mumbling_background_noise_mosquito_db-5_network_cut_n10.mp3``.
+
+    We search for files whose names start with the given prefix and ensure exactly
+    one match is found.
+    """
+
+    # Ensure we are only dealing with the filename part in case a path is passed in
+    prefix = Path(path).name.split(".")[0]  # Strip any possible directories
+
+    # Perform prefix matching recursively inside AUDIO_FILE_PATH and its sub-directories
+    candidates = [p for p in AUDIO_FILE_PATH.rglob(f"{prefix}*.*") if p.is_file()]
+
+    if not candidates:
+        raise FileNotFoundError(
+            f"No audio file found in '{AUDIO_FILE_PATH}' with prefix '{prefix}'."
+        )
+    if len(candidates) > 1:
+        raise RuntimeError(
+            "Multiple audio files match the given prefix "
+            f"'{prefix}': {[c.name for c in candidates]}"
+        )
+
+    audio_path = candidates[0]
+    with open(audio_path, "rb") as f:
+        return f.read()
+
+
+def audio_to_base64(data: bytes) -> str:
+    return base64.b64encode(data).decode("utf-8")
+
+
+def process_audio_test_case(test_cases: list[dict], modality: Modality) -> list[dict]:
+    """
+    This function loads the audio query content from the path specified in the test entry.
+    """
+    for entry in test_cases:
+        for turn in entry["question"]:
+            for msg in turn:
+                if msg["role"] != "user":
+                    continue
+
+                assert (
+                    "audio_path" in msg
+                ), f"Audio path should be specified in the test entry: {entry['id']}"
+
+                if modality == Modality.TRUE_AUDIO:
+                    msg["audio_content"] = load_audio(msg["audio_path"])
+                    # msg["audio_format"] = "wav"
+                    del msg["content"]
+                else:
+                    assert (
+                        modality == Modality.TEXT_AUDIO
+                    ), f"Modality {modality} is not a valid modality for audio test cases."
+                    # FIXME: uncomment this to determine which text to use
+                    # msg["content"] = msg["transcript"]
+                    # msg["content"] = msg["asr_output_openai"]
+                    # msg["content"] = msg["asr_output_elevenlabs"]
+                    msg["original_content"] = msg["content"]
+                    msg["content"] = msg["asr_output_deepgram"]
+
+                del msg["transcript"]
+                del msg["audio_path"]
+                del msg["asr_output_openai"]
+                del msg["asr_output_elevenlabs"]
+                del msg["asr_output_deepgram"]
+        # Merge any existing system prompts with the default audio agent prompt.
+        combined_prompts: list[str] = [SYSTEM_PROMPT_FOR_AUDIO_AGENT]
+
+        # Collect contents of all existing system messages across all turns and remove them.
+        for turn in entry["question"]:
+            for idx in reversed(range(len(turn))):
+                if turn[idx].get("role") == "system":
+                    content = turn[idx].get("content", "")
+                    if (
+                        content not in combined_prompts
+                    ):  # avoid duplicate if same as default
+                        combined_prompts.append(content)
+                    del turn[idx]
+
+        merged_system_prompt = "\n\n".join(combined_prompts)
+
+        # Insert the merged system prompt at the very beginning of the conversation.
+        entry["question"][0].insert(
+            0,
+            {
+                "role": "system",
+                "content": merged_system_prompt,
+            },
+        )
+
+        entry["could_allow_clarification"] = True
+
+    return test_cases
+
+
+def query_contains_audio_input(message: dict) -> bool:
+    """Return True iff the message is a user message that carries raw audio."""
+
+    assert type(message) == dict, "Message should be a dict"
+
+    contains_audio = "audio_content" in message
+
+    # If audio is present, it must come from the user.
+    if contains_audio and message.get("role") != "user":
+        raise ValueError("Audio input should only appear in user messages")
+
+    return contains_audio

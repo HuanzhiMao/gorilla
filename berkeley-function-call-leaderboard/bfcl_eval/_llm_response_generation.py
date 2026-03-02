@@ -9,7 +9,7 @@ import traceback
 from collections import defaultdict
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from copy import deepcopy
-from typing import Optional
+from pathlib import Path
 
 from bfcl_eval.constants.eval_config import (
     PROJECT_ROOT,
@@ -17,7 +17,7 @@ from bfcl_eval.constants.eval_config import (
     RESULT_PATH,
     TEST_IDS_TO_GENERATE_PATH,
 )
-from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING
+from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING, OSSModelConfig
 from bfcl_eval.eval_checker.eval_runner_helper import load_file
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.local_inference.base_oss_handler import OSSHandler
@@ -25,12 +25,32 @@ from bfcl_eval.utils import *
 from tqdm import tqdm
 
 
-def get_args():
+class Args(argparse.Namespace):
+    model: list[str]
+    test_category: list[str]
+    temperature: float
+    include_input_log: bool
+    exclude_state_log: bool
+    num_threads: int
+    num_gpus: int
+    backend: str
+    gpu_memory_utilization: float
+    result_dir: Path | None
+    run_ids: bool
+    allow_overwrite: bool
+    skip_server_setup: bool
+    local_model_path: str | None
+    lora_modules: list[str] | None
+    enable_lora: bool
+    max_lora_rank: int | None
+
+
+def get_args() -> Args:
     parser = argparse.ArgumentParser()
     # Refer to model_choice for supported models.
-    parser.add_argument("--model", type=str, default="gorilla-openfunctions-v2", nargs="+")
+    parser.add_argument("--model", type=str, required=True, nargs="+")
     # Refer to test_categories for supported categories.
-    parser.add_argument("--test-category", type=str, default="all", nargs="+")
+    parser.add_argument("--test-category", type=str, default="vision", nargs="+")
 
     # Parameters for the model that you want to test.
     parser.add_argument("--temperature", type=float, default=0.001)
@@ -38,7 +58,8 @@ def get_args():
     parser.add_argument("--exclude-state-log", action="store_true", default=False)
     parser.add_argument("--num-threads", required=False, type=int)
     parser.add_argument("--num-gpus", default=1, type=int)
-    parser.add_argument("--backend", default="vllm", type=str, choices=["vllm", "sglang"])
+    parser.add_argument("--backend", default="vllm", type=str, choices=["vllm"])
+    # @HuanzhiMao TODO: A single --extra-vllm-args CLI flag?
     parser.add_argument("--gpu-memory-utilization", default=0.9, type=float)
     parser.add_argument("--result-dir", default=None, type=str)
     parser.add_argument("--run-ids", action="store_true", default=False)
@@ -47,7 +68,7 @@ def get_args():
         "--skip-server-setup",
         action="store_true",
         default=False,
-        help="Skip vLLM/SGLang server setup and use existing endpoint specified by the LOCAL_SERVER_ENDPOINT and LOCAL_SERVER_PORT environment variables.",
+        help="Skip vLLM server setup and use existing endpoint specified by the LOCAL_SERVER_ENDPOINT and LOCAL_SERVER_PORT environment variables.",
     )
     # Optional local model path
     parser.add_argument(
@@ -61,7 +82,7 @@ def get_args():
         type=str,
         default=None,
         nargs="*",
-        help="Specify the path to the LoRA modules for vLLM backend in name=\"path\" format. Can be specified multiple times.",
+        help='Specify the path to the LoRA modules for vLLM backend in name="path" format. Can be specified multiple times.',
     )
     parser.add_argument(
         "--enable-lora",
@@ -75,8 +96,8 @@ def get_args():
         default=None,
         help="Specify the maximum LoRA rank for vLLM backend.",
     )
-    args = parser.parse_args()
-    print(f"Parsed arguments: {args}")
+    args: Args = parser.parse_args()  # type: ignore[assignment]
+    print(f"\n\n🚀 Parsed arguments: {args}\n\n")
 
     return args
 
@@ -89,6 +110,11 @@ def build_handler(model_name, temperature):
         registry_name=model_name,
         is_fc_model=config.is_fc_model,
     )
+    # If this is a locally hosted OSS model, pass any vLLM-specific config
+    # through to the handler instance.
+    if isinstance(config, OSSModelConfig) and isinstance(handler, OSSHandler):
+        handler.tool_call_parser = config.vllm_tool_call_parser
+        handler.vllm_serve_args = list(config.vllm_serve_args)
     return handler
 
 
@@ -110,7 +136,9 @@ def get_involved_test_entries(test_category_args, run_ids):
     )
 
 
-def collect_test_cases(args, model_name, all_test_categories, all_test_entries_involved):
+def collect_test_cases(
+    args: Args, model_name, all_test_categories, all_test_entries_involved
+):
     model_name_dir = model_name.replace("/", "_")
     model_result_dir = args.result_dir / model_name_dir
 
@@ -144,7 +172,9 @@ def collect_test_cases(args, model_name, all_test_categories, all_test_entries_i
 
         if is_memory(test_category):
             # We also need to special handle the pre-requisite entries and the snapshot result for memory test cases
-            snapshot_folder = model_result_dir / "memory_snapshot" / test_category
+            snapshot_folder = model_result_dir / get_memory_artifact_dir_by_category(
+                test_category
+            )
             if snapshot_folder.exists():
                 if not args.allow_overwrite:
                     pass
@@ -220,7 +250,7 @@ def multi_threaded_inference(handler, test_case, include_input_log, exclude_stat
     return result_to_write
 
 
-def generate_results(args, model_name, test_cases_total):
+def generate_results(args: Args, model_name, test_cases_total):
     handler = build_handler(model_name, args.temperature)
 
     if isinstance(handler, OSSHandler):
@@ -356,7 +386,7 @@ def generate_results(args, model_name, test_cases_total):
             handler.shutdown_local_server()
 
 
-def main(args):
+def main(args: Args):
 
     # Note: The following environment variables are needed for the memory vector store implementation
     # Otherwise you get segfault or huggingface tokenizer warnings
@@ -385,18 +415,37 @@ def main(args):
                 "• For officially supported models, please refer to `SUPPORTED_MODELS.md`.\n"
                 "• For running new models, please refer to `README.md` and `CONTRIBUTING.md`."
             )
+    # @HuanzhiMao TODO: get the progress bar to work properly
     tqdm.write(f"Generating results for {args.model}")
     if args.run_ids:
         tqdm.write("Running specific test cases. Ignoring `--test-category` argument.")
     else:
         tqdm.write(f"Running full test cases for categories: {all_test_categories}.")
 
-    if any(is_format_sensitivity(test_category) for test_category in all_test_categories):
-        for model_name in args.model:
-            if MODEL_CONFIG_MAPPING[model_name].is_fc_model:
+    skip_rules = [
+        (
+            is_format_sensitivity,
+            lambda cfg: cfg.is_fc_model,
+            "`Format sensitivity` test cases are only supported for prompting (non-FC) models.",
+        ),
+        (
+            contain_native_audio_input,
+            lambda cfg: not cfg.supports_audio_input,
+            "`True audio` test cases are only supported for models that support native audio input.",
+        ),
+        (
+            contain_vision_input,
+            lambda cfg: not cfg.supports_image_input,
+            "`Vision` test cases are only supported for models that support vision/image input.",
+        ),
+    ]
+    for category_check, should_skip, reason in skip_rules:
+        skipped_categories = [tc for tc in all_test_categories if category_check(tc)]
+        if skipped_categories:
+            skipped_models = [m for m in args.model if should_skip(MODEL_CONFIG_MAPPING[m])]
+            if skipped_models:
                 tqdm.write(
-                    "⚠️ Warning: Format sensitivity test cases are only supported for prompting (non-FC) models. "
-                    f"Since {model_name} is a FC model based on its config, the format sensitivity test cases will be skipped."
+                    f"⚠️ Warning: {reason} Skipping categories {', '.join(skipped_categories)} for models: {', '.join(skipped_models)}"
                 )
 
     if args.result_dir is not None:
