@@ -114,7 +114,8 @@ def build_handler(model_name, temperature):
     # through to the handler instance.
     if isinstance(config, OSSModelConfig) and isinstance(handler, OSSHandler):
         handler.tool_call_parser = config.vllm_tool_call_parser
-        handler.vllm_serve_args = list(config.vllm_serve_args)
+        handler.reasoning_parser = config.vllm_reasoning_parser
+        handler.vllm_extra_serve_args = list(config.vllm_extra_serve_args)
     return handler
 
 

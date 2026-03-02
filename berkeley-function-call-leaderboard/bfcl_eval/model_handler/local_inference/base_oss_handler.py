@@ -37,7 +37,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
         self.reasoning_parser = None
         self.tool_call_parser = None
         # Extra CLI args appended to `vllm serve ...`
-        self.vllm_serve_args: list[str] = []
+        self.vllm_extra_serve_args: list[str] = []
 
         # Will be overridden in batch_inference method
         # Used to indicate where the tokenizer and config should be loaded from
@@ -172,8 +172,8 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
                         )
                     if reasoning_parser:
                         cmd.extend(["--reasoning-parser", reasoning_parser])
-                    if self.vllm_serve_args:
-                        cmd.extend(self.vllm_serve_args)
+                    if self.vllm_extra_serve_args:
+                        cmd.extend(self.vllm_extra_serve_args)
                     if enable_lora:
                         cmd.append("--enable-lora")
                     if max_lora_rank is not None:
@@ -230,7 +230,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
 
             # Wait for the server to be ready
             server_ready = False
-            print("Waiting for server to be ready... (this may take a few minutes)")
+            print("🔄 Waiting for server to be ready... (this may take a few minutes)")
             while not server_ready:
                 # Check if the process has terminated unexpectedly
                 if not skip_server_setup and process.poll() is not None:
@@ -246,7 +246,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
                     response = requests.get(f"{self.base_url}/models")
                     if response.status_code == 200:
                         server_ready = True
-                        print("server is ready!")
+                        print("🙌 Server is ready!\n")
                 except requests.exceptions.ConnectionError:
                     # If the connection is not ready, wait and try again
                     time.sleep(1)

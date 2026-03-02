@@ -2151,20 +2151,22 @@ MODEL_CONFIG_MAPPING: dict[str, ModelConfig] = {
     **third_party_inference_model_map,
 }
 
-# Uncomment to get the supported_models.py file contents
-all_model_list = []
-true_audio_model_list = []
-vision_model_list = []
-for key, config in MODEL_CONFIG_MAPPING.items():
-    if config.supports_audio_input:
-        true_audio_model_list.append(key)
-    if config.supports_image_input:
-        vision_model_list.append(key)
-    all_model_list.append(key)
+# @HuanzhiMao TODO: update file on the fly?
+# Uncomment the folllowing to get the supported_models.py file contents
 
-print("Text supported models:")
-print(repr(all_model_list))
-print("True audio supported models:")
-print(repr(true_audio_model_list))
-print("Vision supported models:")
-print(repr(vision_model_list))
+# all_model_list = []
+# true_audio_model_list = []
+# vision_model_list = []
+# for key, config in MODEL_CONFIG_MAPPING.items():
+#     if config.supports_audio_input:
+#         true_audio_model_list.append(key)
+#     if config.supports_image_input:
+#         vision_model_list.append(key)
+#     all_model_list.append(key)
+
+# print("Text supported models:")
+# print(repr(all_model_list))
+# print("True audio supported models:")
+# print(repr(true_audio_model_list))
+# print("Vision supported models:")
+# print(repr(vision_model_list))

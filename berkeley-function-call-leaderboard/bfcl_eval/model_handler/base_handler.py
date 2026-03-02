@@ -227,7 +227,7 @@ class BaseHandler:
                     inference_data, current_turn_message
                 )
 
-            count = 0
+            step_count = 0
             clarification_count = 0
 
             while True:

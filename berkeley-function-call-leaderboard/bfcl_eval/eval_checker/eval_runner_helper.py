@@ -8,7 +8,7 @@ import pandas as pd
 
 from bfcl_eval.constants.column_headers import *
 from bfcl_eval.constants.eval_config import *
-from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING, SCORE_FILE_PATTERN
+from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING
 from bfcl_eval.utils import *
 
 
