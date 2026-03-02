@@ -33,6 +33,8 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_name_huggingface = model_name
         self.dtype = dtype
+
+        self.reasoning_parser = None
         self.tool_call_parser = None
         # Extra CLI args appended to `vllm serve ...`
         self.vllm_serve_args: list[str] = []
@@ -64,6 +66,9 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
 
     def _resolve_tool_call_parser(self) -> str | None:
         return os.getenv("VLLM_TOOL_CALL_PARSER", self.tool_call_parser)
+
+    def _resolve_reasoning_parser(self) -> str | None:
+        return os.getenv("VLLM_REASONING_PARSER", self.reasoning_parser)
 
     @override
     def _query_FC(self, inference_data: dict):
@@ -134,6 +139,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
         try:
             if not skip_server_setup:
                 if backend == "vllm":
+                    reasoning_parser = self._resolve_reasoning_parser()
                     tool_call_parser = None
                     if self.is_fc_model:
                         tool_call_parser = self._resolve_tool_call_parser()
@@ -143,21 +149,29 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
                                 "Set VLLM_TOOL_CALL_PARSER or update the model handler."
                             )
                     cmd = [
-                            "vllm",
-                            "serve",
-                            str(self.model_path_or_id),
-                            "--port",
-                            str(self.local_server_port),
-                            "--dtype",
-                            str(self.dtype),
-                            "--tensor-parallel-size",
-                            str(num_gpus),
-                            "--gpu-memory-utilization",
-                            str(gpu_memory_utilization),
-                            "--trust-remote-code",
-                        ]
+                        "vllm",
+                        "serve",
+                        str(self.model_path_or_id),
+                        "--port",
+                        str(self.local_server_port),
+                        "--dtype",
+                        str(self.dtype),
+                        "--tensor-parallel-size",
+                        str(num_gpus),
+                        "--gpu-memory-utilization",
+                        str(gpu_memory_utilization),
+                        "--trust-remote-code",
+                    ]
                     if tool_call_parser:
-                        cmd.extend(["--enable-auto-tool-choice", "--tool-call-parser", tool_call_parser])
+                        cmd.extend(
+                            [
+                                "--enable-auto-tool-choice",
+                                "--tool-call-parser",
+                                tool_call_parser,
+                            ]
+                        )
+                    if reasoning_parser:
+                        cmd.extend(["--reasoning-parser", reasoning_parser])
                     if self.vllm_serve_args:
                         cmd.extend(self.vllm_serve_args)
                     if enable_lora:
@@ -167,14 +181,18 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
                     if lora_modules:
                         for lora_module in lora_modules:
                             cmd.extend(["--lora-modules", lora_module])
- 
+
                     print(f"🚀Starting vLLM server with command: \"{' '.join(cmd)}\"")
-                    
+
                     # @HuanzhiMao FIXME: test this
                     # Build a clean env so the parent's restricted threading
                     # settings (OMP_NUM_THREADS=1, etc.) don't throttle vLLM.
                     env = os.environ.copy()
-                    for var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "TOKENIZERS_PARALLELISM"):
+                    for var in (
+                        "OMP_NUM_THREADS",
+                        "MKL_NUM_THREADS",
+                        "TOKENIZERS_PARALLELISM",
+                    ):
                         env.pop(var, None)
 
                     process = subprocess.Popen(
