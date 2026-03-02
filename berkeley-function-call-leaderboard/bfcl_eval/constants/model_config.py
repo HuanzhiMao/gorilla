@@ -1482,7 +1482,7 @@ local_inference_model_map = {
         underscore_to_dot=False,
         vllm_tool_call_parser="xlam",
     ),
-    "mistralai/Ministral-8B-Instruct-2410": ModelConfig(
+    "mistralai/Ministral-8B-Instruct-2410": OSSModelConfig(
         model_name="mistralai/Ministral-8B-Instruct-2410",
         display_name="Ministral-8B-Instruct-2410 (FC)",
         url="https://huggingface.co/mistralai/Ministral-8B-Instruct-2410",
@@ -1494,7 +1494,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "microsoft/phi-4": ModelConfig(
+    "microsoft/phi-4": OSSModelConfig(
         model_name="microsoft/phi-4",
         display_name="Phi-4 (Prompt)",
         url="https://huggingface.co/microsoft/phi-4",
@@ -1506,7 +1506,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "microsoft/Phi-4-mini-instruct": ModelConfig(
+    "microsoft/Phi-4-mini-instruct": OSSModelConfig(
         model_name="microsoft/Phi-4-mini-instruct",
         display_name="Phi-4-mini-instruct (Prompt)",
         url="https://huggingface.co/microsoft/Phi-4-mini-instruct",
@@ -1519,7 +1519,7 @@ local_inference_model_map = {
         underscore_to_dot=False,
     ),
     # FIXME, check
-    "microsoft/Phi-4-mini-instruct-FC": ModelConfig(
+    "microsoft/Phi-4-mini-instruct-FC": OSSModelConfig(
         model_name="microsoft/Phi-4-mini-instruct",
         display_name="Phi-4-mini-instruct (FC)",
         url="https://huggingface.co/microsoft/Phi-4-mini-instruct",
@@ -1543,7 +1543,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "ibm-granite/granite-3.1-8b-instruct": ModelConfig(
+    "ibm-granite/granite-3.1-8b-instruct": OSSModelConfig(
         model_name="ibm-granite/granite-3.1-8b-instruct",
         display_name="Granite-3.1-8B-Instruct (FC)",
         url="https://huggingface.co/ibm-granite/granite-3.1-8b-instruct",
@@ -1555,7 +1555,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "ibm-granite/granite-4.0-350m": ModelConfig(
+    "ibm-granite/granite-4.0-350m": OSSModelConfig(
         model_name="ibm-granite/granite-4.0-350m",
         display_name="Granite-4.0-350m (FC)",
         url="https://huggingface.co/ibm-granite/granite-4.0-350m",
@@ -1580,7 +1580,7 @@ local_inference_model_map = {
         underscore_to_dot=True,
         vllm_tool_call_parser="granite-20b-fc",
     ),
-    "MadeAgents/Hammer2.1-7b": ModelConfig(
+    "MadeAgents/Hammer2.1-7b": OSSModelConfig(
         model_name="MadeAgents/Hammer2.1-7b",
         display_name="Hammer2.1-7b (FC)",
         url="https://huggingface.co/MadeAgents/Hammer2.1-7b",
@@ -1592,7 +1592,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "MadeAgents/Hammer2.1-3b": ModelConfig(
+    "MadeAgents/Hammer2.1-3b": OSSModelConfig(
         model_name="MadeAgents/Hammer2.1-3b",
         display_name="Hammer2.1-3b (FC)",
         url="https://huggingface.co/MadeAgents/Hammer2.1-3b",
@@ -1604,7 +1604,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "MadeAgents/Hammer2.1-1.5b": ModelConfig(
+    "MadeAgents/Hammer2.1-1.5b": OSSModelConfig(
         model_name="MadeAgents/Hammer2.1-1.5b",
         display_name="Hammer2.1-1.5b (FC)",
         url="https://huggingface.co/MadeAgents/Hammer2.1-1.5b",
@@ -1616,7 +1616,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "MadeAgents/Hammer2.1-0.5b": ModelConfig(
+    "MadeAgents/Hammer2.1-0.5b": OSSModelConfig(
         model_name="MadeAgents/Hammer2.1-0.5b",
         display_name="Hammer2.1-0.5b (FC)",
         url="https://huggingface.co/MadeAgents/Hammer2.1-0.5b",
@@ -1628,7 +1628,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "THUDM/glm-4-9b-chat": ModelConfig(
+    "THUDM/glm-4-9b-chat": OSSModelConfig(
         model_name="THUDM/glm-4-9b-chat",
         display_name="GLM-4-9b-Chat (FC)",
         url="https://huggingface.co/THUDM/glm-4-9b-chat",
@@ -1640,7 +1640,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
     ),
-    "Qwen/Qwen3.5-27B-FC": ModelConfig(
+    "Qwen/Qwen3.5-27B-FC": OSSModelConfig(
         model_name="Qwen/Qwen3.5-27B",
         display_name="Qwen3.5-27B (FC)",
         url="https://huggingface.co/Qwen/Qwen3.5-27B",
@@ -1655,7 +1655,7 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3-coder",
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-27B": ModelConfig(
+    "Qwen/Qwen3.5-27B": OSSModelConfig(
         model_name="Qwen/Qwen3.5-27B",
         display_name="Qwen3.5-27B (Prompt)",
         url="https://huggingface.co/Qwen/Qwen3.5-27B",
@@ -1668,7 +1668,7 @@ local_inference_model_map = {
         underscore_to_dot=False,
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-35B-A3B-FC": ModelConfig(
+    "Qwen/Qwen3.5-35B-A3B-FC": OSSModelConfig(
         model_name="Qwen/Qwen3.5-35B-A3B",
         display_name="Qwen3.5-35B-A3B (FC)",
         url="https://huggingface.co/Qwen/Qwen3.5-35B-A3B",
@@ -1683,7 +1683,7 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3-coder",
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-35B-A3B": ModelConfig(
+    "Qwen/Qwen3.5-35B-A3B": OSSModelConfig(
         model_name="Qwen/Qwen3.5-35B-A3B",
         display_name="Qwen3.5-35B-A3B (Prompt)",
         url="https://huggingface.co/Qwen/Qwen3.5-35B-A3B",
@@ -1696,7 +1696,7 @@ local_inference_model_map = {
         underscore_to_dot=False,
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-122B-A10B-FC": ModelConfig(
+    "Qwen/Qwen3.5-122B-A10B-FC": OSSModelConfig(
         model_name="Qwen/Qwen3.5-122B-A10B",
         display_name="Qwen3.5-122B-A10B (FC)",
         url="https://huggingface.co/Qwen/Qwen3.5-122B-A10B",
@@ -1711,7 +1711,7 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3-coder",
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-122B-A10B": ModelConfig(
+    "Qwen/Qwen3.5-122B-A10B": OSSModelConfig(
         model_name="Qwen/Qwen3.5-122B-A10B",
         display_name="Qwen3.5-122B-A10B (Prompt)",
         url="https://huggingface.co/Qwen/Qwen3.5-122B-A10B",
@@ -1724,7 +1724,7 @@ local_inference_model_map = {
         underscore_to_dot=False,
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-397B-A17B-FC": ModelConfig(
+    "Qwen/Qwen3.5-397B-A17B-FC": OSSModelConfig(
         model_name="Qwen/Qwen3.5-397B-A17B",
         display_name="Qwen3.5-397B-A17B (FC)",
         url="https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
@@ -1739,7 +1739,7 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3-coder",
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-397B-A17B": ModelConfig(
+    "Qwen/Qwen3.5-397B-A17B": OSSModelConfig(
         model_name="Qwen/Qwen3.5-397B-A17B",
         display_name="Qwen3.5-397B-A17B (Prompt)",
         url="https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
@@ -1752,7 +1752,7 @@ local_inference_model_map = {
         underscore_to_dot=False,
         supports_image_input=True,
     ),
-    "Team-ACE/ToolACE-2-8B": ModelConfig(
+    "Team-ACE/ToolACE-2-8B": OSSModelConfig(
         model_name="Team-ACE/ToolACE-2-8B",
         display_name="ToolACE-2-8B (FC)",
         url="https://huggingface.co/Team-ACE/ToolACE-2-8B",
@@ -1764,7 +1764,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "openbmb/MiniCPM3-4B": ModelConfig(
+    "openbmb/MiniCPM3-4B": OSSModelConfig(
         model_name="openbmb/MiniCPM3-4B",
         display_name="MiniCPM3-4B (Prompt)",
         url="https://huggingface.co/openbmb/MiniCPM3-4B",
@@ -1776,7 +1776,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "openbmb/MiniCPM3-4B-FC": ModelConfig(
+    "openbmb/MiniCPM3-4B-FC": OSSModelConfig(
         model_name="openbmb/MiniCPM3-4B",
         display_name="MiniCPM3-4B-FC (FC)",
         url="https://huggingface.co/openbmb/MiniCPM3-4B",
@@ -1788,7 +1788,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
     ),
-    "watt-ai/watt-tool-8B": ModelConfig(
+    "watt-ai/watt-tool-8B": OSSModelConfig(
         model_name="watt-ai/watt-tool-8B",
         display_name="watt-tool-8B (FC)",
         url="https://huggingface.co/watt-ai/watt-tool-8B/",
@@ -1800,7 +1800,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "watt-ai/watt-tool-70B": ModelConfig(
+    "watt-ai/watt-tool-70B": OSSModelConfig(
         model_name="watt-ai/watt-tool-70B",
         display_name="watt-tool-70B (FC)",
         url="https://huggingface.co/watt-ai/watt-tool-70B/",
@@ -1812,7 +1812,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "ZJared/Haha-7B": ModelConfig(
+    "ZJared/Haha-7B": OSSModelConfig(
         model_name="ZJared/Haha-7B",
         display_name="Haha-7B",
         url="https://huggingface.co/ZJared/Haha-7B",
@@ -1824,7 +1824,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "speakleash/Bielik-11B-v2.3-Instruct": ModelConfig(
+    "speakleash/Bielik-11B-v2.3-Instruct": OSSModelConfig(
         model_name="speakleash/Bielik-11B-v2.3-Instruct",
         display_name="Bielik-11B-v2.3-Instruct (Prompt)",
         url="https://huggingface.co/speakleash/Bielik-11B-v2.3-Instruct",
@@ -1836,7 +1836,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "NovaSky-AI/Sky-T1-32B-Preview": ModelConfig(
+    "NovaSky-AI/Sky-T1-32B-Preview": OSSModelConfig(
         model_name="NovaSky-AI/Sky-T1-32B-Preview",
         display_name="Sky-T1-32B-Preview (Prompt)",
         url="https://huggingface.co/NovaSky-AI/Sky-T1-32B-Preview",
@@ -1848,7 +1848,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "tiiuae/Falcon3-10B-Instruct-FC": ModelConfig(
+    "tiiuae/Falcon3-10B-Instruct-FC": OSSModelConfig(
         model_name="tiiuae/Falcon3-10B-Instruct",
         display_name="Falcon3-10B-Instruct (FC)",
         url="https://huggingface.co/tiiuae/Falcon3-10B-Instruct",
@@ -1860,7 +1860,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "tiiuae/Falcon3-7B-Instruct-FC": ModelConfig(
+    "tiiuae/Falcon3-7B-Instruct-FC": OSSModelConfig(
         model_name="tiiuae/Falcon3-7B-Instruct",
         display_name="Falcon3-7B-Instruct (FC)",
         url="https://huggingface.co/tiiuae/Falcon3-7B-Instruct",
@@ -1872,7 +1872,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "tiiuae/Falcon3-3B-Instruct-FC": ModelConfig(
+    "tiiuae/Falcon3-3B-Instruct-FC": OSSModelConfig(
         model_name="tiiuae/Falcon3-3B-Instruct",
         display_name="Falcon3-3B-Instruct (FC)",
         url="https://huggingface.co/tiiuae/Falcon3-3B-Instruct",
@@ -1884,7 +1884,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "tiiuae/Falcon3-1B-Instruct-FC": ModelConfig(
+    "tiiuae/Falcon3-1B-Instruct-FC": OSSModelConfig(
         model_name="tiiuae/Falcon3-1B-Instruct",
         display_name="Falcon3-1B-Instruct (FC)",
         url="https://huggingface.co/tiiuae/Falcon3-1B-Instruct",
@@ -1896,7 +1896,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "uiuc-convai/CoALM-8B": ModelConfig(
+    "uiuc-convai/CoALM-8B": OSSModelConfig(
         model_name="uiuc-convai/CoALM-8B",
         display_name="CoALM-8B",
         url="https://huggingface.co/uiuc-convai/CoALM-8B",
@@ -1908,7 +1908,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "uiuc-convai/CoALM-70B": ModelConfig(
+    "uiuc-convai/CoALM-70B": OSSModelConfig(
         model_name="uiuc-convai/CoALM-70B",
         display_name="CoALM-70B",
         url="https://huggingface.co/uiuc-convai/CoALM-70B",
@@ -1920,7 +1920,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "uiuc-convai/CoALM-405B": ModelConfig(
+    "uiuc-convai/CoALM-405B": OSSModelConfig(
         model_name="uiuc-convai/CoALM-405B",
         display_name="CoALM-405B",
         url="https://huggingface.co/uiuc-convai/CoALM-405B",
@@ -1932,7 +1932,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "katanemo/Arch-Agent-1.5B": ModelConfig(
+    "katanemo/Arch-Agent-1.5B": OSSModelConfig(
         model_name="katanemo/Arch-Agent-1.5B",
         display_name="Arch-Agent-1.5B",
         url="https://huggingface.co/katanemo/Arch-Agent-1.5B",
@@ -1944,7 +1944,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "katanemo/Arch-Agent-3B": ModelConfig(
+    "katanemo/Arch-Agent-3B": OSSModelConfig(
         model_name="katanemo/Arch-Agent-3B",
         display_name="Arch-Agent-3B",
         url="https://huggingface.co/katanemo/Arch-Agent-3B",
@@ -1956,7 +1956,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "katanemo/Arch-Agent-7B": ModelConfig(
+    "katanemo/Arch-Agent-7B": OSSModelConfig(
         model_name="katanemo/Arch-Agent-7B",
         display_name="Arch-Agent-7B",
         url="https://huggingface.co/katanemo/Arch-Agent-7B",
@@ -1968,7 +1968,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "katanemo/Arch-Agent-32B": ModelConfig(
+    "katanemo/Arch-Agent-32B": OSSModelConfig(
         model_name="katanemo/Arch-Agent-32B",
         display_name="Arch-Agent-32B",
         url="https://huggingface.co/katanemo/Arch-Agent-32B",
@@ -1980,7 +1980,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "BitAgent/BitAgent-8B": ModelConfig(
+    "BitAgent/BitAgent-8B": OSSModelConfig(
         model_name="BitAgent/BitAgent-8B",
         display_name="BitAgent-8B",
         url="https://huggingface.co/BitAgent/BitAgent-8B/",
@@ -1992,7 +1992,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "BitAgent/BitAgent-Bounty-8B": ModelConfig(
+    "BitAgent/BitAgent-Bounty-8B": OSSModelConfig(
         model_name="BitAgent/BitAgent-Bounty-8B",
         display_name="BitAgent-Bounty-8B",
         url="https://huggingface.co/BitAgent/BitAgent-Bounty-8B",
@@ -2004,7 +2004,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "ThinkAgents/ThinkAgent-1B": ModelConfig(
+    "ThinkAgents/ThinkAgent-1B": OSSModelConfig(
         model_name="ThinkAgents/ThinkAgent-1B",
         display_name="ThinkAgent-1B (FC)",
         url="https://huggingface.co/ThinkAgents/ThinkAgent-1B",
@@ -2016,7 +2016,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
-    "phronetic-ai/RZN-T": ModelConfig(
+    "phronetic-ai/RZN-T": OSSModelConfig(
         model_name="phronetic-ai/RZN-T",
         display_name="RZN-T (Prompt)",
         url="https://huggingface.co/phronetic-ai/RZN-T",
@@ -2028,7 +2028,7 @@ local_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "Nanbeige/Nanbeige4-3B-Thinking-2511": ModelConfig(
+    "Nanbeige/Nanbeige4-3B-Thinking-2511": OSSModelConfig(
         model_name="Nanbeige/Nanbeige4-3B-Thinking-2511",
         display_name="Nanbeige4-3B-Thinking-2511 (FC)",
         url="https://huggingface.co/Nanbeige/Nanbeige4-3B-Thinking-2511",

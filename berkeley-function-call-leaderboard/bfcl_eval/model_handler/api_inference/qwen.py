@@ -5,8 +5,8 @@ from bfcl_eval.model_handler.api_inference.openai_completion import OpenAIComple
 from bfcl_eval.constants.enums import ModelStyle
 from openai import OpenAI
 from overrides import override
-from qwen_agent.llm import get_chat_model
 import time
+
 
 class QwenAPIHandler(OpenAICompletionsHandler):
     """
@@ -45,9 +45,7 @@ class QwenAPIHandler(OpenAICompletionsHandler):
             model=self.model_name.replace("-FC", ""),
             tools=tools,
             parallel_tool_calls=True,
-            extra_body={
-                "enable_thinking": True
-            },
+            extra_body={"enable_thinking": True},
             stream=True,
             stream_options={
                 "include_usage": True
@@ -123,7 +121,9 @@ class QwenAPIHandler(OpenAICompletionsHandler):
             }
             # Attach reasoning content so that it can be passed to the next turn
             if reasoning_content:
-                model_response_message_for_chat_history["reasoning_content"] = reasoning_content
+                model_response_message_for_chat_history["reasoning_content"] = (
+                    reasoning_content
+                )
         else:
             model_response = answer_content
             model_response_message_for_chat_history = {
@@ -132,7 +132,9 @@ class QwenAPIHandler(OpenAICompletionsHandler):
             }
             # Attach reasoning content so that it can be passed to the next turn
             if reasoning_content:
-                model_response_message_for_chat_history["reasoning_content"] = reasoning_content
+                model_response_message_for_chat_history["reasoning_content"] = (
+                    reasoning_content
+                )
 
         response_data = {
             "model_responses": model_response,
@@ -159,9 +161,7 @@ class QwenAPIHandler(OpenAICompletionsHandler):
         return self.generate_with_backoff(
             messages=inference_data["message"],
             model=self.model_name,
-            extra_body={
-                "enable_thinking": True
-            },
+            extra_body={"enable_thinking": True},
             stream=True,
             stream_options={
                 "include_usage": True
@@ -209,7 +209,6 @@ class QwenAPIHandler(OpenAICompletionsHandler):
         return response_data
 
 
-
 class QwenAgentThinkHandler(OpenAICompletionsHandler):
 
     def __init__(
@@ -230,30 +229,30 @@ class QwenAgentThinkHandler(OpenAICompletionsHandler):
             --rope-scaling '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":32768}' \
             --max-model-len 65536
         """
-        
-        self.llm = get_chat_model({
-        'model': model_name,  # name of the model served by vllm server
-        'model_type': 'oai',
-        'model_server':'http://localhost:8000/v1', # can be replaced with server host
-        'api_key': "none",
-        'generate_cfg': {
-            'fncall_prompt_type': 'nous',
-            'extra_body': {
-                'chat_template_kwargs': {
-                    'enable_thinking': True
-                }
-            },
-            "thought_in_content": True,
-            'temperature': 0.6,
-            'top_p': 0.95,
-            'top_k': 20,
-            'repetition_penalty': 1.0,
-            'presence_penalty': 0.0,
-            'max_input_tokens': 58000,
-            'timeout': 1000,
-            'max_tokens': 16384
-        }
-    })
+
+        from qwen_agent.llm import get_chat_model
+
+        self.llm = get_chat_model(
+            {
+                "model": model_name,  # name of the model served by vllm server
+                "model_type": "oai",
+                "model_server": "http://localhost:8000/v1",  # can be replaced with server host
+                "api_key": "none",
+                "generate_cfg": {
+                    "fncall_prompt_type": "nous",
+                    "extra_body": {"chat_template_kwargs": {"enable_thinking": True}},
+                    "thought_in_content": True,
+                    "temperature": 0.6,
+                    "top_p": 0.95,
+                    "top_k": 20,
+                    "repetition_penalty": 1.0,
+                    "presence_penalty": 0.0,
+                    "max_input_tokens": 58000,
+                    "timeout": 1000,
+                    "max_tokens": 16384,
+                },
+            }
+        )
 
     #### FC methods ####
     @override
@@ -267,47 +266,51 @@ class QwenAgentThinkHandler(OpenAICompletionsHandler):
             responses = None
             for resp in self.llm.quick_chat_oai(message, tools):
                 responses = resp  # 保留最后一个完整响应
-                
+
         else:
             responses = None
             for resp in self.llm.quick_chat_oai(message):
                 responses = resp
         end_time = time.time()
-        
-        return responses, end_time-start_time
-    
+
+        return responses, end_time - start_time
+
     @override
     def _parse_query_response_FC(self, api_response: Any) -> dict:
         try:
             model_responses = [
-                {func_call['function']['name']: func_call['function']['arguments']}
+                {func_call["function"]["name"]: func_call["function"]["arguments"]}
                 for func_call in api_response["choices"][0]["message"]["tool_calls"]
             ]
             tool_call_ids = [
-                func_call['function']['name'] for func_call in api_response["choices"][0]["message"]["tool_calls"]
+                func_call["function"]["name"]
+                for func_call in api_response["choices"][0]["message"]["tool_calls"]
             ]
         except:
             model_responses = api_response["choices"][0]["message"]["content"]
             tool_call_ids = []
-        
+
         response_data = {
             "model_responses": model_responses,
-            "model_responses_message_for_chat_history": api_response["choices"][0]["message"],
+            "model_responses_message_for_chat_history": api_response["choices"][0][
+                "message"
+            ],
             "tool_call_ids": tool_call_ids,
             "input_token": api_response.get("usage", {}).get("prompt_tokens", 0),
             "output_token": api_response.get("usage", {}).get("completion_tokens", 0),
         }
         return response_data
-        
 
-    
     def _add_assistant_message_FC(
         self, inference_data: dict, model_response_data: dict
     ) -> dict:
-        
-        
-        if isinstance(model_response_data["model_responses_message_for_chat_history"], list):
-            inference_data["message"]+=model_response_data["model_responses_message_for_chat_history"]
+
+        if isinstance(
+            model_response_data["model_responses_message_for_chat_history"], list
+        ):
+            inference_data["message"] += model_response_data[
+                "model_responses_message_for_chat_history"
+            ]
         else:
             inference_data["message"].append(
                 model_response_data["model_responses_message_for_chat_history"]
@@ -329,27 +332,25 @@ class QwenAgentNoThinkHandler(QwenAgentThinkHandler):
             --rope-scaling '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":32768}' \
             --max-model-len 65536
         """
-        
-        self.llm = get_chat_model({
-        'model': model_name, # name of the model served by vllm server
-        'model_type': 'oai',
-        'model_server':'http://localhost:8000/v1', # can be replaced with server host
-        'api_key': "none",
-        'generate_cfg': {
-            'fncall_prompt_type': 'nous',
-            'extra_body': {
-                'chat_template_kwargs': {
-                    'enable_thinking': False
-                }
-            },
-            "thought_in_content": False,
-            'temperature': 0.7,
-            'top_p': 0.8,
-            'top_k': 20,
-            'repetition_penalty': 1.0,
-            'presence_penalty': 1.5,
-            'max_input_tokens': 58000,
-            'timeout': 1000,
-            'max_tokens': 16384
-        }
-    })
+
+        self.llm = get_chat_model(
+            {
+                "model": model_name,  # name of the model served by vllm server
+                "model_type": "oai",
+                "model_server": "http://localhost:8000/v1",  # can be replaced with server host
+                "api_key": "none",
+                "generate_cfg": {
+                    "fncall_prompt_type": "nous",
+                    "extra_body": {"chat_template_kwargs": {"enable_thinking": False}},
+                    "thought_in_content": False,
+                    "temperature": 0.7,
+                    "top_p": 0.8,
+                    "top_k": 20,
+                    "repetition_penalty": 1.0,
+                    "presence_penalty": 1.5,
+                    "max_input_tokens": 58000,
+                    "timeout": 1000,
+                    "max_tokens": 16384,
+                },
+            }
+        )
