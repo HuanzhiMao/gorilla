@@ -120,6 +120,7 @@ class OpenAICompletionsHandler(BaseHandler):
         return inference_data
 
     def _parse_query_response_FC(self, api_response: Any) -> dict:
+        print("🔍🔍 OpenAI Completion API _parse_query_response_FC api_response:", api_response)
         try:
             model_responses = [
                 {func_call.function.name: func_call.function.arguments}

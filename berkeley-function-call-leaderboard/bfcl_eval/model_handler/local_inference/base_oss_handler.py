@@ -1,5 +1,4 @@
 import os
-from re import S
 import subprocess
 import threading
 import time
@@ -7,6 +6,7 @@ from pathlib import Path
 from typing import Optional
 
 import requests
+from bfcl_eval.constants.enums import ModelStyle
 from bfcl_eval.constants.eval_config import LOCAL_SERVER_PORT
 from bfcl_eval.model_handler.api_inference.openai_completion import (
     OpenAICompletionsHandler,
@@ -33,6 +33,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_name_huggingface = model_name
         self.dtype = dtype
+        self.model_style = ModelStyle.OSSMODEL
 
         self.reasoning_parser = None
         self.tool_call_parser = None

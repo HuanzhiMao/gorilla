@@ -6,6 +6,7 @@ from bfcl_eval.constants.default_prompts import (
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING,
 )
+import traceback
 from bfcl_eval.constants.enums import ModelStyle, ResultType, ReturnFormat
 from bfcl_eval.constants.eval_config import (
     MAXIMUM_CLARIFICATION_LIMIT,
@@ -257,6 +258,7 @@ class BaseHandler:
                 # Try parsing the model response
                 model_response_data = self._parse_query_response_FC(api_response)
                 model_responses = model_response_data["model_responses"]
+                print("🔍🔍 model_responses:", model_responses)
 
                 # Add the assistant message to the chat history
                 inference_data = self._add_assistant_message_FC(
@@ -309,7 +311,6 @@ class BaseHandler:
                         }
                     )
                     # @HuanzhiMao double check if this is necessary
-                    model_responses = decoded_model_responses
 
                     if is_empty_execute_response(decoded_model_responses):
                         current_step_inference_log.append(
@@ -321,8 +322,10 @@ class BaseHandler:
                         )
                     else:
                         has_function_calls = True
+                        model_responses = decoded_model_responses
 
                 except Exception as e:
+                    print("🔍🔍 Error decoding the model response.", traceback.format_exc())
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",

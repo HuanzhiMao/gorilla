@@ -185,7 +185,7 @@ def convert_to_tool(functions, mapping, model_style):
         if model_style in [
             ModelStyle.ANTHROPIC,
             ModelStyle.GOOGLE,
-            ModelStyle.OSSMODEL,
+            # ModelStyle.OSSMODEL,
         ]:
             oai_tool.append(item)
         elif model_style in [ModelStyle.OPENAI_RESPONSES]:
@@ -194,6 +194,7 @@ def convert_to_tool(functions, mapping, model_style):
         elif model_style in [
             ModelStyle.COHERE,
             ModelStyle.OPENAI_COMPLETIONS,
+            ModelStyle.OSSMODEL,
             ModelStyle.MISTRAL,
             ModelStyle.FIREWORK_AI,
             ModelStyle.WRITER,
@@ -207,6 +208,17 @@ def convert_to_tool(functions, mapping, model_style):
 
 
 def convert_to_function_call(function_call_list):
+    """
+    Convert a list of function call dictionaries into a list of executable function call strings.
+
+    Args:
+        function_call_list: A single dict or list of dicts mapping function names to their
+            arguments. Arguments can be a JSON string or a dict.
+
+    Returns:
+        A list of strings, each representing a function call in the format
+        "function_name(arg1=value1,arg2=value2,...)".
+    """
     if type(function_call_list) == dict:
         function_call_list = [function_call_list]
     # function_call_list is of type list[dict[str, str]] or list[dict[str, dict]]
