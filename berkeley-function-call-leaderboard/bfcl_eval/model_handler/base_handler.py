@@ -1,7 +1,7 @@
 import json
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any
-
+from tqdm import tqdm
 from bfcl_eval.constants.default_prompts import (
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING,
@@ -233,7 +233,7 @@ class BaseHandler:
 
             while True:
                 # @HuanzhiMao FIXME: check if allow clarification
-                print(
+                tqdm.write(
                     f"{'-' * 100}\nID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {step_count}, Clarification Count: {clarification_count}"
                 )
                 current_step_inference_log: list[dict] = []
@@ -630,9 +630,8 @@ class BaseHandler:
 
             step_count = 0
             while True:
-                print("-" * 100)
-                print(
-                    f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {step_count}"
+                tqdm.write(
+                    f"{'-' * 100}\nID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {step_count}"
                 )
                 current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
