@@ -269,7 +269,6 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
         if len(tools) > 0:
             kwargs["tools"] = tools
             kwargs["tool_choice"] = "auto"
-            print(tools[0])
 
         extra_body = self._build_extra_body()
         if extra_body:
