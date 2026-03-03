@@ -71,45 +71,6 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
     def _resolve_reasoning_parser(self) -> str | None:
         return os.getenv("VLLM_REASONING_PARSER", self.reasoning_parser)
 
-    @override
-    def _query_FC(self, inference_data: dict):
-        message: list[dict] = inference_data["message"]
-        tools = inference_data["tools"]
-        inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
-
-        kwargs = {
-            "messages": message,
-            "model": self.model_path_or_id,
-            "temperature": self.temperature,
-            "timeout": 72000,
-        }
-
-        if len(tools) > 0:
-            kwargs["tools"] = tools
-            kwargs["tool_choice"] = "auto"
-
-        extra_body = self._build_extra_body()
-        if extra_body:
-            kwargs["extra_body"] = extra_body
-
-        return self.generate_with_backoff(**kwargs)
-
-    @override
-    def _query_prompting(self, inference_data: dict):
-        inference_data["inference_input_log"] = {"message": repr(inference_data["message"])}
-
-        kwargs = {
-            "messages": inference_data["message"],
-            "model": self.model_path_or_id,
-            "temperature": self.temperature,
-            "timeout": 72000,
-        }
-        extra_body = self._build_extra_body()
-        if extra_body:
-            kwargs["extra_body"] = extra_body
-
-        return self.generate_with_backoff(**kwargs)
-
     @final
     def spin_up_local_server(
         self,
@@ -290,7 +251,50 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
         if getattr(self, "_stderr_thread", None):
             self._stderr_thread.join(timeout=2)
 
+    #### FC methods ####
+
+    @override
+    def _query_FC(self, inference_data: dict):
+        message: list[dict] = inference_data["message"]
+        tools = inference_data["tools"]
+        inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
+
+        kwargs = {
+            "messages": message,
+            "model": self.model_path_or_id,
+            "temperature": self.temperature,
+            "timeout": 72000,
+        }
+
+        if len(tools) > 0:
+            kwargs["tools"] = tools
+            kwargs["tool_choice"] = "auto"
+            print(tools[0])
+
+
+        extra_body = self._build_extra_body()
+        if extra_body:
+            kwargs["extra_body"] = extra_body
+
+        return self.generate_with_backoff(**kwargs)
+
+
     #### Prompting methods ####
+    @override
+    def _query_prompting(self, inference_data: dict):
+        inference_data["inference_input_log"] = {"message": repr(inference_data["message"])}
+
+        kwargs = {
+            "messages": inference_data["message"],
+            "model": self.model_path_or_id,
+            "temperature": self.temperature,
+            "timeout": 72000,
+        }
+        extra_body = self._build_extra_body()
+        if extra_body:
+            kwargs["extra_body"] = extra_body
+
+        return self.generate_with_backoff(**kwargs)
 
     @override
     def _pre_query_processing_prompting(self, test_entry: dict) -> dict:

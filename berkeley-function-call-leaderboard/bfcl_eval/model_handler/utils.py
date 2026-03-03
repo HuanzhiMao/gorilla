@@ -176,6 +176,7 @@ def convert_to_tool(functions, mapping, model_style):
                 ModelStyle.WRITER,
                 ModelStyle.AMAZON,
                 ModelStyle.NOVITA_AI,
+                ModelStyle.OSSMODEL,
             ]:
                 item[
                     "description"

@@ -104,8 +104,6 @@ class OpenAICompletionsHandler(BaseHandler):
         if len(tools) > 0:
             kwargs["tools"] = tools
 
-        print(tools[0])
-
         return self.generate_with_backoff(**kwargs)
 
     def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
