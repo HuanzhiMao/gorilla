@@ -105,7 +105,7 @@ def generate(
         callback=handle_multiple_input
     ),
     temperature: float = typer.Option(
-        0.001, help="The temperature parameter for the model."
+        0.01, help="The temperature parameter for the model."
     ),
     include_input_log: bool = typer.Option(
         False,

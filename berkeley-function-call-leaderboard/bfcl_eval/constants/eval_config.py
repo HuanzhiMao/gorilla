@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from bfcl_eval.constants.enums import Modality
 
-LOCAL_SERVER_PORT = 1053
+LOCAL_SERVER_PORT = 1050
 LOCAL_SERVER_MAX_CONCURRENT_REQUEST = 100
 
 # @HuanzhiMao different limit for different modalities?
