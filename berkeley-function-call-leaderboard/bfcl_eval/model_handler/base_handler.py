@@ -7,6 +7,9 @@ from bfcl_eval.constants.default_prompts import (
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING,
 )
 import traceback
+
+from tqdm import tqdm
+
 from bfcl_eval.constants.enums import ModelStyle, ResultType, ReturnFormat
 from bfcl_eval.constants.eval_config import (
     MAXIMUM_CLARIFICATION_LIMIT,
@@ -233,7 +236,7 @@ class BaseHandler:
 
             while True:
                 # @HuanzhiMao FIXME: check if allow clarification
-                print(
+                tqdm.write(
                     f"{"-" * 100}\nID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {step_count}, Clarification Count: {clarification_count}"
                 )
                 current_step_inference_log: list[dict] = []
@@ -630,9 +633,8 @@ class BaseHandler:
 
             step_count = 0
             while True:
-                print("-" * 100)
-                print(
-                    f"ID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {step_count}"
+                tqdm.write(
+                    f"ID: {("-" * 100)}\n{test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {step_count}"
                 )
                 current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
@@ -694,7 +696,7 @@ class BaseHandler:
 
                     model_response_data["model_responses_decoded"] = decoded_model_responses
                     if is_empty_execute_response(decoded_model_responses):
-                        print("Empty response from the model. Proceed to next turn.")
+                        tqdm.write("Empty response from the model. Proceed to next turn.")
                         current_step_inference_log.append(
                             {
                                 "role": "handler_log",
@@ -705,7 +707,7 @@ class BaseHandler:
                         break
 
                 except Exception as e:
-                    print("Failed to decode the model response. Proceed to next turn.")
+                    tqdm.write("Failed to decode the model response. Proceed to next turn.")
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",
