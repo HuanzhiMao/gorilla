@@ -104,6 +104,8 @@ class OpenAICompletionsHandler(BaseHandler):
         if len(tools) > 0:
             kwargs["tools"] = tools
 
+        print(tools[0])
+
         return self.generate_with_backoff(**kwargs)
 
     def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
@@ -120,28 +122,28 @@ class OpenAICompletionsHandler(BaseHandler):
         return inference_data
 
     def _parse_query_response_FC(self, api_response: Any) -> dict:
-        print("🔍🔍 OpenAI Completion API _parse_query_response_FC api_response:", api_response)
-        try:
+        if api_response.choices[0].message.tool_calls:
+            tool_calls = api_response.choices[0].message.tool_calls
             model_responses = [
                 {func_call.function.name: func_call.function.arguments}
-                for func_call in api_response.choices[0].message.tool_calls
+                for func_call in tool_calls
             ]
-            tool_call_ids = [
-                func_call.id for func_call in api_response.choices[0].message.tool_calls
-            ]
-        except:
+            tool_call_ids = [func_call.id for func_call in tool_calls]
+        else:
             model_responses = api_response.choices[0].message.content
             tool_call_ids = []
 
         model_responses_message_for_chat_history = api_response.choices[0].message
 
-        return {
+        response_data = {
             "model_responses": model_responses,
             "model_responses_message_for_chat_history": model_responses_message_for_chat_history,
             "tool_call_ids": tool_call_ids,
             "input_token": api_response.usage.prompt_tokens,
             "output_token": api_response.usage.completion_tokens,
         }
+        self._add_reasoning_content_if_available_prompting(api_response, response_data)
+        return response_data
 
     # @HuanzhiMao FIXME: add support for audio and vision
     def add_first_turn_message_FC(
@@ -291,12 +293,14 @@ class OpenAICompletionsHandler(BaseHandler):
         return {"message": []}
 
     def _parse_query_response_prompting(self, api_response: Any) -> dict:
-        return {
+        response_data = {
             "model_responses": api_response.choices[0].message.content,
             "model_responses_message_for_chat_history": api_response.choices[0].message,
             "input_token": api_response.usage.prompt_tokens,
             "output_token": api_response.usage.completion_tokens,
         }
+        self._add_reasoning_content_if_available_prompting(api_response, response_data)
+        return response_data
 
     def add_first_turn_message_prompting(
         self, inference_data: dict, first_turn_message: list[dict]

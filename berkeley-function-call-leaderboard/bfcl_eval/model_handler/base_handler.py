@@ -258,7 +258,6 @@ class BaseHandler:
                 # Try parsing the model response
                 model_response_data = self._parse_query_response_FC(api_response)
                 model_responses = model_response_data["model_responses"]
-                print("🔍🔍 model_responses:", model_responses)
 
                 # Add the assistant message to the chat history
                 inference_data = self._add_assistant_message_FC(
@@ -325,7 +324,7 @@ class BaseHandler:
                         model_responses = decoded_model_responses
 
                 except Exception as e:
-                    print("🔍🔍 Error decoding the model response.", traceback.format_exc())
+                    # print("🔍 Error decoding the model response.", traceback.format_exc())
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",
