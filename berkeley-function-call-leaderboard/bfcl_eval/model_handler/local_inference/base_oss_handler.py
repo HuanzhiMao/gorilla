@@ -271,13 +271,11 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
             kwargs["tool_choice"] = "auto"
             print(tools[0])
 
-
         extra_body = self._build_extra_body()
         if extra_body:
             kwargs["extra_body"] = extra_body
 
         return self.generate_with_backoff(**kwargs)
-
 
     #### Prompting methods ####
     @override
