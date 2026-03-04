@@ -373,3 +373,7 @@ class OpenAICompletionsHandler(BaseHandler):
                 "role": "assistant",
                 "content": str(response_data["model_responses"]),
             }
+
+        # vllm might use `reasoning` instead of `reasoning_content`
+        if hasattr(message, "reasoning"):
+            response_data["reasoning_content"] = message.reasoning
