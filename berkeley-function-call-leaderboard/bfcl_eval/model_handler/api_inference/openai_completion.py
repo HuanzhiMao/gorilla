@@ -268,6 +268,10 @@ class OpenAICompletionsHandler(BaseHandler):
         if hasattr(message, "reasoning_content"):
             response_data["reasoning_content"] = message.reasoning_content
 
+        # vllm might use `reasoning` instead of `reasoning_content`
+        if hasattr(message, "reasoning"):
+            response_data["reasoning_content"] = message.reasoning
+
     #### Prompting methods ####
 
     def _query_prompting(self, inference_data: dict):
