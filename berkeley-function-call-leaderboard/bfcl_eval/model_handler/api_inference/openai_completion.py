@@ -140,7 +140,7 @@ class OpenAICompletionsHandler(BaseHandler):
             "input_token": api_response.usage.prompt_tokens,
             "output_token": api_response.usage.completion_tokens,
         }
-        self._add_reasoning_content_if_available_prompting(api_response, response_data)
+        self._add_reasoning_content_if_available_FC(api_response, response_data)
         return response_data
 
     # @HuanzhiMao FIXME: add support for audio and vision

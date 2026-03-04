@@ -144,7 +144,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
                         for lora_module in lora_modules:
                             cmd.extend(["--lora-modules", lora_module])
 
-                    print(f"🚀Starting vLLM server with command: \"{' '.join(cmd)}\"")
+                    print(f"🚀 Starting vLLM server with command: \"{' '.join(cmd)}\"")
 
                     # @HuanzhiMao FIXME: test this
                     # Build a clean env so the parent's restricted threading

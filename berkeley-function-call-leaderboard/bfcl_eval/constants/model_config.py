@@ -1652,7 +1652,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
         vllm_reasoning_parser="qwen3",
-        vllm_tool_call_parser="qwen3-coder",
+        vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
     "Qwen/Qwen3.5-27B": OSSModelConfig(
@@ -1680,7 +1680,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
         vllm_reasoning_parser="qwen3",
-        vllm_tool_call_parser="qwen3-coder",
+        vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
     "Qwen/Qwen3.5-35B-A3B": OSSModelConfig(
@@ -1708,7 +1708,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
         vllm_reasoning_parser="qwen3",
-        vllm_tool_call_parser="qwen3-coder",
+        vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
     "Qwen/Qwen3.5-122B-A10B": OSSModelConfig(
@@ -1736,7 +1736,7 @@ local_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
         vllm_reasoning_parser="qwen3",
-        vllm_tool_call_parser="qwen3-coder",
+        vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
     "Qwen/Qwen3.5-397B-A17B": OSSModelConfig(
