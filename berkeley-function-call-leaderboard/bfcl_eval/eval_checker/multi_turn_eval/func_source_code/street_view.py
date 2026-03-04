@@ -150,6 +150,8 @@ class StreetViewAPI:
         body: Dict[str, Any] = {}
         if os.getenv("GOOGLE_MAPS_API_KEY"):
             body["api_key"] = os.getenv("GOOGLE_MAPS_API_KEY")
+        if os.getenv("GOOGLE_MAPS_URL_SIGNING_SECRET"):
+            body["url_signing_secret"] = os.getenv("GOOGLE_MAPS_URL_SIGNING_SECRET")
         if session_id:
             body["session_id"] = session_id
         result = self._call("POST", "/connect", body)
