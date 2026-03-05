@@ -302,10 +302,10 @@ Evaluation scores are stored in a `score/` directory under the project root (def
 
 Additionally, four CSV files are generated in `./score/`:
 
-- `data_overall.csv` – Overall scores for each model. This is used for updating the leaderboard.
-- `data_live.csv` – Detailed breakdown of scores for each Live (single-turn) test category.
-- `data_non_live.csv` – Detailed breakdown of scores for each Non-Live (single-turn) test category.
-- `data_multi_turn.csv` – Detailed breakdown of scores for each Multi-Turn test category.
+- `score_overall.csv` – Overall scores for each model. This is used for updating the leaderboard.
+- `score_live.csv` – Detailed breakdown of scores for each Live (single-turn) test category.
+- `score_non_live.csv` – Detailed breakdown of scores for each Non-Live (single-turn) test category.
+- `score_multi_turn.csv` – Detailed breakdown of scores for each Multi-Turn test category.
 
 #### (Optional) WandB Evaluation Logging
 

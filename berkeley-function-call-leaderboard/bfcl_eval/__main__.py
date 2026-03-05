@@ -301,8 +301,8 @@ def scores(
         score_dir = SCORE_PATH
     else:
         score_dir = (PROJECT_ROOT / score_dir).resolve()
-    # files = ["./score/data_non_live.csv", "./score/data_live.csv", "./score/data_overall.csv"]
-    file = score_dir / "data_overall.csv"
+    # files = ["./score/score_non_live.csv", "./score/score_live.csv", "./score/score_overall.csv"]
+    file = score_dir / "score_overall.csv"
 
     selected_columns = [
         "Rank",

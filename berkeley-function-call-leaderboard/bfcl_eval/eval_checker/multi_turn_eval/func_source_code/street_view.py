@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from pickle import NONE
 from tkinter import NO
 from typing import Any, Dict, List, Optional
@@ -109,11 +110,15 @@ class StreetViewAPI:
         Args:
             scenario (Dict[str, float]): Configuration dict. Forwarded to the server.
         """
-        self._connect_host()
-
-        result = self._call("POST", "/init_panorama", scenario)
-        self.available_moves = result.get("available_moves", [])
-        return result
+        while True:
+            try:
+                self._connect_host()
+                result = self._call("POST", "/init_panorama", scenario)
+                self.available_moves = result.get("available_moves", [])
+                return result
+            except RuntimeError as e:
+                print(f"WARNING: Failed to connect to server: {e}. Retrying in 5 seconds...")
+                time.sleep(5)
 
     def __eq__(self, value: object) -> bool:
         """Check equality based on session identity.

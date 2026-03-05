@@ -568,7 +568,7 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
     # Write Non-Live Score File
     write_score_csv_file(
         data=data_non_live,
-        file_path=output_path / "data_non_live.csv",
+        file_path=output_path / "score_non_live.csv",
         header=COLUMNS_NON_LIVE,
         sort_column_index=2,
     )
@@ -576,7 +576,7 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
     # Write Live Score File
     write_score_csv_file(
         data=data_live,
-        file_path=output_path / "data_live.csv",
+        file_path=output_path / "score_live.csv",
         header=COLUMNS_LIVE,
         sort_column_index=2,
     )
@@ -584,7 +584,7 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
     # Write Multi Turn Score File
     write_score_csv_file(
         data=data_multi_turn,
-        file_path=output_path / "data_multi_turn.csv",
+        file_path=output_path / "score_multi_turn.csv",
         header=COLUMNS_MULTI_TURN,
         sort_column_index=2,
     )
@@ -592,7 +592,7 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
     # Write Agentic Score File
     write_score_csv_file(
         data=data_agentic,
-        file_path=output_path / "data_agentic.csv",
+        file_path=output_path / "score_agentic.csv",
         header=COLUMNS_AGENTIC,
         sort_column_index=2,
     )
@@ -604,7 +604,7 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
 
     write_score_csv_file(
         data=data_format_sensitivity,
-        file_path=output_path / "data_format_sensitivity.csv",
+        file_path=output_path / "score_format_sensitivity.csv",
         header=COLUMNS_FORMAT_SENS,
         sort_column_index=2,
         no_conversion_numeric_column_index=[2, 3],
@@ -613,7 +613,7 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
     # Write Total Score File
     write_score_csv_file(
         data=data_combined,
-        file_path=output_path / "data_overall.csv",
+        file_path=output_path / "score_overall.csv",
         header=COLUMNS_OVERALL,
         sort_column_index=1,
         no_conversion_numeric_column_index=[4, 5, 6, 7, 32, 33],
@@ -633,11 +633,11 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
 
         # Log CSV files to WandB
         # Read the CSV files
-        non_live_df = pd.read_csv(output_path / "data_non_live.csv")
-        live_df = pd.read_csv(output_path / "data_live.csv")
-        multi_turn_df = pd.read_csv(output_path / "data_multi_turn.csv")
-        agentic_df = pd.read_csv(output_path / "data_agentic.csv")
-        overall_df = pd.read_csv(output_path / "data_overall.csv")
+        non_live_df = pd.read_csv(output_path / "score_non_live.csv")
+        live_df = pd.read_csv(output_path / "score_live.csv")
+        multi_turn_df = pd.read_csv(output_path / "score_multi_turn.csv")
+        agentic_df = pd.read_csv(output_path / "score_agentic.csv")
+        overall_df = pd.read_csv(output_path / "score_overall.csv")
 
         # Convert DataFrames to WandB Tables
         non_live_table = wandb.Table(dataframe=non_live_df)
@@ -657,11 +657,11 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
         bfcl_artifact.add(overall_table, "overall_results")
 
         # Add raw CSV files to artifact
-        bfcl_artifact.add_file(str(output_path / "data_non_live.csv"))
-        bfcl_artifact.add_file(str(output_path / "data_live.csv"))
-        bfcl_artifact.add_file(str(output_path / "data_multi_turn.csv"))
-        bfcl_artifact.add_file(str(output_path / "data_agentic.csv"))
-        bfcl_artifact.add_file(str(output_path / "data_overall.csv"))
+        bfcl_artifact.add_file(str(output_path / "score_non_live.csv"))
+        bfcl_artifact.add_file(str(output_path / "score_live.csv"))
+        bfcl_artifact.add_file(str(output_path / "score_multi_turn.csv"))
+        bfcl_artifact.add_file(str(output_path / "score_agentic.csv"))
+        bfcl_artifact.add_file(str(output_path / "score_overall.csv"))
 
         # Log tables directly
         wandb.log(

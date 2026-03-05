@@ -463,7 +463,11 @@ def _evaluate_single_ast_entry(
         possible_answer_item,
         language,
         # format sensitivity has parallel, multiple cases which is encoded in index
-        test_category if not is_format_sensitivity(test_category) else extract_test_category_from_id(index.split("|")[-1]),
+        (
+            test_category
+            if not is_format_sensitivity(test_category)
+            else extract_test_category_from_id(index.split("|")[-1])
+        ),
         model_name,
     )
 
@@ -628,14 +632,19 @@ def vision_geoguessr_runner(
     # save_eval_results compute the average accuracy, but it's the same formaula as calculating the average score, so we can use it here.
     # It's just that the `correct_count` field in the header would be strange.
     total_score = total_score / 5000
-    
+
     # @HuanzhiMao TODO: should we report the variance and std for the distance?
     # extra_header_fields = {
     #     "accuracy_variance": accuracy_variance,
     #     "accuracy_std": accuracy_std,
     # }
     return save_eval_results(
-        result, total_score, model_result, test_category, model_name, score_dir,
+        result,
+        total_score,
+        model_result,
+        test_category,
+        model_name,
+        score_dir,
     )
 
 
@@ -657,8 +666,6 @@ def agentic_runner(
     for i in range(len(model_result)):
         index = model_result[i]["id"]
         model_result_list = model_result[i]["result"]
-        # @HuanzhiMao FIXME: the ground truth files are missing for all geo category 
-        print(possible_answer[i])
         possible_answer_item = possible_answer[i]["ground_truth"]
         test_entry = prompt[i]
 
@@ -679,7 +686,12 @@ def agentic_runner(
             result.append(entry_result)
 
     return save_eval_results(
-        result, correct_count, model_result, test_category, model_name, score_dir,
+        result,
+        correct_count,
+        model_result,
+        test_category,
+        model_name,
+        score_dir,
     )
 
 
@@ -721,12 +733,22 @@ def multi_turn_runner(
             result.append(entry_result)
 
     return save_eval_results(
-        result, correct_count, model_result, test_category, model_name, score_dir,
+        result,
+        correct_count,
+        model_result,
+        test_category,
+        model_name,
+        score_dir,
     )
 
 
 def relevance_file_runner(
-    handler: BaseHandler, model_result, prompt, model_name, test_category, score_dir,
+    handler: BaseHandler,
+    model_result,
+    prompt,
+    model_name,
+    test_category,
+    score_dir,
 ):
     # This function serves for both relevance and irrelevance tests, which share the exact opposite logic.
     # If `test_category` is "irrelevance", the model is expected to output no function call.
@@ -749,7 +771,12 @@ def relevance_file_runner(
             result.append(entry_result)
 
     return save_eval_results(
-        result, correct_count, model_result, test_category, model_name, score_dir,
+        result,
+        correct_count,
+        model_result,
+        test_category,
+        model_name,
+        score_dir,
     )
 
 
@@ -803,7 +830,12 @@ def ast_file_runner(
             result.append(entry_result)
 
     return save_eval_results(
-        result, correct_count, model_result, test_category, model_name, score_dir,
+        result,
+        correct_count,
+        model_result,
+        test_category,
+        model_name,
+        score_dir,
     )
 
 
@@ -817,7 +849,7 @@ def evaluate_task(
     leaderboard_table,
     allow_missing: bool = False,
 ):
-    print(f"🔍 Running test: {test_category}")
+    tqdm.write(f"🔍 Running test: {test_category}")
 
     record_cost_latency(leaderboard_table, model_name, model_result)
 
@@ -870,7 +902,12 @@ def evaluate_task(
         )
 
         accuracy, total_count = relevance_file_runner(
-            handler, model_result, prompt, model_name, test_category, score_dir,
+            handler,
+            model_result,
+            prompt,
+            model_name,
+            test_category,
+            score_dir,
         )
 
     else:
@@ -932,7 +969,7 @@ def evaluate_task(
 
     record_result(leaderboard_table, model_name, test_category, accuracy, total_count)
 
-    print(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy:.2%}")
+    tqdm.write(f"✅ Test completed: {test_category}. 🎯 Accuracy: {accuracy:.2%}")
 
     return leaderboard_table
 
@@ -954,18 +991,16 @@ def runner(
     subdirs = [entry for entry in entries if entry.is_dir()]
 
     # Traverse each subdirectory
-    for subdir in tqdm(subdirs, desc="Number of models evaluated"):
+    # @HuanzhiMao TODO: double check if we need extra args for tqdm
+    for subdir in tqdm(subdirs, desc="Number of models evaluated", position=0):
 
         model_name = subdir.relative_to(result_dir).name
         if model_names is not None and model_name not in model_names:
             continue
-        
-        # if "grok" in model_name or "gemini" in model_name:
-        #     continue
 
         model_name_escaped = model_name.replace("_", "/")
 
-        print(f"🦍 Model: {model_name}")
+        tqdm.write(f"🦍 Model: {model_name}")
 
         # Find and process all result JSON files recursively in the subdirectory
         for model_result_json in subdir.rglob(RESULT_FILE_PATTERN):
@@ -1033,11 +1068,9 @@ def main(model, test_categories, result_dir, score_dir, partial_eval: bool = Fal
         for model_name in model:
             if model_name not in MODEL_CONFIG_MAPPING:
                 raise ValueError(f"Invalid model name '{model_name}'.")
-            # @HuanzhiMao TODO: check if / is the only thing we need to worry about? :
-            # Runner takes in the model name that contains "_", instead of "/", for the sake of file path issues.
-            # This is differnet than the model name format that the generation script "openfunctions_evaluation.py" takes in (where the name contains "/").
-            # We patch it here to avoid confusing the user.
-            model_names.append(model_name.replace("/", "_"))
+            # Runner uses a sanitized model name (path-unsafe chars replaced with "_")
+            # so directory names are valid on all platforms including Windows.
+            model_names.append(sanitize_model_name_for_path(model_name))
 
     # Driver function to run the evaluation for all categories involved.
     runner(
@@ -1048,19 +1081,17 @@ def main(model, test_categories, result_dir, score_dir, partial_eval: bool = Fal
         allow_missing=partial_eval,
     )
 
-    # @HuanzhiMao FIXME: replace with tqdm.write
-    # rename to score_overall?
-    print(
-        f"🏁 Evaluation completed. See {score_dir / 'data_overall.csv'} for cross-modality overall results on BFCL V4."
+    tqdm.write(
+        f"🏁 Evaluation completed. See {score_dir / 'score_overall.csv'} for cross-modality overall results on BFCL V4."
     )
     if partial_eval:
-        print(
+        tqdm.write(
             "⚠️  Partial evaluation for a single category is enabled (--partial-run flag is set). Accuracy scores are computed only on the subset of entries present in the model result files, which may differ from a full evaluation and from the official leaderboard score."
         )
-    print(
-        f"See {score_dir / 'data_text_overall.csv'} for text modality details, "
-        f"{score_dir / 'data_true_audio_overall.csv'} and {score_dir / 'data_text_audio_overall.csv'} for audio, "
-        f"and {score_dir / 'data_vision_overall.csv'} for vision."
+    tqdm.write(
+        f"See {score_dir / 'score_text_overall.csv'} for text modality details, "
+        f"{score_dir / 'score_true_audio_overall.csv'} and {score_dir / 'score_text_audio_overall.csv'} for audio, "
+        f"and {score_dir / 'score_vision_overall.csv'} for vision."
     )
 
 
