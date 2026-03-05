@@ -140,7 +140,7 @@ def get_involved_test_entries(test_category_args, run_ids):
 def collect_test_cases(
     args: Args, model_name, all_test_categories, all_test_entries_involved
 ):
-    model_name_dir = model_name.replace("/", "_")
+    model_name_dir = sanitize_model_name_for_path(model_name)
     model_result_dir = args.result_dir / model_name_dir
 
     existing_result = []

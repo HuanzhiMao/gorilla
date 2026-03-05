@@ -44,6 +44,16 @@ def _get_file_lock(filepath: str) -> FileLock:
         return lock
 
 
+def sanitize_model_name_for_path(model_name: str) -> str:
+    """Replace characters that are invalid in file/directory names with underscores.
+
+    Handles forward slashes (Unix path separator), backslashes (Windows path
+    separator), and other characters that are forbidden on Windows
+    (< > : " | ? *).
+    """
+    return re.compile(r'[<>:"/\\|?*]').sub("_", model_name)
+
+
 #### Helper functions to extract/parse/complete test category from different formats ####
 
 # Category names use the format "modality:base_name", e.g. "text:simple_python",
@@ -275,7 +285,7 @@ def is_geoguessr(test_category: str) -> bool:
 
 
 # @HuanzhiMao TODO: find a better name?
-# Used for checker, because type 1 has a different metric than the rest of the categories. 
+# Used for checker, because type 1 has a different metric than the rest of the categories.
 def is_geoguessr_type1(test_category: str) -> bool:
     return is_geoguessr(test_category) and "type1" in test_category
 

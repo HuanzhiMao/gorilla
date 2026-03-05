@@ -66,8 +66,8 @@ class BaseHandler:
             model_name.replace("/", "_").replace("-", "_").replace(".", "_")
         )
         # The directory name for the model
-        # Replace the slash with underscore to avoid creating subdirectories
-        self.registry_dir_name = registry_name.replace("/", "_")
+        # Replace path-unsafe characters with underscore for cross-platform compatibility
+        self.registry_dir_name = sanitize_model_name_for_path(registry_name)
         self.temperature = temperature
 
         # Set any additional attributes passed via kwargs
