@@ -1,5 +1,3 @@
-
-# @HuanzhiMao FIXME: all use :, or all use _
 #### Text Modality ####
 
 TEXT_NON_LIVE_CATEGORY = [
