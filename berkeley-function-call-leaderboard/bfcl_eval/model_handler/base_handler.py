@@ -234,7 +234,7 @@ class BaseHandler:
             while True:
                 # @HuanzhiMao FIXME: check if allow clarification
                 tqdm.write(
-                    f"{'-' * 100}\nID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {step_count}, Clarification Count: {clarification_count}"
+                    f"{'-' * 100}\nID: {test_entry_id}, Turn: {turn_idx}, Step: {step_count}, Clarification Count: {clarification_count}"
                 )
                 current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
@@ -631,7 +631,7 @@ class BaseHandler:
             step_count = 0
             while True:
                 tqdm.write(
-                    f"{'-' * 100}\nID: {test_entry_id.replace('multi_turn_', '')}, Turn: {turn_idx}, Step: {step_count}"
+                    f"{'-' * 100}\nID: {test_entry_id}, Turn: {turn_idx}, Step: {step_count}"
                 )
                 current_step_inference_log: list[dict] = []
                 # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
