@@ -624,9 +624,16 @@ def vision_geoguessr_runner(
         entry_result["inference_log"] = model_result[i].get("inference_log", "")
         result.append(entry_result)
 
+    # @HuanzhiMao FIXME: Is there a more elegant solution for this?
     # save_eval_results compute the average accuracy, but it's the same formaula as calculating the average score, so we can use it here.
     # It's just that the `correct_count` field in the header would be strange.
     total_score = total_score / 5000
+    
+    # @HuanzhiMao TODO: should we report the variance and std for the distance?
+    # extra_header_fields = {
+    #     "accuracy_variance": accuracy_variance,
+    #     "accuracy_std": accuracy_std,
+    # }
     return save_eval_results(
         result, total_score, model_result, test_category, model_name, score_dir,
     )
@@ -650,6 +657,8 @@ def agentic_runner(
     for i in range(len(model_result)):
         index = model_result[i]["id"]
         model_result_list = model_result[i]["result"]
+        # @HuanzhiMao FIXME: the ground truth files are missing for all geo category 
+        print(possible_answer[i])
         possible_answer_item = possible_answer[i]["ground_truth"]
         test_entry = prompt[i]
 
@@ -801,7 +810,6 @@ def ast_file_runner(
 #### Main runner function ####
 def evaluate_task(
     test_category,
-    result_dir,
     score_dir,
     model_result,
     model_name,
@@ -820,7 +828,7 @@ def evaluate_task(
 
     if is_geoguessr(test_category):
         possible_answer = load_ground_truth_entry(test_category)
-        if "type1" in test_category:
+        if is_geoguessr_type1(test_category):
             accuracy, total_count = vision_geoguessr_runner(
                 handler,
                 model_result,
@@ -866,6 +874,7 @@ def evaluate_task(
         )
 
     else:
+        # @HuanzhiMao TODO: check if this works for audio cases.
         # Find the corresponding possible answer entries
         possible_answer = load_ground_truth_entry(test_category)
         # Sanity: prompt and ground truth should be 1:1
@@ -935,7 +944,7 @@ def runner(
     # A dictionary to store the evaluation scores.
     # Key is model name, value is a dictionary with keys as test category
     # and values as a dictionary with accuracy and total count.
-    # TODO: use defaultdict to initialize the leaderboard table
+    # @HuanzhiMao TODO: use defaultdict to initialize the leaderboard table?
     leaderboard_table = {}
 
     # Get a list of all entries in the folder
@@ -951,8 +960,8 @@ def runner(
         if model_names is not None and model_name not in model_names:
             continue
         
-        if "grok" in model_name or "gemini" in model_name:
-            continue
+        # if "grok" in model_name or "gemini" in model_name:
+        #     continue
 
         model_name_escaped = model_name.replace("_", "/")
 
@@ -960,9 +969,13 @@ def runner(
 
         # Find and process all result JSON files recursively in the subdirectory
         for model_result_json in subdir.rglob(RESULT_FILE_PATTERN):
+            print(model_result_json)
             base_category = extract_test_category(model_result_json)
+            print(base_category)
             # Reconstruct the full prefixed category name from the directory structure
             modality = detect_modality_from_path(model_result_json, subdir)
+            print(modality)
+            # raise Exception
             test_category = f"{modality}:{base_category}"
             if test_category not in test_categories:
                 continue
@@ -982,7 +995,6 @@ def runner(
 
             leaderboard_table = evaluate_task(
                 test_category,
-                result_dir,
                 score_dir,
                 model_result,
                 model_name,
@@ -1021,6 +1033,7 @@ def main(model, test_categories, result_dir, score_dir, partial_eval: bool = Fal
         for model_name in model:
             if model_name not in MODEL_CONFIG_MAPPING:
                 raise ValueError(f"Invalid model name '{model_name}'.")
+            # @HuanzhiMao TODO: check if / is the only thing we need to worry about? :
             # Runner takes in the model name that contains "_", instead of "/", for the sake of file path issues.
             # This is differnet than the model name format that the generation script "openfunctions_evaluation.py" takes in (where the name contains "/").
             # We patch it here to avoid confusing the user.
@@ -1035,6 +1048,8 @@ def main(model, test_categories, result_dir, score_dir, partial_eval: bool = Fal
         allow_missing=partial_eval,
     )
 
+    # @HuanzhiMao FIXME: replace with tqdm.write
+    # rename to score_overall?
     print(
         f"🏁 Evaluation completed. See {score_dir / 'data_overall.csv'} for cross-modality overall results on BFCL V4."
     )
@@ -1060,7 +1075,7 @@ if __name__ == "__main__":
         "--test-category",
         nargs="+",
         type=str,
-        default="vision",
+        default="all",
         help="A list of test categories to run the evaluation on",
     )
     parser.add_argument(

@@ -274,6 +274,12 @@ def is_geoguessr(test_category: str) -> bool:
     return "geoguessr" in test_category
 
 
+# @HuanzhiMao TODO: find a better name?
+# Used for checker, because type 1 has a different metric than the rest of the categories. 
+def is_geoguessr_type1(test_category: str) -> bool:
+    return is_geoguessr(test_category) and "type1" in test_category
+
+
 def contain_vision_input(test_category: str) -> bool:
     """
     Check if the test category requires a vision input (eg, vision_web_search_base, geoguessr_type1, etc.).

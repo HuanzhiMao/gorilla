@@ -116,6 +116,7 @@ def calculate_percentage_weighted_accuracy(
 
 
 def record_result(leaderboard_table, model_name, test_category, accuracy, total_count):
+    # @HuanzhiMao TODO: should we record the score by modality?
     if model_name not in leaderboard_table:
         leaderboard_table[model_name] = {}
     leaderboard_table[model_name][test_category] = {
@@ -125,6 +126,7 @@ def record_result(leaderboard_table, model_name, test_category, accuracy, total_
 
 
 def record_cost_latency(leaderboard_table, model_name, model_output_data):
+    # @HuanzhiMao TODO: should we record latency/cost by modality?
     def process_data(key, data, output_list):
         # All entries are either a list of list (in multi-turn), or a single value (in single-turn)
         if key in data:
