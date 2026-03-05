@@ -729,6 +729,7 @@ api_inference_model_map = {
         output_price=12,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "gemini-3-pro-preview": ModelConfig(
         model_name="gemini-3-pro-preview",
