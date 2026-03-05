@@ -73,6 +73,7 @@ VISION_WEB_SEARCH_CATEGORY = [
 
 VISION_GEOGUESSR_CATEGORY = [
     "vision:geoguessr_type1",
+    "vision:geoguessr_type1_competition",
     "vision:geoguessr_type2",
     "vision:geoguessr_type3",
 ]
