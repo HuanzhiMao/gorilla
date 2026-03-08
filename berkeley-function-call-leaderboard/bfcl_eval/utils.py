@@ -1144,29 +1144,28 @@ def get_all_format_sensitivity_configs() -> list[str]:
 #### Utils for Vision ####
 
 
+_VISION_SUFFIX_MAP = {
+    "vision_crop_169": "_169",
+    "vision_crop_43": "_43",
+    "vision_resize_169": "_resize_169",
+    "vision_resize_43": "_resize_43",
+    "vision_bw": "_bw",
+    "vision_edge": "_edge",
+    "vision_rg": "_rg",
+}
+
+
 def process_vision_web_search_test_cases(
     all_entries: list[dict], test_category: str
 ) -> list[dict]:
     # return [{"id": "vision_base_0", "question": [[{"role": "user", "content": "You must call the fetch_image function to fetch an image and tell me what's in the image."}]], "function": [], "involved_classes": ["StreetViewAPI"]}]
     result = []
     for entry in all_entries:
-        # @HuanzhiMao FIXME, maybe optimize the dataset structure
         user_query = entry["question"][0][0]["content"]
         image_file_name = entry["image_file_name"]
-        if test_category == "vision_crop_169":
-            image_file_name = image_file_name.replace(".jpeg", "_169.jpeg")
-        elif test_category == "vision_crop_43":
-            image_file_name = image_file_name.replace(".jpeg", "_43.jpeg")
-        elif test_category == "vision_resize_169":
-            image_file_name = image_file_name.replace(".jpeg", "_resize_169.jpeg")
-        elif test_category == "vision_resize_43":
-            image_file_name = image_file_name.replace(".jpeg", "_resize_43.jpeg")
-        elif test_category == "vision_bw":
-            image_file_name = image_file_name.replace(".jpeg", "_bw.jpeg")
-        elif test_category == "vision_edge":
-            image_file_name = image_file_name.replace(".jpeg", "_edge.jpeg")
-        elif test_category == "vision_rg":
-            image_file_name = image_file_name.replace(".jpeg", "_rg.jpeg")
+        suffix = _VISION_SUFFIX_MAP.get(test_category, "")
+        if suffix:
+            image_file_name = image_file_name.replace(".jpeg", f"{suffix}.jpeg")
         image_path = IMAGE_PATH / image_file_name
         with open(image_path, "rb") as image_file:
             image_bytes = image_file.read()
