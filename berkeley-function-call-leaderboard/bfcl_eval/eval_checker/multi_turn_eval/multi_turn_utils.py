@@ -114,22 +114,16 @@ def execute_multi_turn_func_call(
             result_type = ResultType.TEXT
 
             # Every result should be a dict with "result" and "result_type" keys
-            # @HuanzhiMao FIXME: Maybe we should use a more elegant way to handle this
             if isinstance(func_call_result, ImageResult):
                 result_type = ResultType.IMAGE
                 func_call_result = func_call_result.to_dict()
-            else:
-                if type(func_call_result) == str:
-                    pass
-                elif type(func_call_result) == dict:
-                    # Check if this is an image result (has _type: "image")
-                    # Image results are kept as JSON for special handling by model handlers
-                    try:
-                        func_call_result = json.dumps(func_call_result)
-                    except:
-                        func_call_result = str(func_call_result)
-                else:
+            elif isinstance(func_call_result, dict):
+                try:
+                    func_call_result = json.dumps(func_call_result)
+                except (TypeError, ValueError):
                     func_call_result = str(func_call_result)
+            elif not isinstance(func_call_result, str):
+                func_call_result = str(func_call_result)
 
             # @HuanzhiMao FIXME: update all related code for this new format
             execution_results.append(
