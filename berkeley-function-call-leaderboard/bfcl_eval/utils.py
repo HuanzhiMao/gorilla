@@ -550,21 +550,36 @@ def load_dataset_entry(
     return all_entries
 
 
-# @HuanzhiMao FIXME: Add support for audio and vision
 def load_ground_truth_entry(test_category: str) -> list[dict]:
     """
     This function retrieves the ground truth entry for a given test category.
     The test_category must be a modality-prefixed category (e.g., "text:simple_python").
     Entry IDs are prefixed with the modality to match the corresponding dataset entries.
+
+    Audio modalities (true_audio, text_audio) share the same ground truth files as
+    text, so we load from the text ground truth directory.
+
+    Vision modalities use their own ground truth directory. Vision web search
+    categories all share the ``vision_base.json`` ground truth file, while
+    geoguessr categories each have their own file.
     """
     modality = get_category_modality(test_category)
     base_category = get_base_category(test_category)
-    ground_truth_dir = MODALITY_POSSIBLE_ANSWER_PATH[modality]
 
     if is_format_sensitivity(test_category):
         # Format sensitivity ground truth handles its own ID construction;
         # it calls load_ground_truth_entry() for inner categories which already prefix.
         return load_format_sensitivity_ground_truth_entry()
+
+    # Audio modalities reuse the text ground truth files.
+    if modality in (Modality.TRUE_AUDIO, Modality.TEXT_AUDIO):
+        ground_truth_dir = MODALITY_POSSIBLE_ANSWER_PATH[Modality.TEXT]
+    else:
+        ground_truth_dir = MODALITY_POSSIBLE_ANSWER_PATH[modality]
+
+    # Vision web search categories all share the vision_base ground truth.
+    if is_vision_web_search(test_category):
+        entries = load_file(ground_truth_dir / "vision_base.json")
 
     elif is_memory(test_category):
         entries = load_file(ground_truth_dir / "memory.json")

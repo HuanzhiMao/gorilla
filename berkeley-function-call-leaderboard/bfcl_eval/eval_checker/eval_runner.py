@@ -894,8 +894,7 @@ def evaluate_task(
             )
 
     elif is_vision_web_search(test_category):
-        # @HuanzhiMao FIXME, no hard code
-        possible_answer = load_ground_truth_entry("vision:vision_base")
+        possible_answer = load_ground_truth_entry(test_category)
 
         # Vision is using the same substring matching logic as agentic categories
         accuracy, total_count = agentic_runner(
