@@ -855,7 +855,7 @@ def evaluate_task(
 ):
     tqdm.write(f"🔍 Running test: {test_category}")
 
-    record_cost_latency(leaderboard_table, model_name, model_result)
+    record_cost_latency(leaderboard_table, model_name, test_category, model_result)
 
     # Find the corresponding prompt entries
     prompt = load_dataset_entry(
@@ -886,7 +886,7 @@ def evaluate_task(
             )
 
     elif is_vision_web_search(test_category):
-        # @HuanzhiMao FIXME
+        # @HuanzhiMao FIXME, no hard code
         possible_answer = load_ground_truth_entry("vision:vision_base")
 
         # Vision is using the same substring matching logic as agentic categories
@@ -985,7 +985,6 @@ def runner(
     # A dictionary to store the evaluation scores.
     # Key is model name, value is a dictionary with keys as test category
     # and values as a dictionary with accuracy and total count.
-    # @HuanzhiMao TODO: use defaultdict to initialize the leaderboard table?
     leaderboard_table = {}
 
     # Get a list of all entries in the folder
@@ -995,7 +994,6 @@ def runner(
     subdirs = [entry for entry in entries if entry.is_dir()]
 
     # Traverse each subdirectory
-    # @HuanzhiMao TODO: double check if we need extra args for tqdm
     for subdir in tqdm(subdirs, desc="Number of models evaluated", position=0):
 
         model_name = subdir.relative_to(result_dir).name

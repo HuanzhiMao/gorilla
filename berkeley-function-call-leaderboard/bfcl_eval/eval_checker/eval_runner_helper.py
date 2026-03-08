@@ -116,17 +116,21 @@ def calculate_percentage_weighted_accuracy(
 
 
 def record_result(leaderboard_table, model_name, test_category, accuracy, total_count):
-    # @HuanzhiMao TODO: should we record the score by modality?
+    modality = get_category_modality(test_category).value
+    base_category = get_base_category(test_category)
     if model_name not in leaderboard_table:
         leaderboard_table[model_name] = {}
-    leaderboard_table[model_name][test_category] = {
+    if modality not in leaderboard_table[model_name]:
+        leaderboard_table[model_name][modality] = {}
+    leaderboard_table[model_name][modality][base_category] = {
         "accuracy": accuracy,
         "total_count": total_count,
     }
 
 
-def record_cost_latency(leaderboard_table, model_name, model_output_data):
-    # @HuanzhiMao TODO: should we record latency/cost by modality?
+def record_cost_latency(leaderboard_table, model_name, test_category, model_output_data):
+    modality = get_category_modality(test_category).value
+
     def process_data(key, data, output_list):
         # All entries are either a list of list (in multi-turn), or a single value (in single-turn)
         if key in data:
@@ -147,8 +151,12 @@ def record_cost_latency(leaderboard_table, model_name, model_output_data):
 
     if model_name not in leaderboard_table:
         leaderboard_table[model_name] = {}
-        leaderboard_table[model_name]["cost"] = {"input_data": [], "output_data": []}
-        leaderboard_table[model_name]["latency"] = {"data": []}
+    if modality not in leaderboard_table[model_name]:
+        leaderboard_table[model_name][modality] = {}
+    if "cost" not in leaderboard_table[model_name][modality]:
+        leaderboard_table[model_name][modality]["cost"] = {"input_data": [], "output_data": []}
+    if "latency" not in leaderboard_table[model_name][modality]:
+        leaderboard_table[model_name][modality]["latency"] = {"data": []}
 
     input_token = []
     output_token = []
@@ -158,9 +166,9 @@ def record_cost_latency(leaderboard_table, model_name, model_output_data):
         process_data("input_token_count", data, input_token)
         process_data("output_token_count", data, output_token)
 
-    leaderboard_table[model_name]["cost"]["input_data"].extend(input_token)
-    leaderboard_table[model_name]["cost"]["output_data"].extend(output_token)
-    leaderboard_table[model_name]["latency"]["data"].extend(latency)
+    leaderboard_table[model_name][modality]["cost"]["input_data"].extend(input_token)
+    leaderboard_table[model_name][modality]["cost"]["output_data"].extend(output_token)
+    leaderboard_table[model_name][modality]["latency"]["data"].extend(latency)
 
 
 def save_eval_results(
@@ -186,7 +194,8 @@ def save_eval_results(
         header.update(extra_header_fields)
 
     result.insert(0, header)
-    output_file_name = f"{test_category}_score.json"
+    base_category = get_base_category(test_category)
+    output_file_name = f"{base_category}_score.json"
     output_file_dir = (
         score_dir / model_name / get_directory_structure_by_category(test_category)
     )
@@ -236,15 +245,28 @@ def get_cost_latency_info(model_name, cost_data, latency_data):
     return cost, mean_latency, std_latency, percentile_95_latency
 
 
-def get_category_score(score_dict: dict, test_category: str) -> dict:
-    if test_category in score_dict:
-        score = score_dict[test_category]
+def get_category_score(modality_dict: dict, base_category: str, modality: str) -> dict:
+    """Look up a category score from a per-modality sub-dict.
+
+    Parameters
+    ----------
+    modality_dict : dict
+        ``leaderboard_table[model_name][modality]`` – the sub-dict for one modality.
+    base_category : str
+        The base category name without modality prefix (e.g. ``"simple_python"``).
+    modality : str
+        The modality value string (e.g. ``"text"``), used to construct the full
+        prefixed category when falling back to ``load_dataset_entry``.
+    """
+    if base_category in modality_dict:
+        score = modality_dict[base_category]
         score["display_accuracy"] = score["accuracy"]
         return score
     else:
+        full_category = f"{modality}:{base_category}"
         num_entry = len(
             load_dataset_entry(
-                test_category, include_prereq=False, include_language_specific_hint=False
+                full_category, include_prereq=False, include_language_specific_hint=False
             )
         )
         # If a category is not being evaluated, it needs to be distinguished from the situation where the evaluation score is 0
@@ -291,217 +313,269 @@ def write_score_csv_file(
                 f.write(",".join(row))
 
 
+def _aggregate_cost_latency_across_modalities(value):
+    """Aggregate cost and latency data across all modalities for a single model.
+
+    ``value`` is ``leaderboard_table[model_name]`` whose keys are modality
+    names, each containing optional ``"cost"`` and ``"latency"`` sub-dicts.
+    """
+    cost_all = {"input_data": [], "output_data": []}
+    latency_all = {"data": []}
+    for modality_data in value.values():
+        if not isinstance(modality_data, dict):
+            continue
+        modality_cost = modality_data.get("cost", {})
+        cost_all["input_data"].extend(modality_cost.get("input_data", []))
+        cost_all["output_data"].extend(modality_cost.get("output_data", []))
+        modality_latency = modality_data.get("latency", {})
+        latency_all["data"].extend(modality_latency.get("data", []))
+    return cost_all, latency_all
+
+
+def _compute_non_live_scores(modality_dict, modality):
+    """Compute non-live category scores for a given modality sub-dict."""
+    python_simple = get_category_score(modality_dict, "simple_python", modality)
+    python_multiple = get_category_score(modality_dict, "multiple", modality)
+    python_parallel = get_category_score(modality_dict, "parallel", modality)
+    python_parallel_multiple = get_category_score(modality_dict, "parallel_multiple", modality)
+    java_simple = get_category_score(modality_dict, "simple_java", modality)
+    js_simple = get_category_score(modality_dict, "simple_javascript", modality)
+    irrelevance = get_category_score(modality_dict, "irrelevance", modality)
+
+    simple_ast = calculate_unweighted_accuracy([python_simple, java_simple, js_simple])
+    summary_ast = calculate_unweighted_accuracy(
+        [simple_ast, python_multiple, python_parallel, python_parallel_multiple]
+    )
+    overall = calculate_unweighted_accuracy(
+        [simple_ast, python_multiple, python_parallel, python_parallel_multiple],
+        display_na_if_category_missing=False,
+    )
+    return {
+        "python_simple": python_simple,
+        "python_multiple": python_multiple,
+        "python_parallel": python_parallel,
+        "python_parallel_multiple": python_parallel_multiple,
+        "java_simple": java_simple,
+        "js_simple": js_simple,
+        "irrelevance": irrelevance,
+        "simple_ast": simple_ast,
+        "summary_ast": summary_ast,
+        "overall": overall,
+    }
+
+
+def _compute_live_scores(modality_dict, modality):
+    """Compute live category scores for a given modality sub-dict."""
+    simple = get_category_score(modality_dict, "live_simple", modality)
+    multiple = get_category_score(modality_dict, "live_multiple", modality)
+    parallel = get_category_score(modality_dict, "live_parallel", modality)
+    parallel_multiple = get_category_score(modality_dict, "live_parallel_multiple", modality)
+    irrelevance = get_category_score(modality_dict, "live_irrelevance", modality)
+    relevance = get_category_score(modality_dict, "live_relevance", modality)
+
+    summary_ast = calculate_weighted_accuracy(
+        [simple, multiple, parallel, parallel_multiple]
+    )
+    overall = calculate_weighted_accuracy(
+        [simple, multiple, parallel, parallel_multiple],
+        display_na_if_category_missing=False,
+    )
+    return {
+        "simple": simple,
+        "multiple": multiple,
+        "parallel": parallel,
+        "parallel_multiple": parallel_multiple,
+        "irrelevance": irrelevance,
+        "relevance": relevance,
+        "summary_ast": summary_ast,
+        "overall": overall,
+    }
+
+
+def _compute_multi_turn_scores(modality_dict, modality):
+    """Compute multi-turn category scores for a given modality sub-dict."""
+    base = get_category_score(modality_dict, "multi_turn_base", modality)
+    miss_func = get_category_score(modality_dict, "multi_turn_miss_func", modality)
+    miss_param = get_category_score(modality_dict, "multi_turn_miss_param", modality)
+    long_context = get_category_score(modality_dict, "multi_turn_long_context", modality)
+    overall = calculate_unweighted_accuracy(
+        [base, miss_func, miss_param, long_context],
+        display_na_if_category_missing=False,
+    )
+    return {
+        "base": base,
+        "miss_func": miss_func,
+        "miss_param": miss_param,
+        "long_context": long_context,
+        "overall": overall,
+    }
+
+
+def _build_non_live_row(display_name, nl):
+    """Build a CSV row for the non-live sub-table."""
+    return [
+        "N/A",
+        display_name,
+        nl["overall"]["display_accuracy"],
+        nl["summary_ast"]["display_accuracy"],
+        nl["simple_ast"]["display_accuracy"],
+        nl["python_simple"]["display_accuracy"],
+        nl["java_simple"]["display_accuracy"],
+        nl["js_simple"]["display_accuracy"],
+        nl["python_multiple"]["display_accuracy"],
+        nl["python_parallel"]["display_accuracy"],
+        nl["python_parallel_multiple"]["display_accuracy"],
+        nl["irrelevance"]["display_accuracy"],
+    ]
+
+
+def _build_live_row(display_name, lv):
+    """Build a CSV row for the live sub-table."""
+    return [
+        "N/A",
+        display_name,
+        lv["overall"]["display_accuracy"],
+        lv["summary_ast"]["display_accuracy"],
+        lv["simple"]["display_accuracy"],
+        lv["multiple"]["display_accuracy"],
+        lv["parallel"]["display_accuracy"],
+        lv["parallel_multiple"]["display_accuracy"],
+        lv["irrelevance"]["display_accuracy"],
+        lv["relevance"]["display_accuracy"],
+    ]
+
+
+def _build_multi_turn_row(display_name, mt):
+    """Build a CSV row for the multi-turn sub-table."""
+    return [
+        "N/A",
+        display_name,
+        mt["overall"]["display_accuracy"],
+        mt["base"]["display_accuracy"],
+        mt["miss_func"]["display_accuracy"],
+        mt["miss_param"]["display_accuracy"],
+        mt["long_context"]["display_accuracy"],
+    ]
+
+
+def _build_audio_overall_row(display_name, nl, lv, mt, total_irrelevance, modality_overall):
+    """Build a CSV row for an audio modality overall table."""
+    return [
+        "N/A",
+        modality_overall["display_accuracy"],
+        display_name,
+        nl["summary_ast"]["display_accuracy"],
+        nl["simple_ast"]["display_accuracy"],
+        nl["python_multiple"]["display_accuracy"],
+        nl["python_parallel"]["display_accuracy"],
+        nl["python_parallel_multiple"]["display_accuracy"],
+        lv["overall"]["display_accuracy"],
+        lv["simple"]["display_accuracy"],
+        lv["multiple"]["display_accuracy"],
+        lv["parallel"]["display_accuracy"],
+        lv["parallel_multiple"]["display_accuracy"],
+        mt["overall"]["display_accuracy"],
+        mt["base"]["display_accuracy"],
+        mt["miss_func"]["display_accuracy"],
+        mt["miss_param"]["display_accuracy"],
+        mt["long_context"]["display_accuracy"],
+        lv["relevance"]["display_accuracy"],
+        total_irrelevance["display_accuracy"],
+    ]
+
+
 def generate_leaderboard_csv(leaderboard_table, output_path):
     print("📈 Aggregating data to generate leaderboard score table...")
-    # Prepare format sensitivity configuration list once
     all_format_configs = get_all_format_sensitivity_configs()
 
-    data_non_live = []
-    data_live = []
-    data_multi_turn = []
-    data_agentic = []
-    data_format_sensitivity = []
+    # Text modality data
+    data_text_non_live = []
+    data_text_live = []
+    data_text_multi_turn = []
+    data_text_agentic = []
+    data_text_format_sensitivity = []
+    data_text_overall = []
+
+    # Audio modality data (true_audio and text_audio)
+    data_true_audio_non_live = []
+    data_true_audio_live = []
+    data_true_audio_multi_turn = []
+    data_true_audio_overall = []
+    data_text_audio_non_live = []
+    data_text_audio_live = []
+    data_text_audio_multi_turn = []
+    data_text_audio_overall = []
+
+    # Vision modality data
+    data_vision_overall = []
+
+    # Cross-modality overall
     data_combined = []
+
     for model_name, value in leaderboard_table.items():
         model_name_escaped = model_name.replace("_", "/")
         model_config = MODEL_CONFIG_MAPPING[model_name_escaped]
 
-        cost_data = value.get("cost", {"input_data": [], "output_data": []})
-        latency_data = value.get("latency", {"data": []})
+        # Aggregate cost/latency across all modalities
+        cost_data_all, latency_data_all = _aggregate_cost_latency_across_modalities(value)
         cost, latency_mean, latency_std, percentile_95_latency = get_cost_latency_info(
-            model_name_escaped, cost_data, latency_data
+            model_name_escaped, cost_data_all, latency_data_all
         )
 
-        # Non-Live Score
-        python_simple_ast_non_live = get_category_score(value, "simple_python")
-        python_multiple_ast_non_live = get_category_score(value, "multiple")
-        python_parallel_ast_non_live = get_category_score(value, "parallel")
-        python_parallel_multiple_ast_non_live = get_category_score(
-            value, "parallel_multiple"
-        )
-        java_simple_ast_non_live = get_category_score(value, "simple_java")
-        javascript_simple_ast_non_live = get_category_score(value, "simple_javascript")
-        irrelevance_non_live = get_category_score(value, "irrelevance")
+        # ---- Text Modality ---- #
+        text_data = value.get("text", {})
+        text_nl = _compute_non_live_scores(text_data, "text")
+        text_lv = _compute_live_scores(text_data, "text")
+        text_mt = _compute_multi_turn_scores(text_data, "text")
 
-        simple_ast_non_live = calculate_unweighted_accuracy(
-            [
-                python_simple_ast_non_live,
-                java_simple_ast_non_live,
-                javascript_simple_ast_non_live,
-            ]
-        )
-        multiple_ast_non_live = python_multiple_ast_non_live
-        parallel_ast_non_live = python_parallel_ast_non_live
-        parallel_multiple_ast_non_live = python_parallel_multiple_ast_non_live
+        data_text_non_live.append(_build_non_live_row(model_config.display_name, text_nl))
+        data_text_live.append(_build_live_row(model_config.display_name, text_lv))
+        data_text_multi_turn.append(_build_multi_turn_row(model_config.display_name, text_mt))
 
-        summary_ast_non_live = calculate_unweighted_accuracy(
-            [
-                simple_ast_non_live,
-                multiple_ast_non_live,
-                parallel_ast_non_live,
-                parallel_multiple_ast_non_live,
-            ]
+        # Agentic (text only)
+        text_ws_base = get_category_score(text_data, "web_search_base", "text")
+        text_ws_no_snippet = get_category_score(text_data, "web_search_no_snippet", "text")
+        text_summary_ws = calculate_unweighted_accuracy([text_ws_base, text_ws_no_snippet])
+        text_mem_kv = get_category_score(text_data, "memory_kv", "text")
+        text_mem_vector = get_category_score(text_data, "memory_vector", "text")
+        text_mem_rec_sum = get_category_score(text_data, "memory_rec_sum", "text")
+        text_summary_mem = calculate_unweighted_accuracy(
+            [text_mem_kv, text_mem_vector, text_mem_rec_sum]
         )
-        overall_accuracy_non_live = calculate_unweighted_accuracy(
-            [
-                simple_ast_non_live,
-                multiple_ast_non_live,
-                parallel_ast_non_live,
-                parallel_multiple_ast_non_live,
-            ],
+        text_overall_agentic = calculate_unweighted_accuracy(
+            [text_summary_ws, text_summary_mem],
             display_na_if_category_missing=False,
         )
 
-        data_non_live.append(
+        data_text_agentic.append(
             [
                 "N/A",
                 model_config.display_name,
-                overall_accuracy_non_live["display_accuracy"],
-                summary_ast_non_live["display_accuracy"],
-                simple_ast_non_live["display_accuracy"],
-                python_simple_ast_non_live["display_accuracy"],
-                java_simple_ast_non_live["display_accuracy"],
-                javascript_simple_ast_non_live["display_accuracy"],
-                multiple_ast_non_live["display_accuracy"],
-                parallel_ast_non_live["display_accuracy"],
-                parallel_multiple_ast_non_live["display_accuracy"],
-                irrelevance_non_live["display_accuracy"],
+                text_overall_agentic["display_accuracy"],
+                text_summary_ws["display_accuracy"],
+                text_ws_base["display_accuracy"],
+                text_ws_no_snippet["display_accuracy"],
+                text_summary_mem["display_accuracy"],
+                text_mem_kv["display_accuracy"],
+                text_mem_vector["display_accuracy"],
+                text_mem_rec_sum["display_accuracy"],
             ]
         )
 
-        # Live Score
-        python_simple_ast_live = get_category_score(value, "live_simple")
-        python_multiple_ast_live = get_category_score(value, "live_multiple")
-        python_parallel_ast_live = get_category_score(value, "live_parallel")
-        python_parallel_multiple_ast_live = get_category_score(
-            value, "live_parallel_multiple"
-        )
-        irrelevance_live = get_category_score(value, "live_irrelevance")
-        relevance_live = get_category_score(value, "live_relevance")
-        summary_ast_live = calculate_weighted_accuracy(
-            [
-                python_simple_ast_live,
-                python_multiple_ast_live,
-                python_parallel_ast_live,
-                python_parallel_multiple_ast_live,
-            ]
-        )
-
-        overall_accuracy_live = calculate_weighted_accuracy(
-            [
-                python_simple_ast_live,
-                python_multiple_ast_live,
-                python_parallel_ast_live,
-                python_parallel_multiple_ast_live,
-            ],
-            display_na_if_category_missing=False,
-        )
-
-        data_live.append(
-            [
-                "N/A",
-                model_config.display_name,
-                overall_accuracy_live["display_accuracy"],
-                summary_ast_live["display_accuracy"],
-                python_simple_ast_live["display_accuracy"],
-                python_multiple_ast_live["display_accuracy"],
-                python_parallel_ast_live["display_accuracy"],
-                python_parallel_multiple_ast_live["display_accuracy"],
-                irrelevance_live["display_accuracy"],
-                relevance_live["display_accuracy"],
-            ]
-        )
-
-        # Multi-Turn Score
-        multi_turn_base = get_category_score(value, "multi_turn_base")
-        multi_turn_miss_func = get_category_score(value, "multi_turn_miss_func")
-        multi_turn_miss_param = get_category_score(value, "multi_turn_miss_param")
-        multi_turn_long_context = get_category_score(value, "multi_turn_long_context")
-        overall_accuracy_multi_turn = calculate_unweighted_accuracy(
-            [
-                multi_turn_base,
-                multi_turn_miss_func,
-                multi_turn_miss_param,
-                multi_turn_long_context,
-            ],
-            display_na_if_category_missing=False,
-        )
-
-        data_multi_turn.append(
-            [
-                "N/A",
-                model_config.display_name,
-                overall_accuracy_multi_turn["display_accuracy"],
-                multi_turn_base["display_accuracy"],
-                multi_turn_miss_func["display_accuracy"],
-                multi_turn_miss_param["display_accuracy"],
-                multi_turn_long_context["display_accuracy"],
-            ]
-        )
-
-        # Agentic Score
-        web_search_base = get_category_score(value, "web_search_base")
-        web_search_no_snippet = get_category_score(value, "web_search_no_snippet")
-        summary_web_search = calculate_unweighted_accuracy(
-            [
-                web_search_base,
-                web_search_no_snippet,
-            ]
-        )
-        memory_kv = get_category_score(value, "memory_kv")
-        memory_vector = get_category_score(value, "memory_vector")
-        memory_rec_sum = get_category_score(value, "memory_rec_sum")
-        summary_memory = calculate_unweighted_accuracy(
-            [
-                memory_kv,
-                memory_vector,
-                memory_rec_sum,
-            ]
-        )
-        overall_accuracy_agentic = calculate_unweighted_accuracy(
-            [
-                summary_web_search,
-                summary_memory,
-            ],
-            display_na_if_category_missing=False,
-        )
-
-        data_agentic.append(
-            [
-                "N/A",
-                model_config.display_name,
-                overall_accuracy_agentic["display_accuracy"],
-                summary_web_search["display_accuracy"],
-                web_search_base["display_accuracy"],
-                web_search_no_snippet["display_accuracy"],
-                summary_memory["display_accuracy"],
-                memory_kv["display_accuracy"],
-                memory_vector["display_accuracy"],
-                memory_rec_sum["display_accuracy"],
-            ]
-        )
-
-        # Total Score
-        total_irrelevance = calculate_unweighted_accuracy(
-            [irrelevance_non_live, irrelevance_live]
-        )
-        total_relevance = relevance_live
-
-        # Format Sensitivity statistics
-        format_sensitivity_metadata = value.get("format_sensitivity", {})
+        # Format Sensitivity (text only)
+        format_sensitivity_metadata = text_data.get("format_sensitivity", {})
         format_sensitivity_max_delta = format_sensitivity_metadata.get(
             "accuracy_max_delta", "N/A"
         )
         format_sensitivity_std = format_sensitivity_metadata.get("accuracy_std", "N/A")
 
-        # Prepare row for format sensitivity CSV
         config_accuracy_values = []
         for cfg in all_format_configs:
             cfg_stats = format_sensitivity_metadata.get(cfg, {})
             cfg_acc = cfg_stats.get("accuracy", "N/A")
             config_accuracy_values.append(cfg_acc)
 
-        data_format_sensitivity.append(
+        data_text_format_sensitivity.append(
             [
                 "N/A",
                 model_config.display_name,
@@ -511,170 +585,267 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
             ]
         )
 
+        # Text Overall
+        text_total_irrelevance = calculate_unweighted_accuracy(
+            [text_nl["irrelevance"], text_lv["irrelevance"]]
+        )
+
         # TODO: @HuanzhiMao adjust the weights
-        total_overall_accuracy = calculate_percentage_weighted_accuracy(
+        text_total_overall = calculate_percentage_weighted_accuracy(
             [
-                overall_accuracy_non_live,
-                overall_accuracy_live,
-                total_irrelevance,
-                overall_accuracy_multi_turn,
-                overall_accuracy_agentic,
+                text_nl["overall"],
+                text_lv["overall"],
+                text_total_irrelevance,
+                text_mt["overall"],
+                text_overall_agentic,
             ],
             [10, 10, 10, 30, 40],
+            display_na_if_category_missing=False,
+        )
+
+        data_text_overall.append(
+            [
+                "N/A",
+                text_total_overall["display_accuracy"],
+                model_config.display_name,
+                text_nl["summary_ast"]["display_accuracy"],
+                text_nl["simple_ast"]["display_accuracy"],
+                text_nl["python_multiple"]["display_accuracy"],
+                text_nl["python_parallel"]["display_accuracy"],
+                text_nl["python_parallel_multiple"]["display_accuracy"],
+                text_lv["overall"]["display_accuracy"],
+                text_lv["simple"]["display_accuracy"],
+                text_lv["multiple"]["display_accuracy"],
+                text_lv["parallel"]["display_accuracy"],
+                text_lv["parallel_multiple"]["display_accuracy"],
+                text_mt["overall"]["display_accuracy"],
+                text_mt["base"]["display_accuracy"],
+                text_mt["miss_func"]["display_accuracy"],
+                text_mt["miss_param"]["display_accuracy"],
+                text_mt["long_context"]["display_accuracy"],
+                text_summary_ws["display_accuracy"],
+                text_ws_base["display_accuracy"],
+                text_ws_no_snippet["display_accuracy"],
+                text_summary_mem["display_accuracy"],
+                text_mem_kv["display_accuracy"],
+                text_mem_vector["display_accuracy"],
+                text_mem_rec_sum["display_accuracy"],
+                text_lv["relevance"]["display_accuracy"],
+                text_total_irrelevance["display_accuracy"],
+                format_sensitivity_max_delta,
+                format_sensitivity_std,
+            ]
+        )
+
+        # ---- Audio Modalities (true_audio and text_audio) ---- #
+        audio_modality_overalls = {}
+        for audio_prefix, data_nl, data_l, data_mt_list, data_ov in [
+            ("true_audio", data_true_audio_non_live, data_true_audio_live, data_true_audio_multi_turn, data_true_audio_overall),
+            ("text_audio", data_text_audio_non_live, data_text_audio_live, data_text_audio_multi_turn, data_text_audio_overall),
+        ]:
+            audio_data = value.get(audio_prefix, {})
+            a_nl = _compute_non_live_scores(audio_data, audio_prefix)
+            a_lv = _compute_live_scores(audio_data, audio_prefix)
+            a_mt = _compute_multi_turn_scores(audio_data, audio_prefix)
+
+            data_nl.append(_build_non_live_row(model_config.display_name, a_nl))
+            data_l.append(_build_live_row(model_config.display_name, a_lv))
+            data_mt_list.append(_build_multi_turn_row(model_config.display_name, a_mt))
+
+            # Audio Overall (unweighted average of non-live, live, irrelevance, multi-turn)
+            a_total_irrelevance = calculate_unweighted_accuracy(
+                [a_nl["irrelevance"], a_lv["irrelevance"]]
+            )
+            a_modality_overall = calculate_unweighted_accuracy(
+                [a_nl["overall"], a_lv["overall"], a_total_irrelevance, a_mt["overall"]],
+                display_na_if_category_missing=False,
+            )
+            audio_modality_overalls[audio_prefix] = a_modality_overall
+
+            data_ov.append(
+                _build_audio_overall_row(
+                    model_config.display_name, a_nl, a_lv, a_mt,
+                    a_total_irrelevance, a_modality_overall,
+                )
+            )
+
+        # ---- Vision Modality ---- #
+        vision_data = value.get("vision", {})
+        vision_geo_t1 = get_category_score(vision_data, "geoguessr_type1", "vision")
+        vision_geo_t2 = get_category_score(vision_data, "geoguessr_type2", "vision")
+        vision_geo_t3 = get_category_score(vision_data, "geoguessr_type3", "vision")
+        vision_overall = calculate_unweighted_accuracy(
+            [vision_geo_t1, vision_geo_t2, vision_geo_t3],
+            display_na_if_category_missing=False,
+        )
+
+        data_vision_overall.append(
+            [
+                "N/A",
+                model_config.display_name,
+                vision_overall["display_accuracy"],
+                vision_geo_t1["display_accuracy"],
+                vision_geo_t2["display_accuracy"],
+                vision_geo_t3["display_accuracy"],
+            ]
+        )
+
+        # ---- Cross-Modality Overall ---- #
+        cross_modality_overall = calculate_unweighted_accuracy(
+            [
+                text_total_overall,
+                audio_modality_overalls["true_audio"],
+                audio_modality_overalls["text_audio"],
+                vision_overall,
+            ],
             display_na_if_category_missing=False,
         )
 
         data_combined.append(
             [
                 "N/A",
-                total_overall_accuracy["display_accuracy"],
+                cross_modality_overall["display_accuracy"],
                 model_config.display_name,
                 model_config.url,
                 cost,
                 latency_mean,
                 latency_std,
                 percentile_95_latency,
-                summary_ast_non_live["display_accuracy"],
-                simple_ast_non_live["display_accuracy"],
-                multiple_ast_non_live["display_accuracy"],
-                parallel_ast_non_live["display_accuracy"],
-                parallel_multiple_ast_non_live["display_accuracy"],
-                overall_accuracy_live["display_accuracy"],
-                python_simple_ast_live["display_accuracy"],
-                python_multiple_ast_live["display_accuracy"],
-                python_parallel_ast_live["display_accuracy"],
-                python_parallel_multiple_ast_live["display_accuracy"],
-                overall_accuracy_multi_turn["display_accuracy"],
-                multi_turn_base["display_accuracy"],
-                multi_turn_miss_func["display_accuracy"],
-                multi_turn_miss_param["display_accuracy"],
-                multi_turn_long_context["display_accuracy"],
-                summary_web_search["display_accuracy"],
-                web_search_base["display_accuracy"],
-                web_search_no_snippet["display_accuracy"],
-                summary_memory["display_accuracy"],
-                memory_kv["display_accuracy"],
-                memory_vector["display_accuracy"],
-                memory_rec_sum["display_accuracy"],
-                total_relevance["display_accuracy"],
-                total_irrelevance["display_accuracy"],
-                format_sensitivity_max_delta,
-                format_sensitivity_std,
+                text_total_overall["display_accuracy"],
+                audio_modality_overalls["true_audio"]["display_accuracy"],
+                audio_modality_overalls["text_audio"]["display_accuracy"],
+                vision_overall["display_accuracy"],
                 model_config.org,
                 model_config.license,
             ]
         )
 
-    # Write Non-Live Score File
+    # ---- Write Text CSV Files ---- #
     write_score_csv_file(
-        data=data_non_live,
-        file_path=output_path / "score_non_live.csv",
-        header=COLUMNS_NON_LIVE,
+        data=data_text_non_live,
+        file_path=output_path / "score_text_non_live.csv",
+        header=COLUMNS_TEXT_NON_LIVE,
+        sort_column_index=2,
+    )
+    write_score_csv_file(
+        data=data_text_live,
+        file_path=output_path / "score_text_live.csv",
+        header=COLUMNS_TEXT_LIVE,
+        sort_column_index=2,
+    )
+    write_score_csv_file(
+        data=data_text_multi_turn,
+        file_path=output_path / "score_text_multi_turn.csv",
+        header=COLUMNS_TEXT_MULTI_TURN,
+        sort_column_index=2,
+    )
+    write_score_csv_file(
+        data=data_text_agentic,
+        file_path=output_path / "score_text_agentic.csv",
+        header=COLUMNS_TEXT_AGENTIC,
         sort_column_index=2,
     )
 
-    # Write Live Score File
-    write_score_csv_file(
-        data=data_live,
-        file_path=output_path / "score_live.csv",
-        header=COLUMNS_LIVE,
-        sort_column_index=2,
-    )
-
-    # Write Multi Turn Score File
-    write_score_csv_file(
-        data=data_multi_turn,
-        file_path=output_path / "score_multi_turn.csv",
-        header=COLUMNS_MULTI_TURN,
-        sort_column_index=2,
-    )
-
-    # Write Agentic Score File
-    write_score_csv_file(
-        data=data_agentic,
-        file_path=output_path / "score_agentic.csv",
-        header=COLUMNS_AGENTIC,
-        sort_column_index=2,
-    )
-
-    # Write Format Sensitivity Score File
-    COLUMNS_FORMAT_SENS = COLUMNS_FORMAT_SENS_PREFIX + [
+    COLUMNS_FORMAT_SENS = COLUMNS_TEXT_FORMAT_SENS_PREFIX + [
         f"Config {cfg}" for cfg in all_format_configs
     ]
-
     write_score_csv_file(
-        data=data_format_sensitivity,
-        file_path=output_path / "score_format_sensitivity.csv",
+        data=data_text_format_sensitivity,
+        file_path=output_path / "score_text_format_sensitivity.csv",
         header=COLUMNS_FORMAT_SENS,
         sort_column_index=2,
         no_conversion_numeric_column_index=[2, 3],
     )
 
-    # Write Total Score File
+    write_score_csv_file(
+        data=data_text_overall,
+        file_path=output_path / "score_text_overall.csv",
+        header=COLUMNS_TEXT_OVERALL,
+        sort_column_index=1,
+        no_conversion_numeric_column_index=[27, 28],
+    )
+
+    # ---- Write Audio CSV Files ---- #
+    for audio_prefix, data_nl, data_l, data_mt_list, data_ov in [
+        ("true_audio", data_true_audio_non_live, data_true_audio_live, data_true_audio_multi_turn, data_true_audio_overall),
+        ("text_audio", data_text_audio_non_live, data_text_audio_live, data_text_audio_multi_turn, data_text_audio_overall),
+    ]:
+        write_score_csv_file(
+            data=data_nl,
+            file_path=output_path / f"score_{audio_prefix}_non_live.csv",
+            header=COLUMNS_AUDIO_NON_LIVE,
+            sort_column_index=2,
+        )
+        write_score_csv_file(
+            data=data_l,
+            file_path=output_path / f"score_{audio_prefix}_live.csv",
+            header=COLUMNS_AUDIO_LIVE,
+            sort_column_index=2,
+        )
+        write_score_csv_file(
+            data=data_mt_list,
+            file_path=output_path / f"score_{audio_prefix}_multi_turn.csv",
+            header=COLUMNS_AUDIO_MULTI_TURN,
+            sort_column_index=2,
+        )
+        write_score_csv_file(
+            data=data_ov,
+            file_path=output_path / f"score_{audio_prefix}_overall.csv",
+            header=COLUMNS_AUDIO_OVERALL,
+            sort_column_index=1,
+        )
+
+    # ---- Write Vision CSV Files ---- #
+    write_score_csv_file(
+        data=data_vision_overall,
+        file_path=output_path / "score_vision_overall.csv",
+        header=COLUMNS_VISION_OVERALL,
+        sort_column_index=2,
+    )
+
+    # ---- Write Cross-Modality Overall CSV ---- #
     write_score_csv_file(
         data=data_combined,
         file_path=output_path / "score_overall.csv",
         header=COLUMNS_OVERALL,
         sort_column_index=1,
-        no_conversion_numeric_column_index=[4, 5, 6, 7, 32, 33],
+        no_conversion_numeric_column_index=[4, 5, 6, 7],
     )
 
+    # ---- WandB Logging ---- #
     wandb_project = os.getenv("WANDB_BFCL_PROJECT")
     if wandb_project and wandb_project != "ENTITY:PROJECT":
         import wandb
 
-        # Initialize WandB run
         wandb.init(
-            # wandb_project is 'entity:project'
             entity=wandb_project.split(":")[0],
             project=wandb_project.split(":")[1],
             name=f"BFCL-v4-{datetime.now().strftime('%Y%m%d-%H%M%S')}",
         )
 
-        # Log CSV files to WandB
-        # Read the CSV files
-        non_live_df = pd.read_csv(output_path / "score_non_live.csv")
-        live_df = pd.read_csv(output_path / "score_live.csv")
-        multi_turn_df = pd.read_csv(output_path / "score_multi_turn.csv")
-        agentic_df = pd.read_csv(output_path / "score_agentic.csv")
-        overall_df = pd.read_csv(output_path / "score_overall.csv")
+        csv_files = {
+            "Text Non-Live": "score_text_non_live.csv",
+            "Text Live": "score_text_live.csv",
+            "Text Multi-Turn": "score_text_multi_turn.csv",
+            "Text Agentic": "score_text_agentic.csv",
+            "Text Overall": "score_text_overall.csv",
+            "True Audio Overall": "score_true_audio_overall.csv",
+            "Text Audio Overall": "score_text_audio_overall.csv",
+            "Vision Overall": "score_vision_overall.csv",
+            "Overall": "score_overall.csv",
+        }
 
-        # Convert DataFrames to WandB Tables
-        non_live_table = wandb.Table(dataframe=non_live_df)
-        live_table = wandb.Table(dataframe=live_df)
-        multi_turn_table = wandb.Table(dataframe=multi_turn_df)
-        agentic_table = wandb.Table(dataframe=agentic_df)
-        overall_table = wandb.Table(dataframe=overall_df)
-
-        # Create artifacts
         bfcl_artifact = wandb.Artifact("bfcl_results", type="dataset")
+        tables = {}
+        for label, filename in csv_files.items():
+            df = pd.read_csv(output_path / filename)
+            table = wandb.Table(dataframe=df)
+            tables[label] = table
+            artifact_name = filename.replace(".csv", "").replace("score_", "") + "_results"
+            bfcl_artifact.add(table, artifact_name)
+            bfcl_artifact.add_file(str(output_path / filename))
 
-        # Add tables to artifact
-        bfcl_artifact.add(non_live_table, "non_live_results")
-        bfcl_artifact.add(live_table, "live_results")
-        bfcl_artifact.add(multi_turn_table, "multi_turn_results")
-        bfcl_artifact.add(agentic_table, "agentic_results")
-        bfcl_artifact.add(overall_table, "overall_results")
-
-        # Add raw CSV files to artifact
-        bfcl_artifact.add_file(str(output_path / "score_non_live.csv"))
-        bfcl_artifact.add_file(str(output_path / "score_live.csv"))
-        bfcl_artifact.add_file(str(output_path / "score_multi_turn.csv"))
-        bfcl_artifact.add_file(str(output_path / "score_agentic.csv"))
-        bfcl_artifact.add_file(str(output_path / "score_overall.csv"))
-
-        # Log tables directly
-        wandb.log(
-            {
-                "Non-Live Results": non_live_table,
-                "Live Results": live_table,
-                "Multi-Turn Results": multi_turn_table,
-                "Agentic Results": agentic_table,
-                "Overall Results": overall_table,
-            }
-        )
-
-        # Log artifact
+        wandb.log(tables)
         wandb.log_artifact(bfcl_artifact)
         wandb.finish()
 
@@ -694,8 +865,11 @@ def update_leaderboard_table_with_local_score_file(
         # Find and process all score JSON files recursively in the subdirectory
         for model_score_json in subdir.rglob(SCORE_FILE_PATTERN):
             metadata = load_file(model_score_json)[0]
-            test_category = extract_test_category(model_score_json)
+            base_category = extract_test_category(model_score_json)
+            modality = detect_modality_from_path(model_score_json, subdir)
             if model_name not in leaderboard_table:
                 leaderboard_table[model_name] = {}
+            if modality not in leaderboard_table[model_name]:
+                leaderboard_table[model_name][modality] = {}
             # Store the full metadata to retain additional statistics (e.g. format sensitivity breakdown)
-            leaderboard_table[model_name][test_category] = metadata
+            leaderboard_table[model_name][modality][base_category] = metadata
