@@ -4,7 +4,11 @@ from collections import defaultdict
 
 from bfcl_eval.constants.enums import Language, ReturnFormat
 from bfcl_eval.constants.eval_config import *
-from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING
+from bfcl_eval.constants.model_config import (
+    DIR_NAME_TO_REGISTRY,
+    MODEL_CONFIG_MAPPING,
+    REGISTRY_TO_DIR_NAME,
+)
 from bfcl_eval.eval_checker.agentic_eval.agentic_checker import agentic_checker
 from bfcl_eval.eval_checker.ast_eval.ast_checker import ast_checker
 from bfcl_eval.eval_checker.eval_runner_helper import *
@@ -998,7 +1002,12 @@ def runner(
         if model_names is not None and model_name not in model_names:
             continue
 
-        model_name_escaped = model_name.replace("_", "/")
+        registry_name = DIR_NAME_TO_REGISTRY.get(model_name)
+        if registry_name is None:
+            tqdm.write(
+                f"⚠️  Skipping directory '{model_name}': no matching model found in MODEL_CONFIG_MAPPING."
+            )
+            continue
 
         tqdm.write(f"🦍 Model: {model_name}")
 
@@ -1015,7 +1024,7 @@ def runner(
             if test_category not in test_categories:
                 continue
 
-            handler = get_handler(model_name_escaped)
+            handler = get_handler(registry_name)
 
             # We don't evaluate the following categories in the current iteration of the benchmark
             if (
@@ -1068,9 +1077,8 @@ def main(model, test_categories, result_dir, score_dir, partial_eval: bool = Fal
         for model_name in model:
             if model_name not in MODEL_CONFIG_MAPPING:
                 raise ValueError(f"Invalid model name '{model_name}'.")
-            # Runner uses a sanitized model name (path-unsafe chars replaced with "_")
-            # so directory names are valid on all platforms including Windows.
-            model_names.append(sanitize_model_name_for_path(model_name))
+            # Look up the pre-computed sanitized directory name from model_config.
+            model_names.append(REGISTRY_TO_DIR_NAME[model_name])
 
     # Driver function to run the evaluation for all categories involved.
     runner(

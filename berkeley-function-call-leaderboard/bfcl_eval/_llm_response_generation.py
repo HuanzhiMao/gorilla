@@ -17,7 +17,11 @@ from bfcl_eval.constants.eval_config import (
     RESULT_PATH,
     TEST_IDS_TO_GENERATE_PATH,
 )
-from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING, OSSModelConfig
+from bfcl_eval.constants.model_config import (
+    MODEL_CONFIG_MAPPING,
+    OSSModelConfig,
+    REGISTRY_TO_DIR_NAME,
+)
 from bfcl_eval.eval_checker.eval_runner_helper import load_file
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.local_inference.base_oss_handler import OSSHandler
@@ -140,7 +144,7 @@ def get_involved_test_entries(test_category_args, run_ids):
 def collect_test_cases(
     args: Args, model_name, all_test_categories, all_test_entries_involved
 ):
-    model_name_dir = sanitize_model_name_for_path(model_name)
+    model_name_dir = REGISTRY_TO_DIR_NAME[model_name]
     model_result_dir = args.result_dir / model_name_dir
 
     existing_result = []

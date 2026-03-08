@@ -66,8 +66,11 @@ class BaseHandler:
             model_name.replace("/", "_").replace("-", "_").replace(".", "_")
         )
         # The directory name for the model
-        # Replace path-unsafe characters with underscore for cross-platform compatibility
-        self.registry_dir_name = sanitize_model_name_for_path(registry_name)
+        # Look up the pre-computed sanitized name from model_config as the single source of truth.
+        # Import here to avoid circular imports (model_config imports handler classes).
+        from bfcl_eval.constants.model_config import REGISTRY_TO_DIR_NAME
+
+        self.registry_dir_name = REGISTRY_TO_DIR_NAME[registry_name]
         self.temperature = temperature
 
         # Set any additional attributes passed via kwargs
