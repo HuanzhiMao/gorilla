@@ -11,8 +11,10 @@ from bfcl_eval.constants.enums import ModelStyle, ResultType, ReturnFormat
 from bfcl_eval.constants.eval_config import (
     MAXIMUM_CLARIFICATION_LIMIT,
     MAXIMUM_STEP_LIMIT,
+    MAXIMUM_STEP_LIMIT_DEFAULT,
     RESULT_PATH,
 )
+from bfcl_eval.utils import get_category_modality
 from bfcl_eval.constants.executable_backend_config import (
     END_SESSION_AFTER_EVAL_CLASSES,
     OMIT_STATE_INFO_CLASSES,
@@ -108,6 +110,8 @@ class BaseHandler:
         involved_classes: list = test_entry.get("involved_classes", [])
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
+        modality = get_category_modality(test_category)
+        max_step_limit = MAXIMUM_STEP_LIMIT.get(modality, MAXIMUM_STEP_LIMIT_DEFAULT)
         # Only for audio tasks, we allow the model to ask for clarification.
         could_allow_clarification: bool = test_entry.get("could_allow_clarification", False)
 
@@ -378,12 +382,12 @@ class BaseHandler:
                             )
 
                     # If the model has taken too many steps, we force it to quit.
-                    if step_count > MAXIMUM_STEP_LIMIT:
+                    if step_count > max_step_limit:
                         force_quit = True
                         current_step_inference_log.append(
                             {
                                 "role": "handler_log",
-                                "content": f"Model has been forced to quit after {MAXIMUM_STEP_LIMIT} steps.",
+                                "content": f"Model has been forced to quit after {max_step_limit} steps.",
                             }
                         )
                         break
@@ -524,6 +528,8 @@ class BaseHandler:
         involved_classes: list = test_entry["involved_classes"]
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
+        modality = get_category_modality(test_category)
+        max_step_limit = MAXIMUM_STEP_LIMIT.get(modality, MAXIMUM_STEP_LIMIT_DEFAULT)
 
         # This is only for the miss function category
         # A mapping from turn index to function to holdout
@@ -745,12 +751,12 @@ class BaseHandler:
 
                 step_count += 1
                 # Force quit after too many steps
-                if step_count > MAXIMUM_STEP_LIMIT:
+                if step_count > max_step_limit:
                     force_quit = True
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",
-                            "content": f"Model has been forced to quit after {MAXIMUM_STEP_LIMIT} steps.",
+                            "content": f"Model has been forced to quit after {max_step_limit} steps.",
                         }
                     )
                     break

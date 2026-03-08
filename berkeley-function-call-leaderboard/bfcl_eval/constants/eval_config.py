@@ -5,8 +5,13 @@ from bfcl_eval.constants.enums import Modality
 LOCAL_SERVER_PORT = 1055
 LOCAL_SERVER_MAX_CONCURRENT_REQUEST = 100
 
-# @HuanzhiMao different limit for different modalities?
-MAXIMUM_STEP_LIMIT = 40
+MAXIMUM_STEP_LIMIT_DEFAULT = 40
+MAXIMUM_STEP_LIMIT = {
+    Modality.TEXT: MAXIMUM_STEP_LIMIT_DEFAULT,
+    Modality.VISION: MAXIMUM_STEP_LIMIT_DEFAULT,
+    Modality.TRUE_AUDIO: MAXIMUM_STEP_LIMIT_DEFAULT,
+    Modality.TEXT_AUDIO: MAXIMUM_STEP_LIMIT_DEFAULT,
+}
 MAXIMUM_CLARIFICATION_LIMIT = 15
 
 # Price got from Lambda Cloud, 23.92 per hour for 8x H100, on-demand pay as you go total price
