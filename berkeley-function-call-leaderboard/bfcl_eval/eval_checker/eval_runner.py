@@ -632,23 +632,31 @@ def vision_geoguessr_runner(
         entry_result["inference_log"] = model_result[i].get("inference_log", "")
         result.append(entry_result)
 
-    # @HuanzhiMao FIXME: Is there a more elegant solution for this?
-    # save_eval_results compute the average accuracy, but it's the same formaula as calculating the average score, so we can use it here.
-    # It's just that the `correct_count` field in the header would be strange.
-    total_score = total_score / 5000
+    max_score = 5000  # Maximum possible score per entry
+    avg_score = total_score / len(model_result)
 
-    # @HuanzhiMao TODO: should we report the variance and std for the distance?
-    # extra_header_fields = {
-    #     "accuracy_variance": accuracy_variance,
-    #     "accuracy_std": accuracy_std,
-    # }
+    scores = [entry["score"] for entry in result]
+    if len(scores) > 1:
+        score_variance = round(statistics.variance(scores), 2)
+        score_std = round(statistics.stdev(scores), 2)
+    else:
+        score_variance = 0.0
+        score_std = 0.0
+
+    extra_header_fields = {
+        "score_variance": score_variance,
+        "score_std": score_std,
+    }
+
     return save_eval_results(
         result,
-        total_score,
-        model_result,
-        test_category,
-        model_name,
-        score_dir,
+        correct_count=total_score,
+        model_result=model_result,
+        test_category=test_category,
+        model_name=model_name,
+        score_dir=score_dir,
+        accuracy=avg_score / max_score,
+        extra_header_fields=extra_header_fields,
     )
 
 

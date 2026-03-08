@@ -179,12 +179,14 @@ def save_eval_results(
     model_name,
     score_dir,
     extra_header_fields: dict = None,
+    accuracy: float = None,
 ) -> tuple[float, int]:
     """
     Compute accuracy, finalize evaluation results and write them to disk.
     Return the accuracy and the total number of test cases.
     """
-    accuracy = correct_count / len(model_result)
+    if accuracy is None:
+        accuracy = correct_count / len(model_result)
     header = {
         "accuracy": accuracy,
         "correct_count": correct_count,
