@@ -17,7 +17,7 @@ class StreetViewAPI:
         """Create a new StreetView API client."""
         self._api_description = "This tool belongs to the StreetView API, which is used to navigate and capture street views."
 
-        self._base_url = os.getenv("GEOGUESSR_SERVER_URL", "http://127.0.0.1:8000")
+        self._base_url = os.getenv("GEOGUESSR_SERVER_URL", "http://127.0.0.1:18000")
         self._session = requests.Session()
         self._timeout = (15, None)  # (connect timeout, read timeout)
         # The client only retains the session identifier. All other state lives
