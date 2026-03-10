@@ -111,7 +111,7 @@ class BaseHandler:
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
         modality = get_category_modality(test_category)
-        max_step_limit = MAXIMUM_STEP_LIMIT.get(modality, MAXIMUM_STEP_LIMIT_DEFAULT)
+        max_step_limit = MAXIMUM_STEP_LIMIT[modality]
         # Only for audio tasks, we allow the model to ask for clarification.
         category_allow_clarification: bool = could_allow_clarification(test_category)
 
