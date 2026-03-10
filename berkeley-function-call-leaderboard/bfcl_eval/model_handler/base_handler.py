@@ -11,7 +11,6 @@ from bfcl_eval.constants.enums import ModelStyle, ResultType, ReturnFormat
 from bfcl_eval.constants.eval_config import (
     MAXIMUM_CLARIFICATION_LIMIT,
     MAXIMUM_STEP_LIMIT,
-    MAXIMUM_STEP_LIMIT_DEFAULT,
     RESULT_PATH,
 )
 from bfcl_eval.utils import could_allow_clarification, get_category_modality
