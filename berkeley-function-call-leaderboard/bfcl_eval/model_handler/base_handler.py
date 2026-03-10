@@ -14,7 +14,7 @@ from bfcl_eval.constants.eval_config import (
     MAXIMUM_STEP_LIMIT_DEFAULT,
     RESULT_PATH,
 )
-from bfcl_eval.utils import get_category_modality
+from bfcl_eval.utils import could_allow_clarification, get_category_modality
 from bfcl_eval.constants.executable_backend_config import (
     END_SESSION_AFTER_EVAL_CLASSES,
     OMIT_STATE_INFO_CLASSES,
@@ -113,7 +113,7 @@ class BaseHandler:
         modality = get_category_modality(test_category)
         max_step_limit = MAXIMUM_STEP_LIMIT.get(modality, MAXIMUM_STEP_LIMIT_DEFAULT)
         # Only for audio tasks, we allow the model to ask for clarification.
-        could_allow_clarification: bool = test_entry.get("could_allow_clarification", False)
+        category_allow_clarification: bool = could_allow_clarification(test_category)
 
         # This is only for the miss function category
         # A mapping from turn index to function to holdout
@@ -296,7 +296,7 @@ class BaseHandler:
                 # The eval will handle decoding separately.
                 if (
                     not contain_multi_turn_interaction(test_entry_id)
-                    and not could_allow_clarification
+                    and not category_allow_clarification
                 ):
                     break
 
@@ -395,7 +395,7 @@ class BaseHandler:
                     continue
 
                 # Path 2: No function calls → if model is allowed to ask clarification, check if model is asking a valid clarification.
-                elif could_allow_clarification:
+                elif category_allow_clarification:
                     (
                         allowed_clarifications,
                         original_user_request,

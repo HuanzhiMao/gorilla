@@ -273,6 +273,14 @@ def contain_native_audio_input(test_category):
     return is_true_audio(test_category)
 
 
+def could_allow_clarification(test_category):
+    """
+    Check if the test category allows the model to ask for clarification.
+    Only audio tasks (true_audio and text_audio) allow clarification.
+    """
+    return is_true_audio(test_category)
+
+
 def is_vision_web_search(test_category: str) -> bool:
     """
     Check if the test category is a vision web search category (eg, vision_web_search_base, vision_web_search_rg, etc.).
@@ -1310,8 +1318,6 @@ def process_audio_test_case(test_cases: list[dict], modality: Modality) -> list[
                 "content": merged_system_prompt,
             },
         )
-
-        entry["could_allow_clarification"] = True
 
     return test_cases
 
