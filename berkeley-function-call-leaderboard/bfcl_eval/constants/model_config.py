@@ -539,7 +539,7 @@ api_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    # @HuanzhiMao FIXME: update all following models. double check
+    # @HuanzhiMao TODO: update to Nova Pro 2 when it's out
     "nova-pro-v1.0": ModelConfig(
         model_name="us.amazon.nova-pro-v1:0",
         display_name="Amazon-Nova-Pro-v1:0 (FC)",
@@ -1681,7 +1681,6 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
-        supports_image_input=True,
         vllm_reasoning_parser="qwen3",
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
@@ -1712,7 +1711,6 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
-        supports_image_input=True,
         vllm_reasoning_parser="qwen3",
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
@@ -1743,7 +1741,6 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
-        supports_image_input=True,
         vllm_reasoning_parser="qwen3",
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
@@ -1774,7 +1771,6 @@ local_inference_model_map = {
         output_price=None,
         is_fc_model=False,
         underscore_to_dot=False,
-        supports_image_input=True,
         vllm_reasoning_parser="qwen3",
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
