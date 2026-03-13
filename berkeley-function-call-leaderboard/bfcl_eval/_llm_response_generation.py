@@ -443,6 +443,8 @@ def main(args: Args):
             lambda cfg: not cfg.supports_image_input,
             "`Vision` test cases are only supported for models that support vision/image input.",
         ),
+        # @HuanzhiMao FIXME
+        # ⚠️ Warning: `Vision` test cases are only supported for models that support vision/image input. Skipping categories vision:geoguessr_type1, vision:geoguessr_type1_competition, vision:geoguessr_type2, vision:geoguessr_type3 for models: glm-4.6v-FC
     ]
     for category_check, should_skip, reason in skip_rules:
         skipped_categories = [tc for tc in all_test_categories if category_check(tc)]

@@ -1192,7 +1192,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
-        supports_audio_input=True,
+        supports_image_input=True,
     ),
     "glm-4.6v-flash-FC": ModelConfig(
         model_name="glm-4.6v-flash",
@@ -1205,7 +1205,7 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
-        supports_audio_input=True,
+        supports_image_input=True,
     ),
     "glm-4.6-FC": ModelConfig(
         model_name="glm-4.6",
