@@ -1192,6 +1192,20 @@ api_inference_model_map = {
         output_price=None,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_audio_input=True,
+    ),
+    "glm-4.6v-flash-FC": ModelConfig(
+        model_name="glm-4.6v-flash",
+        display_name="GLM-4.6v-Flash (FC)",
+        url="https://huggingface.co/zai-org/GLM-4.6v-Flash",
+        org="Zhipu AI",
+        license="MIT",
+        model_handler=GLMAPIHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=True,
+        supports_audio_input=True,
     ),
     "glm-4.6-FC": ModelConfig(
         model_name="glm-4.6",
@@ -2322,3 +2336,9 @@ DIR_NAME_TO_REGISTRY: dict[str, str] = {
 # print(repr(true_audio_model_list))
 # print("Vision supported models:")
 # print(repr(vision_model_list))
+
+
+
+
+# https://docs.bigmodel.cn/cn/guide/models/sound-and-video/glm-realtime
+# https://docs.bigmodel.cn/cn/guide/models/sound-and-video/glm-4-voice
