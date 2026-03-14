@@ -198,17 +198,6 @@ def collect_test_cases(
         if test_case["id"] not in existing_ids
     ]
 
-    # Skip format sensitivity test cases for FC models
-    if (
-        any(is_format_sensitivity(test_category) for test_category in all_test_categories)
-        and MODEL_CONFIG_MAPPING[model_name].is_fc_model
-    ):
-        test_cases_to_generate = [
-            test_case
-            for test_case in test_cases_to_generate
-            if not is_format_sensitivity(test_case["id"])
-        ]
-
     test_cases_to_generate = clean_up_memory_prereq_entries(test_cases_to_generate)
     # TODO: Should we move these to the load_dataset_entry function?
     test_cases_to_generate = populate_initial_settings_for_memory_test_cases(
@@ -449,7 +438,7 @@ def main(args: Args):
     for category_check, should_skip, reason in skip_rules:
         skipped_categories = [tc for tc in all_test_categories if category_check(tc)]
         if skipped_categories:
-            skipped_models = [m for m in args.model if should_skip(MODEL_CONFIG_MAPPING[m])]
+            skipped_models = [model_name for model_name in args.model if should_skip(MODEL_CONFIG_MAPPING[model_name])]
             if skipped_models:
                 tqdm.write(
                     f"⚠️ Warning: {reason} Skipping categories {', '.join(skipped_categories)} for models: {', '.join(skipped_models)}"
@@ -461,11 +450,27 @@ def main(args: Args):
         args.result_dir = RESULT_PATH
 
     for model_name in args.model:
+        config = MODEL_CONFIG_MAPPING[model_name]
+
+        # Filter out categories and entries that this model doesn't support
+        model_test_categories = all_test_categories
+        model_test_entries = all_test_entries_involved
+        for category_check, should_skip, _ in skip_rules:
+            if should_skip(config):
+                model_test_categories = [
+                    tc for tc in model_test_categories if not category_check(tc)
+                ]
+                model_test_entries = [
+                    entry
+                    for entry in model_test_entries
+                    if not category_check(entry["id"])
+                ]
+
         test_cases_total = collect_test_cases(
             args,
             model_name,
-            all_test_categories,
-            deepcopy(all_test_entries_involved),
+            model_test_categories,
+            deepcopy(model_test_entries),
         )
 
         if len(test_cases_total) == 0:
