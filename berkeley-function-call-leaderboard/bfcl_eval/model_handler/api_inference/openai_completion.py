@@ -1,3 +1,4 @@
+from enum import Flag
 import json
 import os
 import time
@@ -31,6 +32,10 @@ class OpenAICompletionsHandler(BaseHandler):
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_style = ModelStyle.OPENAI_COMPLETIONS
         self._client = None
+        # @HuanzhiMao FIXME: Add audio support for openai completion. 
+        self.can_handle_audio_input = False
+        self.can_handle_image_input = True
+        self.can_handle_image_tool_response = True
 
     @property
     def client(self):
@@ -80,9 +85,7 @@ class OpenAICompletionsHandler(BaseHandler):
     @retry_with_backoff(error_type=RateLimitError)
     def generate_with_backoff(self, **kwargs):
         start_time = time.time()
-        # print("🔍 OpenAI Completion API request kwargs:", kwargs)
         api_response = self.client.chat.completions.create(**kwargs)
-        # print("🔍 OpenAI Completion API response:", api_response)
         end_time = time.time()
 
         return api_response, end_time - start_time
