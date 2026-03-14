@@ -441,7 +441,9 @@ def main(args: Args):
             skipped_models = [model_name for model_name in args.model if should_skip(MODEL_CONFIG_MAPPING[model_name])]
             if skipped_models:
                 tqdm.write(
-                    f"⚠️ Warning: {reason} Skipping categories {', '.join(skipped_categories)} for models: {', '.join(skipped_models)}"
+                    f"\n⚠️ Warning: {reason}"
+                    f"\n   Skipping categories: {', '.join(skipped_categories)}"
+                    f"\n   For models: {', '.join(skipped_models)}\n"
                 )
 
     if args.result_dir is not None:
