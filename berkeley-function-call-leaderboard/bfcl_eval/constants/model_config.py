@@ -187,7 +187,7 @@ api_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    # @HuanzhiMao FIXME: remove this 
+    # @HuanzhiMao FIXME: remove this
     "gpt-5.2-2025-12-11-FC": ModelConfig(
         model_name="gpt-5.2-2025-12-11",
         display_name="GPT-5.2-2025-12-11 (FC)",
@@ -540,6 +540,7 @@ api_inference_model_map = {
         supports_image_input=True,
     ),
     # @HuanzhiMao TODO: update to Nova Pro 2 when it's out
+    # Nova series don't support audio input
     "nova-pro-v1.0": ModelConfig(
         model_name="us.amazon.nova-pro-v1:0",
         display_name="Amazon-Nova-Pro-v1:0 (FC)",
@@ -551,6 +552,7 @@ api_inference_model_map = {
         output_price=3.2,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "nova-2-lite-v1.0": ModelConfig(
         model_name="us.amazon.nova-2-lite-v1:0",
@@ -563,6 +565,7 @@ api_inference_model_map = {
         output_price=2.5,
         is_fc_model=True,
         underscore_to_dot=True,
+        supports_image_input=True,
     ),
     "nova-micro-v1.0": ModelConfig(
         model_name="us.amazon.nova-micro-v1:0",
@@ -1181,36 +1184,10 @@ api_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "glm-4.6v-FC": ModelConfig(
-        model_name="glm-4.6v",
-        display_name="GLM-4.6v (FC)",
-        url="https://huggingface.co/zai-org/GLM-4.6",
-        org="Zhipu AI",
-        license="MIT",
-        model_handler=GLMAPIHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
-    "glm-4.6v-flash-FC": ModelConfig(
-        model_name="glm-4.6v-flash",
-        display_name="GLM-4.6v-Flash (FC)",
-        url="https://huggingface.co/zai-org/GLM-4.6v-Flash",
-        org="Zhipu AI",
-        license="MIT",
-        model_handler=GLMAPIHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
-    "glm-4.6-FC": ModelConfig(
-        model_name="glm-4.6",
-        display_name="GLM-4.6 (FC thinking)",
-        url="https://huggingface.co/zai-org/GLM-4.6",
+    "glm-5-FC": ModelConfig(
+        model_name="glm-5",
+        display_name="GLM-5 (FC thinking)",
+        url="https://huggingface.co/zai-org/GLM-5",
         org="Zhipu AI",
         license="MIT",
         model_handler=GLMAPIHandler,
@@ -1219,10 +1196,10 @@ api_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
     ),
-    "glm-4.5-FC": ModelConfig(
-        model_name="glm-4.5",
-        display_name="GLM-4.5 (FC)",
-        url="https://huggingface.co/zai-org/GLM-4.5",
+    "GLM-4.7-FlashX-FC": ModelConfig(
+        model_name="GLM-4.7-FlashX",
+        display_name="GLM-4.7-FlashX (FC)",
+        url="https://docs.z.ai/guides/llm/glm-4.7",
         org="Zhipu AI",
         license="MIT",
         model_handler=GLMAPIHandler,
@@ -2297,11 +2274,40 @@ third_party_inference_model_map = {
     ),
 }
 
+vision_model_map = {
+    "glm-4.6v-FC": ModelConfig(
+        model_name="glm-4.6v",
+        display_name="GLM-4.6v (FC)",
+        url="https://huggingface.co/zai-org/GLM-4.6",
+        org="Zhipu AI",
+        license="MIT",
+        model_handler=GLMAPIHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=True,
+        supports_image_input=True,
+    ),
+    "glm-4.6v-flash-FC": ModelConfig(
+        model_name="glm-4.6v-flash",
+        display_name="GLM-4.6v-Flash (FC)",
+        url="https://huggingface.co/zai-org/GLM-4.6v-Flash",
+        org="Zhipu AI",
+        license="MIT",
+        model_handler=GLMAPIHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=True,
+        supports_image_input=True,
+    ),
+}
 
 MODEL_CONFIG_MAPPING: dict[str, ModelConfig] = {
     **api_inference_model_map,
     **local_inference_model_map,
     **third_party_inference_model_map,
+    **vision_model_map,
 }
 
 # Pre-computed mappings between registry names (keys in MODEL_CONFIG_MAPPING) and
@@ -2336,8 +2342,6 @@ DIR_NAME_TO_REGISTRY: dict[str, str] = {
 # print(repr(true_audio_model_list))
 # print("Vision supported models:")
 # print(repr(vision_model_list))
-
-
 
 
 # https://docs.bigmodel.cn/cn/guide/models/sound-and-video/glm-realtime
