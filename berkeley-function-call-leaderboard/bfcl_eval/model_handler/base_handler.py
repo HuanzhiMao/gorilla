@@ -47,6 +47,28 @@ class BaseHandler:
     model_name_underline_replaced: str
     model_style: ModelStyle
 
+    # Capability flags: every subclass must explicitly declare these as class
+    # attributes so handler authors are forced to consider each modality.
+    can_handle_audio_input: bool
+    can_handle_image_input: bool
+    can_handle_image_tool_response: bool
+
+    _REQUIRED_CAPABILITY_FLAGS = (
+        "can_handle_audio_input",
+        "can_handle_image_input",
+        "can_handle_image_tool_response",
+    )
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        missing = [
+            attr for attr in BaseHandler._REQUIRED_CAPABILITY_FLAGS if attr not in vars(cls)
+        ]
+        if missing:
+            raise TypeError(
+                f"{cls.__name__} must explicitly declare: {', '.join(missing)}"
+            )
+
     def __init__(
         self, model_name, temperature, registry_name, is_fc_model, **kwargs
     ) -> None:
