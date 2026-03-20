@@ -1,4 +1,4 @@
-{"id": "geoguessr_type1_0", "ground_truth": ["78.2232, 15.6267"]}
+{"id": "geoguessr_type1_0", "ground_truth": ["78.22295351095083, 15.627656919871827"]}
 {"id": "geoguessr_type1_1", "ground_truth": ["-23.698, 133.8807"]}
 {"id": "geoguessr_type1_2", "ground_truth": ["64.1464934, -21.9427864"]}
 {"id": "geoguessr_type1_3", "ground_truth": ["-43.5320179, 172.6352018"]}
@@ -9,13 +9,13 @@
 {"id": "geoguessr_type1_8", "ground_truth": ["45.6772908, -111.0430523"]}
 {"id": "geoguessr_type1_9", "ground_truth": ["46.8769336, -96.7894519"]}
 {"id": "geoguessr_type1_10", "ground_truth": ["44.4759, -73.2121"]}
-{"id": "geoguessr_type1_11", "ground_truth": ["43.263, -2.935"]}
+{"id": "geoguessr_type1_11", "ground_truth": ["43.2629194712061, -2.9350286076591914"]}
 {"id": "geoguessr_type1_12", "ground_truth": ["41.1577369, -8.6278261"]}
 {"id": "geoguessr_type1_13", "ground_truth": ["50.0647, 19.945"]}
 {"id": "geoguessr_type1_14", "ground_truth": ["59.4371275, 24.7560852"]}
 {"id": "geoguessr_type1_15", "ground_truth": ["42.6500373, 18.0933762"]}
 {"id": "geoguessr_type1_16", "ground_truth": ["41.7180869, 44.8266331"]}
-{"id": "geoguessr_type1_17", "ground_truth": ["27.7176733, 85.3270983"]}
+{"id": "geoguessr_type1_17", "ground_truth": ["27.717602710685952, 85.32711394520103"]}
 {"id": "geoguessr_type1_18", "ground_truth": ["47.881796, 106.9114568"]}
 {"id": "geoguessr_type1_19", "ground_truth": ["-0.1805375, -78.4667639"]}
 {"id": "geoguessr_type1_20", "ground_truth": ["-16.4956554, -68.1508609"]}
@@ -42,7 +42,7 @@
 {"id": "geoguessr_type1_41", "ground_truth": ["15.4896355, 120.5898637"]}
 {"id": "geoguessr_type1_42", "ground_truth": ["41.0685879, 21.0775386"]}
 {"id": "geoguessr_type1_43", "ground_truth": ["45.8928253, 12.2979247"]}
-{"id": "geoguessr_type1_44", "ground_truth": ["-17.7264928, -63.1660252"]}
+{"id": "geoguessr_type1_44", "ground_truth": ["-17.726534474761085, -63.165943897381624"]}
 {"id": "geoguessr_type1_45", "ground_truth": ["55.1739999, -118.7514"]}
 {"id": "geoguessr_type1_46", "ground_truth": ["31.2812801, -6.0578266"]}
 {"id": "geoguessr_type1_47", "ground_truth": ["-23.1528445, 46.0382021"]}
