@@ -63,6 +63,8 @@ def execute_multi_turn_func_call(
             if class_name not in STATELESS_CLASSES:
                 class_initial_config = initial_config.get(class_name, {})
                 # Deep copy the initial configuration to avoid mutation issues
+                # @HuanzhiMao TODO: update multi turn initial config format for reusability
+                # "WeatherCom": "./data/multi_turn_initial_state/weather_com.json",
                 class_instance._load_scenario(
                     copy.deepcopy(class_initial_config), long_context=long_context
                 )

@@ -545,6 +545,7 @@ def load_dataset_entry(
             # All other categories, we don't need any special handling
             all_entries = load_file(modality_path / f"{base_category}.json")
 
+    all_entries = resolve_initial_config_file_paths(all_entries, SERVER_INITIAL_CONFIG_VARIANT_PATH)
     all_entries = process_agentic_test_case(all_entries)
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
 
@@ -1016,6 +1017,43 @@ def clean_up_memory_prereq_entries(test_cases: list[dict]) -> list[dict]:
                 if dep_id in test_case_ids_to_generate
             ]
 
+    return test_cases
+
+
+def resolve_initial_config_file_paths(
+    test_cases: list[dict], base_dir: Path
+) -> list[dict]:
+    """
+    Resolve initial_config values that are file path strings.
+
+    An entry's initial_config maps class names to either an inline config dict
+    or a string file path pointing to an external JSON config file.  When the
+    value is a string, this function loads the referenced JSON file (resolved
+    relative to *base_dir*) and replaces the string with the loaded dict.
+
+    Inline dict (no change):
+        "initial_config": {
+            "GorillaFileSystem": {"root": {"workspace": {"type": "directory", ...}}}
+        }
+
+    File path string (resolved to loaded JSON):
+        "initial_config": {
+            "WeatherCom": "./weather_com_variants/weather_com_west.json"
+        }
+        ->
+        "initial_config": {
+            "WeatherCom": { <contents of weather_com_west.json> }
+        }
+    """
+    for entry in test_cases:
+        init_config = entry.get("initial_config")
+        if not isinstance(init_config, dict):
+            continue
+        for class_name, config_value in init_config.items():
+            if isinstance(config_value, str):
+                config_path = (base_dir / config_value).resolve()
+                with open(config_path) as f:
+                    init_config[class_name] = json.load(f)
     return test_cases
 
 
