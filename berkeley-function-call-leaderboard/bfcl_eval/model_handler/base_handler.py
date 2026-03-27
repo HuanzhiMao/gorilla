@@ -137,8 +137,11 @@ class BaseHandler:
         category_allow_clarification: bool = could_allow_clarification(test_category)
 
         # This is only for the miss function category
-        # A mapping from turn index to function to holdout
-        holdout_function: dict[int, list] = test_entry.get("missed_function", {})
+        # Supports conditions: "after_n_turns" and "after_first_invoke"
+        missed_classes_rules: list[dict] = test_entry.get("missed_classes", [])
+        if isinstance(missed_classes_rules, dict):
+            missed_classes_rules = [missed_classes_rules]
+        failure_injection: list | None = test_entry.get("failure_injection")
 
         total_input_token_count: list[list[float]] = []
         total_output_token_count: list[list[float]] = []
@@ -154,6 +157,7 @@ class BaseHandler:
         all_reasoning_content: list[list] = []
 
         # Execute no function call, but just to get a reference to all the instances to get the initial state for logging purpose
+        # Also applies failure_injection patches at instance creation time (turn 0).
         _, involved_instances = execute_multi_turn_func_call(
             [],
             initial_config,
@@ -162,6 +166,7 @@ class BaseHandler:
             test_entry_id,
             long_context=("long_context" in test_category or "composite" in test_category),
             is_evaL_run=False,
+            failure_injection=failure_injection,
         )
 
         if is_memory(test_category):
@@ -214,21 +219,24 @@ class BaseHandler:
                 )
                 self._compile_tools(inference_data, test_entry)
 
-            if str(turn_idx) in holdout_function:
-                test_entry["function"].extend(holdout_function[str(turn_idx)])
-                # Since we have added new functions, we need to recompile the tools
-                inference_data = self._compile_tools(inference_data, test_entry)
-                assert (
-                    len(current_turn_message) == 0
-                ), "Holdout turn should not have user message."
-                # TODO: Move this to before pre_query_processing_FC.
-                # Shouldn't be happening in the inference loop.
-                current_turn_message = [
-                    {
-                        "role": "user",
-                        "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
-                    }
-                ]
+            for mc_rule in missed_classes_rules:
+                if mc_rule.get("_released"):
+                    continue
+                if mc_rule["condition"] == "after_n_turns" and turn_idx == mc_rule["value"]:
+                    test_entry["function"].extend(mc_rule["holdout_func_docs"])
+                    inference_data = self._compile_tools(inference_data, test_entry)
+                    mc_rule["_released"] = True
+                    assert (
+                        len(current_turn_message) == 0
+                    ), "Holdout turn should not have user message."
+                    # TODO: Move this to before pre_query_processing_FC.
+                    # Shouldn't be happening in the inference loop.
+                    current_turn_message = [
+                        {
+                            "role": "user",
+                            "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
+                        }
+                    ]
 
             current_turn_message_for_logging = deepcopy(current_turn_message)
             if contain_vision_input(test_category):
@@ -402,6 +410,19 @@ class BaseHandler:
                                 }
                             )
 
+                    # Check if holdout functions should be released after this invocation
+                    for mc_rule in missed_classes_rules:
+                        if mc_rule.get("_released"):
+                            continue
+                        if mc_rule["condition"] == "after_first_invoke":
+                            target_func = mc_rule["value"]
+                            for func_call in decoded_model_responses:
+                                if isinstance(func_call, str) and func_call.startswith(target_func + "("):
+                                    test_entry["function"].extend(mc_rule["holdout_func_docs"])
+                                    inference_data = self._compile_tools(inference_data, test_entry)
+                                    mc_rule["_released"] = True
+                                    break
+
                     # If the model has taken too many steps, we force it to quit.
                     if step_count > max_step_limit:
                         force_quit = True
@@ -545,6 +566,7 @@ class BaseHandler:
         include_input_log: bool,
         exclude_state_log: bool,
     ) -> tuple[list[list], dict]:
+        raise NotImplementedError
         initial_config: dict = test_entry.get("initial_config", {})
         involved_classes: list = test_entry["involved_classes"]
         test_entry_id: str = test_entry["id"]
@@ -553,8 +575,11 @@ class BaseHandler:
         max_step_limit = MAXIMUM_STEP_LIMIT.get(modality, MAXIMUM_STEP_LIMIT_DEFAULT)
 
         # This is only for the miss function category
-        # A mapping from turn index to function to holdout
-        holdout_function: dict[int, list] = test_entry.get("missed_function", {})
+        # Supports conditions: "after_n_turns" and "after_first_invoke"
+        missed_classes_rules: list[dict] = test_entry.get("missed_classes", [])
+        if isinstance(missed_classes_rules, dict):
+            missed_classes_rules = [missed_classes_rules]
+        failure_injection: list | None = test_entry.get("failure_injection")
 
         total_input_token_count: list[list[float]] = []
         total_output_token_count: list[list[float]] = []
@@ -568,6 +593,7 @@ class BaseHandler:
         force_quit = False  # Whether the model has been forced to quit. If True, this whole entry will be failed.
 
         # Execute no function call, but just to get a reference to all the instances to get the initial state for logging purpose
+        # Also applies failure_injection patches at instance creation time (turn 0).
         _, involved_instances = execute_multi_turn_func_call(
             [],
             initial_config,
@@ -576,6 +602,7 @@ class BaseHandler:
             test_entry_id,
             long_context=("long_context" in test_category or "composite" in test_category),
             is_evaL_run=False,
+            failure_injection=failure_injection,
         )
 
         if is_memory(test_category):
@@ -618,18 +645,22 @@ class BaseHandler:
         for turn_idx, current_turn_message in enumerate(all_multi_turn_messages):
             current_turn_message: list[dict]
 
-            if str(turn_idx) in holdout_function:
-                assert (
-                    len(current_turn_message) == 0
-                ), "Holdout turn should not have user message."
-                current_turn_message = [
-                    {
-                        "role": "user",
-                        "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING.format(
-                            functions=holdout_function[str(turn_idx)]
-                        ),
-                    }
-                ]
+            for mc_rule in missed_classes_rules:
+                if mc_rule.get("_released"):
+                    continue
+                if mc_rule["condition"] == "after_n_turns" and turn_idx == mc_rule["value"]:
+                    mc_rule["_released"] = True
+                    assert (
+                        len(current_turn_message) == 0
+                    ), "Holdout turn should not have user message."
+                    current_turn_message = [
+                        {
+                            "role": "user",
+                            "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING.format(
+                                functions=mc_rule["holdout_func_docs"]
+                            ),
+                        }
+                    ]
 
             current_turn_response = []
             current_turn_reasoning_content = []
@@ -769,6 +800,28 @@ class BaseHandler:
                             "content": execution_result,
                         }
                     )
+
+                # Check if holdout functions should be released after this invocation
+                for mc_rule in missed_classes_rules:
+                    if mc_rule.get("_released"):
+                        continue
+                    if mc_rule["condition"] == "after_first_invoke":
+                        target_func = mc_rule["value"]
+                        for func_call in decoded_model_responses:
+                            if isinstance(func_call, str) and func_call.startswith(target_func + "("):
+                                inference_data = self._add_next_turn_user_message_prompting(
+                                    inference_data,
+                                    [
+                                        {
+                                            "role": "user",
+                                            "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING.format(
+                                                functions=mc_rule["holdout_func_docs"]
+                                            ),
+                                        }
+                                    ],
+                                )
+                                mc_rule["_released"] = True
+                                break
 
                 step_count += 1
                 # Force quit after too many steps

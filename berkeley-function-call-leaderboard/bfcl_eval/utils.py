@@ -971,18 +971,38 @@ def populate_test_cases_with_predefined_functions(test_cases: list[dict]) -> lis
             )
             entry["function"].extend(func_doc)
 
-        # Handle Miss Func category; we need to remove the holdout function doc
-        if "missed_function" in entry:
-            for turn_index, missed_func_names in entry["missed_function"].items():
-                entry["missed_function"][turn_index] = []
-                for missed_func_name in missed_func_names:
-                    for i, func_doc in enumerate(entry["function"]):
-                        if func_doc["name"] == missed_func_name:
-                            # Add the missed function doc to the missed_function list
-                            entry["missed_function"][turn_index].append(func_doc)
-                            # Remove it from the function list
-                            entry["function"].pop(i)
-                            break
+        # Handle Miss Func category; we need to remove the holdout function docs
+        if "missed_classes" in entry:
+            rules = entry["missed_classes"]
+            if isinstance(rules, dict):
+                rules = [rules]
+                entry["missed_classes"] = rules
+
+            for mc_rule in rules:
+                holdout_func_docs = []
+
+                # Remove entire classes of functions
+                if "holdout_classes" in mc_rule:
+                    for class_name in mc_rule["holdout_classes"]:
+                        class_func_docs = load_file(
+                            MULTI_TURN_FUNC_DOC_PATH / MULTI_TURN_FUNC_DOC_FILE_MAPPING[class_name]
+                        )
+                        holdout_func_docs.extend(class_func_docs)
+                        holdout_func_names = {f["name"] for f in class_func_docs}
+                        entry["function"] = [
+                            f for f in entry["function"] if f["name"] not in holdout_func_names
+                        ]
+
+                # Remove individual functions
+                if "holdout_functions" in mc_rule:
+                    for func_name in mc_rule["holdout_functions"]:
+                        for i, func_doc in enumerate(entry["function"]):
+                            if func_doc["name"] == func_name:
+                                holdout_func_docs.append(func_doc)
+                                entry["function"].pop(i)
+                                break
+
+                mc_rule["holdout_func_docs"] = holdout_func_docs
 
     return test_cases
 
