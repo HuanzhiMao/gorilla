@@ -65,7 +65,7 @@ MEMORY_PREREQ_CONVERSATION_PATH = TEXT_DATASET_PATH / "memory_prereq_conversatio
 UTILS_PATH = PACKAGE_ROOT / "scripts"
 FORMAT_SENSITIVITY_IDS_PATH = TEXT_DATASET_PATH / "format_sensitivity.json"
 SERVER_INITIAL_CONFIG_VARIANT_PATH = TEXT_DATASET_PATH / "server_initial_config_variant"
-SERVER_FAILURE_PATCH_PATH = TEXT_DATASET_PATH / "server_failure_path"
+SERVER_FAILURE_PATCH_PATH = TEXT_DATASET_PATH / "server_failure_patch"
 
 RESULT_FILE_PATTERN = "*_result.json"
 SCORE_FILE_PATTERN = "*_score.json"
