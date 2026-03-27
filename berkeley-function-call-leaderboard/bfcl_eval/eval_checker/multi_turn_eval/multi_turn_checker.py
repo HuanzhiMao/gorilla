@@ -1,3 +1,6 @@
+import ast
+import re
+
 from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     execute_multi_turn_func_call,
     is_empty_execute_response,
@@ -312,3 +315,230 @@ def _is_subsequence_unordered(list1, list2) -> tuple[bool, list]:
     # If there are missing elements, list1 is not a subsequence of list2
     is_subsequence = len(missing_elements) == 0
     return is_subsequence, missing_elements
+
+
+#### Function Call Constraint Checker ####
+
+
+def multi_turn_func_call_constraint_checker(
+    multi_turn_model_result_list_decoded: list[list[list[str]]],
+    ground_truth: dict,
+) -> dict:
+    """
+    Checks the model's function calls against must_be_called and must_not_be_called constraints.
+
+    Args:
+        multi_turn_model_result_list_decoded: The decoded model responses across turns.
+            Structure: list[turns] -> list[steps] -> list[func_call_strings]
+        ground_truth: A dict with keys:
+            - "must_be_called_functions": list of function specs that must appear in order.
+            - "must_not_be_called_functions": list of function specs that must not appear.
+
+    Each function spec is either:
+        - "ClassName.method_name" — only checks that the method was called (args ignored)
+        - "ClassName.method_name(arg1=val1, arg2=val2)" — checks that the method was called
+          with at least the listed arguments matching the listed values (extra args are ok)
+    """
+    must_be_called = ground_truth.get("must_be_called_functions", [])
+    must_not_be_called = ground_truth.get("must_not_be_called_functions", [])
+
+    # Flatten all model function calls across turns and steps into a single ordered list
+    all_model_calls = []
+    for turn in multi_turn_model_result_list_decoded:
+        for step in turn:
+            for func_call in step:
+                all_model_calls.append(func_call)
+
+    # Parse the constraint specs
+    must_be_called_specs = [_parse_func_spec(spec) for spec in must_be_called]
+    must_not_be_called_specs = [_parse_func_spec(spec) for spec in must_not_be_called]
+
+    # Check must_be_called: must appear as a subsequence (in order, other calls allowed in between)
+    must_be_called_result = _check_must_be_called(all_model_calls, must_be_called_specs)
+    if not must_be_called_result["valid"]:
+        return must_be_called_result
+
+    # Check must_not_be_called: none of these should appear
+    must_not_be_called_result = _check_must_not_be_called(
+        all_model_calls, must_not_be_called_specs
+    )
+    if not must_not_be_called_result["valid"]:
+        return must_not_be_called_result
+
+    return {"valid": True}
+
+
+def _parse_func_spec(spec: str) -> dict:
+    """
+    Parse a function constraint spec into its components.
+
+    Supports:
+        "ClassName.method_name" -> {"class": "ClassName", "method": "method_name", "args": None}
+        "ClassName.method_name(a=1, b='x')" -> {"class": "ClassName", "method": "method_name", "args": {"a": 1, "b": "x"}}
+        "method_name" -> {"class": None, "method": "method_name", "args": None}
+        "method_name(a=1)" -> {"class": None, "method": "method_name", "args": {"a": 1}}
+    """
+    # Split off args portion if present
+    paren_idx = spec.find("(")
+    if paren_idx != -1:
+        name_part = spec[:paren_idx]
+        args_str = spec[paren_idx:]  # includes parens
+        args = _parse_args(args_str)
+    else:
+        name_part = spec
+        args = None
+
+    # Split class and method
+    if "." in name_part:
+        class_name, method_name = name_part.rsplit(".", 1)
+    else:
+        class_name = None
+        method_name = name_part
+
+    return {
+        "class": class_name,
+        "method": method_name,
+        "args": args,
+        "raw": spec,
+    }
+
+
+def _parse_args(args_str: str) -> dict:
+    """
+    Parse an argument string like "(query='hello', max_results=10)" into a dict.
+    Uses ast to safely evaluate the argument values.
+    """
+    # Wrap in a dummy function call so ast can parse it
+    dummy_call = f"f{args_str}"
+    try:
+        tree = ast.parse(dummy_call, mode="eval")
+        call_node = tree.body
+        args = {}
+        # Handle keyword arguments
+        for kw in call_node.keywords:
+            args[kw.arg] = ast.literal_eval(kw.value)
+        # Handle positional arguments (store by index)
+        for i, arg in enumerate(call_node.args):
+            args[i] = ast.literal_eval(arg)
+        return args
+    except (SyntaxError, ValueError):
+        return {}
+
+
+def _parse_model_call(func_call: str) -> dict:
+    """
+    Parse a model function call string into method name and arguments.
+
+    Model calls can be:
+        "method_name(arg1=val1, ...)"
+        "ClassName.method_name(arg1=val1, ...)"
+    """
+    paren_idx = func_call.find("(")
+    if paren_idx != -1:
+        name_part = func_call[:paren_idx].strip()
+        args_str = func_call[paren_idx:]
+        args = _parse_args(args_str)
+    else:
+        name_part = func_call.strip()
+        args = {}
+
+    if "." in name_part:
+        class_name, method_name = name_part.rsplit(".", 1)
+    else:
+        class_name = None
+        method_name = name_part
+
+    return {
+        "class": class_name,
+        "method": method_name,
+        "args": args,
+    }
+
+
+def _func_call_matches_spec(func_call: str, spec: dict) -> bool:
+    """
+    Check if a model function call string matches a constraint spec.
+
+    Matching rules:
+    - Method name must match.
+    - If spec has a class name, the model call's class must match (if present) or is ignored
+      (since model calls may not include class prefixes).
+    - If spec has args, every arg in the spec must be present in the model call with the same value.
+      The model call may have additional args.
+    """
+    parsed = _parse_model_call(func_call)
+
+    # Method name must match
+    if parsed["method"] != spec["method"]:
+        return False
+
+    # Note: spec may have a class name (e.g. "WeatherCom.login") but that's purely for
+    # human readability. Model calls never include class prefixes, so we don't check it.
+
+    # If spec has no args requirement, we're done (just checking the function was called)
+    if spec["args"] is None:
+        return True
+
+    # Check that all spec args are present in the model call with matching values
+    for key, expected_value in spec["args"].items():
+        if key not in parsed["args"]:
+            return False
+        if parsed["args"][key] != expected_value:
+            return False
+
+    return True
+
+
+def _check_must_be_called(
+    all_model_calls: list[str], specs: list[dict]
+) -> dict:
+    """
+    Check that all specs appear as a subsequence of the model calls (in order).
+    The model can call other functions in between.
+    """
+    if not specs:
+        return {"valid": True}
+
+    spec_idx = 0
+    for func_call in all_model_calls:
+        if spec_idx >= len(specs):
+            break
+        if _func_call_matches_spec(func_call, specs[spec_idx]):
+            spec_idx += 1
+
+    if spec_idx < len(specs):
+        missing = [spec["raw"] for spec in specs[spec_idx:]]
+        return {
+            "valid": False,
+            "error_message": f"Required function calls not found (in order) in model response. Missing: {missing}",
+            "error_type": "multi_turn:must_be_called_missing",
+            "details": {
+                "missing_specs": missing,
+                "model_calls": all_model_calls,
+            },
+        }
+
+    return {"valid": True}
+
+
+def _check_must_not_be_called(
+    all_model_calls: list[str], specs: list[dict]
+) -> dict:
+    """
+    Check that none of the specs match any model call.
+    """
+    for func_call in all_model_calls:
+        for spec in specs:
+            if _func_call_matches_spec(func_call, spec):
+                return {
+                    "valid": False,
+                    "error_message": f"Function call '{func_call}' matches forbidden spec '{spec['raw']}'.",
+                    "error_type": "multi_turn:must_not_be_called_violation",
+                    "details": {
+                        "matched_call": func_call,
+                        "forbidden_spec": spec["raw"],
+                        "model_calls": all_model_calls,
+                    },
+                }
+
+    return {"valid": True}
