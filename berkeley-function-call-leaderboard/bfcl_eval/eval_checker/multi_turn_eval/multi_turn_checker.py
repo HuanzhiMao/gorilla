@@ -24,6 +24,7 @@ def multi_turn_checker(
     involved_classes: list = test_entry["involved_classes"]
     test_entry_id: str = test_entry["id"]
     test_category: str = test_entry_id.rsplit("_", 1)[0]
+    failure_injection: list | None = test_entry.get("failure_injection")
     execution_results: list[dict] = []
     all_turn_model_execution_results: list[dict] = []
 
@@ -33,13 +34,16 @@ def multi_turn_checker(
     ):
         single_turn_model_response_list = multi_turn_model_result_list_decoded[turn_index]
 
+        # failure_injection patches are applied only on the first turn (turn 0)
+        turn_failure_injection = failure_injection if turn_index == 0 else None
+
         # Note that we combine all the sub-step results into a single list, for easier comparison
         single_turn_model_execution_results = []
         single_turn_model_execution_results_uncombined = []
         single_turn_ground_truth_execution_results = []
         model_instances = {}  # Will be overwritten in the for loop
         single_step_model_execution_results = []  # Will be overwritten in the for loop
-    
+
         for single_step_model_response in single_turn_model_response_list:
             single_step_model_execution_results, model_instances = (
                 execute_multi_turn_func_call(
@@ -52,6 +56,7 @@ def multi_turn_checker(
                         "long_context" in test_category or "composite" in test_category
                     ),
                     is_evaL_run=True,
+                    failure_injection=turn_failure_injection,
                 )
             )
             single_turn_model_execution_results.extend(single_step_model_execution_results)
@@ -69,6 +74,7 @@ def multi_turn_checker(
                     "long_context" in test_category or "composite" in test_category
                 ),
                 is_evaL_run=True,
+                failure_injection=turn_failure_injection,
             )
         )
 

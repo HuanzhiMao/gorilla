@@ -1,6 +1,9 @@
 from copy import deepcopy
 from typing import Dict, List, Optional, Union
 
+# @HuanzhiMao FIXME: Remove this later, after testing.
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.server_patch_mixin import PatchableMixin
+
 DEFAULT_STATE = {
     "username": "john",
     "password": "john123",
@@ -13,7 +16,7 @@ DEFAULT_STATE = {
 }
 
 
-class TwitterAPI:
+class TwitterAPI(PatchableMixin):
     def __init__(self):
         self.username: str
         self.password: str

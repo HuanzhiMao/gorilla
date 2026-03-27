@@ -29,6 +29,8 @@ for test_category in test_categories_total:
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
 
+        failure_injection = test_entry.get("failure_injection")
+
         _, involved_instances = execute_multi_turn_func_call(
             [],
             initial_config,
@@ -37,6 +39,7 @@ for test_category in test_categories_total:
             test_entry_id,
             long_context=("long_context" in test_category or "composite" in test_category),
             is_evaL_run=False,
+            failure_injection=failure_injection,
         )
 
         state_log = []

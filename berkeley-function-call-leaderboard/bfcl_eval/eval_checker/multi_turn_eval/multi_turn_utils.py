@@ -1,16 +1,65 @@
 import copy
 import importlib
+import importlib.util
 import inspect
 import json
 import keyword
 import re
 
+from bfcl_eval.constants.eval_config import SERVER_FAILURE_PATCH_PATH
 from bfcl_eval.constants.executable_backend_config import (
     CLASS_FILE_PATH_MAPPING,
     STATELESS_CLASSES,
 )
 from bfcl_eval.constants.enums import ResultType
 from bfcl_eval.eval_checker.multi_turn_eval.func_source_code import ImageResult
+
+_server_patches_loaded = False
+
+
+def _load_all_server_patches():
+    """
+    Import all patch modules from SERVER_FAILURE_PATCH_PATH so that their
+    @register_patch decorators execute and populate the class patch registries.
+
+    This is idempotent — subsequent calls are no-ops.
+    """
+    global _server_patches_loaded
+    if _server_patches_loaded:
+        return
+    _server_patches_loaded = True
+
+    if not SERVER_FAILURE_PATCH_PATH.is_dir():
+        return
+
+    for patch_file in sorted(SERVER_FAILURE_PATCH_PATH.glob("*.py")):
+        if patch_file.name.startswith("_"):
+            continue
+        spec = importlib.util.spec_from_file_location(patch_file.stem, patch_file)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+
+def _apply_failure_injections(involved_instances: dict, failure_injection: list):
+    """
+    Apply server-failure patches to the given class instances.
+
+    Args:
+        involved_instances: Mapping of class name -> instance.
+        failure_injection: A list of [ClassName.method_name, patch_name] pairs.
+            e.g. [["WeatherComAPI.compare_locations", "FEATURE_SUSPENDED"]]
+    """
+    _load_all_server_patches()
+
+    for spec in failure_injection:
+        class_method, patch_name = spec
+        class_name, method_name = class_method.rsplit(".", 1)
+        if class_name not in involved_instances:
+            raise ValueError(
+                f"failure_injection references class '{class_name}' "
+                f"but it is not in involved_classes: {sorted(involved_instances)}"
+            )
+        involved_instances[class_name].apply_patch(method_name, patch_name)
 
 
 def execute_multi_turn_func_call(
@@ -21,6 +70,7 @@ def execute_multi_turn_func_call(
     test_entry_id: str,
     long_context: bool = False,
     is_evaL_run: bool = False,
+    failure_injection: list | None = None,
 ) -> tuple[list[dict], dict]:
     """
     Execute a list of function calls against dynamically loaded class instances.
@@ -40,6 +90,8 @@ def execute_multi_turn_func_call(
         test_entry_id: The test entry ID, used as part of the instance cache key.
         long_context: Whether to load the scenario in long-context mode.
         is_evaL_run: If True, appends "_eval" to the model name for cache isolation.
+        failure_injection: Optional list of [ClassName.method_name, patch_name] pairs
+            to apply after instance creation (turn 0 only).
 
     Returns:
         A tuple of (execution_results, involved_instances) where:
@@ -52,11 +104,13 @@ def execute_multi_turn_func_call(
 
     class_method_name_mapping = {}
     involved_instances = {}
+    newly_created = False
     for class_name in involved_classes:
         module_name = CLASS_FILE_PATH_MAPPING[class_name]
         instance_name = f"{model_name}_{test_entry_id}_{class_name}_instance"
         instance_name = _sanitize_class_instance_name(instance_name)
         if instance_name not in globals():
+            newly_created = True
             module = importlib.import_module(module_name)
             class_ = getattr(module, class_name)
             class_instance = class_()
@@ -83,6 +137,10 @@ def execute_multi_turn_func_call(
             if method_name.startswith("_"):
                 continue
             class_method_name_mapping[method_name] = instance_name
+
+    # Apply failure-injection patches once, right after instances are first created.
+    if failure_injection and newly_created:
+        _apply_failure_injections(involved_instances, failure_injection)
 
     execution_results = []
     for func_call in func_call_list:
