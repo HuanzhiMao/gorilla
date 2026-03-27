@@ -415,7 +415,10 @@ class BaseHandler:
                         if mc_rule.get("_released"):
                             continue
                         if mc_rule["condition"] == "after_first_invoke":
+                            # Value may be "ClassName.func_name"; decoded responses use bare func names
                             target_func = mc_rule["value"]
+                            if "." in target_func:
+                                target_func = target_func.split(".", 1)[1]
                             for func_call in decoded_model_responses:
                                 if isinstance(func_call, str) and func_call.startswith(target_func + "("):
                                     test_entry["function"].extend(mc_rule["holdout_func_docs"])
@@ -806,7 +809,10 @@ class BaseHandler:
                     if mc_rule.get("_released"):
                         continue
                     if mc_rule["condition"] == "after_first_invoke":
+                        # Value may be "ClassName.func_name"; decoded responses use bare func names
                         target_func = mc_rule["value"]
+                        if "." in target_func:
+                            target_func = target_func.split(".", 1)[1]
                         for func_call in decoded_model_responses:
                             if isinstance(func_call, str) and func_call.startswith(target_func + "("):
                                 inference_data = self._add_next_turn_user_message_prompting(
