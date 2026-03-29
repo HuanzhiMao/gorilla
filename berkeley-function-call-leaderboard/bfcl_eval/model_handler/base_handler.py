@@ -139,8 +139,6 @@ class BaseHandler:
         # This is only for the miss function category
         # Supports conditions: "after_n_turns" and "after_n_invoke"
         missed_classes_rules: list[dict] = test_entry.get("missed_classes", [])
-        if isinstance(missed_classes_rules, dict):
-            missed_classes_rules = [missed_classes_rules]
         failure_injection: list | None = test_entry.get("failure_injection")
 
         total_input_token_count: list[list[float]] = []
@@ -583,8 +581,6 @@ class BaseHandler:
         # This is only for the miss function category
         # Supports conditions: "after_n_turns" and "after_n_invoke"
         missed_classes_rules: list[dict] = test_entry.get("missed_classes", [])
-        if isinstance(missed_classes_rules, dict):
-            missed_classes_rules = [missed_classes_rules]
         failure_injection: list | None = test_entry.get("failure_injection")
 
         total_input_token_count: list[list[float]] = []
