@@ -17,7 +17,7 @@ from copy import deepcopy
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -72,7 +72,7 @@ DEFAULT_STATE = {
 }
 
 
-class FidelityAPI(BaseServiceAPI):
+class FidelityAPI(PatchableMixin):
     """
     In-memory dummy implementation of a Fidelity-like brokerage.
 
@@ -80,14 +80,9 @@ class FidelityAPI(BaseServiceAPI):
     analyst ratings, fund screening, a watchlist, and tax lot tracking.
     """
 
-    _STATE_KEYS = (
-        "profile", "portfolio", "positions", "orders", "watchlist", "tax_lots",
-    )
-    _ID_COUNTER_DEFAULTS = {"order": 0, "tax_lot": 0}
-    _DEFAULT_SEED = 6002
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = {"order": 0, "tax_lot": 0}
         self.profile: Dict[str, Any]
         self.portfolio: Dict[str, Dict[str, Any]]
         self.positions: Dict[str, Dict[str, Any]]
@@ -100,6 +95,11 @@ class FidelityAPI(BaseServiceAPI):
             "analyst research, fund screening, and tax lot tracking."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

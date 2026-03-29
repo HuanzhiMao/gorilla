@@ -19,7 +19,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -83,7 +83,7 @@ DEFAULT_STATE = {
 }
 
 
-class AppleMusicAPI(BaseServiceAPI):
+class AppleMusicAPI(PatchableMixin):
     """
     In-memory dummy implementation of an Apple Music-like streaming service.
     Supports library-centric workflow, love/dislike ratings, curated stations,
@@ -91,16 +91,9 @@ class AppleMusicAPI(BaseServiceAPI):
     playback without explicit device management.
     """
 
-    _STATE_KEYS = (
-        "profile", "player", "playlists",
-        "artists", "albums", "songs",
-        "stations", "ratings", "recently_played", "recently_added", "editorial_content",
-    )
-    _ID_COUNTER_DEFAULTS = {"playlist": 0, "station": 0}
-    _DEFAULT_SEED = 99
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = {"playlist": 0, "station": 0}
         self.profile: Dict[str, Any]
         self.player: Dict[str, Any]
         self.playlists: Dict[str, Dict[str, Any]]
@@ -119,6 +112,11 @@ class AppleMusicAPI(BaseServiceAPI):
             "and discover new music through editorial content."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

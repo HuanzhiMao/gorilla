@@ -18,7 +18,7 @@ from copy import deepcopy
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 class YahooWeatherError(Exception):
@@ -62,7 +62,7 @@ DEFAULT_STATE = {
 }
 
 
-class YahooWeatherAPI(BaseServiceAPI):
+class YahooWeatherAPI(PatchableMixin):
     """
     In-memory dummy Yahoo Weather — simpler weather service.
 
@@ -94,20 +94,9 @@ class YahooWeatherAPI(BaseServiceAPI):
     radar.
     """
 
-    _STATE_KEYS = (
-        "profile",
-        "current_weather",
-        "hourly_forecast",
-        "daily_forecast",
-        "alerts",
-        "historical_weather",
-        "location_index",
-    )
-    _ID_COUNTER_DEFAULTS = {}
-    _DEFAULT_SEED = 9002
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = {}
         self.profile: Dict[str, Any]
         self.current_weather: Dict[str, Dict[str, Any]]
         self.hourly_forecast: Dict[str, Dict[str, Any]]

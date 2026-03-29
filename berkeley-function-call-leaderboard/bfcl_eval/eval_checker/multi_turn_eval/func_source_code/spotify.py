@@ -18,7 +18,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -85,26 +85,16 @@ DEFAULT_STATE = {
 }
 
 
-class SpotifyAPI(BaseServiceAPI):
+class SpotifyAPI(PatchableMixin):
     """
     In-memory dummy implementation of a Spotify-like music streaming service.
     Supports device-bound playback, collaborative playlists, Spotify Connect,
     context URIs, podcasts, and seed-based recommendations.
     """
 
-    _STATE_KEYS = (
-        "profile", "player", "playlists",
-        "artists", "albums", "songs",
-        "shows", "episodes", "followed_users",
-    )
-    _ID_COUNTER_DEFAULTS = {
-        "playlist": 0,
-        "device": 0,
-    }
-    _DEFAULT_SEED = 42
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = { "playlist": 0, "device": 0, }
         self.profile: Dict[str, Any]
         self.player: Dict[str, Any]
         self.playlists: Dict[str, Dict[str, Any]]
@@ -120,6 +110,11 @@ class SpotifyAPI(BaseServiceAPI):
             "devices, save tracks and albums, follow artists, and listen to podcasts."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

@@ -18,7 +18,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -83,7 +83,7 @@ DEFAULT_STATE = {
 }
 
 
-class GmailAPI(BaseServiceAPI):
+class GmailAPI(PatchableMixin):
     """
     In-memory dummy implementation of a Gmail-like email service.
 
@@ -100,12 +100,9 @@ class GmailAPI(BaseServiceAPI):
     Supports multi-user switching via switch_user().
     """
 
-    _STATE_KEYS = ("profile", "emails", "drafts", "contacts", "folders")
-    _ID_COUNTER_DEFAULTS = {"email": 0, "thread": 0, "draft": 0}
-    _DEFAULT_SEED = 1234
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = {"email": 0, "thread": 0, "draft": 0}
         self.profile: Dict[str, Dict[str, Any]] = {}
         self.emails: Dict[str, Dict[str, Any]] = {}
         self.drafts: Dict[str, Dict[str, Any]] = {}
@@ -117,6 +114,11 @@ class GmailAPI(BaseServiceAPI):
             "with thread-based conversation grouping."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

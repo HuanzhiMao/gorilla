@@ -18,7 +18,7 @@ from copy import deepcopy
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 class WeatherComError(Exception):
@@ -63,7 +63,7 @@ DEFAULT_STATE = {
 }
 
 
-class WeatherComAPI(BaseServiceAPI):
+class WeatherComAPI(PatchableMixin):
     """
     In-memory dummy Weather.com — comprehensive weather platform.
 
@@ -102,21 +102,9 @@ class WeatherComAPI(BaseServiceAPI):
     get_historical_weather.
     """
 
-    _STATE_KEYS = (
-        "profile",
-        "current_weather",
-        "hourly_forecast",
-        "daily_forecast",
-        "alerts",
-        "air_quality",
-        "historical_weather",
-        "location_index",
-    )
-    _ID_COUNTER_DEFAULTS = {}
-    _DEFAULT_SEED = 9001
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = {}
         self.profile: Dict[str, Any]
         self.current_weather: Dict[str, Dict[str, Any]]
         self.hourly_forecast: Dict[str, Dict[str, Any]]

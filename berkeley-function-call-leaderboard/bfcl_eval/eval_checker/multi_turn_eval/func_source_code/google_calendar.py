@@ -16,7 +16,7 @@ from copy import deepcopy
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -69,7 +69,7 @@ DEFAULT_STATE = {
 }
 
 
-class GoogleCalendarAPI(BaseServiceAPI):
+class GoogleCalendarAPI(PatchableMixin):
     """
     In-memory dummy implementation of Google Calendar.
 
@@ -90,12 +90,9 @@ class GoogleCalendarAPI(BaseServiceAPI):
     reminders, free/busy queries, and calendar sharing with ACL management.
     """
 
-    _STATE_KEYS = ("profile", "calendars", "events", "calendar_acls")
-    _ID_COUNTER_DEFAULTS = {"calendar": 0, "event": 0}
-    _DEFAULT_SEED = 7001
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = {"calendar": 0, "event": 0}
         self.profile: Dict[str, Any]
         self.calendars: Dict[str, Dict[str, Any]]
         self.events: Dict[str, Dict[str, Any]]
@@ -107,6 +104,11 @@ class GoogleCalendarAPI(BaseServiceAPI):
             "calendar sharing with ACL management."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

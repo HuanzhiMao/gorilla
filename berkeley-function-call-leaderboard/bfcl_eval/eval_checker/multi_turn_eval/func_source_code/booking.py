@@ -17,7 +17,7 @@ from copy import deepcopy
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 class BookingError(Exception):
@@ -48,7 +48,7 @@ DEFAULT_STATE = {
 }
 
 
-class BookingAPI(BaseServiceAPI):
+class BookingAPI(PatchableMixin):
     """
     In-memory dummy Booking.com — accommodation-focused travel platform.
 
@@ -74,12 +74,9 @@ class BookingAPI(BaseServiceAPI):
     amenities, and rating.
     """
 
-    _STATE_KEYS = ("profile", "properties", "room_types", "bookings")
-    _ID_COUNTER_DEFAULTS = {"booking": 0}
-    _DEFAULT_SEED = 8001
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = {"booking": 0}
         self.profile: Dict[str, Any]
         self.properties: Dict[str, Dict[str, Any]]
         self.room_types: Dict[str, Dict[str, Any]]
@@ -90,6 +87,11 @@ class BookingAPI(BaseServiceAPI):
             "availability, and booking management."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

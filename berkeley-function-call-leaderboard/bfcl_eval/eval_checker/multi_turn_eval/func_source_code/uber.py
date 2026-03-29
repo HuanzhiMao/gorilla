@@ -18,7 +18,7 @@ from copy import deepcopy
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 class UberError(Exception):
@@ -52,7 +52,7 @@ DEFAULT_STATE = {
 }
 
 
-class UberAPI(BaseServiceAPI):
+class UberAPI(PatchableMixin):
     """
     In-memory dummy Uber ride-hailing platform.
 
@@ -72,12 +72,9 @@ class UberAPI(BaseServiceAPI):
     rides, fare splitting, driver matching, tipping, and ride rating.
     """
 
-    _STATE_KEYS = ("profile", "rides", "drivers", "ride_types", "offers")
-    _ID_COUNTER_DEFAULTS = {"ride": 0, "split": 0}
-    _DEFAULT_SEED = 8003
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = {"ride": 0, "split": 0}
         self.profile: Dict[str, Any]
         self.rides: Dict[str, Dict[str, Any]]
         self.drivers: Dict[str, Dict[str, Any]]
@@ -89,6 +86,11 @@ class UberAPI(BaseServiceAPI):
             "multi-stop rides, fare splitting, driver info, and ride history."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

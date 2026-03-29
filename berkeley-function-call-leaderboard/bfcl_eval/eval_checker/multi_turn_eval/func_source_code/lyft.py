@@ -18,7 +18,7 @@ from copy import deepcopy
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 class LyftError(Exception):
@@ -53,7 +53,7 @@ DEFAULT_STATE = {
 }
 
 
-class LyftAPI(BaseServiceAPI):
+class LyftAPI(PatchableMixin):
     """
     In-memory dummy Lyft ride-hailing platform.
 
@@ -75,12 +75,9 @@ class LyftAPI(BaseServiceAPI):
     round-up donations, driver matching, tipping, and ride rating.
     """
 
-    _STATE_KEYS = ("profile", "rides", "drivers", "ride_types", "offers")
-    _ID_COUNTER_DEFAULTS = {"ride": 0}
-    _DEFAULT_SEED = 8004
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = {"ride": 0}
         self.profile: Dict[str, Any]
         self.rides: Dict[str, Dict[str, Any]]
         self.drivers: Dict[str, Dict[str, Any]]
@@ -92,6 +89,11 @@ class LyftAPI(BaseServiceAPI):
             "priority pickup, round-up donations, and ride history."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

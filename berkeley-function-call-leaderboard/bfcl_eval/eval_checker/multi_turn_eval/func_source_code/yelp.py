@@ -18,7 +18,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -64,7 +64,7 @@ DEFAULT_STATE = {
 }
 
 
-class YelpAPI(BaseServiceAPI):
+class YelpAPI(PatchableMixin):
     """
     In-memory dummy implementation of a Yelp-like restaurant review service.
 
@@ -80,12 +80,9 @@ class YelpAPI(BaseServiceAPI):
     Current-user perspective: no registration or account switching.
     """
 
-    _STATE_KEYS = ("profile", "businesses", "reviews", "saved_places")
-    _ID_COUNTER_DEFAULTS = {"review": 0}
-    _DEFAULT_SEED = 7890
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = {"review": 0}
         self.profile: Dict[str, Any] = {}
         self.businesses: Dict[str, Dict[str, Any]] = {}
         self.reviews: Dict[str, Dict[str, Any]] = {}
@@ -96,6 +93,11 @@ class YelpAPI(BaseServiceAPI):
             "managing saved/bookmarked businesses."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

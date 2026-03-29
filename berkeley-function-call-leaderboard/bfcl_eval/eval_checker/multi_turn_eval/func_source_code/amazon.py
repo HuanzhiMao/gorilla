@@ -19,7 +19,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -83,7 +83,7 @@ DEFAULT_STATE = {
 }
 
 
-class AmazonAPI(BaseServiceAPI):
+class AmazonAPI(PatchableMixin):
     """
     In-memory dummy implementation of an Amazon-like marketplace.
 
@@ -93,19 +93,9 @@ class AmazonAPI(BaseServiceAPI):
     shipping options, Prime membership, gift wrapping, and Subscribe & Save.
     """
 
-    _STATE_KEYS = (
-        "profile", "cart", "orders", "returns", "reviews",
-        "products", "offers", "shipping_options",
-        "sellers", "wishlists",
-    )
-    _ID_COUNTER_DEFAULTS = {
-        "order": 0, "return": 0, "review": 0,
-        "wishlist": 0, "address": 0, "payment": 0,
-    }
-    _DEFAULT_SEED = 9012
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = { "order": 0, "return": 0, "review": 0, "wishlist": 0, "address": 0, "payment": 0, }
         self.profile: Dict[str, Any]
         self.cart: Dict[str, Any]
         self.orders: Dict[str, Dict[str, Any]]
@@ -123,6 +113,11 @@ class AmazonAPI(BaseServiceAPI):
             "and write product reviews."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

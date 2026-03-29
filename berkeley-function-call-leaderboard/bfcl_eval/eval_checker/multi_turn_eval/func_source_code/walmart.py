@@ -18,7 +18,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -101,7 +101,7 @@ DEFAULT_STATE = {
 }
 
 
-class WalmartAPI(BaseServiceAPI):
+class WalmartAPI(PatchableMixin):
     """
     In-memory dummy implementation of a Walmart-like retail shopping service.
     Supports product search, store-aware inventory, multiple fulfillment types
@@ -109,23 +109,9 @@ class WalmartAPI(BaseServiceAPI):
     substitution preferences, and full order lifecycle management.
     """
 
-    _STATE_KEYS = (
-        "profile", "cart", "orders", "returns", "reviews",
-        "products", "offers", "shipping_options",
-        "stores", "store_inventory", "pickup_slots",  # Walmart-specific
-    )
-    _ID_COUNTER_DEFAULTS = {
-        "cart": 0,
-        "order": 0,
-        "return": 0,
-        "review": 0,
-        "address": 0,
-        "payment": 0,
-    }
-    _DEFAULT_SEED = 5678
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = { "cart": 0, "order": 0, "return": 0, "review": 0, "address": 0, "payment": 0, }
         self.profile: Dict[str, Any]
         self.cart: Dict[str, Any]
         self.orders: Dict[str, Dict[str, Any]]
@@ -144,6 +130,11 @@ class WalmartAPI(BaseServiceAPI):
             "and manage account details including Walmart+ membership benefits."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

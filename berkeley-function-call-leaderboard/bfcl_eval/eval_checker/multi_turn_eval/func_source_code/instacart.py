@@ -18,7 +18,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -94,7 +94,7 @@ DEFAULT_STATE = {
 }
 
 
-class InstacartAPI(BaseServiceAPI):
+class InstacartAPI(PatchableMixin):
     """
     In-memory dummy implementation of an Instacart-like grocery delivery service.
 
@@ -103,18 +103,9 @@ class InstacartAPI(BaseServiceAPI):
     and delivers the items within a chosen delivery window.
     """
 
-    _STATE_KEYS = (
-        "profile", "cart", "orders", "returns", "reviews",
-        "products", "offers", "shipping_options",
-        "stores", "store_inventory", "delivery_windows", "shoppers", "issues",  # Instacart-specific
-    )
-    _ID_COUNTER_DEFAULTS = {
-        "cart": 0, "order": 0, "address": 0, "payment": 0, "issue": 0,
-    }
-    _DEFAULT_SEED = 5678
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = { "cart": 0, "order": 0, "address": 0, "payment": 0, "issue": 0, }
         self.profile: Dict[str, Any]
         self.cart: Dict[str, Any]
         self.orders: Dict[str, Dict[str, Any]]
@@ -135,6 +126,11 @@ class InstacartAPI(BaseServiceAPI):
             "orders fulfilled by personal shoppers."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

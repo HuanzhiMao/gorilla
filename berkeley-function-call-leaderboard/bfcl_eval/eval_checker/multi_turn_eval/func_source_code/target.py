@@ -18,7 +18,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -89,7 +89,7 @@ DEFAULT_STATE = {
 }
 
 
-class TargetAPI(BaseServiceAPI):
+class TargetAPI(PatchableMixin):
     """
     In-memory dummy implementation of a Target-like retail shopping service.
     Supports product search, Target Circle loyalty (offers, points, birthday
@@ -97,24 +97,9 @@ class TargetAPI(BaseServiceAPI):
     via Shipt, gift registries, and full order lifecycle management.
     """
 
-    _STATE_KEYS = (
-        "profile", "cart", "orders", "returns", "reviews",
-        "products", "offers", "shipping_options",
-        "stores", "store_inventory", "drive_up_times", "delivery_windows", "registries",
-    )
-    _ID_COUNTER_DEFAULTS = {
-        "cart": 0,
-        "order": 0,
-        "return": 0,
-        "review": 0,
-        "address": 0,
-        "payment": 0,
-        "registry": 0,
-    }
-    _DEFAULT_SEED = 9012
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = { "cart": 0, "order": 0, "return": 0, "review": 0, "address": 0, "payment": 0, "registry": 0, }
         self.profile: Dict[str, Any]
         self.stores: Dict[str, Dict[str, Any]]
         self.products: Dict[str, Dict[str, Any]]
@@ -136,6 +121,11 @@ class TargetAPI(BaseServiceAPI):
             "handle the full order lifecycle."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

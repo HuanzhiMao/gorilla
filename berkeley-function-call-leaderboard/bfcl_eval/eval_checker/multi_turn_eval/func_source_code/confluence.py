@@ -17,7 +17,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -64,7 +64,7 @@ DEFAULT_STATE = {
 }
 
 
-class ConfluenceAPI(BaseServiceAPI):
+class ConfluenceAPI(PatchableMixin):
     """
     In-memory dummy implementation of a Confluence team wiki platform.
 
@@ -84,12 +84,9 @@ class ConfluenceAPI(BaseServiceAPI):
     Current-user perspective: no registration or account switching.
     """
 
-    _STATE_KEYS = ("profile", "spaces", "pages", "comments", "shares")
-    _ID_COUNTER_DEFAULTS = {"page": 0, "comment": 0, "share": 0}
-    _DEFAULT_SEED = 6789
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = {"page": 0, "comment": 0, "share": 0}
         self.profile: Dict[str, Any] = {}
         self.spaces: Dict[str, Dict[str, Any]] = {}
         self.pages: Dict[str, Dict[str, Any]] = {}
@@ -100,6 +97,11 @@ class ConfluenceAPI(BaseServiceAPI):
             "wiki and documentation platform for creating, organizing, and "
             "sharing knowledge with spaces, pages, and collaborative editing."
         )
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,

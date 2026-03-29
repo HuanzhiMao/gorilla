@@ -19,7 +19,7 @@ from copy import deepcopy
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 
-from .base_service import BaseServiceAPI
+from .server_patch_mixin import PatchableMixin
 
 
 # ---------------------------------------------------------------------------
@@ -71,7 +71,7 @@ DEFAULT_STATE = {
 }
 
 
-class ZelleAPI(BaseServiceAPI):
+class ZelleAPI(PatchableMixin):
     """
     In-memory dummy implementation of a Zelle-like bank-to-bank payment service.
 
@@ -92,16 +92,11 @@ class ZelleAPI(BaseServiceAPI):
     sources, daily/monthly transfer limits, all transactions private.
     """
 
-    _STATE_KEYS = ("profile", "contacts", "transactions", "requests", "funding_sources")
-    _ID_COUNTER_DEFAULTS = {
-        "contact": 0, "transaction": 0, "request": 0, "funding_source": 0,
-    }
-    _DEFAULT_SEED = 5001
     _DAILY_LIMIT = 2500.0
     _MONTHLY_LIMIT = 20000.0
 
     def __init__(self):
-        super().__init__()
+        self._id_counters = { "contact": 0, "transaction": 0, "request": 0, "funding_source": 0, }
         self.profile: Dict[str, Any] = {}
         self.contacts: Dict[str, Dict[str, Any]] = {}
         self.transactions: Dict[str, Dict[str, Any]] = {}
@@ -113,6 +108,11 @@ class ZelleAPI(BaseServiceAPI):
             "management with daily and monthly transfer limits."
         )
 
+
+    def _new_id(self, prefix: str) -> str:
+        """Generate the next sequential ID for *prefix* (e.g. ``order_1``)."""
+        self._id_counters[prefix] = self._id_counters.get(prefix, 0) + 1
+        return f"{prefix}_{self._id_counters[prefix]}"
 
     def _load_scenario(
         self,
