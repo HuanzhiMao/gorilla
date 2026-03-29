@@ -46,13 +46,13 @@ def _apply_failure_injections(involved_instances: dict, failure_injection: list)
 
     Args:
         involved_instances: Mapping of class name -> instance.
-        failure_injection: A list of [ClassName.method_name, patch_name] pairs.
-            e.g. [["WeatherComAPI.compare_locations", "FEATURE_SUSPENDED"]]
+        failure_injection: A list of {"method": ClassName.method_name, "patch": patch_name} dicts.
+            e.g. [{"method": "WeatherComAPI.compare_locations", "patch": "FEATURE_SUSPENDED"}]
     """
     _load_all_server_patches()
 
     for spec in failure_injection:
-        class_method, patch_name = spec
+        class_method, patch_name = spec["method"], spec["patch"]
         class_name, method_name = class_method.rsplit(".", 1)
         if class_name not in involved_instances:
             raise ValueError(
@@ -90,7 +90,7 @@ def execute_multi_turn_func_call(
         test_entry_id: The test entry ID, used as part of the instance cache key.
         long_context: Whether to load the scenario in long-context mode.
         is_evaL_run: If True, appends "_eval" to the model name for cache isolation.
-        failure_injection: Optional list of [ClassName.method_name, patch_name] pairs
+        failure_injection: Optional list of {"method": ClassName.method_name, "patch": patch_name} dicts
             to apply after instance creation (turn 0 only).
 
     Returns:

@@ -137,7 +137,7 @@ class BaseHandler:
         category_allow_clarification: bool = could_allow_clarification(test_category)
 
         # This is only for the miss function category
-        # Supports conditions: "after_n_turns" and "after_first_invoke"
+        # Supports conditions: "after_n_turns" and "after_n_invoke"
         missed_classes_rules: list[dict] = test_entry.get("missed_classes", [])
         if isinstance(missed_classes_rules, dict):
             missed_classes_rules = [missed_classes_rules]
@@ -414,16 +414,19 @@ class BaseHandler:
                     for mc_rule in missed_classes_rules:
                         if mc_rule.get("_released"):
                             continue
-                        if mc_rule["condition"] == "after_first_invoke":
-                            # Value may be "ClassName.func_name"; decoded responses use bare func names
-                            target_func = mc_rule["value"]
+                        if mc_rule["condition"] == "after_n_invoke":
+                            # target_function may be "ClassName.func_name"; decoded responses use bare func names
+                            target_func = mc_rule["target_function"]
                             if "." in target_func:
                                 target_func = target_func.split(".", 1)[1]
                             for func_call in decoded_model_responses:
                                 if isinstance(func_call, str) and func_call.startswith(target_func + "("):
-                                    test_entry["function"].extend(mc_rule["holdout_func_docs"])
-                                    inference_data = self._compile_tools(inference_data, test_entry)
-                                    mc_rule["_released"] = True
+                                    mc_rule.setdefault("_invoke_count", 0)
+                                    mc_rule["_invoke_count"] += 1
+                                    if mc_rule["_invoke_count"] >= mc_rule["n"]:
+                                        test_entry["function"].extend(mc_rule["holdout_func_docs"])
+                                        inference_data = self._compile_tools(inference_data, test_entry)
+                                        mc_rule["_released"] = True
                                     break
 
                     # If the model has taken too many steps, we force it to quit.
@@ -578,7 +581,7 @@ class BaseHandler:
         max_step_limit = MAXIMUM_STEP_LIMIT.get(modality, MAXIMUM_STEP_LIMIT_DEFAULT)
 
         # This is only for the miss function category
-        # Supports conditions: "after_n_turns" and "after_first_invoke"
+        # Supports conditions: "after_n_turns" and "after_n_invoke"
         missed_classes_rules: list[dict] = test_entry.get("missed_classes", [])
         if isinstance(missed_classes_rules, dict):
             missed_classes_rules = [missed_classes_rules]
@@ -808,25 +811,28 @@ class BaseHandler:
                 for mc_rule in missed_classes_rules:
                     if mc_rule.get("_released"):
                         continue
-                    if mc_rule["condition"] == "after_first_invoke":
-                        # Value may be "ClassName.func_name"; decoded responses use bare func names
-                        target_func = mc_rule["value"]
+                    if mc_rule["condition"] == "after_n_invoke":
+                        # target_function may be "ClassName.func_name"; decoded responses use bare func names
+                        target_func = mc_rule["target_function"]
                         if "." in target_func:
                             target_func = target_func.split(".", 1)[1]
                         for func_call in decoded_model_responses:
                             if isinstance(func_call, str) and func_call.startswith(target_func + "("):
-                                inference_data = self._add_next_turn_user_message_prompting(
-                                    inference_data,
-                                    [
-                                        {
-                                            "role": "user",
-                                            "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING.format(
-                                                functions=mc_rule["holdout_func_docs"]
-                                            ),
-                                        }
-                                    ],
-                                )
-                                mc_rule["_released"] = True
+                                mc_rule.setdefault("_invoke_count", 0)
+                                mc_rule["_invoke_count"] += 1
+                                if mc_rule["_invoke_count"] >= mc_rule["n"]:
+                                    inference_data = self._add_next_turn_user_message_prompting(
+                                        inference_data,
+                                        [
+                                            {
+                                                "role": "user",
+                                                "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING.format(
+                                                    functions=mc_rule["holdout_func_docs"]
+                                                ),
+                                            }
+                                        ],
+                                    )
+                                    mc_rule["_released"] = True
                                 break
 
                 step_count += 1
