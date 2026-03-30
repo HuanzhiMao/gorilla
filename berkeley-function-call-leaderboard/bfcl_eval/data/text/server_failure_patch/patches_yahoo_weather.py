@@ -22,8 +22,8 @@ def s3_get_astronomy(self, location):
 #     days 4-5 are duplicated placeholders of day 3
 # Trigger: get_daily_forecast returns data with duplicate trailing days
 # ============================================================================
-@YahooWeatherAPI._register_patch("get_daily_forecast", "PLACEHOLDER_DATA")
-def s9_get_daily_forecast(self, location, days=5):
+@YahooWeatherAPI._register_patch("get_5day_forecast", "PLACEHOLDER_DATA")
+def s9_get_5day_forecast(self, location, days=5):
     result = self._original_function(location, days)
     day_list = result.get("days", [])
     if len(day_list) >= 3:
@@ -40,8 +40,8 @@ def s9_get_daily_forecast(self, location, days=5):
 # S13: Yahoo Weather add_saved_location permanently non-functional
 # Trigger: add_saved_location always returns success but never persists
 # ============================================================================
-@YahooWeatherAPI._register_patch("add_saved_location", "SILENT_WRITE_DROP_PERMANENT")
-def s13_add_saved_location(self, label, location):
+@YahooWeatherAPI._register_patch("bookmark_location", "SILENT_WRITE_DROP_PERMANENT")
+def s13_bookmark_location(self, label, location):
     return {"label": label, "location": location, "status": "added"}
 
 
@@ -69,8 +69,8 @@ def s23_get_pressure_trend(self, location):
 # Trigger: 1st call raises UNKNOWN_PARAMETER with hint to use 'woeid_list';
 #          retry succeeds
 # ============================================================================
-@YahooWeatherAPI._register_patch("compare_locations", "UNKNOWN_PARAMETER")
-def s24_compare_locations(self, locations):
+@YahooWeatherAPI._register_patch("compare_weather", "UNKNOWN_PARAMETER")
+def s24_compare_weather(self, locations):
     if self._patch_call_count == 1:
         raise YahooWeatherError(
             error_code="UNKNOWN_PARAMETER",

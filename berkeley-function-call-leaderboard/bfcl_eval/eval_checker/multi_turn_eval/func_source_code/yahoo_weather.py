@@ -173,9 +173,9 @@ class YahooWeatherAPI(PatchableMixin):
 
     # ---- Location Resolution ----
 
-    def search_location(self, query: str) -> Dict[str, Any]:
+    def resolve_location(self, query: str) -> Dict[str, Any]:
         """
-        Search for a location by name, returns WOEID-style metadata.
+        Resolve a location by name, returns WOEID-style metadata.
 
         Args:
             query (str): Location name or partial match.
@@ -194,18 +194,18 @@ class YahooWeatherAPI(PatchableMixin):
 
     # ---- Profile ----
 
-    def get_user_profile(self) -> Dict[str, Any]:
+    def get_weather_profile(self) -> Dict[str, Any]:
         """
-        Get the current user's weather profile.
+        Get the current user's Yahoo Weather profile.
 
         Returns:
             Dict[str, Any]: default_location, saved_locations, unit, timezone.
         """
         return deepcopy(self.profile)
 
-    def set_default_location(self, location: str) -> Dict[str, Any]:
+    def set_home_location(self, location: str) -> Dict[str, Any]:
         """
-        Set the default location for weather queries.
+        Set the home location for Yahoo Weather queries.
 
         Args:
             location (str): Location name or identifier.
@@ -216,9 +216,9 @@ class YahooWeatherAPI(PatchableMixin):
         self.profile["default_location"] = location
         return {"default_location": location, "status": "updated"}
 
-    def add_saved_location(self, label: str, location: str) -> Dict[str, Any]:
+    def bookmark_location(self, label: str, location: str) -> Dict[str, Any]:
         """
-        Add a location to saved locations list.
+        Bookmark a location for quick access.
 
         Args:
             label (str): Display label (e.g. "Home", "Office").
@@ -237,12 +237,12 @@ class YahooWeatherAPI(PatchableMixin):
         saved.append({"label": label, "location": location})
         return {"label": label, "location": location, "status": "added"}
 
-    def remove_saved_location(self, label: str) -> Dict[str, Any]:
+    def unbookmark_location(self, label: str) -> Dict[str, Any]:
         """
-        Remove a saved location by label.
+        Remove a bookmarked location by label.
 
         Args:
-            label (str): The label of the saved location to remove.
+            label (str): The label of the bookmarked location to remove.
 
         Returns:
             Dict[str, Any]: label, status "removed".
@@ -256,12 +256,12 @@ class YahooWeatherAPI(PatchableMixin):
         self.profile["saved_locations"] = new_list
         return {"label": label, "status": "removed"}
 
-    def get_saved_locations(self) -> List[Dict[str, Any]]:
+    def get_bookmarked_locations(self) -> List[Dict[str, Any]]:
         """
-        Get all saved locations with current weather summary.
+        Get all bookmarked locations with current weather summary.
 
         Returns:
-            List[Dict[str, Any]]: Saved locations with label, location,
+            List[Dict[str, Any]]: Bookmarked locations with label, location,
                 and current temperature/condition if available.
         """
         saved = self.profile.get("saved_locations", [])
@@ -279,7 +279,7 @@ class YahooWeatherAPI(PatchableMixin):
             )
         return results
 
-    def set_unit_preferences(
+    def configure_units(
         self,
         temperature: Optional[str] = None,
         wind: Optional[str] = None,
@@ -287,7 +287,7 @@ class YahooWeatherAPI(PatchableMixin):
         distance: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-        Set measurement unit preferences.
+        Configure measurement unit preferences.
 
         Args:
             temperature (str, optional): "fahrenheit" or "celsius".
@@ -311,7 +311,7 @@ class YahooWeatherAPI(PatchableMixin):
 
     # ---- Current Observation ----
 
-    def get_current_weather(self, location: str) -> Dict[str, Any]:
+    def get_current_observation(self, location: str) -> Dict[str, Any]:
         """
         Get current weather observation for a location.
 
@@ -327,9 +327,9 @@ class YahooWeatherAPI(PatchableMixin):
 
     # ---- Hourly Forecast (12 hours max) ----
 
-    def get_hourly_forecast(self, location: str, hours: int = 12) -> Dict[str, Any]:
+    def get_hourly_outlook(self, location: str, hours: int = 12) -> Dict[str, Any]:
         """
-        Get hourly forecast up to 12 hours.
+        Get hourly weather outlook up to 12 hours.
 
         Args:
             location (str): Location name or identifier.
@@ -357,9 +357,9 @@ class YahooWeatherAPI(PatchableMixin):
 
     # ---- Daily Forecast (5 days max) ----
 
-    def get_daily_forecast(self, location: str, days: int = 5) -> Dict[str, Any]:
+    def get_5day_forecast(self, location: str, days: int = 5) -> Dict[str, Any]:
         """
-        Get daily forecast up to 5 days.
+        Get 5-day daily forecast.
 
         Args:
             location (str): Location name or identifier.
@@ -387,7 +387,7 @@ class YahooWeatherAPI(PatchableMixin):
 
     # ---- Alerts ----
 
-    def get_alerts(self, location: str) -> Dict[str, Any]:
+    def get_weather_alerts(self, location: str) -> Dict[str, Any]:
         """
         Get active weather alerts for a location.
 
@@ -406,9 +406,9 @@ class YahooWeatherAPI(PatchableMixin):
 
     # ---- Historical Weather ----
 
-    def get_historical_weather(self, location: str, date: str) -> Dict[str, Any]:
+    def get_past_weather(self, location: str, date: str) -> Dict[str, Any]:
         """
-        Get historical weather for a past date (simplified).
+        Get past weather for a historical date (simplified).
 
         Args:
             location (str): Location name or identifier.
@@ -536,7 +536,7 @@ class YahooWeatherAPI(PatchableMixin):
 
     # ---- Comparison (simpler than weather.com) ----
 
-    def compare_locations(self, locations: List[str]) -> List[Dict[str, Any]]:
+    def compare_weather(self, locations: List[str]) -> List[Dict[str, Any]]:
         """
         Compare current weather across locations (max 3).
 
