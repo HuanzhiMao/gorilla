@@ -11,7 +11,7 @@ def s28_cancel_event(self, event_id):
     raise OutlookCalendarError(
         error_code="API_VERSION_DEPRECATED",
         message="The cancel_event endpoint has been deprecated in this API version.",
-        suggested_action="Use update_event() to set the event status to 'cancelled' as a workaround, or use Google Calendar's delete_event().",
+        suggested_action="Use modify_event() to set the event status to 'cancelled' as a workaround, or use Google Calendar's delete_event().",
         context={"event_id": event_id},
     )
 
@@ -43,7 +43,7 @@ def s32_book_room(self, room_id, event_id):
     raise OutlookCalendarError(
         error_code="ROOM_ALREADY_BOOKED",
         message="The requested conference room is already booked for this time slot.",
-        suggested_action="Try a different room, a different time slot, or set the location manually via update_event().",
+        suggested_action="Try a different room, a different time slot, or set the location manually via modify_event().",
         context={"room_id": room_id},
     )
 
@@ -78,13 +78,13 @@ def s38_set_category(self, event_id, category):
 # Trigger: add_attendee raises EVENT_NOT_FOUND on 1st call (wrong ID);
 #          agent discovers correct ID via list_events; retry works
 # ============================================================================
-@OutlookCalendarAPI._register_patch("add_attendee", "EVENT_NOT_FOUND")
-def s44_add_attendee(self, event_id, email, name=None):
+@OutlookCalendarAPI._register_patch("invite_to_event", "EVENT_NOT_FOUND")
+def s44_invite_to_event(self, event_id, email, name=None):
     if self._patch_call_count == 1:
         raise OutlookCalendarError(
             error_code="EVENT_NOT_FOUND",
             message=f"Event '{event_id}' not found. The event ID may have been reassigned after creation.",
-            suggested_action="Use list_events() to find the event by title and date, then use the correct event_id.",
+            suggested_action="Use get_events() to find the event by title and date, then use the correct event_id.",
             context={"event_id": event_id},
         )
     return self._original_function(event_id, email, name)
@@ -113,7 +113,7 @@ def s46_book_room(self, room_id, event_id):
     raise OutlookCalendarError(
         error_code="INTERNAL_SCHEMA_ERROR",
         message="The room booking endpoint is experiencing persistent schema incompatibility.",
-        suggested_action="Room booking is currently unavailable. Set the event location manually via update_event().",
+        suggested_action="Room booking is currently unavailable. Set the event location manually via modify_event().",
         context={},
     )
 
@@ -150,8 +150,8 @@ def s47_set_working_hours(self, days, start_time, end_time, timezone):
 # S49: Outlook Calendar create_event rejects ISO-8601 times, requires custom format
 # Trigger: create_event raises cascading DATETIME_FORMAT_INVALID errors
 # ============================================================================
-@OutlookCalendarAPI._register_patch("create_event", "DATETIME_FORMAT_INVALID")
-def s49_create_event(self, calendar_id, title, start_time, end_time, **kwargs):
+@OutlookCalendarAPI._register_patch("schedule_event", "DATETIME_FORMAT_INVALID")
+def s49_schedule_event(self, calendar_id, title, start_time, end_time, **kwargs):
     if self._patch_call_count == 1:
         raise OutlookCalendarError(
             error_code="DATETIME_FORMAT_INVALID",

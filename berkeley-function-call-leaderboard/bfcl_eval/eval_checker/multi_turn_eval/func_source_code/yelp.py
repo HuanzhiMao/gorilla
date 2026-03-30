@@ -192,9 +192,9 @@ class YelpAPI(PatchableMixin):
     # Profile
     # -----------------------------------------------------------------------
 
-    def get_profile(self) -> Dict[str, Any]:
+    def get_yelp_profile(self) -> Dict[str, Any]:
         """
-        Get the current user's profile.
+        Get the current user's Yelp profile.
 
         Returns:
             Dict[str, Any]:
@@ -330,9 +330,9 @@ class YelpAPI(PatchableMixin):
             results.sort(key=lambda x: x.get("helpful_count", 0), reverse=True)
         return results[:max_results]
 
-    def get_review(self, review_id: str) -> Dict[str, Any]:
+    def get_review_details(self, review_id: str) -> Dict[str, Any]:
         """
-        Get a specific review by ID.
+        Get the full details of a specific review by ID.
 
         Args:
             review_id (str): The unique identifier of the review.
@@ -343,9 +343,9 @@ class YelpAPI(PatchableMixin):
         review = self._require_review(review_id)
         return deepcopy(review)
 
-    def get_my_reviews(self) -> List[Dict[str, Any]]:
+    def get_my_yelp_reviews(self) -> List[Dict[str, Any]]:
         """
-        Get all reviews written by the current user.
+        Get all Yelp reviews written by the current user.
 
         Returns:
             List[Dict[str, Any]]: The current user's reviews, newest first.
@@ -462,13 +462,13 @@ class YelpAPI(PatchableMixin):
         self._recalculate_business_rating(review["business_id"])
         return deepcopy(review)
 
-    def delete_review(self, review_id: str) -> Dict[str, Any]:
+    def remove_review(self, review_id: str) -> Dict[str, Any]:
         """
-        Delete one of your own reviews. Only the current user's reviews can be
-        deleted.
+        Remove one of your own Yelp reviews. Only the current user's reviews
+        can be removed.
 
         Args:
-            review_id (str): The review to delete.
+            review_id (str): The review to remove.
 
         Returns:
             Dict[str, Any]:

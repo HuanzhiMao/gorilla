@@ -184,9 +184,9 @@ class OutlookCalendarAPI(PatchableMixin):
     # User
     # -----------------------------------------------------------------------
 
-    def get_user_profile(self) -> Dict[str, Any]:
+    def get_calendar_profile(self) -> Dict[str, Any]:
         """
-        Get the current user's profile.
+        Get the current user's Outlook Calendar profile.
 
         Returns:
             Dict[str, Any]: name, email, timezone.
@@ -197,9 +197,9 @@ class OutlookCalendarAPI(PatchableMixin):
     # Calendar management
     # -----------------------------------------------------------------------
 
-    def list_calendars(self) -> List[Dict[str, Any]]:
+    def get_calendars(self) -> List[Dict[str, Any]]:
         """
-        List all calendars for the current user.
+        Get all calendars for the current user.
 
         Returns:
             List[Dict[str, Any]]: Calendar objects with calendar_id, name,
@@ -207,9 +207,9 @@ class OutlookCalendarAPI(PatchableMixin):
         """
         return [deepcopy(c) for c in self.calendars.values()]
 
-    def create_calendar(self, name: str) -> Dict[str, Any]:
+    def new_calendar(self, name: str) -> Dict[str, Any]:
         """
-        Create a new calendar.
+        Create a new Outlook calendar.
 
         Args:
             name (str): Calendar name.
@@ -223,12 +223,12 @@ class OutlookCalendarAPI(PatchableMixin):
         }
         return deepcopy(self.calendars[cal_id])
 
-    def delete_calendar(self, calendar_id: str) -> Dict[str, Any]:
+    def remove_calendar(self, calendar_id: str) -> Dict[str, Any]:
         """
-        Delete a non-primary calendar and all its events.
+        Remove a non-primary Outlook calendar and all its events.
 
         Args:
-            calendar_id (str): The calendar to delete.
+            calendar_id (str): The calendar to remove.
 
         Returns:
             Dict[str, Any]: calendar_id, status "deleted".
@@ -246,7 +246,7 @@ class OutlookCalendarAPI(PatchableMixin):
     # Events
     # -----------------------------------------------------------------------
 
-    def create_event(
+    def schedule_event(
         self,
         calendar_id: str,
         title: str,
@@ -261,7 +261,7 @@ class OutlookCalendarAPI(PatchableMixin):
         generate_teams_link: bool = False,
     ) -> Dict[str, Any]:
         """
-        Create a calendar event.
+        Schedule a new event on an Outlook calendar.
 
         Args:
             calendar_id (str): The calendar.
@@ -326,7 +326,7 @@ class OutlookCalendarAPI(PatchableMixin):
 
         return deepcopy(self.events[event_id])
 
-    def update_event(
+    def modify_event(
         self, event_id: str,
         title: Optional[str] = None, start_time: Optional[str] = None,
         end_time: Optional[str] = None, description: Optional[str] = None,
@@ -335,10 +335,10 @@ class OutlookCalendarAPI(PatchableMixin):
         reminders: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
         """
-        Update an event's properties.
+        Modify an event's properties.
 
         Args:
-            event_id (str): The event to update.
+            event_id (str): The event to modify.
             title (str, optional): New title.
             start_time (str, optional): New start time.
             end_time (str, optional): New end time.
@@ -350,7 +350,7 @@ class OutlookCalendarAPI(PatchableMixin):
                 method and minutes_before.
 
         Returns:
-            Dict[str, Any]: Updated event object.
+            Dict[str, Any]: Modified event object.
         """
         ev = self._require_event(event_id)
         if title is not None:
@@ -388,7 +388,7 @@ class OutlookCalendarAPI(PatchableMixin):
         ev["updated_at"] = _utc_now_iso()
         return {"event_id": event_id, "status": "cancelled"}
 
-    def get_event(self, event_id: str) -> Dict[str, Any]:
+    def get_event_details(self, event_id: str) -> Dict[str, Any]:
         """
         Get full event details.
 
@@ -400,13 +400,13 @@ class OutlookCalendarAPI(PatchableMixin):
         """
         return deepcopy(self._require_event(event_id))
 
-    def list_events(
+    def get_events(
         self, calendar_id: Optional[str] = None,
         start_date: Optional[str] = None, end_date: Optional[str] = None,
         max_results: int = 20,
     ) -> List[Dict[str, Any]]:
         """
-        List events, optionally filtered by calendar and date range.
+        Get events, optionally filtered by calendar and date range.
 
         Args:
             calendar_id (str, optional): Filter by calendar.
@@ -431,11 +431,11 @@ class OutlookCalendarAPI(PatchableMixin):
         results.sort(key=lambda x: x.get("start_time", ""))
         return results[:max_results]
 
-    def search_events(
+    def find_events(
         self, query: str, calendar_id: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
-        Search events by text query across title, description, and location.
+        Find events by text query across title, description, and location.
 
         Args:
             query (str): Search text.
@@ -460,9 +460,9 @@ class OutlookCalendarAPI(PatchableMixin):
     # Attendees & RSVP
     # -----------------------------------------------------------------------
 
-    def rsvp_event(self, event_id: str, response: str) -> Dict[str, Any]:
+    def respond_to_event(self, event_id: str, response: str) -> Dict[str, Any]:
         """
-        RSVP to an event invitation.
+        Respond to an event invitation.
 
         Args:
             event_id (str): The event.
@@ -488,11 +488,11 @@ class OutlookCalendarAPI(PatchableMixin):
         ev["updated_at"] = _utc_now_iso()
         return {"event_id": event_id, "response": response, "status": "updated"}
 
-    def add_attendee(
+    def invite_to_event(
         self, event_id: str, email: str, name: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-        Add an attendee to an event.
+        Invite an attendee to an event.
 
         Args:
             event_id (str): The event.
@@ -512,13 +512,13 @@ class OutlookCalendarAPI(PatchableMixin):
         ev["updated_at"] = _utc_now_iso()
         return {"event_id": event_id, "email": email, "status": "added"}
 
-    def remove_attendee(self, event_id: str, email: str) -> Dict[str, Any]:
+    def uninvite_from_event(self, event_id: str, email: str) -> Dict[str, Any]:
         """
-        Remove an attendee from an event.
+        Uninvite an attendee from an event.
 
         Args:
             event_id (str): The event.
-            email (str): Attendee's email to remove.
+            email (str): Attendee's email to uninvite.
 
         Returns:
             Dict[str, Any]: event_id, email, status "removed".
@@ -531,9 +531,9 @@ class OutlookCalendarAPI(PatchableMixin):
         ev["updated_at"] = _utc_now_iso()
         return {"event_id": event_id, "email": email, "status": "removed"}
 
-    def set_event_reminder(self, event_id: str, reminders: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def configure_event_reminder(self, event_id: str, reminders: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Set reminders for an event.
+        Configure reminders for an event.
 
         Args:
             event_id (str): The event.
