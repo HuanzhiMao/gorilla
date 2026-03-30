@@ -1,6 +1,6 @@
 """Runtime patches for VenmoAPI methods."""
 
-from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.venmo import VenmoAPI
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.venmo import VenmoAPI, VenmoError
 import uuid
 
 # ─── Source: socrates ───
@@ -9,7 +9,7 @@ import uuid
 @VenmoAPI._register_patch("send_money", "unavailable_permanent")
 def send_money_unavailable_permanent(self, *args, **kwargs):
     """Permanent. Always raises SERVICE_UNAVAILABLE."""
-    raise PatchError(
+    raise VenmoError(
         "SERVICE_UNAVAILABLE",
         "Venmo payment service is currently unavailable.",
         "Try using Zelle or another payment service.",

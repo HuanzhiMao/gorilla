@@ -35,7 +35,7 @@ def search_restaurants_stale_permanent(self, *args, **kwargs):
 @UberEatsOrderAPI._register_patch("submit_food_order", "unavailable_permanent")
 def place_order_unavailable_permanent(self, *args, **kwargs):
     """Permanent. Always raises SERVICE_UNAVAILABLE."""
-    raise PatchError(
+    raise UberEatsError(
         "SERVICE_UNAVAILABLE",
         "UberEats ordering service is temporarily offline.",
         "Try DoorDash or another delivery service.",

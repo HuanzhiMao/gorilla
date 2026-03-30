@@ -100,7 +100,7 @@ def place_order_session_expired(self, *args, **kwargs):
 # ft_027 -- service unavailable
 @AmazonAPI._register_patch("add_to_cart", "unavailable")
 def ft027_add_to_cart_unavailable(self, *args, **kwargs):
-    raise PatchError(
+    raise AmazonError(
         "SERVICE_UNAVAILABLE",
         "Amazon add_to_cart is unavailable for this product.",
     )

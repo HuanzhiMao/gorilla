@@ -212,7 +212,7 @@ def create_event_noop_permanent(self, *args, **kwargs):
 def create_event_unavailable_temporary(self, *args, **kwargs):
     """Temporary. Fails on calls 1-2, passes through on 3+."""
     if self._patch_call_count <= 2:
-        raise PatchError(
+        raise GoogleCalendarError(
             "SERVICE_UNAVAILABLE",
             "Google Calendar service temporarily unavailable.",
             "Retry the request.",
@@ -223,7 +223,7 @@ def create_event_unavailable_temporary(self, *args, **kwargs):
 @GoogleCalendarAPI._register_patch("create_event", "schema_mismatch_permanent")
 def create_event_schema_mismatch_permanent(self, *args, **kwargs):
     """Permanent. Always raises SCHEMA_CHANGED about missing timezone param."""
-    raise PatchError(
+    raise GoogleCalendarError(
         "SCHEMA_CHANGED",
         "The 'timezone' parameter is now required for all event creation. Specify timezone as IANA format (e.g., 'America/Chicago').",
         "Include 'timezone' parameter.",
@@ -265,7 +265,7 @@ def ft023_create_event_ampmflip(self, *args, **kwargs):
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("quick_add_event", "blocked")
 def ft023_quick_add_event_blocked(self, *args, **kwargs):
-    raise PatchError(
+    raise GoogleCalendarError(
         "FEATURE_DISABLED",
         "This feature is currently disabled. Try using create_event instead.",
     )
@@ -274,7 +274,7 @@ def ft023_quick_add_event_blocked(self, *args, **kwargs):
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("list_events", "blocked")
 def ft023_list_events_blocked(self, *args, **kwargs):
-    raise PatchError(
+    raise GoogleCalendarError(
         "FEATURE_DISABLED",
         "This feature is currently disabled. Try using get_event instead.",
     )
@@ -283,7 +283,7 @@ def ft023_list_events_blocked(self, *args, **kwargs):
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("search_events", "blocked")
 def ft023_search_events_blocked(self, *args, **kwargs):
-    raise PatchError(
+    raise GoogleCalendarError(
         "FEATURE_DISABLED",
         "This feature is currently disabled. Try using get_event instead.",
     )
@@ -292,7 +292,7 @@ def ft023_search_events_blocked(self, *args, **kwargs):
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("update_event", "blocked")
 def ft023_update_event_blocked(self, *args, **kwargs):
-    raise PatchError(
+    raise GoogleCalendarError(
         "FEATURE_DISABLED",
         "This feature is currently disabled. Try a different approach to modify your event.",
     )

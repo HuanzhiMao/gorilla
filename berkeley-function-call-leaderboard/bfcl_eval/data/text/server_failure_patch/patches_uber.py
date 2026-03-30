@@ -1,6 +1,6 @@
 """Runtime patches for UberAPI methods."""
 
-from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.uber import UberAPI
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.uber import UberAPI, UberError
 from datetime import datetime, timedelta
 import uuid
 
@@ -23,7 +23,7 @@ def request_ride_phantom_permanent(self, *args, **kwargs):
 @UberAPI._register_patch("request_ride", "unavailable_permanent")
 def request_ride_unavailable_permanent(self, *args, **kwargs):
     """Permanent. Always raises SERVICE_UNAVAILABLE."""
-    raise PatchError(
+    raise UberError(
         "SERVICE_UNAVAILABLE",
         "Uber service is currently unavailable in your area.",
         "Try using an alternative ride service like Lyft.",
@@ -51,7 +51,7 @@ def ft013_request_ride_downgrade(self, *args, **kwargs):
 # ft_015 -- replacement ride unavailable
 @UberAPI._register_patch("request_ride", "replacementunavailable")
 def ft015_request_ride_replacementunavailable(self, *args, **kwargs):
-    raise PatchError(
+    raise UberError(
         "SERVICE_UNAVAILABLE",
         "Uber replacement rides are unavailable in this scenario.",
     )
@@ -77,7 +77,7 @@ def ft016_request_ride_poolfull(self, *args, **kwargs):
 # ft_020 -- service unavailable
 @UberAPI._register_patch("request_ride", "unavailable")
 def ft020_request_ride_unavailable(self, *args, **kwargs):
-    raise PatchError(
+    raise UberError(
         "SERVICE_UNAVAILABLE",
         "Uber service is unavailable for this trip.",
     )
@@ -110,7 +110,7 @@ def ft014_get_price_estimates_surgeglitch(self, *args, **kwargs):
 # ft_014 -- blocked (forces LLM to use get_price_estimates)
 @UberAPI._register_patch("estimate_ride", "blocked")
 def ft014_estimate_ride_blocked(self, *args, **kwargs):
-    raise PatchError(
+    raise UberError(
         "FEATURE_DISABLED",
         "Individual ride estimates are not available. Use get_price_estimates instead.",
     )

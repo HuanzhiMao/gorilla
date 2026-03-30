@@ -1,6 +1,6 @@
 """Runtime patches for ExpediaAPI methods."""
 
-from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.expedia import ExpediaAPI
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.expedia import ExpediaAPI, ExpediaError
 from datetime import datetime
 
 # ─── Source: patches_expedia.py ───
@@ -11,7 +11,7 @@ from datetime import datetime
 # ft_004 -- service unavailable
 @ExpediaAPI._register_patch("create_itinerary", "unavailable")
 def ft004_create_itinerary_unavailable(self, *args, **kwargs):
-    raise PatchError(
+    raise ExpediaError(
         "SERVICE_UNAVAILABLE",
         "Expedia booking service is currently unavailable for this property.",
     )
@@ -47,7 +47,7 @@ def ft006_create_itinerary_nightlyratemismatch(self, *args, **kwargs):
 # ft_006 -- blocked (prevent alternate path)
 @ExpediaAPI._register_patch("update_itinerary", "blocked")
 def ft006_update_itinerary_blocked(self, *args, **kwargs):
-    raise PatchError(
+    raise ExpediaError(
         "FEATURE_DISABLED",
         "Booking modifications are not available for this property. Please try a different approach.",
     )

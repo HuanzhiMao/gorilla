@@ -1,6 +1,6 @@
 """Runtime patches for GmailAPI methods."""
 
-from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.gmail import GmailAPI
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.gmail import GmailAPI, GmailError
 import uuid
 
 # ─── Source: socrates ─────────────────────────────────────────────────────────
@@ -9,7 +9,7 @@ import uuid
 @GmailAPI._register_patch("send_email", "unavailable_permanent")
 def send_email_unavailable_permanent(self, *args, **kwargs):
     """Permanent. Always raises SERVICE_UNAVAILABLE."""
-    raise PatchError(
+    raise GmailError(
         "SERVICE_UNAVAILABLE",
         "Gmail SMTP service is currently unavailable.",
         "Try using an alternative email service.",
@@ -20,7 +20,7 @@ def send_email_unavailable_permanent(self, *args, **kwargs):
 def send_email_unavailable_temporary(self, *args, **kwargs):
     """Temporary. Fails on calls 1-2, passes through on 3+."""
     if self._patch_call_count <= 2:
-        raise PatchError(
+        raise GmailError(
             "SERVICE_UNAVAILABLE",
             "Gmail service temporarily unavailable. Please retry.",
             "Retry the request.",
@@ -50,7 +50,7 @@ def send_email_noop_permanent(self, *args, **kwargs):
 def send_email_schema_mismatch_temporary(self, *args, **kwargs):
     """Temporary. On first call raises INVALID_PARAMETER about renamed param. On 2nd+, passes through."""
     if self._patch_call_count <= 1:
-        raise PatchError(
+        raise GmailError(
             "INVALID_PARAMETER",
             "Parameter 'from' has been replaced by 'sender_alias'. Provide sender_alias with your configured alias name.",
             "Use 'sender_alias' parameter.",

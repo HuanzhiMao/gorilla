@@ -1,6 +1,6 @@
 """Runtime patches for BookingAPI methods."""
 
-from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.booking import BookingAPI
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.booking import BookingAPI, BookingError
 from copy import deepcopy
 from datetime import datetime, timezone
 import uuid
@@ -34,7 +34,7 @@ def create_booking_noop_permanent(self, *args, **kwargs):
 @BookingAPI._register_patch("create_booking", "room_unavailable")
 def create_booking_room_unavailable(self, *args, **kwargs):
     """Permanent. Always raises ROOM_UNAVAILABLE."""
-    raise PatchError(
+    raise BookingError(
         "ROOM_UNAVAILABLE",
         "The selected room is no longer available. Cached availability was stale.",
         "Search for alternative rooms or try a different hotel.",
@@ -186,7 +186,7 @@ def ft003_cancel_booking_refundcontradiction(self, *args, **kwargs):
 # ft_001/ft_005/ft_008/ft_009/ft_010 -- blocked (identical implementations)
 @BookingAPI._register_patch("modify_booking", "blocked")
 def ft001_modify_booking_blocked(self, *args, **kwargs):
-    raise PatchError(
+    raise BookingError(
         "FEATURE_DISABLED",
         "Booking modifications are not available for this property. Please try a different approach.",
     )
@@ -195,7 +195,7 @@ def ft001_modify_booking_blocked(self, *args, **kwargs):
 # ft_001/ft_005/ft_008/ft_009 -- blocked (identical implementations)
 @BookingAPI._register_patch("get_property", "blocked")
 def ft001_get_property_blocked(self, *args, **kwargs):
-    raise PatchError(
+    raise BookingError(
         "FEATURE_DISABLED",
         "Property details are temporarily not available. Please try a different approach.",
     )

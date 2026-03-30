@@ -1,6 +1,6 @@
 """Runtime patches for GoogleMapReviewAPI methods."""
 
-from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.google_map_review import GoogleMapReviewAPI
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.google_map_review import GoogleMapReviewAPI, GoogleMapReviewError
 from copy import deepcopy
 import uuid
 
@@ -35,7 +35,7 @@ _WRONG_BUSINESS_REVIEWS = [
 # ---------------------------------------------------------------------------
 @GoogleMapReviewAPI._register_patch("get_place_reviews", "service_unavailable")
 def get_place_reviews_service_unavailable(self, *args, **kwargs):
-    raise PatchError(
+    raise GoogleMapReviewError(
         "SERVICE_UNAVAILABLE",
         "Google Reviews service is currently unavailable due to backend migration.",
         "Try again later or use an alternative review service.",
@@ -48,7 +48,7 @@ def get_place_reviews_service_unavailable(self, *args, **kwargs):
 @GoogleMapReviewAPI._register_patch("search_places", "rate_limited")
 def search_places_rate_limited(self, *args, **kwargs):
     if self._patch_call_count == 1:
-        raise PatchError(
+        raise GoogleMapReviewError(
             "RATE_LIMITED",
             "Too many requests. Please retry after a brief wait.",
             "Wait a moment and retry.",
@@ -61,7 +61,7 @@ def search_places_rate_limited(self, *args, **kwargs):
 # ---------------------------------------------------------------------------
 @GoogleMapReviewAPI._register_patch("add_review", "endpoint_suspended")
 def add_review_endpoint_suspended(self, *args, **kwargs):
-    raise PatchError(
+    raise GoogleMapReviewError(
         "ENDPOINT_SUSPENDED",
         "Review posting is temporarily suspended due to anti-spam system overhaul.",
         "Try posting your review on an alternative platform.",
@@ -74,7 +74,7 @@ def add_review_endpoint_suspended(self, *args, **kwargs):
 @GoogleMapReviewAPI._register_patch("get_place_details", "upstream_timeout")
 def get_place_details_upstream_timeout(self, *args, **kwargs):
     if self._patch_call_count == 1:
-        raise PatchError(
+        raise GoogleMapReviewError(
             "UPSTREAM_TIMEOUT",
             "Request timed out due to backend load spike. Please retry.",
             "Retry the request.",
@@ -87,7 +87,7 @@ def get_place_details_upstream_timeout(self, *args, **kwargs):
 # ---------------------------------------------------------------------------
 @GoogleMapReviewAPI._register_patch("get_place_reviews", "quota_exhausted")
 def get_place_reviews_quota_exhausted(self, *args, **kwargs):
-    raise PatchError(
+    raise GoogleMapReviewError(
         "QUOTA_EXHAUSTED",
         "API quota for review retrieval has been exhausted for this billing period.",
         "Use an alternative review service.",
@@ -285,7 +285,7 @@ def get_place_reviews_wrong_business(self, *args, **kwargs):
 # ---------------------------------------------------------------------------
 @GoogleMapReviewAPI._register_patch("search_places", "invalid_features")
 def search_places_invalid_features(self, *args, **kwargs):
-    raise PatchError(
+    raise GoogleMapReviewError(
         "INVALID_PARAMETER",
         "Parameter 'features' is not recognized. Use 'attributes' parameter with "
         "filter objects: [{'type': 'pet_friendly'}, {'type': 'outdoor_seating'}]",
@@ -301,7 +301,7 @@ def get_place_reviews_wrong_sort_param(self, *args, **kwargs):
     if self._patch_call_count == 1:
         sort_by = kwargs.get("sort_by", "")
         if sort_by in ("recent", "newest"):
-            raise PatchError(
+            raise GoogleMapReviewError(
                 "INVALID_PARAMETER",
                 "Parameter 'sort_by' has been renamed to 'order_by'. "
                 "Use order_by='newest' instead.",
@@ -319,7 +319,7 @@ def add_review_photo_schema_error(self, *args, **kwargs):
     if photos is None and len(args) >= 4:
         photos = args[3]
     if photos:
-        raise PatchError(
+        raise GoogleMapReviewError(
             "SCHEMA_CHANGED",
             "Photos must now be uploaded separately using upload_media() before "
             "attaching to a review. The 'photos' parameter has been removed from post_review.",
@@ -334,7 +334,7 @@ def add_review_photo_schema_error(self, *args, **kwargs):
 @GoogleMapReviewAPI._register_patch("search_places", "radius_units")
 def search_places_radius_units(self, *args, **kwargs):
     if self._patch_call_count == 1:
-        raise PatchError(
+        raise GoogleMapReviewError(
             "INVALID_RADIUS",
             "Radius value appears to be in miles. The 'radius' parameter now "
             "requires meters. Use radius=3218 for approximately 2 miles.",
@@ -349,7 +349,7 @@ def search_places_radius_units(self, *args, **kwargs):
 @GoogleMapReviewAPI._register_patch("search_places", "open_now_renamed")
 def search_places_open_now_renamed(self, *args, **kwargs):
     if self._patch_call_count == 1:
-        raise PatchError(
+        raise GoogleMapReviewError(
             "INVALID_PARAMETER",
             "Parameter 'open_now' has been renamed to 'currently_open'. "
             "Use currently_open=true.",
@@ -364,7 +364,7 @@ def search_places_open_now_renamed(self, *args, **kwargs):
 @GoogleMapReviewAPI._register_patch("add_review", "category_id_required")
 def add_review_category_id_required(self, *args, **kwargs):
     if self._patch_call_count == 1:
-        raise PatchError(
+        raise GoogleMapReviewError(
             "MISSING_PARAMETER",
             "Parameter 'category_id' is now required for review submission. "
             "Use get_place_details() to find the category_id.",
@@ -379,7 +379,7 @@ def add_review_category_id_required(self, *args, **kwargs):
 @GoogleMapReviewAPI._register_patch("add_review", "numeric_place_id")
 def add_review_numeric_place_id(self, *args, **kwargs):
     if self._patch_call_count == 1:
-        raise PatchError(
+        raise GoogleMapReviewError(
             "INVALID_ID_FORMAT",
             "place_id must be a numeric identifier. Use search_places() to "
             "find the numeric place ID.",
