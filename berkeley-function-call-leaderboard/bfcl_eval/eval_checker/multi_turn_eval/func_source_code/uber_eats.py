@@ -196,7 +196,7 @@ class UberEatsOrderAPI(PatchableMixin):
     # Profile & account
     # -----------------------------------------------------------------------
 
-    def get_profile(self) -> Dict[str, Any]:
+    def get_eater_profile(self) -> Dict[str, Any]:
         """
         Retrieve the current user's profile information.
 
@@ -235,7 +235,7 @@ class UberEatsOrderAPI(PatchableMixin):
             self.profile["phone"] = phone
         return deepcopy(self.profile)
 
-    def add_address(
+    def register_delivery_address(
         self,
         street: str,
         city: str,
@@ -307,7 +307,7 @@ class UberEatsOrderAPI(PatchableMixin):
             a["is_default"] = a.get("address_id") == address_id
         return deepcopy(self.profile)
 
-    def list_payment_methods(self) -> List[Dict[str, Any]]:
+    def get_registered_payments(self) -> List[Dict[str, Any]]:
         """
         List all payment methods saved to the user's profile.
 
@@ -318,7 +318,7 @@ class UberEatsOrderAPI(PatchableMixin):
         """
         return deepcopy(self.profile.get("payment_method", []))
 
-    def add_payment_method(
+    def register_payment_method(
         self,
         card_number: str,
         expiration_date: str,
@@ -451,7 +451,7 @@ class UberEatsOrderAPI(PatchableMixin):
     # Order management
     # -----------------------------------------------------------------------
 
-    def place_order(
+    def submit_food_order(
         self,
         restaurant_id: str,
         items: List[Dict[str, Any]],
@@ -660,7 +660,7 @@ class UberEatsOrderAPI(PatchableMixin):
         ]
         return sorted(summaries, key=lambda x: x.get("created_at", ""), reverse=True)
 
-    def cancel_order(self, order_id: str, reason: str) -> Dict[str, Any]:
+    def cancel_food_order(self, order_id: str, reason: str) -> Dict[str, Any]:
         """
         Cancel an active order. A small fee applies if food is already being prepared.
 

@@ -169,7 +169,7 @@ class ConfluenceAPI(PatchableMixin):
     # Profile
     # -----------------------------------------------------------------------
 
-    def get_user_profile(self) -> Dict[str, Any]:
+    def retrieve_profile(self) -> Dict[str, Any]:
         """
         Retrieve the current user's Confluence profile.
 
@@ -228,7 +228,7 @@ class ConfluenceAPI(PatchableMixin):
     # Pages
     # -----------------------------------------------------------------------
 
-    def create_page(
+    def publish_content(
         self,
         space_id: str,
         title: str,
@@ -284,7 +284,7 @@ class ConfluenceAPI(PatchableMixin):
 
         return deepcopy(page)
 
-    def get_page(self, page_id: str) -> Dict[str, Any]:
+    def fetch_content(self, page_id: str) -> Dict[str, Any]:
         """
         Retrieve the full details of a Confluence page by its ID.
 
@@ -301,7 +301,7 @@ class ConfluenceAPI(PatchableMixin):
         page = self._require_page(page_id)
         return deepcopy(page)
 
-    def list_pages(self, space_id: str) -> List[Dict[str, Any]]:
+    def list_space_content(self, space_id: str) -> List[Dict[str, Any]]:
         """
         List all pages in a given Confluence space.
 
@@ -329,7 +329,7 @@ class ConfluenceAPI(PatchableMixin):
                 })
         return results
 
-    def update_page(
+    def revise_content(
         self,
         page_id: str,
         version_number: int,
@@ -383,7 +383,7 @@ class ConfluenceAPI(PatchableMixin):
             "last_edited_by": page["last_edited_by"],
         }
 
-    def delete_page(self, page_id: str) -> Dict[str, Any]:
+    def trash_content(self, page_id: str) -> Dict[str, Any]:
         """
         Delete a Confluence page by its ID. This moves the page to the
         space's trash.
@@ -539,7 +539,7 @@ class ConfluenceAPI(PatchableMixin):
     # Sharing
     # -----------------------------------------------------------------------
 
-    def share_page(
+    def grant_content_access(
         self,
         page_id: str,
         email: str,

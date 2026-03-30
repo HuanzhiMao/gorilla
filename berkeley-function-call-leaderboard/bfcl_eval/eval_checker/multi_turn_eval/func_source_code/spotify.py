@@ -373,7 +373,7 @@ class SpotifyAPI(PatchableMixin):
         """
         return deepcopy(self._require_album(album_id))
 
-    def get_artist(self, artist_id: str) -> Dict[str, Any]:
+    def fetch_artist(self, artist_id: str) -> Dict[str, Any]:
         """
         Get full details for a single artist by ID.
 
@@ -388,7 +388,7 @@ class SpotifyAPI(PatchableMixin):
         """
         return deepcopy(self._require_artist(artist_id))
 
-    def get_artist_top_tracks(
+    def fetch_top_tracks(
         self,
         artist_id: str,
         limit: int = 5,
@@ -515,7 +515,7 @@ class SpotifyAPI(PatchableMixin):
                 )
         return results
 
-    def get_playlist(self, playlist_id: str) -> Dict[str, Any]:
+    def fetch_playlist(self, playlist_id: str) -> Dict[str, Any]:
         """
         Get full details for a playlist, including all track IDs.
 
@@ -530,7 +530,7 @@ class SpotifyAPI(PatchableMixin):
         """
         return deepcopy(self._require_playlist(playlist_id))
 
-    def create_playlist(
+    def create_new_playlist(
         self,
         name: str,
         description: str = "",
@@ -573,7 +573,7 @@ class SpotifyAPI(PatchableMixin):
         }
         return playlist_id
 
-    def add_tracks_to_playlist(
+    def queue_tracks_to_playlist(
         self,
         playlist_id: str,
         track_ids: List[str],
@@ -621,7 +621,7 @@ class SpotifyAPI(PatchableMixin):
             "added": added,
         }
 
-    def remove_tracks_from_playlist(
+    def dequeue_tracks_from_playlist(
         self,
         playlist_id: str,
         track_ids: List[str],
@@ -659,7 +659,7 @@ class SpotifyAPI(PatchableMixin):
             "removed": removed,
         }
 
-    def update_playlist_details(
+    def modify_playlist_details(
         self,
         playlist_id: str,
         name: Optional[str] = None,
@@ -701,7 +701,7 @@ class SpotifyAPI(PatchableMixin):
             playlist["public"] = public
         return deepcopy(playlist)
 
-    def delete_playlist(self, playlist_id: str) -> Dict[str, Any]:
+    def remove_playlist(self, playlist_id: str) -> Dict[str, Any]:
         """
         Delete (unfollow) a playlist. Only the owner can permanently delete it.
 
@@ -812,7 +812,7 @@ class SpotifyAPI(PatchableMixin):
     # Playback control
     # -----------------------------------------------------------------------
 
-    def play_track(
+    def start_track(
         self,
         track_id: str,
         device_id: Optional[str] = None,
@@ -945,7 +945,7 @@ class SpotifyAPI(PatchableMixin):
 
         return deepcopy(self.player)
 
-    def pause_playback(self) -> Dict[str, Any]:
+    def pause_stream(self) -> Dict[str, Any]:
         """
         Pause playback on the current user's active device.
 
@@ -956,7 +956,7 @@ class SpotifyAPI(PatchableMixin):
         pb["is_playing"] = False
         return deepcopy(pb)
 
-    def resume_playback(self) -> Dict[str, Any]:
+    def resume_stream(self) -> Dict[str, Any]:
         """
         Resume playback on the current user's active device.
 
@@ -974,7 +974,7 @@ class SpotifyAPI(PatchableMixin):
         pb["is_playing"] = True
         return deepcopy(pb)
 
-    def skip_to_next(self) -> Dict[str, Any]:
+    def next_track(self) -> Dict[str, Any]:
         """
         Skip to the next track in the queue or context. If the queue is empty
         and no context is set, playback stops.
@@ -997,7 +997,7 @@ class SpotifyAPI(PatchableMixin):
 
         return deepcopy(pb)
 
-    def skip_to_previous(self) -> Dict[str, Any]:
+    def previous_track(self) -> Dict[str, Any]:
         """
         Skip to the previous track. In this simplified model, if the current
         position is more than 3 seconds in, it restarts the current track.
@@ -1011,7 +1011,7 @@ class SpotifyAPI(PatchableMixin):
             pb["position_ms"] = 0
         return deepcopy(pb)
 
-    def seek_track(self, position_ms: int) -> Dict[str, Any]:
+    def seek_position(self, position_ms: int) -> Dict[str, Any]:
         """
         Seek to a position in the currently playing track.
 
@@ -1029,7 +1029,7 @@ class SpotifyAPI(PatchableMixin):
         pb["position_ms"] = pos
         return deepcopy(pb)
 
-    def set_shuffle(self, state: bool) -> Dict[str, Any]:
+    def toggle_shuffle(self, state: bool) -> Dict[str, Any]:
         """
         Toggle shuffle mode on the current user's playback.
 
@@ -1043,7 +1043,7 @@ class SpotifyAPI(PatchableMixin):
         pb["shuffle"] = bool(state)
         return deepcopy(pb)
 
-    def set_repeat(self, mode: str) -> Dict[str, Any]:
+    def toggle_repeat(self, mode: str) -> Dict[str, Any]:
         """
         Set the repeat mode on the current user's playback.
 
@@ -1064,7 +1064,7 @@ class SpotifyAPI(PatchableMixin):
         pb["repeat_mode"] = mode
         return deepcopy(pb)
 
-    def get_playback_state(self) -> Dict[str, Any]:
+    def get_now_playing(self) -> Dict[str, Any]:
         """
         Get the current playback state for the current user, including the
         active device and current track information.
@@ -1254,7 +1254,7 @@ class SpotifyAPI(PatchableMixin):
     # Social / following
     # -----------------------------------------------------------------------
 
-    def follow_artist(self, artist_id: str) -> Dict[str, Any]:
+    def subscribe_to_artist(self, artist_id: str) -> Dict[str, Any]:
         """
         Follow an artist.
 
@@ -1282,7 +1282,7 @@ class SpotifyAPI(PatchableMixin):
             "total_followed": len(followed_list),
         }
 
-    def unfollow_artist(self, artist_id: str) -> Dict[str, Any]:
+    def unsubscribe_from_artist(self, artist_id: str) -> Dict[str, Any]:
         """
         Unfollow an artist.
 
@@ -1310,7 +1310,7 @@ class SpotifyAPI(PatchableMixin):
             "total_followed": len(followed_list),
         }
 
-    def get_followed_artists(self) -> List[Dict[str, Any]]:
+    def get_subscribed_artists(self) -> List[Dict[str, Any]]:
         """
         Get the list of artists the current user is following.
 
@@ -1374,7 +1374,7 @@ class SpotifyAPI(PatchableMixin):
         self.followed_users[self.user_id].remove(target_user_id)
         return {"unfollowed": True, "target_user_id": target_user_id}
 
-    def share_track(self, track_id: str) -> Dict[str, Any]:
+    def share_track_link(self, track_id: str) -> Dict[str, Any]:
         """
         Generate a shareable link for a track.
 
@@ -1499,7 +1499,7 @@ class SpotifyAPI(PatchableMixin):
     # Account info
     # -----------------------------------------------------------------------
 
-    def get_user_profile(self) -> Dict[str, Any]:
+    def get_listener_profile(self) -> Dict[str, Any]:
         """
         Get profile information for the current user.
 

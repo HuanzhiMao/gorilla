@@ -174,7 +174,7 @@ class GoogleCalendarAPI(PatchableMixin):
     # User
     # -----------------------------------------------------------------------
 
-    def get_user_profile(self) -> Dict[str, Any]:
+    def get_calendar_settings(self) -> Dict[str, Any]:
         """
         Get the current user's profile.
 

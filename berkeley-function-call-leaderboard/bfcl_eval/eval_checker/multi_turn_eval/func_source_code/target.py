@@ -277,7 +277,7 @@ class TargetAPI(PatchableMixin):
     # Product search & browse
     # -----------------------------------------------------------------------
 
-    def search_products(
+    def search_merchandise(
         self,
         query: str,
         category: Optional[str] = None,
@@ -355,7 +355,7 @@ class TargetAPI(PatchableMixin):
 
         return results
 
-    def get_product_details(self, product_id: str) -> Dict[str, Any]:
+    def get_merchandise_info(self, product_id: str) -> Dict[str, Any]:
         """
         Retrieve full details for a specific product.
 
@@ -503,7 +503,7 @@ class TargetAPI(PatchableMixin):
     # Cart management
     # -----------------------------------------------------------------------
 
-    def add_to_cart(
+    def put_in_cart(
         self,
         product_id: str,
         quantity: int,
@@ -611,7 +611,7 @@ class TargetAPI(PatchableMixin):
         cart["subtotal"] = self._compute_cart_subtotal()
         return deepcopy(cart)
 
-    def update_cart_item(
+    def modify_cart_item(
         self,
         line_item_id: str,
         quantity: Optional[int] = None,
@@ -673,7 +673,7 @@ class TargetAPI(PatchableMixin):
         cart["subtotal"] = self._compute_cart_subtotal()
         return deepcopy(cart)
 
-    def remove_from_cart(self, line_item_id: str) -> Dict[str, Any]:
+    def pull_from_cart(self, line_item_id: str) -> Dict[str, Any]:
         """
         Remove a line item from the current user's cart.
 
@@ -699,7 +699,7 @@ class TargetAPI(PatchableMixin):
         cart["subtotal"] = self._compute_cart_subtotal()
         return deepcopy(cart)
 
-    def get_cart(self) -> Dict[str, Any]:
+    def view_cart(self) -> Dict[str, Any]:
         """
         Retrieve the current state of the current user's shopping cart with a freshly
         computed subtotal.
@@ -720,7 +720,7 @@ class TargetAPI(PatchableMixin):
     # Fulfillment
     # -----------------------------------------------------------------------
 
-    def select_fulfillment(
+    def set_fulfillment_method(
         self, fulfillment_type: str, store_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
@@ -998,7 +998,7 @@ class TargetAPI(PatchableMixin):
     # Checkout & orders
     # -----------------------------------------------------------------------
 
-    def apply_promo_code(self, promo_code: str) -> Dict[str, Any]:
+    def apply_discount_code(self, promo_code: str) -> Dict[str, Any]:
         """
         Apply a promotional code to the current user's cart.
 
@@ -1064,7 +1064,7 @@ class TargetAPI(PatchableMixin):
             "discount_preview": discount_preview,
         }
 
-    def place_order(
+    def checkout_order(
         self,
         payment_method_id: str,
         address_id: Optional[str] = None,
@@ -1307,7 +1307,7 @@ class TargetAPI(PatchableMixin):
     # Order management
     # -----------------------------------------------------------------------
 
-    def get_order_details(self, order_id: str) -> Dict[str, Any]:
+    def get_order_info(self, order_id: str) -> Dict[str, Any]:
         """
         Retrieve full details for an order. The order must belong to the current user.
 
@@ -1330,7 +1330,7 @@ class TargetAPI(PatchableMixin):
             raise PermissionError("You do not have permission to access this resource.")
         return deepcopy(order)
 
-    def cancel_order(self, order_id: str, reason: str) -> Dict[str, Any]:
+    def void_order(self, order_id: str, reason: str) -> Dict[str, Any]:
         """
         Cancel an order. Only orders in "confirmed" or "processing" status can
         be canceled. The order must belong to the current user.
@@ -1397,7 +1397,7 @@ class TargetAPI(PatchableMixin):
             "circle_points_reversed": points_to_reverse,
         }
 
-    def start_return(
+    def begin_return(
         self,
         order_id: str,
         product_id: str,
@@ -1489,7 +1489,7 @@ class TargetAPI(PatchableMixin):
     # Reviews
     # -----------------------------------------------------------------------
 
-    def get_reviews(
+    def read_reviews(
         self,
         product_id: str,
         rating_filter: Optional[int] = None,
@@ -1525,7 +1525,7 @@ class TargetAPI(PatchableMixin):
         results.sort(key=lambda r: r.get("created_at", ""), reverse=True)
         return results
 
-    def write_review(
+    def post_review(
         self,
         product_id: str,
         rating: int,
@@ -1605,7 +1605,7 @@ class TargetAPI(PatchableMixin):
     # Account & addresses
     # -----------------------------------------------------------------------
 
-    def list_addresses(self) -> List[Dict[str, Any]]:
+    def get_address_book(self) -> List[Dict[str, Any]]:
         """
         List all delivery addresses saved to the current user's account.
 
@@ -1620,7 +1620,7 @@ class TargetAPI(PatchableMixin):
             results.append(deepcopy(addr))
         return results
 
-    def add_address(
+    def save_address(
         self,
         name: str,
         street: str,
@@ -1672,7 +1672,7 @@ class TargetAPI(PatchableMixin):
 
         return deepcopy(addr)
 
-    def list_payment_methods(self) -> List[Dict[str, Any]]:
+    def get_saved_payments(self) -> List[Dict[str, Any]]:
         """
         List all payment methods saved to the current user's account.
 
@@ -1692,7 +1692,7 @@ class TargetAPI(PatchableMixin):
             results.append(result)
         return results
 
-    def add_payment_method(
+    def save_payment_method(
         self,
         card_type: str,
         card_number: str,

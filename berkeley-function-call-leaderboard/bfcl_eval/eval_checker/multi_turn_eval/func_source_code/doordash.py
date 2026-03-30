@@ -197,7 +197,7 @@ class DoorDashAPI(PatchableMixin):
     # Profile & account
     # -----------------------------------------------------------------------
 
-    def get_profile(self) -> Dict[str, Any]:
+    def get_dasher_profile(self) -> Dict[str, Any]:
         """
         Retrieve the current user's profile information.
 
@@ -212,7 +212,7 @@ class DoorDashAPI(PatchableMixin):
         """
         return deepcopy(self.profile)
 
-    def update_profile(
+    def update_dasher_profile(
         self,
         name: Optional[str] = None,
         email: Optional[str] = None,
@@ -237,7 +237,7 @@ class DoorDashAPI(PatchableMixin):
             self.profile["phone"] = phone
         return deepcopy(self.profile)
 
-    def add_address(
+    def add_delivery_location(
         self,
         street: str,
         city: str,
@@ -276,7 +276,7 @@ class DoorDashAPI(PatchableMixin):
         )
         return deepcopy(self.profile)
 
-    def remove_address(self, address_id: str) -> Dict[str, Any]:
+    def remove_delivery_location(self, address_id: str) -> Dict[str, Any]:
         """
         Remove a saved delivery address from the user's profile.
 
@@ -294,7 +294,7 @@ class DoorDashAPI(PatchableMixin):
         ]
         return deepcopy(self.profile)
 
-    def set_default_address(self, address_id: str) -> Dict[str, Any]:
+    def set_primary_delivery_location(self, address_id: str) -> Dict[str, Any]:
         """
         Mark an address as the default delivery address.
 
@@ -309,7 +309,7 @@ class DoorDashAPI(PatchableMixin):
             a["is_default"] = a.get("address_id") == address_id
         return deepcopy(self.profile)
 
-    def list_payment_methods(self) -> List[Dict[str, Any]]:
+    def list_dash_payments(self) -> List[Dict[str, Any]]:
         """
         List all payment methods saved to the user's profile.
 
@@ -320,7 +320,7 @@ class DoorDashAPI(PatchableMixin):
         """
         return deepcopy(self.profile.get("payment_method", []))
 
-    def add_payment_method(
+    def add_dash_payment(
         self,
         card_number: str,
         expiration_date: str,
@@ -354,7 +354,7 @@ class DoorDashAPI(PatchableMixin):
         )
         return method_id
 
-    def set_default_payment_method(self, method_id: str) -> List[Dict[str, Any]]:
+    def set_primary_dash_payment(self, method_id: str) -> List[Dict[str, Any]]:
         """
         Mark a payment method as the default for future orders.
 
@@ -373,7 +373,7 @@ class DoorDashAPI(PatchableMixin):
     # Restaurant & menu browsing
     # -----------------------------------------------------------------------
 
-    def search_restaurants(
+    def search_stores(
         self,
         query: str = "",
         category: Optional[str] = None,
@@ -413,7 +413,7 @@ class DoorDashAPI(PatchableMixin):
             )
         return out
 
-    def get_restaurant(self, restaurant_id: str) -> Dict[str, Any]:
+    def get_store_details(self, restaurant_id: str) -> Dict[str, Any]:
         """
         Retrieve full details for a restaurant, including a brief menu summary.
 
@@ -428,7 +428,7 @@ class DoorDashAPI(PatchableMixin):
         r = self._require_restaurant(restaurant_id)
         return deepcopy(r)
 
-    def get_menu(self, restaurant_id: str) -> List[Dict[str, Any]]:
+    def get_store_menu(self, restaurant_id: str) -> List[Dict[str, Any]]:
         """
         Retrieve the full menu for a restaurant.
 
@@ -453,7 +453,7 @@ class DoorDashAPI(PatchableMixin):
     # Order management
     # -----------------------------------------------------------------------
 
-    def place_order(
+    def place_dash(
         self,
         restaurant_id: str,
         items: List[Dict[str, Any]],
@@ -624,7 +624,7 @@ class DoorDashAPI(PatchableMixin):
 
         return order_id
 
-    def get_order(self, order_id: str) -> Dict[str, Any]:
+    def get_dash(self, order_id: str) -> Dict[str, Any]:
         """
         Retrieve full details for a specific order.
 
@@ -641,7 +641,7 @@ class DoorDashAPI(PatchableMixin):
         o = self._require_order(order_id)
         return deepcopy(o)
 
-    def get_order_history(self) -> List[Dict[str, Any]]:
+    def get_dash_history(self) -> List[Dict[str, Any]]:
         """
         Retrieve a summary list of all orders, newest first.
 
@@ -662,7 +662,7 @@ class DoorDashAPI(PatchableMixin):
         ]
         return sorted(summaries, key=lambda x: x.get("created_at", ""), reverse=True)
 
-    def cancel_order(self, order_id: str, reason: str) -> Dict[str, Any]:
+    def cancel_dash(self, order_id: str, reason: str) -> Dict[str, Any]:
         """
         Cancel an active order. A small fee applies if the restaurant has already started preparing.
 
@@ -696,7 +696,7 @@ class DoorDashAPI(PatchableMixin):
 
         return {"order_id": order_id, "canceled": True, "fee": fee}
 
-    def track_order(self, order_id: str) -> Dict[str, Any]:
+    def track_dash(self, order_id: str) -> Dict[str, Any]:
         """
         Get real-time delivery tracking for an order.
 
@@ -753,7 +753,7 @@ class DoorDashAPI(PatchableMixin):
             {"item_id": i["item_id"], "quantity": i["quantity"]}
             for i in past.get("items", [])
         ]
-        return self.place_order(
+        return self.place_dash(
             restaurant_id=restaurant_id,
             items=items,
             delivery_address_id=delivery_address_id,
@@ -761,7 +761,7 @@ class DoorDashAPI(PatchableMixin):
             tip=tip,
         )
 
-    def rate_order(
+    def rate_dash(
         self,
         order_id: str,
         rating: int,
@@ -814,7 +814,7 @@ class DoorDashAPI(PatchableMixin):
     # Offers & membership
     # -----------------------------------------------------------------------
 
-    def get_available_offers(self) -> List[Dict[str, Any]]:
+    def get_promos(self) -> List[Dict[str, Any]]:
         """
         Retrieve all available promotional offers and indicate which are in the user's wallet.
 

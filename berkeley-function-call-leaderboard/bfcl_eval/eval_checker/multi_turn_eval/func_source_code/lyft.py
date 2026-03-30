@@ -185,7 +185,7 @@ class LyftAPI(PatchableMixin):
 
     # ---- User ----
 
-    def get_user_profile(self) -> Dict[str, Any]:
+    def get_rider_profile(self) -> Dict[str, Any]:
         """
         Get the current user's profile.
 
@@ -195,7 +195,7 @@ class LyftAPI(PatchableMixin):
         """
         return deepcopy(self.profile)
 
-    def add_saved_place(
+    def save_location(
         self, label: str, address: str, lat: float, lng: float,
     ) -> Dict[str, Any]:
         """
@@ -214,7 +214,7 @@ class LyftAPI(PatchableMixin):
         self.profile.setdefault("saved_places", []).append(place)
         return {"label": label, "address": address, "status": "added"}
 
-    def remove_saved_place(self, label: str) -> Dict[str, Any]:
+    def delete_location(self, label: str) -> Dict[str, Any]:
         """
         Remove a saved place by label.
 
@@ -233,7 +233,7 @@ class LyftAPI(PatchableMixin):
 
     # ---- Ride Types & Estimates ----
 
-    def list_ride_types(self) -> List[Dict[str, Any]]:
+    def list_ride_modes(self) -> List[Dict[str, Any]]:
         """
         List all available ride types with base fares and capacity.
 
@@ -285,7 +285,7 @@ class LyftAPI(PatchableMixin):
 
     # ---- Rides ----
 
-    def request_ride(
+    def book_ride(
         self, pickup_lat: float, pickup_lng: float,
         dropoff_lat: float, dropoff_lng: float,
         ride_type_id: str,
@@ -383,7 +383,7 @@ class LyftAPI(PatchableMixin):
             }
         return result
 
-    def cancel_ride(self, ride_id: str) -> Dict[str, Any]:
+    def cancel_trip(self, ride_id: str) -> Dict[str, Any]:
         """
         Cancel a ride. Fee may apply if driver already en route.
 
@@ -404,7 +404,7 @@ class LyftAPI(PatchableMixin):
         ride["status"] = "cancelled"
         return {"ride_id": ride_id, "status": "cancelled", "cancel_fee": cancel_fee}
 
-    def get_ride(self, ride_id: str) -> Dict[str, Any]:
+    def get_trip(self, ride_id: str) -> Dict[str, Any]:
         """
         Get full ride details.
 
@@ -416,7 +416,7 @@ class LyftAPI(PatchableMixin):
         """
         return deepcopy(self._require_ride(ride_id))
 
-    def list_rides(self, status: Optional[str] = None, limit: int = 20) -> List[Dict[str, Any]]:
+    def list_trip_history(self, status: Optional[str] = None, limit: int = 20) -> List[Dict[str, Any]]:
         """
         List ride history, optionally filtered by status.
 
@@ -435,7 +435,7 @@ class LyftAPI(PatchableMixin):
         results.sort(key=lambda x: x.get("created_at", ""), reverse=True)
         return results[:limit]
 
-    def rate_ride(self, ride_id: str, rating: int) -> Dict[str, Any]:
+    def rate_trip(self, ride_id: str, rating: int) -> Dict[str, Any]:
         """
         Rate a completed ride (1-5 stars).
 
@@ -454,7 +454,7 @@ class LyftAPI(PatchableMixin):
         ride["rating"] = rating
         return {"ride_id": ride_id, "rating": rating, "status": "rated"}
 
-    def tip_driver(self, ride_id: str, amount: float) -> Dict[str, Any]:
+    def add_gratuity(self, ride_id: str, amount: float) -> Dict[str, Any]:
         """
         Add a tip to a completed ride.
 
@@ -506,7 +506,7 @@ class LyftAPI(PatchableMixin):
 
     # ---- Driver ----
 
-    def get_driver_info(self, ride_id: str) -> Dict[str, Any]:
+    def get_driver_details(self, ride_id: str) -> Dict[str, Any]:
         """
         Get driver details for a ride.
 
@@ -528,7 +528,7 @@ class LyftAPI(PatchableMixin):
 
     # ---- Offers ----
 
-    def apply_offer(self, offer_id: str) -> Dict[str, Any]:
+    def redeem_promo(self, offer_id: str) -> Dict[str, Any]:
         """
         Apply a promotional offer to the user's account.
 
@@ -553,7 +553,7 @@ class LyftAPI(PatchableMixin):
             "status": "applied",
         }
 
-    def list_offers(self) -> List[Dict[str, Any]]:
+    def list_promos(self) -> List[Dict[str, Any]]:
         """
         List available promotional offers.
 

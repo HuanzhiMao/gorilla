@@ -146,7 +146,7 @@ class ExpediaAPI(PatchableMixin):
 
     # ---- User ----
 
-    def get_user_profile(self) -> Dict[str, Any]:
+    def get_traveler_profile(self) -> Dict[str, Any]:
         """
         Get user profile.
 
@@ -198,7 +198,7 @@ class ExpediaAPI(PatchableMixin):
 
     # ---- Search ----
 
-    def search_properties(
+    def search_hotels(
         self, city: str, check_in_date: str, check_out_date: str,
         num_guests: int = 2, min_rating: Optional[float] = None,
         max_price: Optional[float] = None, amenities: Optional[List[str]] = None,
@@ -254,7 +254,7 @@ class ExpediaAPI(PatchableMixin):
         results.sort(key=lambda x: x.get("review_score", 0), reverse=True)
         return results[:limit]
 
-    def get_property(self, property_id: str) -> Dict[str, Any]:
+    def get_hotel_details(self, property_id: str) -> Dict[str, Any]:
         """
         Get full property details.
 
@@ -267,7 +267,7 @@ class ExpediaAPI(PatchableMixin):
         """
         return deepcopy(self._require_property(property_id))
 
-    def get_room_types(
+    def get_room_availability(
         self, property_id: str, check_in_date: str, check_out_date: str,
         num_guests: int = 2,
     ) -> List[Dict[str, Any]]:
@@ -295,7 +295,7 @@ class ExpediaAPI(PatchableMixin):
 
     # ---- Bookings ----
 
-    def create_booking(
+    def create_itinerary(
         self, room_type_id: str, check_in_date: str, check_out_date: str,
         num_guests: int, rooms_booked: int = 1,
         guest_name: Optional[str] = None, guest_email: Optional[str] = None,
@@ -370,7 +370,7 @@ class ExpediaAPI(PatchableMixin):
         }
         return deepcopy(self.bookings[booking_id])
 
-    def cancel_booking(self, booking_id: str) -> Dict[str, Any]:
+    def cancel_itinerary(self, booking_id: str) -> Dict[str, Any]:
         """
         Cancel a booking.
 
@@ -398,7 +398,7 @@ class ExpediaAPI(PatchableMixin):
             "refundable": refundable,
         }
 
-    def get_booking(self, booking_id: str) -> Dict[str, Any]:
+    def get_itinerary(self, booking_id: str) -> Dict[str, Any]:
         """
         Get booking details.
 
@@ -410,7 +410,7 @@ class ExpediaAPI(PatchableMixin):
         """
         return deepcopy(self._require_booking(booking_id))
 
-    def list_bookings(self, booking_status: Optional[str] = None) -> List[Dict[str, Any]]:
+    def list_trips(self, booking_status: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         List bookings, optionally filtered by status.
 
@@ -429,7 +429,7 @@ class ExpediaAPI(PatchableMixin):
         results.sort(key=lambda x: x.get("check_in_date", ""))
         return results
 
-    def modify_booking(
+    def update_itinerary(
         self, booking_id: str,
         check_in_date: Optional[str] = None,
         check_out_date: Optional[str] = None,

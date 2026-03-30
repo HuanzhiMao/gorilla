@@ -29,7 +29,7 @@ def patch_stale_slots(self, store_id):
 
 
 # ft_025 -- ready_at override
-@WalmartAPI._register_patch("get_order_details", "readyat")
+@WalmartAPI._register_patch("get_purchase_details", "readyat")
 def ft025_get_order_details_readyat(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     result["ready_at"] = "2026-04-15T18:00:00-05:00"

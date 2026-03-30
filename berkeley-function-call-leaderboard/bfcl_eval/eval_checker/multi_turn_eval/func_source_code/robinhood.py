@@ -221,7 +221,7 @@ class RobinhoodAPI(PatchableMixin):
     # Stock quotes & search
     # -----------------------------------------------------------------------
 
-    def get_stock_quote(self, symbol: str) -> Dict[str, Any]:
+    def get_asset_quote(self, symbol: str) -> Dict[str, Any]:
         """
         Get a real-time quote for a stock or asset.
 
@@ -238,7 +238,7 @@ class RobinhoodAPI(PatchableMixin):
         stock = self._require_stock(symbol)
         return deepcopy(stock)
 
-    def search_stocks(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
+    def search_assets(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
         """
         Search for stocks/assets by name or symbol.
 
@@ -321,7 +321,7 @@ class RobinhoodAPI(PatchableMixin):
     # Orders
     # -----------------------------------------------------------------------
 
-    def place_order(
+    def place_trade(
         self,
         symbol: str,
         side: str,
@@ -455,9 +455,9 @@ class RobinhoodAPI(PatchableMixin):
         stock = self._require_stock(symbol)
         price = stock.get("current_price", 1)
         quantity = round(amount_in_dollars / price, 6)
-        return self.place_order(symbol, side, quantity, order_type="market")
+        return self.place_trade(symbol, side, quantity, order_type="market")
 
-    def cancel_order(self, order_id: str) -> Dict[str, Any]:
+    def cancel_trade(self, order_id: str) -> Dict[str, Any]:
         """
         Cancel a pending order.
 
@@ -474,7 +474,7 @@ class RobinhoodAPI(PatchableMixin):
         order["status"] = "canceled"
         return {"order_id": order_id, "status": "canceled"}
 
-    def get_order(self, order_id: str) -> Dict[str, Any]:
+    def get_trade(self, order_id: str) -> Dict[str, Any]:
         """
         Get details of a specific order.
 
@@ -487,7 +487,7 @@ class RobinhoodAPI(PatchableMixin):
         order = self._require_order(order_id)
         return deepcopy(order)
 
-    def list_orders(
+    def list_trades(
         self, status: Optional[str] = None, limit: int = 20,
     ) -> List[Dict[str, Any]]:
         """
@@ -513,7 +513,7 @@ class RobinhoodAPI(PatchableMixin):
     # Watchlist
     # -----------------------------------------------------------------------
 
-    def add_to_watchlist(self, symbol: str) -> Dict[str, Any]:
+    def add_to_collection(self, symbol: str) -> Dict[str, Any]:
         """
         Add a stock to the watchlist.
 
@@ -530,7 +530,7 @@ class RobinhoodAPI(PatchableMixin):
         self.watchlist.append(sym)
         return {"symbol": sym, "status": "added", "watchlist_size": len(self.watchlist)}
 
-    def remove_from_watchlist(self, symbol: str) -> Dict[str, Any]:
+    def remove_from_collection(self, symbol: str) -> Dict[str, Any]:
         """
         Remove a stock from the watchlist.
 
@@ -546,7 +546,7 @@ class RobinhoodAPI(PatchableMixin):
         self.watchlist.remove(sym)
         return {"symbol": sym, "status": "removed"}
 
-    def get_watchlist(self) -> List[Dict[str, Any]]:
+    def get_collection(self) -> List[Dict[str, Any]]:
         """
         Get the watchlist with current prices.
 
@@ -762,7 +762,7 @@ class RobinhoodAPI(PatchableMixin):
     # Deposits & withdrawals
     # -----------------------------------------------------------------------
 
-    def deposit_funds(self, amount: float) -> Dict[str, Any]:
+    def instant_deposit(self, amount: float) -> Dict[str, Any]:
         """
         Deposit funds into the Robinhood account.  Instant deposits are
         available up to the user's instant deposit limit.
@@ -791,7 +791,7 @@ class RobinhoodAPI(PatchableMixin):
             "status": "completed" if pending == 0 else "partially_instant",
         }
 
-    def withdraw_funds(self, amount: float) -> Dict[str, Any]:
+    def withdraw_to_bank(self, amount: float) -> Dict[str, Any]:
         """
         Withdraw funds to linked bank account.
 

@@ -239,7 +239,7 @@ class OutlookAPI(PatchableMixin):
     # User switching
     # -----------------------------------------------------------------------
 
-    def switch_user(self, username: str) -> Dict[str, Any]:
+    def set_active_user(self, username: str) -> Dict[str, Any]:
         """
         Switch the active user account.
 
@@ -264,7 +264,7 @@ class OutlookAPI(PatchableMixin):
     # Email listing & reading
     # -----------------------------------------------------------------------
 
-    def list_emails(
+    def list_mail_items(
         self,
         folder: str = "inbox",
         max_results: int = 20,
@@ -298,7 +298,7 @@ class OutlookAPI(PatchableMixin):
         results.sort(key=lambda x: x.get("created_at", ""), reverse=True)
         return results[:max_results]
 
-    def get_email(self, email_id: str) -> Dict[str, Any]:
+    def get_mail_item(self, email_id: str) -> Dict[str, Any]:
         """
         Retrieve the full content of a single email by its ID.
 
@@ -346,7 +346,7 @@ class OutlookAPI(PatchableMixin):
     # Composing & sending
     # -----------------------------------------------------------------------
 
-    def send_email(
+    def send_mail_item(
         self,
         to: List[str],
         subject: str,
@@ -412,7 +412,7 @@ class OutlookAPI(PatchableMixin):
             "status": "sent",
         }
 
-    def create_draft(
+    def compose_draft(
         self,
         to: Optional[List[str]] = None,
         subject: str = "",
@@ -449,7 +449,7 @@ class OutlookAPI(PatchableMixin):
         }
         return {"draft_id": draft_id, "status": "created"}
 
-    def update_draft(
+    def update_composed_draft(
         self,
         draft_id: str,
         to: Optional[List[str]] = None,
@@ -489,7 +489,7 @@ class OutlookAPI(PatchableMixin):
             draft["attachments"] = attachments
         return deepcopy(draft)
 
-    def send_draft(self, draft_id: str) -> Dict[str, Any]:
+    def send_composed_draft(self, draft_id: str) -> Dict[str, Any]:
         """
         Send a previously created draft. The draft is removed after sending.
 
@@ -509,7 +509,7 @@ class OutlookAPI(PatchableMixin):
                 context={"draft_id": draft_id},
             )
 
-        result = self.send_email(
+        result = self.send_mail_item(
             to=draft["to"],
             subject=draft.get("subject", ""),
             body=draft.get("body", ""),
@@ -521,7 +521,7 @@ class OutlookAPI(PatchableMixin):
         del self.drafts[draft_id]
         return result
 
-    def reply_to_email(
+    def reply_to_conversation(
         self,
         email_id: str,
         body: str,
@@ -558,9 +558,9 @@ class OutlookAPI(PatchableMixin):
         if not subject.lower().startswith("re:"):
             subject = f"RE: {subject}"
 
-        return self.send_email(to=recipients, subject=subject, body=body)
+        return self.send_mail_item(to=recipients, subject=subject, body=body)
 
-    def forward_email(
+    def forward_mail_item(
         self,
         email_id: str,
         to: List[str],
@@ -602,7 +602,7 @@ class OutlookAPI(PatchableMixin):
         fwd_body += f"Subject: {original.get('subject', '')}\n\n"
         fwd_body += original.get("body", "")
 
-        return self.send_email(
+        return self.send_mail_item(
             to=to,
             subject=subject,
             body=fwd_body,
@@ -679,7 +679,7 @@ class OutlookAPI(PatchableMixin):
         self._add_to_folder("trash", email_id)
         return {"email_id": email_id, "status": "moved_to_deleted"}
 
-    def mark_as_read(self, email_id: str) -> Dict[str, Any]:
+    def set_as_read(self, email_id: str) -> Dict[str, Any]:
         """
         Mark an email as read.
 
@@ -695,7 +695,7 @@ class OutlookAPI(PatchableMixin):
         self._remove_from_folder("unread", email_id)
         return {"email_id": email_id, "read": True}
 
-    def mark_as_unread(self, email_id: str) -> Dict[str, Any]:
+    def set_as_unread(self, email_id: str) -> Dict[str, Any]:
         """
         Mark an email as unread.
 
@@ -779,7 +779,7 @@ class OutlookAPI(PatchableMixin):
     # Search
     # -----------------------------------------------------------------------
 
-    def search_emails(
+    def query_mail_items(
         self,
         query: str,
         folder: Optional[str] = None,
@@ -889,7 +889,7 @@ class OutlookAPI(PatchableMixin):
     # Contacts
     # -----------------------------------------------------------------------
 
-    def list_contacts(self) -> List[Dict[str, Any]]:
+    def list_people(self) -> List[Dict[str, Any]]:
         """
         List all contacts.
 
@@ -899,7 +899,7 @@ class OutlookAPI(PatchableMixin):
         self._require_user(self.user_id)
         return [deepcopy(c) for c in self.contacts.values()]
 
-    def add_contact(
+    def add_person(
         self,
         name: str,
         email_address: str,

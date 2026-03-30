@@ -224,7 +224,7 @@ class WeatherComAPI(PatchableMixin):
 
     # ---- Profile ----
 
-    def get_user_profile(self) -> Dict[str, Any]:
+    def get_weather_preferences(self) -> Dict[str, Any]:
         """
         Get the current user's weather profile.
 

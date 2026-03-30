@@ -13,7 +13,7 @@ def _arg(args, kwargs, idx, name, default=None):
 # ─── Source: socrates ───
 
 
-@UberEatsOrderAPI._register_patch("place_order", "phantom_permanent")
+@UberEatsOrderAPI._register_patch("submit_food_order", "phantom_permanent")
 def place_order_phantom_permanent(self, *args, **kwargs):
     """Permanent silent no-op. Returns fake order_id without ever placing the order.
     The order never exists in the system, so get_order / cancel_order will correctly fail."""
@@ -32,7 +32,7 @@ def search_restaurants_stale_permanent(self, *args, **kwargs):
     return results
 
 
-@UberEatsOrderAPI._register_patch("place_order", "unavailable_permanent")
+@UberEatsOrderAPI._register_patch("submit_food_order", "unavailable_permanent")
 def place_order_unavailable_permanent(self, *args, **kwargs):
     """Permanent. Always raises SERVICE_UNAVAILABLE."""
     raise PatchError(
@@ -46,7 +46,7 @@ def place_order_unavailable_permanent(self, *args, **kwargs):
 
 
 # ft_022 -- doubled total
-@UberEatsOrderAPI._register_patch("place_order", "doubledtotal")
+@UberEatsOrderAPI._register_patch("submit_food_order", "doubledtotal")
 def ft022_place_order_doubledtotal(self, *args, **kwargs):
     order_id = self._original_function(*args, **kwargs)
     if order_id in self.orders:
@@ -58,8 +58,8 @@ def ft022_place_order_doubledtotal(self, *args, **kwargs):
 
 
 # S51: Late night pizza — Night Owl closed on UE
-@UberEatsOrderAPI._register_patch("place_order", "s51_restaurant_closed")
-def s51_place_order(self, *args, **kwargs):
+@UberEatsOrderAPI._register_patch("submit_food_order", "s51_restaurant_closed")
+def s51_submit_food_order(self, *args, **kwargs):
     restaurant_id = _arg(args, kwargs, 0, "restaurant_id")
     if restaurant_id == "night_owl_01":
         raise UberEatsError(
@@ -72,8 +72,8 @@ def s51_place_order(self, *args, **kwargs):
 
 
 # S52: Poker night — nachos out of stock on UE
-@UberEatsOrderAPI._register_patch("place_order", "s52_nachos_out_of_stock")
-def s52_place_order(self, *args, **kwargs):
+@UberEatsOrderAPI._register_patch("submit_food_order", "s52_nachos_out_of_stock")
+def s52_submit_food_order(self, *args, **kwargs):
     items = _arg(args, kwargs, 1, "items", [])
     if any((it or {}).get("item_id") == "pb_nachos" for it in (items or [])):
         raise UberEatsError(
@@ -86,8 +86,8 @@ def s52_place_order(self, *args, **kwargs):
 
 
 # S53: Post-gym — out of delivery zone on UE
-@UberEatsOrderAPI._register_patch("place_order", "s53_out_of_zone")
-def s53_place_order(self, *args, **kwargs):
+@UberEatsOrderAPI._register_patch("submit_food_order", "s53_out_of_zone")
+def s53_submit_food_order(self, *args, **kwargs):
     raise UberEatsError(
         error_code="OUT_OF_DELIVERY_ZONE",
         message="Delivery address is outside the maximum delivery radius.",
@@ -97,8 +97,8 @@ def s53_place_order(self, *args, **kwargs):
 
 
 # S54: Anniversary dinner — payments outage
-@UberEatsOrderAPI._register_patch("place_order", "s54_payments_outage_temporary")
-def s54_place_order(self, *args, **kwargs):
+@UberEatsOrderAPI._register_patch("submit_food_order", "s54_payments_outage_temporary")
+def s54_submit_food_order(self, *args, **kwargs):
     if self._patch_call_count <= 2:
         raise UberEatsError(
             error_code="PAYMENTS_OUTAGE",
@@ -110,8 +110,8 @@ def s54_place_order(self, *args, **kwargs):
 
 
 # S55: Thai food — promo SPICY15 not eligible at bangkok_st on UE
-@UberEatsOrderAPI._register_patch("place_order", "s55_promo_not_eligible")
-def s55_place_order(self, *args, **kwargs):
+@UberEatsOrderAPI._register_patch("submit_food_order", "s55_promo_not_eligible")
+def s55_submit_food_order(self, *args, **kwargs):
     restaurant_id = _arg(args, kwargs, 0, "restaurant_id")
     offer_id = _arg(args, kwargs, 5, "offer_id")
     if (
@@ -128,8 +128,8 @@ def s55_place_order(self, *args, **kwargs):
 
 
 # S57: Wrong order report + restaurant closed on reorder
-@UberEatsOrderAPI._register_patch("place_order", "s57_sakura_closed")
-def s57_place_order(self, *args, **kwargs):
+@UberEatsOrderAPI._register_patch("submit_food_order", "s57_sakura_closed")
+def s57_submit_food_order(self, *args, **kwargs):
     restaurant_id = _arg(args, kwargs, 0, "restaurant_id")
     if restaurant_id == "sakura_01":
         raise UberEatsError(
@@ -150,8 +150,8 @@ def s60_get_menu(self, restaurant_id):
 
 
 # S61: Group order — no default payment method
-@UberEatsOrderAPI._register_patch("place_order", "s61_no_default_payment")
-def s61_place_order(self, *args, **kwargs):
+@UberEatsOrderAPI._register_patch("submit_food_order", "s61_no_default_payment")
+def s61_submit_food_order(self, *args, **kwargs):
     raise UberEatsError(
         error_code="NO_DEFAULT_PAYMENT_METHOD",
         message="Organizer has no default payment method.",
@@ -161,8 +161,8 @@ def s61_place_order(self, *args, **kwargs):
 
 
 # S63: Split order — guac out of stock on UE
-@UberEatsOrderAPI._register_patch("place_order", "s63_guac_out_of_stock")
-def s63_place_order(self, *args, **kwargs):
+@UberEatsOrderAPI._register_patch("submit_food_order", "s63_guac_out_of_stock")
+def s63_submit_food_order(self, *args, **kwargs):
     items = _arg(args, kwargs, 1, "items", [])
     if any((it or {}).get("item_id") == "guac_dip" for it in (items or [])):
         raise UberEatsError(

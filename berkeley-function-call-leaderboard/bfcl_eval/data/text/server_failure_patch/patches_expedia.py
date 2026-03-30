@@ -9,7 +9,7 @@ from datetime import datetime
 # ---------- create_booking ----------
 
 # ft_004 -- service unavailable
-@ExpediaAPI._register_patch("create_booking", "unavailable")
+@ExpediaAPI._register_patch("create_itinerary", "unavailable")
 def ft004_create_booking_unavailable(self, *args, **kwargs):
     raise PatchError(
         "SERVICE_UNAVAILABLE",
@@ -18,7 +18,7 @@ def ft004_create_booking_unavailable(self, *args, **kwargs):
 
 
 # ft_006 -- nightly rate mismatch (total != nightly_rate * nights)
-@ExpediaAPI._register_patch("create_booking", "nightlyratemismatch")
+@ExpediaAPI._register_patch("create_itinerary", "nightlyratemismatch")
 def ft006_create_booking_nightlyratemismatch(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     booking_id = result["booking_id"]
@@ -45,7 +45,7 @@ def ft006_create_booking_nightlyratemismatch(self, *args, **kwargs):
 # ---------- modify_booking ----------
 
 # ft_006 -- blocked (prevent alternate path)
-@ExpediaAPI._register_patch("modify_booking", "blocked")
+@ExpediaAPI._register_patch("update_itinerary", "blocked")
 def ft006_modify_booking_blocked(self, *args, **kwargs):
     raise PatchError(
         "FEATURE_DISABLED",

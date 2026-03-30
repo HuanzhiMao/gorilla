@@ -30,7 +30,7 @@ def patch_region_denied_cart(self, product_id, quantity, fulfillment_type=None, 
 
 
 # ft_026 -- RedCard discount glitch (0.5% instead of 5%)
-@TargetAPI._register_patch("place_order", "redcardglitch")
+@TargetAPI._register_patch("checkout_order", "redcardglitch")
 def ft026_place_order_redcardglitch(self, *args, **kwargs):
     cart_snapshot = deepcopy(self.cart)
     result = self._original_function(*args, **kwargs)

@@ -220,7 +220,7 @@ class VenmoAPI(PatchableMixin):
     # Profile
     # -----------------------------------------------------------------------
 
-    def get_profile(self) -> Dict[str, Any]:
+    def get_account_summary(self) -> Dict[str, Any]:
         """
         Get the current user's Venmo profile.
 
@@ -265,7 +265,7 @@ class VenmoAPI(PatchableMixin):
     # Contacts
     # -----------------------------------------------------------------------
 
-    def add_contact(
+    def add_friend(
         self,
         name: str,
         username: str,
@@ -294,7 +294,7 @@ class VenmoAPI(PatchableMixin):
         }
         return deepcopy(self.contacts[contact_id])
 
-    def list_contacts(self) -> List[Dict[str, Any]]:
+    def list_friends(self) -> List[Dict[str, Any]]:
         """
         List all saved contacts.
 

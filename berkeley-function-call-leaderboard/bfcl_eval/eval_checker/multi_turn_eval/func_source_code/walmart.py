@@ -257,7 +257,7 @@ class WalmartAPI(PatchableMixin):
     # Product search & browse
     # -----------------------------------------------------------------------
 
-    def search_products(
+    def browse_products(
         self,
         query: str,
         category: Optional[str] = None,
@@ -335,7 +335,7 @@ class WalmartAPI(PatchableMixin):
 
         return results
 
-    def get_product_details(self, product_id: str) -> Dict[str, Any]:
+    def get_item_details(self, product_id: str) -> Dict[str, Any]:
         """
         Retrieve full details for a specific product.
 
@@ -444,7 +444,7 @@ class WalmartAPI(PatchableMixin):
     # Cart management
     # -----------------------------------------------------------------------
 
-    def add_to_cart(
+    def add_item_to_basket(
         self,
         product_id: str,
         quantity: int,
@@ -555,7 +555,7 @@ class WalmartAPI(PatchableMixin):
         cart["subtotal"] = self._compute_cart_subtotal()
         return deepcopy(cart)
 
-    def update_cart_item(
+    def update_basket_item(
         self,
         line_item_id: str,
         quantity: Optional[int] = None,
@@ -633,7 +633,7 @@ class WalmartAPI(PatchableMixin):
         cart["subtotal"] = self._compute_cart_subtotal()
         return deepcopy(cart)
 
-    def remove_from_cart(self, line_item_id: str) -> Dict[str, Any]:
+    def remove_item_from_basket(self, line_item_id: str) -> Dict[str, Any]:
         """
         Remove a line item from the current user's cart.
 
@@ -660,7 +660,7 @@ class WalmartAPI(PatchableMixin):
         cart["subtotal"] = self._compute_cart_subtotal()
         return deepcopy(cart)
 
-    def get_cart(self) -> Dict[str, Any]:
+    def get_basket(self) -> Dict[str, Any]:
         """
         Retrieve the current state of the current user's shopping cart with a freshly
         computed subtotal.
@@ -680,7 +680,7 @@ class WalmartAPI(PatchableMixin):
     # Fulfillment & pickup
     # -----------------------------------------------------------------------
 
-    def select_fulfillment(
+    def choose_fulfillment(
         self, fulfillment_type: str, store_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
@@ -798,7 +798,7 @@ class WalmartAPI(PatchableMixin):
     # Checkout & orders
     # -----------------------------------------------------------------------
 
-    def apply_promo_code(self, promo_code: str) -> Dict[str, Any]:
+    def redeem_promo_code(self, promo_code: str) -> Dict[str, Any]:
         """
         Apply a promotional code to the current user's cart. Validates eligibility without
         consuming usage -- usage is consumed on place_order().
@@ -882,7 +882,7 @@ class WalmartAPI(PatchableMixin):
             "discount_preview": discount_preview,
         }
 
-    def place_order(
+    def submit_order(
         self,
         payment_method_id: str,
         address_id: Optional[str] = None,
@@ -1069,7 +1069,7 @@ class WalmartAPI(PatchableMixin):
     # Order management
     # -----------------------------------------------------------------------
 
-    def get_order_details(self, order_id: str) -> Dict[str, Any]:
+    def get_purchase_details(self, order_id: str) -> Dict[str, Any]:
         """
         Retrieve full details for an order. The order must belong to the current user.
 
@@ -1091,7 +1091,7 @@ class WalmartAPI(PatchableMixin):
             raise PermissionError("You do not have permission to access this resource.")
         return deepcopy(order)
 
-    def cancel_order(self, order_id: str, reason: str) -> Dict[str, Any]:
+    def cancel_purchase(self, order_id: str, reason: str) -> Dict[str, Any]:
         """
         Cancel an order. Only orders in "confirmed" or "processing" status can
         be canceled. The order must belong to the current user.
@@ -1140,7 +1140,7 @@ class WalmartAPI(PatchableMixin):
             "refund_amount": refund,
         }
 
-    def start_return(
+    def initiate_return(
         self,
         order_id: str,
         product_id: str,
@@ -1232,7 +1232,7 @@ class WalmartAPI(PatchableMixin):
     # Reviews
     # -----------------------------------------------------------------------
 
-    def get_reviews(
+    def get_item_reviews(
         self,
         product_id: str,
         rating_filter: Optional[int] = None,
@@ -1268,7 +1268,7 @@ class WalmartAPI(PatchableMixin):
         results.sort(key=lambda r: r.get("created_at", ""), reverse=True)
         return results
 
-    def write_review(
+    def submit_review(
         self,
         product_id: str,
         rating: int,
@@ -1350,7 +1350,7 @@ class WalmartAPI(PatchableMixin):
     # Account & addresses
     # -----------------------------------------------------------------------
 
-    def list_addresses(self) -> List[Dict[str, Any]]:
+    def list_shipping_addresses(self) -> List[Dict[str, Any]]:
         """
         List all delivery addresses saved to the current user's account.
 
@@ -1364,7 +1364,7 @@ class WalmartAPI(PatchableMixin):
             results.append(deepcopy(addr))
         return results
 
-    def add_address(
+    def add_shipping_address(
         self,
         name: str,
         street: str,
@@ -1416,7 +1416,7 @@ class WalmartAPI(PatchableMixin):
 
         return deepcopy(addr)
 
-    def list_payment_methods(self) -> List[Dict[str, Any]]:
+    def list_wallet_payments(self) -> List[Dict[str, Any]]:
         """
         List all payment methods saved to the current user's account.
 
@@ -1430,7 +1430,7 @@ class WalmartAPI(PatchableMixin):
             results.append(deepcopy(pm))
         return results
 
-    def add_payment_method(
+    def add_wallet_payment(
         self,
         card_type: str,
         card_number: str,

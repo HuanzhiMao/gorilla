@@ -332,7 +332,7 @@ class InstacartAPI(PatchableMixin):
     # Product search & browse
     # -----------------------------------------------------------------------
 
-    def search_products(
+    def search_grocery_items(
         self,
         store_id: str,
         query: str = "",
@@ -383,7 +383,7 @@ class InstacartAPI(PatchableMixin):
             })
         return results
 
-    def get_product_details(self, store_id: str, product_id: str) -> Dict[str, Any]:
+    def get_grocery_details(self, store_id: str, product_id: str) -> Dict[str, Any]:
         """
         Get detailed information for a specific product at a specific store, including
         store-specific pricing and stock level.
@@ -449,7 +449,7 @@ class InstacartAPI(PatchableMixin):
         }
         return cart_id
 
-    def add_to_cart(
+    def add_grocery_item(
         self,
         cart_id: str,
         product_id: str,
@@ -504,7 +504,7 @@ class InstacartAPI(PatchableMixin):
         cart["subtotal"] = self._compute_cart_subtotal(cart)
         return deepcopy(cart)
 
-    def update_cart_item(
+    def update_grocery_quantity(
         self,
         cart_id: str,
         product_id: str,
@@ -553,7 +553,7 @@ class InstacartAPI(PatchableMixin):
         cart["subtotal"] = self._compute_cart_subtotal(cart)
         return deepcopy(cart)
 
-    def remove_from_cart(self, cart_id: str, product_id: str) -> Dict[str, Any]:
+    def remove_grocery_item(self, cart_id: str, product_id: str) -> Dict[str, Any]:
         """
         Remove a product entirely from the cart.
 
@@ -578,7 +578,7 @@ class InstacartAPI(PatchableMixin):
         cart["subtotal"] = self._compute_cart_subtotal(cart)
         return deepcopy(cart)
 
-    def get_cart(self, cart_id: str) -> Dict[str, Any]:
+    def get_grocery_cart(self, cart_id: str) -> Dict[str, Any]:
         """
         Retrieve the current state of a cart with a freshly computed subtotal.
 
@@ -659,7 +659,7 @@ class InstacartAPI(PatchableMixin):
     # Delivery windows
     # -----------------------------------------------------------------------
 
-    def get_delivery_windows(self, store_id: str) -> List[Dict[str, Any]]:
+    def get_delivery_slots(self, store_id: str) -> List[Dict[str, Any]]:
         """
         Retrieve available delivery time slots for a store.
 
@@ -680,7 +680,7 @@ class InstacartAPI(PatchableMixin):
     # Coupons
     # -----------------------------------------------------------------------
 
-    def apply_coupon(self, cart_id: str, coupon_code: str) -> Dict[str, Any]:
+    def redeem_coupon(self, cart_id: str, coupon_code: str) -> Dict[str, Any]:
         """
         Apply a coupon code to a cart. Validates eligibility without consuming
         the coupon (consumption happens at checkout).
@@ -978,7 +978,7 @@ class InstacartAPI(PatchableMixin):
             "new_total": pricing["total"],
         }
 
-    def cancel_order(self, order_id: str, reason: str) -> Dict[str, Any]:
+    def cancel_delivery(self, order_id: str, reason: str) -> Dict[str, Any]:
         """
         Cancel an active order. Cancellation is only possible before the shopper
         has completed shopping. A cancellation fee may apply if shopping has started.
@@ -1105,7 +1105,7 @@ class InstacartAPI(PatchableMixin):
     # Account: addresses
     # -----------------------------------------------------------------------
 
-    def list_addresses(self) -> List[Dict[str, Any]]:
+    def list_drop_off_addresses(self) -> List[Dict[str, Any]]:
         """
         List all delivery addresses saved to the current user's account.
 
@@ -1120,7 +1120,7 @@ class InstacartAPI(PatchableMixin):
             results.append(deepcopy(addr))
         return results
 
-    def add_address(
+    def add_drop_off_address(
         self,
         label: str,
         street: str,
@@ -1165,7 +1165,7 @@ class InstacartAPI(PatchableMixin):
     # Account: payment methods
     # -----------------------------------------------------------------------
 
-    def list_payment_methods(self) -> List[Dict[str, Any]]:
+    def list_payment_options(self) -> List[Dict[str, Any]]:
         """
         List all payment methods saved to the current user's account.
 
@@ -1184,7 +1184,7 @@ class InstacartAPI(PatchableMixin):
             })
         return results
 
-    def add_payment_method(
+    def add_payment_option(
         self,
         card_number: str,
         expiration_date: str,

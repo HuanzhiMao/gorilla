@@ -361,7 +361,7 @@ class YelpAPI(PatchableMixin):
     # Reviews — writing (current user only)
     # -----------------------------------------------------------------------
 
-    def write_review(
+    def compose_review(
         self,
         business_id: str,
         rating: int,

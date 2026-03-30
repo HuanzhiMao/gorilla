@@ -33,7 +33,7 @@ def ft019_get_ride_estimates_invalidentry(self, *args, **kwargs):
 # ---------- request_ride ----------
 
 # ft_017 -- capacity violation (XL returns capacity=4)
-@LyftAPI._register_patch("request_ride", "capacityviolation")
+@LyftAPI._register_patch("book_ride", "capacityviolation")
 def ft017_request_ride_capacityviolation(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     ride_id = result["ride_id"]
@@ -46,7 +46,7 @@ def ft017_request_ride_capacityviolation(self, *args, **kwargs):
 
 
 # ft_020 -- fixed fare override (Lyft side of cross-platform scenario)
-@LyftAPI._register_patch("request_ride", "fixedfare")
+@LyftAPI._register_patch("book_ride", "fixedfare")
 def ft020_request_ride_fixedfare(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     ride_id = result["ride_id"]

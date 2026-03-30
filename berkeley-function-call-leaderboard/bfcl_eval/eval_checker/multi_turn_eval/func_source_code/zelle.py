@@ -237,7 +237,7 @@ class ZelleAPI(PatchableMixin):
     # Profile
     # -----------------------------------------------------------------------
 
-    def get_profile(self) -> Dict[str, Any]:
+    def get_account_profile(self) -> Dict[str, Any]:
         """
         Get the current user's Zelle profile.
 
@@ -251,7 +251,7 @@ class ZelleAPI(PatchableMixin):
     # Contacts
     # -----------------------------------------------------------------------
 
-    def add_contact(
+    def add_recipient(
         self,
         name: str,
         username: str,
@@ -288,7 +288,7 @@ class ZelleAPI(PatchableMixin):
         }
         return deepcopy(self.contacts[contact_id])
 
-    def list_contacts(self) -> List[Dict[str, Any]]:
+    def list_recipients(self) -> List[Dict[str, Any]]:
         """
         List all saved contacts.
 
@@ -297,7 +297,7 @@ class ZelleAPI(PatchableMixin):
         """
         return [deepcopy(c) for c in self.contacts.values()]
 
-    def get_contact(self, contact_id: str) -> Dict[str, Any]:
+    def get_recipient(self, contact_id: str) -> Dict[str, Any]:
         """
         Get a specific contact by ID.
 
@@ -310,7 +310,7 @@ class ZelleAPI(PatchableMixin):
         contact = self._require_contact(contact_id)
         return deepcopy(contact)
 
-    def remove_contact(self, contact_id: str) -> Dict[str, Any]:
+    def remove_recipient(self, contact_id: str) -> Dict[str, Any]:
         """
         Remove a contact from the saved list.
 
@@ -329,7 +329,7 @@ class ZelleAPI(PatchableMixin):
     # Sending money
     # -----------------------------------------------------------------------
 
-    def send_money(
+    def send_transfer(
         self,
         contact_id: str,
         amount: float,
@@ -438,7 +438,7 @@ class ZelleAPI(PatchableMixin):
             "note": note,
         }
 
-    def cancel_transaction(self, transaction_id: str) -> Dict[str, Any]:
+    def cancel_transfer(self, transaction_id: str) -> Dict[str, Any]:
         """
         Cancel a pending transaction. Only pending transactions can be
         cancelled. The amount is refunded to the original funding source.
@@ -472,7 +472,7 @@ class ZelleAPI(PatchableMixin):
             "refunded_amount": txn.get("amount", 0),
         }
 
-    def get_transaction(self, transaction_id: str) -> Dict[str, Any]:
+    def get_transfer(self, transaction_id: str) -> Dict[str, Any]:
         """
         Get full details of a transaction.
 
@@ -485,7 +485,7 @@ class ZelleAPI(PatchableMixin):
         txn = self._require_transaction(transaction_id)
         return deepcopy(txn)
 
-    def list_transactions(
+    def list_transfers(
         self,
         status: Optional[str] = None,
         limit: int = 20,
@@ -513,7 +513,7 @@ class ZelleAPI(PatchableMixin):
     # Money requests
     # -----------------------------------------------------------------------
 
-    def request_money(
+    def request_transfer(
         self,
         contact_id: str,
         amount: float,
@@ -559,7 +559,7 @@ class ZelleAPI(PatchableMixin):
             "note": note,
         }
 
-    def respond_to_request(
+    def respond_to_transfer_request(
         self,
         request_id: str,
         action: str,
@@ -673,7 +673,7 @@ class ZelleAPI(PatchableMixin):
             "transaction_id": txn_id,
         }
 
-    def cancel_request(self, request_id: str) -> Dict[str, Any]:
+    def cancel_transfer_request(self, request_id: str) -> Dict[str, Any]:
         """
         Cancel an outgoing money request that you created.
 
@@ -702,7 +702,7 @@ class ZelleAPI(PatchableMixin):
         req["status"] = "cancelled"
         return {"request_id": request_id, "status": "cancelled"}
 
-    def get_request(self, request_id: str) -> Dict[str, Any]:
+    def get_transfer_request(self, request_id: str) -> Dict[str, Any]:
         """
         Get full details of a money request.
 
@@ -715,7 +715,7 @@ class ZelleAPI(PatchableMixin):
         req = self._require_request(request_id)
         return deepcopy(req)
 
-    def list_requests(
+    def list_transfer_requests(
         self,
         direction: Optional[str] = None,
         status: Optional[str] = None,
@@ -746,7 +746,7 @@ class ZelleAPI(PatchableMixin):
     # Funding sources
     # -----------------------------------------------------------------------
 
-    def add_funding_source(
+    def link_bank_account(
         self,
         name: str,
         last4: str,
@@ -776,7 +776,7 @@ class ZelleAPI(PatchableMixin):
         self.profile.setdefault("linked_bank_accounts", []).append(source_id)
         return deepcopy(self.funding_sources[source_id])
 
-    def list_funding_sources(self) -> List[Dict[str, Any]]:
+    def list_enrolled_banks(self) -> List[Dict[str, Any]]:
         """
         List all funding sources (bank accounts).
 
@@ -785,7 +785,7 @@ class ZelleAPI(PatchableMixin):
         """
         return [deepcopy(s) for s in self.funding_sources.values()]
 
-    def activate_funding_source(self, source_id: str) -> Dict[str, Any]:
+    def enroll_bank_account(self, source_id: str) -> Dict[str, Any]:
         """
         Activate a funding source so it can be used for transfers.
 
@@ -800,7 +800,7 @@ class ZelleAPI(PatchableMixin):
         src["active"] = True
         return {"source_id": source_id, "active": True, "status": "activated"}
 
-    def deactivate_funding_source(self, source_id: str) -> Dict[str, Any]:
+    def unenroll_bank_account(self, source_id: str) -> Dict[str, Any]:
         """
         Deactivate a funding source so it cannot be used for transfers.
 

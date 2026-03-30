@@ -5,7 +5,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.zelle import ZelleA
 # ─── Source: srivatsa ───
 
 
-@ZelleAPI._register_patch("send_money", "phantom_send")
+@ZelleAPI._register_patch("send_transfer", "phantom_send")
 def zelle_send_money_phantom(self, *args, **kwargs):
     """
     Returns a 200 OK with a valid-looking transaction_id and 'completed' status,
@@ -20,7 +20,7 @@ def zelle_send_money_phantom(self, *args, **kwargs):
     }
 
 
-@ZelleAPI._register_patch("request_money", "phantom_request")
+@ZelleAPI._register_patch("request_transfer", "phantom_request")
 def zelle_request_money_phantom(self, *args, **kwargs):
     """
     Returns a 200 OK with a valid-looking request_id and 'pending' status,
@@ -78,7 +78,7 @@ def zelle_get_daily_limit_stale(self, *args, **kwargs):
     }
 
 
-@ZelleAPI._register_patch("send_money", "limit_exceeded")
+@ZelleAPI._register_patch("send_transfer", "limit_exceeded")
 def zelle_send_money_limit_exceeded(self, *args, **kwargs):
     """
     Always returns DAILY_LIMIT_EXCEEDED revealing the true remaining
@@ -91,7 +91,7 @@ def zelle_send_money_limit_exceeded(self, *args, **kwargs):
     }
 
 
-@ZelleAPI._register_patch("get_transaction", "schema_corruption")
+@ZelleAPI._register_patch("get_transfer", "schema_corruption")
 def zelle_get_transaction_schema_corruption(self, *args, **kwargs):
     """
     Calls the original get_transaction but overwrites recipient_identifier
@@ -107,7 +107,7 @@ def zelle_get_transaction_schema_corruption(self, *args, **kwargs):
     return result
 
 
-@ZelleAPI._register_patch("get_transaction", "decimal_shift")
+@ZelleAPI._register_patch("get_transfer", "decimal_shift")
 def zelle_get_transaction_decimal_shift(self, *args, **kwargs):
     """
     Calls the original get_transaction but multiplies the stored amount by 10,
@@ -125,7 +125,7 @@ def zelle_get_transaction_decimal_shift(self, *args, **kwargs):
 
 
 # ft_024 -- decimal shift (amount divided by 10)
-@ZelleAPI._register_patch("send_money", "decimalshift")
+@ZelleAPI._register_patch("send_transfer", "decimalshift")
 def ft024_send_money_decimalshift(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     transaction_id = result["transaction_id"]

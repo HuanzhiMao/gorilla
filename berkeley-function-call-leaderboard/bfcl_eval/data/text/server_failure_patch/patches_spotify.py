@@ -6,8 +6,8 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.spotify import Spot
 # S69: TWICE — all Spotify devices offline, NO_ACTIVE_DEVICE
 # Trigger: play_track with no device available
 # ============================================================================
-@SpotifyAPI._register_patch("play_track", "s69_no_active_device")
-def s69_play_track(self, track_id, device_id=None):
+@SpotifyAPI._register_patch("start_track", "s69_no_active_device")
+def s69_start_track(self, track_id, device_id=None):
     if device_id:
         raise SpotifyError(
             error_code="DEVICE_NOT_FOUND",
@@ -54,8 +54,8 @@ def s72_play_context(self, context_uri, offset=0, device_id=None):
 # S75: Friend's apartment — DEVICE_NOT_OWNED / NO_ACTIVE_DEVICE
 # Trigger: play_track fails for any device (user has none, friend's not owned)
 # ============================================================================
-@SpotifyAPI._register_patch("play_track", "s75_device_not_owned")
-def s75_play_track(self, track_id, device_id=None):
+@SpotifyAPI._register_patch("start_track", "s75_device_not_owned")
+def s75_start_track(self, track_id, device_id=None):
     if device_id and device_id.startswith("dev_friend"):
         raise SpotifyError(
             error_code="DEVICE_NOT_OWNED",

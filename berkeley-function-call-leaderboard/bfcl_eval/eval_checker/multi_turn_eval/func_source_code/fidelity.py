@@ -167,7 +167,7 @@ class FidelityAPI(PatchableMixin):
     # User profile
     # -----------------------------------------------------------------------
 
-    def get_user_profile(self) -> Dict[str, Any]:
+    def get_investor_profile(self) -> Dict[str, Any]:
         """
         Get the current user's profile.
 

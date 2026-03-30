@@ -193,7 +193,7 @@ class GoogleMapReviewAPI(PatchableMixin):
     # Profile
     # -----------------------------------------------------------------------
 
-    def get_profile(self) -> Dict[str, Any]:
+    def get_reviewer_profile(self) -> Dict[str, Any]:
         """
         Get the current user's profile.
 
@@ -543,7 +543,7 @@ class GoogleMapReviewAPI(PatchableMixin):
             "status": "saved",
         }
 
-    def remove_saved_place(self, business_id: str) -> Dict[str, Any]:
+    def unpin_place(self, business_id: str) -> Dict[str, Any]:
         """
         Remove a place from your saved list.
 
