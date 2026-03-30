@@ -3,18 +3,18 @@ Runtime patches for API methods.
 
 All API classes in func_source_code inherit from PatchableMixin, which provides:
   - A per-class patch registry  (cls._PATCHES)
-  - cls.register_patch(method_name, patch_name)  — decorator to register a patch
-  - instance.apply_patch(method_name, patch_name) — apply a registered patch
+  - cls._register_patch(method_name, patch_name)  — decorator to register a patch
+  - instance._apply_patch(method_name, patch_name) — apply a registered patch
 
 Usage:
     from posting_api import TwitterAPI
 
-    @TwitterAPI.register_patch("search_tweets", "scenario_1")
+    @TwitterAPI._register_patch("search_tweets", "scenario_1")
     def search_tweets_scenario_1(self, keyword):
         ...
 
     api = TwitterAPI()
-    api.apply_patch("search_tweets", "scenario_1")
+    api._apply_patch("search_tweets", "scenario_1")
 
     # Check per-method call counts via api._patch_call_count_mapping
     # e.g. api._patch_call_count_mapping["search_tweets"]
@@ -33,7 +33,7 @@ class PatchableMixin:
         cls._PATCHES = {}
 
     @classmethod
-    def register_patch(cls, method_name, patch_name):
+    def _register_patch(cls, method_name, patch_name):
         """Decorator to register a patch on this class."""
         if not hasattr(cls, "_PATCHES") or "_PATCHES" not in cls.__dict__:
             cls._PATCHES = {}
@@ -43,7 +43,7 @@ class PatchableMixin:
             return fn
         return decorator
 
-    def apply_patch(self, method_name: str, patch_name: str):
+    def _apply_patch(self, method_name: str, patch_name: str):
         """Apply a named patch to a method on this instance."""
         class_patches = self.__class__.__dict__.get("_PATCHES", {})
         if method_name not in class_patches or patch_name not in class_patches[method_name]:

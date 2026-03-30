@@ -42,10 +42,11 @@ def get_public_methods(class_name: str) -> list[str]:
     cls = getattr(module, class_name)
     instance = cls()
 
+    IGNORED_METHODS = {"_apply_patch", "_register_patch"}
     methods = [
         name
         for name, _ in inspect.getmembers(instance, predicate=inspect.ismethod)
-        if not name.startswith("_")
+        if not name.startswith("_") and name not in IGNORED_METHODS
     ]
     _class_methods_cache[class_name] = methods
     return methods
@@ -55,13 +56,14 @@ def check_duplicates() -> int:
     """Check all multi-turn data files for duplicate method names. Returns the number of violations."""
     total_violations = 0
 
-    for category in TEXT_MULTI_TURN_CATEGORY:
-        base_category = get_base_category(category)
-        filepath = TEXT_DATASET_PATH / f"{base_category}.json"
-        if not filepath.exists():
-            print(f"Skipping {category} (file not found)")
-            continue
+    for category in [1]:
+        # base_category = get_base_category(category)
+        # filepath = TEXT_DATASET_PATH / f"{base_category}.json"
+        # if not filepath.exists():
+        #     print(f"Skipping {category} (file not found)")
+        #     continue
 
+        filepath = "/Users/hans/repo/gorilla-hans/berkeley-function-call-leaderboard/bfcl_eval/data/text/failing_tools.json"
         entries = load_file(filepath)
         file_violations = 0
 

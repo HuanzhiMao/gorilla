@@ -20,7 +20,7 @@ _server_patches_loaded = False
 def _load_all_server_patches():
     """
     Import all patch modules from SERVER_FAILURE_PATCH_PATH so that their
-    @register_patch decorators execute and populate the class patch registries.
+    @_register_patch decorators execute and populate the class patch registries.
 
     This is idempotent — subsequent calls are no-ops.
     """
@@ -59,7 +59,7 @@ def _apply_failure_injections(involved_instances: dict, failure_injection: list)
                 f"failure_injection references class '{class_name}' "
                 f"but it is not in involved_classes: {sorted(involved_instances)}"
             )
-        involved_instances[class_name].apply_patch(method_name, patch_name)
+        involved_instances[class_name]._apply_patch(method_name, patch_name)
 
 
 def execute_multi_turn_func_call(
