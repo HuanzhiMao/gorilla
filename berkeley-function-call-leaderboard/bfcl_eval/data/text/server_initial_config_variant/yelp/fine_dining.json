@@ -1,0 +1,120 @@
+{
+  "_meta": {
+    "api_class": "YelpAPI",
+    "source_file": "yelp.py",
+    "description": "Fine dining - Yelp with current data for French Laundry and EMP",
+    "random_seed": 7890
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "yelp_french_laundry": {
+      "business_id": "yelp_french_laundry",
+      "name": "The French Laundry",
+      "category": "restaurant",
+      "address": "6640 Washington St, Yountville, CA 94599",
+      "rating": 4.9,
+      "review_count": 3,
+      "price_level": "$$$$",
+      "opening_hours": "Fri-Sun 17:00-21:00",
+      "phone": "+1-707-555-0199",
+      "website": "https://thefrenchlaundry.example.com"
+    },
+    "yelp_emp": {
+      "business_id": "yelp_emp",
+      "name": "Eleven Madison Park",
+      "category": "restaurant",
+      "address": "11 Madison Ave, New York, NY 10010",
+      "rating": 4.8,
+      "review_count": 3,
+      "price_level": "$$$$",
+      "opening_hours": "Tue-Sat 17:30-22:00",
+      "phone": "+1-212-555-0288",
+      "website": "https://elevenmadisonpark.example.com"
+    }
+  },
+  "reviews": {
+    "rev_yfl_001": {
+      "review_id": "rev_yfl_001",
+      "business_id": "yelp_french_laundry",
+      "author": {
+        "name": "Catherine Brooks",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "A transcendent dining experience. The spring tasting menu features incredible local produce. The oysters and pearls remains the best single dish I've ever had.",
+      "photos": ["spring_menu.jpg"],
+      "created_at": "2026-03-14T19:00:00Z",
+      "helpful_count": 10
+    },
+    "rev_yfl_002": {
+      "review_id": "rev_yfl_002",
+      "business_id": "yelp_french_laundry",
+      "author": {
+        "name": "William Chen",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Waited 3 months for this reservation and it exceeded expectations. Each course was perfection. The sommelier's wine pairings were inspired. Magical evening.",
+      "photos": ["wine_pairing.jpg"],
+      "created_at": "2026-03-16T20:00:00Z",
+      "helpful_count": 8
+    },
+    "rev_yfl_003": {
+      "review_id": "rev_yfl_003",
+      "business_id": "yelp_french_laundry",
+      "author": {
+        "name": "Diana Park",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Thomas Keller's masterpiece continues to set the standard. The 9-course menu was flawless. The garden is gorgeous. Worth every dollar.",
+      "photos": [],
+      "created_at": "2026-03-17T18:30:00Z",
+      "helpful_count": 6
+    },
+    "rev_yemp_001": {
+      "review_id": "rev_yemp_001",
+      "business_id": "yelp_emp",
+      "author": {
+        "name": "Robert James",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "The plant-based menu is revolutionary. Daniel Humm creates magic with vegetables. The art deco dining room is breathtaking. A landmark experience.",
+      "photos": ["emp_dish.jpg"],
+      "created_at": "2026-03-14T20:00:00Z",
+      "helpful_count": 9
+    },
+    "rev_yemp_002": {
+      "review_id": "rev_yemp_002",
+      "business_id": "yelp_emp",
+      "author": {
+        "name": "Sophia Martinez",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Every course surprised and delighted. The service is impeccable - warm and personal. The honey lavender dessert was the perfect finale. A NYC treasure.",
+      "photos": [],
+      "created_at": "2026-03-16T19:30:00Z",
+      "helpful_count": 7
+    },
+    "rev_yemp_003": {
+      "review_id": "rev_yemp_003",
+      "business_id": "yelp_emp",
+      "author": {
+        "name": "Kevin Park",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Stunning vegan fine dining. Most dishes were extraordinary. The mushroom course was the highlight. An ambitious and largely successful concept.",
+      "photos": [],
+      "created_at": "2026-03-17T21:00:00Z",
+      "helpful_count": 4
+    }
+  },
+  "saved_places": {}
+}

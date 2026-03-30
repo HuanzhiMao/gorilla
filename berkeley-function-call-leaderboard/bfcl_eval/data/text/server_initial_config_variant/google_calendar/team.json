@@ -1,0 +1,474 @@
+{
+  "_meta": {
+    "api_class": "GoogleCalendarAPI",
+    "source_file": "google_calendar.py",
+    "description": "Initial state for Google Calendar - Team/collaboration scenarios (S25, S30, S31, S34, S35, S37, S40, S45)"
+  },
+  "random_seed": 42,
+  "profile": {
+    "name": "Alex Chen",
+    "email": "alex.chen@company.com",
+    "timezone": "America/New_York"
+  },
+  "calendars": {
+    "cal_001": {
+      "calendar_id": "cal_001",
+      "name": "Alex Chen",
+      "is_primary": true
+    },
+    "cal_002": {
+      "calendar_id": "cal_002",
+      "name": "Work",
+      "is_primary": false
+    },
+    "cal_003": {
+      "calendar_id": "cal_003",
+      "name": "Personal",
+      "is_primary": false
+    }
+  },
+  "calendar_acls": {},
+  "events": {
+    "evt_sprint_review": {
+      "event_id": "evt_sprint_review",
+      "calendar_id": "cal_002",
+      "title": "Sprint Review",
+      "description": "End-of-sprint review with the engineering team. Demo completed features and discuss blockers.",
+      "location": "Conference Room B",
+      "start_time": "2026-03-21T14:00:00-04:00",
+      "end_time": "2026-03-21T15:00:00-04:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "alex.chen@company.com",
+        "name": "Alex Chen"
+      },
+      "attendees": [
+        {
+          "email": "alex.chen@company.com",
+          "name": "Alex Chen",
+          "response_status": "accepted"
+        },
+        {
+          "email": "jordan.whitfield@company.com",
+          "name": "Jordan Whitfield",
+          "response_status": "accepted"
+        }
+      ],
+      "reminders": [
+        {
+          "method": "popup",
+          "minutes_before": 15
+        }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/spr-intrev-iew",
+      "created_at": "2026-03-10T09:00:00-04:00",
+      "updated_at": "2026-03-15T11:00:00-04:00"
+    },
+    "evt_dentist": {
+      "event_id": "evt_dentist",
+      "calendar_id": "cal_003",
+      "title": "Dentist Appointment",
+      "description": "Routine cleaning with Dr. Patel.",
+      "location": "Bright Smiles Dental, 330 E 39th St, New York, NY",
+      "start_time": "2026-03-21T14:30:00-04:00",
+      "end_time": "2026-03-21T15:30:00-04:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "alex.chen@company.com",
+        "name": "Alex Chen"
+      },
+      "attendees": [],
+      "reminders": [
+        {
+          "method": "email",
+          "minutes_before": 1440
+        },
+        {
+          "method": "popup",
+          "minutes_before": 60
+        }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2026-03-05T10:00:00-04:00",
+      "updated_at": "2026-03-05T10:00:00-04:00"
+    },
+    "evt_1on1_lisa": {
+      "event_id": "evt_1on1_lisa",
+      "calendar_id": "cal_002",
+      "title": "1:1 with Lisa",
+      "description": "Weekly sync with Lisa on project status and career development.",
+      "location": null,
+      "start_time": "2026-03-21T11:00:00-04:00",
+      "end_time": "2026-03-21T11:30:00-04:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "alex.chen@company.com",
+        "name": "Alex Chen"
+      },
+      "attendees": [
+        {
+          "email": "alex.chen@company.com",
+          "name": "Alex Chen",
+          "response_status": "accepted"
+        },
+        {
+          "email": "lisa.wong@company.com",
+          "name": "Lisa Wong",
+          "response_status": "accepted"
+        }
+      ],
+      "reminders": [
+        {
+          "method": "popup",
+          "minutes_before": 10
+        }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/one-onli-saw",
+      "created_at": "2026-03-01T09:00:00-04:00",
+      "updated_at": "2026-03-19T14:00:00-04:00"
+    },
+    "evt_standup": {
+      "event_id": "evt_standup",
+      "calendar_id": "cal_002",
+      "title": "Team Standup",
+      "description": "Daily standup with the engineering team. Quick sync on progress and blockers.",
+      "location": null,
+      "start_time": "2026-03-21T11:30:00-04:00",
+      "end_time": "2026-03-21T12:00:00-04:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "alex.chen@company.com",
+        "name": "Alex Chen"
+      },
+      "attendees": [
+        {
+          "email": "alex.chen@company.com",
+          "name": "Alex Chen",
+          "response_status": "accepted"
+        },
+        {
+          "email": "jordan.whitfield@company.com",
+          "name": "Jordan Whitfield",
+          "response_status": "accepted"
+        },
+        {
+          "email": "lisa.wong@company.com",
+          "name": "Lisa Wong",
+          "response_status": "accepted"
+        }
+      ],
+      "reminders": [
+        {
+          "method": "popup",
+          "minutes_before": 5
+        }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": [
+          "MO",
+          "TU",
+          "WE",
+          "TH",
+          "FR"
+        ]
+      },
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/stnd-upte-amx",
+      "created_at": "2026-02-01T08:00:00-05:00",
+      "updated_at": "2026-03-01T08:00:00-04:00"
+    },
+    "evt_quarterly_planning": {
+      "event_id": "evt_quarterly_planning",
+      "calendar_id": "cal_002",
+      "title": "Quarterly Planning",
+      "description": "Q2 planning session. Review OKRs, set priorities, and align on roadmap.",
+      "location": "Conference Room A",
+      "start_time": "2026-03-25T10:00:00-04:00",
+      "end_time": "2026-03-25T11:00:00-04:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "alex.chen@company.com",
+        "name": "Alex Chen"
+      },
+      "attendees": [
+        {
+          "email": "alex.chen@company.com",
+          "name": "Alex Chen",
+          "response_status": "accepted"
+        }
+      ],
+      "reminders": [
+        {
+          "method": "popup",
+          "minutes_before": 30
+        },
+        {
+          "method": "email",
+          "minutes_before": 1440
+        }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/qtr-plan-ning",
+      "created_at": "2026-03-10T10:00:00-04:00",
+      "updated_at": "2026-03-10T10:00:00-04:00"
+    },
+    "evt_alpha_standup": {
+      "event_id": "evt_alpha_standup",
+      "calendar_id": "cal_001",
+      "title": "Project Alpha Standup",
+      "description": "Daily standup for the Project Alpha team.",
+      "location": null,
+      "start_time": "2026-03-03T09:00:00-05:00",
+      "end_time": "2026-03-03T09:30:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "alex.chen@company.com",
+        "name": "Alex Chen"
+      },
+      "attendees": [
+        {
+          "email": "alex.chen@company.com",
+          "name": "Alex Chen",
+          "response_status": "accepted"
+        },
+        {
+          "email": "jordan.whitfield@company.com",
+          "name": "Jordan Whitfield",
+          "response_status": "accepted"
+        }
+      ],
+      "reminders": [
+        {
+          "method": "popup",
+          "minutes_before": 5
+        }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/alp-hast-nup",
+      "created_at": "2026-02-20T09:00:00-05:00",
+      "updated_at": "2026-02-28T10:00:00-05:00"
+    },
+    "evt_alpha_retro": {
+      "event_id": "evt_alpha_retro",
+      "calendar_id": "cal_001",
+      "title": "Project Alpha Retro",
+      "description": "Sprint retrospective for the Project Alpha team. Reflect on what went well and what to improve.",
+      "location": "Conference Room C",
+      "start_time": "2026-03-07T15:00:00-05:00",
+      "end_time": "2026-03-07T16:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "alex.chen@company.com",
+        "name": "Alex Chen"
+      },
+      "attendees": [
+        {
+          "email": "alex.chen@company.com",
+          "name": "Alex Chen",
+          "response_status": "accepted"
+        },
+        {
+          "email": "jordan.whitfield@company.com",
+          "name": "Jordan Whitfield",
+          "response_status": "accepted"
+        },
+        {
+          "email": "lisa.wong@company.com",
+          "name": "Lisa Wong",
+          "response_status": "accepted"
+        }
+      ],
+      "reminders": [
+        {
+          "method": "popup",
+          "minutes_before": 15
+        }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/alp-hare-tro",
+      "created_at": "2026-02-20T09:00:00-05:00",
+      "updated_at": "2026-03-01T10:00:00-05:00"
+    },
+    "evt_offsite": {
+      "event_id": "evt_offsite",
+      "calendar_id": "cal_002",
+      "title": "Company Offsite",
+      "description": "Annual company offsite. Team building activities, strategy sessions, and networking.",
+      "location": "The Retreat Center, 500 Mountain Rd, Bear Mountain, NY",
+      "start_time": "2026-04-15T09:00:00-04:00",
+      "end_time": "2026-04-15T17:00:00-04:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "maria.chen@company.com",
+        "name": "Maria Chen"
+      },
+      "attendees": [
+        {
+          "email": "alex.chen@company.com",
+          "name": "Alex Chen",
+          "response_status": "needs_action"
+        },
+        {
+          "email": "maria.chen@company.com",
+          "name": "Maria Chen",
+          "response_status": "accepted"
+        },
+        {
+          "email": "jordan.whitfield@company.com",
+          "name": "Jordan Whitfield",
+          "response_status": "accepted"
+        },
+        {
+          "email": "lisa.wong@company.com",
+          "name": "Lisa Wong",
+          "response_status": "tentative"
+        }
+      ],
+      "reminders": [
+        {
+          "method": "email",
+          "minutes_before": 2880
+        },
+        {
+          "method": "popup",
+          "minutes_before": 1440
+        }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2026-03-01T10:00:00-04:00",
+      "updated_at": "2026-03-15T14:00:00-04:00"
+    },
+    "evt_morning_focus": {
+      "event_id": "evt_morning_focus",
+      "calendar_id": "cal_001",
+      "title": "Morning Focus Time",
+      "description": "Blocked time for deep work. No meetings.",
+      "location": null,
+      "start_time": "2026-03-20T08:00:00-04:00",
+      "end_time": "2026-03-20T10:00:00-04:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "alex.chen@company.com",
+        "name": "Alex Chen"
+      },
+      "attendees": [],
+      "reminders": [
+        {
+          "method": "popup",
+          "minutes_before": 10
+        }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": [
+          "MO",
+          "WE",
+          "FR"
+        ]
+      },
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2026-02-15T08:00:00-05:00",
+      "updated_at": "2026-02-15T08:00:00-05:00"
+    },
+    "evt_lunch_break": {
+      "event_id": "evt_lunch_break",
+      "calendar_id": "cal_003",
+      "title": "Lunch Break",
+      "description": "Lunch break.",
+      "location": null,
+      "start_time": "2026-03-20T12:00:00-04:00",
+      "end_time": "2026-03-20T13:00:00-04:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "alex.chen@company.com",
+        "name": "Alex Chen"
+      },
+      "attendees": [],
+      "reminders": [],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": [
+          "MO",
+          "TU",
+          "WE",
+          "TH",
+          "FR"
+        ]
+      },
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2026-01-05T08:00:00-05:00",
+      "updated_at": "2026-01-05T08:00:00-05:00"
+    },
+    "evt_design_sync": {
+      "event_id": "evt_design_sync",
+      "calendar_id": "cal_002",
+      "title": "Design Sync",
+      "description": "Weekly sync with the design team on UI/UX updates.",
+      "location": null,
+      "start_time": "2026-03-20T15:00:00-04:00",
+      "end_time": "2026-03-20T16:00:00-04:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "alex.chen@company.com",
+        "name": "Alex Chen"
+      },
+      "attendees": [
+        {
+          "email": "alex.chen@company.com",
+          "name": "Alex Chen",
+          "response_status": "accepted"
+        },
+        {
+          "email": "sarah.miller@company.com",
+          "name": "Sarah Miller",
+          "response_status": "accepted"
+        }
+      ],
+      "reminders": [
+        {
+          "method": "popup",
+          "minutes_before": 10
+        }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": [
+          "FR"
+        ]
+      },
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/des-igns-ync",
+      "created_at": "2026-02-10T10:00:00-05:00",
+      "updated_at": "2026-03-01T10:00:00-04:00"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "api_class": "YelpAPI",
+    "source_file": "yelp.py",
+    "description": "Quick Fix Auto - Yelp with all legitimate reviews (no fake reviews)",
+    "random_seed": 7890
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "yelp_qfa": {
+      "business_id": "yelp_qfa",
+      "name": "Quick Fix Auto",
+      "category": "auto_repair",
+      "address": "890 Valencia St, San Francisco, CA 94110",
+      "rating": 4.3,
+      "review_count": 3,
+      "price_level": "$",
+      "opening_hours": "Mon-Sat 08:00-19:00",
+      "phone": "+1-415-555-0789",
+      "website": "https://quickfixauto-sf.example.com"
+    }
+  },
+  "reviews": {
+    "rev_yqfa_001": {
+      "review_id": "rev_yqfa_001",
+      "business_id": "yelp_qfa",
+      "author": {
+        "name": "Patricia Kim",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Brought my car in for an oil change and they were thorough with the inspection. Found a small leak and fixed it at a fair price. Honest shop.",
+      "photos": [],
+      "created_at": "2026-03-10T14:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_yqfa_002": {
+      "review_id": "rev_yqfa_002",
+      "business_id": "yelp_qfa",
+      "author": {
+        "name": "Steven Martinez",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Great neighborhood mechanic. They diagnosed my engine light issue quickly and the repair was done same day. Transparent pricing and no upselling.",
+      "photos": [],
+      "created_at": "2026-03-14T11:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_yqfa_003": {
+      "review_id": "rev_yqfa_003",
+      "business_id": "yelp_qfa",
+      "author": {
+        "name": "Diana Foster",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Reliable auto shop. They replaced my brake pads and did a full inspection. Fair prices for SF. Good communication throughout the process.",
+      "photos": [],
+      "created_at": "2026-03-16T15:30:00Z",
+      "helpful_count": 2
+    }
+  },
+  "saved_places": {}
+}

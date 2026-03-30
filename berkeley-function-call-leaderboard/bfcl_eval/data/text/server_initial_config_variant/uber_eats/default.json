@@ -1,0 +1,1140 @@
+{
+  "_meta": {
+    "api_class": "UberEatsOrderAPI",
+    "source_file": "uber_eats.py",
+    "description": "Initial state for the UberEats Order API (single-user perspective)",
+    "random_seed": 5678
+  },
+  "random_seed": 5678,
+  "profile": {
+    "name": "Aisha Patel",
+    "email": "aisha.patel@email.com",
+    "phone": "+1-213-555-0178",
+    "address": [
+      {
+        "address_id": "addr_1",
+        "street": "421 W 6th St, Apt 8B",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90014",
+        "is_default": true
+      },
+      {
+        "address_id": "addr_2",
+        "street": "800 S Figueroa St",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90017",
+        "is_default": false
+      },
+      {
+        "address_id": "addr_3",
+        "street": "1925 Hillhurst Ave, Apt 3C",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90027",
+        "is_default": false
+      },
+      {
+        "address_id": "addr_4",
+        "street": "3400 Sunset Blvd",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90026",
+        "is_default": false
+      }
+    ],
+    "payment_method": [
+      {
+        "method_id": "pm_1",
+        "type": "card",
+        "last4": "3291",
+        "expiration_date": "08/27",
+        "name": "Aisha Patel",
+        "is_default": true
+      },
+      {
+        "method_id": "pm_2",
+        "type": "card",
+        "last4": "8754",
+        "expiration_date": "09/26",
+        "name": "Aisha Patel",
+        "is_default": false
+      },
+      {
+        "method_id": "pm_3",
+        "type": "card",
+        "last4": "6120",
+        "expiration_date": "04/28",
+        "name": "Aisha Patel",
+        "is_default": false
+      }
+    ],
+    "promo": ["OFFER-56780", "OFFER-56782", "OFFER-56784"],
+    "uber_one": true,
+    "favorites": ["REST-56780", "REST-56781", "REST-56784", "REST-56789"]
+  },
+  "orders": {
+    "ORD-56780": {
+      "order_id": "ORD-56780",
+      "restaurant_id": "REST-56780",
+      "restaurant_name": "Siam Orchid Thai",
+      "items": [
+        {
+          "item_id": "ITEM-56780",
+          "name": "Pad Thai",
+          "price": 14.95,
+          "quantity": 1,
+          "selected_options": ["extra_chicken"],
+          "special_instructions": "No peanuts"
+        },
+        {
+          "item_id": "ITEM-56781",
+          "name": "Green Curry",
+          "price": 15.95,
+          "quantity": 1,
+          "selected_options": ["medium_spice"],
+          "special_instructions": ""
+        }
+      ],
+      "fees": {
+        "delivery_fee": 0.00,
+        "service_fee": 3.09,
+        "tax": 2.94,
+        "tip": 5.00
+      },
+      "total": 41.93,
+      "status": "delivered",
+      "created_at": "2025-03-08T12:00:00Z",
+      "applied_promo": null,
+      "delivery_address": {
+        "street": "421 W 6th St, Apt 8B",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90014"
+      },
+      "eta_min": 0,
+      "rating": {
+        "rating": 4,
+        "comment": "Curry was great but noodles were a bit cold"
+      }
+    },
+    "ORD-56781": {
+      "order_id": "ORD-56781",
+      "restaurant_id": "REST-56781",
+      "restaurant_name": "El Pueblo Taqueria",
+      "items": [
+        {
+          "item_id": "ITEM-56784",
+          "name": "Carne Asada Burrito",
+          "price": 12.95,
+          "quantity": 2,
+          "selected_options": ["super_size"],
+          "special_instructions": "Extra salsa on the side"
+        },
+        {
+          "item_id": "ITEM-56786",
+          "name": "Chips & Guacamole",
+          "price": 6.95,
+          "quantity": 1,
+          "selected_options": [],
+          "special_instructions": ""
+        }
+      ],
+      "fees": {
+        "delivery_fee": 0.00,
+        "service_fee": 3.29,
+        "tax": 3.12,
+        "tip": 4.00
+      },
+      "total": 43.26,
+      "status": "delivered",
+      "created_at": "2025-03-05T19:30:00Z",
+      "applied_promo": null,
+      "delivery_address": {
+        "street": "421 W 6th St, Apt 8B",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90014"
+      },
+      "eta_min": 0,
+      "rating": {
+        "rating": 5,
+        "comment": "Best burritos in LA, super fast delivery!"
+      }
+    },
+    "ORD-56782": {
+      "order_id": "ORD-56782",
+      "restaurant_id": "REST-56782",
+      "restaurant_name": "Bombay Spice Kitchen",
+      "items": [
+        {
+          "item_id": "ITEM-56788",
+          "name": "Chicken Tikka Masala",
+          "price": 16.95,
+          "quantity": 1,
+          "selected_options": ["medium_spice"],
+          "special_instructions": ""
+        },
+        {
+          "item_id": "ITEM-56790",
+          "name": "Samosa (2 pcs)",
+          "price": 5.95,
+          "quantity": 1,
+          "selected_options": [],
+          "special_instructions": ""
+        }
+      ],
+      "fees": {
+        "delivery_fee": 4.49,
+        "service_fee": 2.29,
+        "tax": 2.17,
+        "tip": 0.00
+      },
+      "total": 31.85,
+      "status": "preparing",
+      "created_at": "2025-03-18T19:10:00Z",
+      "applied_promo": null,
+      "delivery_address": {
+        "street": "421 W 6th St, Apt 8B",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90014"
+      },
+      "eta_min": 35
+    },
+    "ORD-56783": {
+      "order_id": "ORD-56783",
+      "restaurant_id": "REST-56784",
+      "restaurant_name": "Venice Beach Poke",
+      "items": [
+        {
+          "item_id": "ITEM-56796",
+          "name": "Ahi Tuna Poke Bowl",
+          "price": 16.95,
+          "quantity": 1,
+          "selected_options": ["brown_rice"],
+          "special_instructions": "Extra avocado"
+        },
+        {
+          "item_id": "ITEM-56798",
+          "name": "Seaweed Salad",
+          "price": 6.95,
+          "quantity": 1,
+          "selected_options": [],
+          "special_instructions": ""
+        }
+      ],
+      "fees": {
+        "delivery_fee": 0.00,
+        "service_fee": 2.39,
+        "tax": 2.27,
+        "tip": 3.50
+      },
+      "total": 32.06,
+      "status": "delivered",
+      "created_at": "2025-03-02T13:15:00Z",
+      "applied_promo": null,
+      "delivery_address": {
+        "street": "1925 Hillhurst Ave, Apt 3C",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90027"
+      },
+      "eta_min": 0,
+      "rating": {
+        "rating": 5,
+        "comment": "Super fresh fish, love this place!"
+      }
+    },
+    "ORD-56784": {
+      "order_id": "ORD-56784",
+      "restaurant_id": "REST-56785",
+      "restaurant_name": "Seoul Street BBQ",
+      "items": [
+        {
+          "item_id": "ITEM-56800",
+          "name": "Bulgogi Bowl",
+          "price": 15.95,
+          "quantity": 1,
+          "selected_options": [],
+          "special_instructions": ""
+        },
+        {
+          "item_id": "ITEM-56802",
+          "name": "Korean Fried Chicken (6 pcs)",
+          "price": 13.95,
+          "quantity": 1,
+          "selected_options": ["gochujang_sauce"],
+          "special_instructions": ""
+        }
+      ],
+      "fees": {
+        "delivery_fee": 3.49,
+        "service_fee": 2.99,
+        "tax": 2.84,
+        "tip": 4.00
+      },
+      "total": 43.22,
+      "status": "canceled",
+      "created_at": "2025-03-11T18:00:00Z",
+      "applied_promo": null,
+      "delivery_address": {
+        "street": "800 S Figueroa St",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90017"
+      },
+      "eta_min": 0,
+      "cancel_reason": "Wrong delivery address selected"
+    },
+    "ORD-56785": {
+      "order_id": "ORD-56785",
+      "restaurant_id": "REST-56786",
+      "restaurant_name": "Silverlake Ramen",
+      "items": [
+        {
+          "item_id": "ITEM-56804",
+          "name": "Tonkotsu Ramen",
+          "price": 16.95,
+          "quantity": 1,
+          "selected_options": ["extra_chashu"],
+          "special_instructions": "Firm noodles please"
+        }
+      ],
+      "fees": {
+        "delivery_fee": 0.00,
+        "service_fee": 1.70,
+        "tax": 1.61,
+        "tip": 3.00
+      },
+      "total": 23.26,
+      "status": "delivered",
+      "created_at": "2025-03-14T20:30:00Z",
+      "applied_promo": {
+        "offer_id": "OFFER-56781",
+        "discount": 3.49
+      },
+      "delivery_address": {
+        "street": "421 W 6th St, Apt 8B",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90014"
+      },
+      "eta_min": 0,
+      "rating": {
+        "rating": 5,
+        "comment": "Rich broth, perfect noodles. Best ramen delivery."
+      }
+    },
+    "ORD-56786": {
+      "order_id": "ORD-56786",
+      "restaurant_id": "REST-56787",
+      "restaurant_name": "DTLA Burger Bar",
+      "items": [
+        {
+          "item_id": "ITEM-56808",
+          "name": "Smash Burger",
+          "price": 14.95,
+          "quantity": 2,
+          "selected_options": ["add_bacon"],
+          "special_instructions": ""
+        },
+        {
+          "item_id": "ITEM-56810",
+          "name": "Truffle Fries",
+          "price": 9.95,
+          "quantity": 1,
+          "selected_options": [],
+          "special_instructions": ""
+        }
+      ],
+      "fees": {
+        "delivery_fee": 3.99,
+        "service_fee": 3.99,
+        "tax": 3.78,
+        "tip": 5.00
+      },
+      "total": 56.61,
+      "status": "refunded",
+      "created_at": "2025-02-25T18:00:00Z",
+      "applied_promo": null,
+      "delivery_address": {
+        "street": "421 W 6th St, Apt 8B",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90014"
+      },
+      "eta_min": 0,
+      "refund_reason": "Order arrived 45 minutes late, food was cold"
+    },
+    "ORD-56787": {
+      "order_id": "ORD-56787",
+      "restaurant_id": "REST-56789",
+      "restaurant_name": "Figueroa Bakery & Cafe",
+      "items": [
+        {
+          "item_id": "ITEM-56820",
+          "name": "Avocado Toast",
+          "price": 13.95,
+          "quantity": 1,
+          "selected_options": ["add_poached_egg"],
+          "special_instructions": ""
+        },
+        {
+          "item_id": "ITEM-56822",
+          "name": "Cold Brew Coffee",
+          "price": 5.95,
+          "quantity": 2,
+          "selected_options": [],
+          "special_instructions": "One with oat milk"
+        }
+      ],
+      "fees": {
+        "delivery_fee": 0.00,
+        "service_fee": 2.59,
+        "tax": 2.46,
+        "tip": 3.00
+      },
+      "total": 33.90,
+      "status": "delivered",
+      "created_at": "2025-03-16T09:30:00Z",
+      "applied_promo": null,
+      "delivery_address": {
+        "street": "3400 Sunset Blvd",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90026"
+      },
+      "eta_min": 0,
+      "rating": {
+        "rating": 3,
+        "comment": "Toast was good but coffee was lukewarm"
+      }
+    },
+    "ORD-56788": {
+      "order_id": "ORD-56788",
+      "restaurant_id": "REST-56783",
+      "restaurant_name": "Koreatown BBQ House",
+      "items": [
+        {
+          "item_id": "ITEM-56792",
+          "name": "Galbi (Short Ribs)",
+          "price": 22.95,
+          "quantity": 1,
+          "selected_options": [],
+          "special_instructions": ""
+        },
+        {
+          "item_id": "ITEM-56794",
+          "name": "Japchae",
+          "price": 12.95,
+          "quantity": 1,
+          "selected_options": [],
+          "special_instructions": ""
+        }
+      ],
+      "fees": {
+        "delivery_fee": 0.00,
+        "service_fee": 3.59,
+        "tax": 3.41,
+        "tip": 6.00
+      },
+      "total": 48.90,
+      "status": "en_route",
+      "created_at": "2025-03-18T18:45:00Z",
+      "applied_promo": null,
+      "delivery_address": {
+        "street": "421 W 6th St, Apt 8B",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90014"
+      },
+      "eta_min": 15
+    }
+  },
+  "restaurants": {
+    "REST-56780": {
+      "restaurant_id": "REST-56780",
+      "name": "Siam Orchid Thai",
+      "category": "Thai",
+      "rating": 4.5,
+      "address": "1240 S Flower St, Los Angeles, CA 90015",
+      "is_open": true,
+      "delivery_fee": 3.49,
+      "estimated_delivery_time": 35,
+      "menu": [
+        {"item_id": "ITEM-56780", "name": "Pad Thai", "price": 14.95},
+        {"item_id": "ITEM-56781", "name": "Green Curry", "price": 15.95},
+        {"item_id": "ITEM-56782", "name": "Thai Spring Rolls (4 pcs)", "price": 7.95},
+        {"item_id": "ITEM-56783", "name": "Mango Sticky Rice", "price": 8.95}
+      ]
+    },
+    "REST-56781": {
+      "restaurant_id": "REST-56781",
+      "name": "El Pueblo Taqueria",
+      "category": "Mexican",
+      "rating": 4.7,
+      "address": "532 S Spring St, Los Angeles, CA 90013",
+      "is_open": true,
+      "delivery_fee": 2.99,
+      "estimated_delivery_time": 25,
+      "menu": [
+        {"item_id": "ITEM-56784", "name": "Carne Asada Burrito", "price": 12.95},
+        {"item_id": "ITEM-56785", "name": "Street Tacos (3 pcs)", "price": 9.95},
+        {"item_id": "ITEM-56786", "name": "Chips & Guacamole", "price": 6.95},
+        {"item_id": "ITEM-56787", "name": "Churros (4 pcs)", "price": 5.95}
+      ]
+    },
+    "REST-56782": {
+      "restaurant_id": "REST-56782",
+      "name": "Bombay Spice Kitchen",
+      "category": "Indian",
+      "rating": 4.4,
+      "address": "915 S Grand Ave, Los Angeles, CA 90015",
+      "is_open": true,
+      "delivery_fee": 4.49,
+      "estimated_delivery_time": 40,
+      "menu": [
+        {"item_id": "ITEM-56788", "name": "Chicken Tikka Masala", "price": 16.95},
+        {"item_id": "ITEM-56789", "name": "Lamb Biryani", "price": 18.95},
+        {"item_id": "ITEM-56790", "name": "Samosa (2 pcs)", "price": 5.95},
+        {"item_id": "ITEM-56791", "name": "Gulab Jamun (3 pcs)", "price": 4.95}
+      ]
+    },
+    "REST-56783": {
+      "restaurant_id": "REST-56783",
+      "name": "Koreatown BBQ House",
+      "category": "Korean",
+      "rating": 4.6,
+      "address": "3500 W 6th St, Los Angeles, CA 90020",
+      "is_open": true,
+      "delivery_fee": 3.99,
+      "estimated_delivery_time": 45,
+      "menu": [
+        {"item_id": "ITEM-56792", "name": "Galbi (Short Ribs)", "price": 22.95},
+        {"item_id": "ITEM-56793", "name": "Bibimbap", "price": 14.95},
+        {"item_id": "ITEM-56794", "name": "Japchae", "price": 12.95},
+        {"item_id": "ITEM-56795", "name": "Kimchi Fried Rice", "price": 13.95}
+      ]
+    },
+    "REST-56784": {
+      "restaurant_id": "REST-56784",
+      "name": "Venice Beach Poke",
+      "category": "Hawaiian",
+      "rating": 4.8,
+      "address": "1601 Ocean Front Walk, Los Angeles, CA 90291",
+      "is_open": true,
+      "delivery_fee": 3.49,
+      "estimated_delivery_time": 30,
+      "menu": [
+        {"item_id": "ITEM-56796", "name": "Ahi Tuna Poke Bowl", "price": 16.95},
+        {"item_id": "ITEM-56797", "name": "Salmon Poke Bowl", "price": 17.95},
+        {"item_id": "ITEM-56798", "name": "Seaweed Salad", "price": 6.95},
+        {"item_id": "ITEM-56799", "name": "Coconut Water", "price": 3.95}
+      ]
+    },
+    "REST-56785": {
+      "restaurant_id": "REST-56785",
+      "name": "Seoul Street BBQ",
+      "category": "Korean",
+      "rating": 4.3,
+      "address": "621 S Western Ave, Los Angeles, CA 90005",
+      "is_open": false,
+      "delivery_fee": 3.49,
+      "estimated_delivery_time": 40,
+      "menu": [
+        {"item_id": "ITEM-56800", "name": "Bulgogi Bowl", "price": 15.95},
+        {"item_id": "ITEM-56801", "name": "Spicy Pork Bowl", "price": 14.95},
+        {"item_id": "ITEM-56802", "name": "Korean Fried Chicken (6 pcs)", "price": 13.95},
+        {"item_id": "ITEM-56803", "name": "Tteokbokki", "price": 9.95}
+      ]
+    },
+    "REST-56786": {
+      "restaurant_id": "REST-56786",
+      "name": "Silverlake Ramen",
+      "category": "Japanese",
+      "rating": 4.7,
+      "address": "2927 Sunset Blvd, Los Angeles, CA 90026",
+      "is_open": true,
+      "delivery_fee": 3.99,
+      "estimated_delivery_time": 35,
+      "menu": [
+        {"item_id": "ITEM-56804", "name": "Tonkotsu Ramen", "price": 16.95},
+        {"item_id": "ITEM-56805", "name": "Spicy Miso Ramen", "price": 17.95},
+        {"item_id": "ITEM-56806", "name": "Gyoza (6 pcs)", "price": 8.95},
+        {"item_id": "ITEM-56807", "name": "Matcha Ice Cream", "price": 5.95}
+      ]
+    },
+    "REST-56787": {
+      "restaurant_id": "REST-56787",
+      "name": "DTLA Burger Bar",
+      "category": "Burgers",
+      "rating": 4.2,
+      "address": "700 S Grand Ave, Los Angeles, CA 90017",
+      "is_open": true,
+      "delivery_fee": 3.99,
+      "estimated_delivery_time": 30,
+      "menu": [
+        {"item_id": "ITEM-56808", "name": "Smash Burger", "price": 14.95},
+        {"item_id": "ITEM-56809", "name": "Mushroom Swiss Burger", "price": 16.95},
+        {"item_id": "ITEM-56810", "name": "Truffle Fries", "price": 9.95},
+        {"item_id": "ITEM-56811", "name": "Oreo Milkshake", "price": 7.95}
+      ]
+    },
+    "REST-56788": {
+      "restaurant_id": "REST-56788",
+      "name": "Aleppo Kitchen",
+      "category": "Mediterranean",
+      "rating": 4.5,
+      "address": "1140 S Hope St, Los Angeles, CA 90015",
+      "is_open": false,
+      "delivery_fee": 4.99,
+      "estimated_delivery_time": 40,
+      "menu": [
+        {"item_id": "ITEM-56812", "name": "Lamb Shawarma Plate", "price": 17.95},
+        {"item_id": "ITEM-56813", "name": "Falafel Wrap", "price": 11.95},
+        {"item_id": "ITEM-56814", "name": "Hummus & Pita", "price": 7.95},
+        {"item_id": "ITEM-56815", "name": "Baklava (3 pcs)", "price": 6.95}
+      ]
+    },
+    "REST-56789": {
+      "restaurant_id": "REST-56789",
+      "name": "Figueroa Bakery & Cafe",
+      "category": "Breakfast",
+      "rating": 4.3,
+      "address": "240 S Figueroa St, Los Angeles, CA 90012",
+      "is_open": true,
+      "delivery_fee": 2.49,
+      "estimated_delivery_time": 25,
+      "menu": [
+        {"item_id": "ITEM-56820", "name": "Avocado Toast", "price": 13.95},
+        {"item_id": "ITEM-56821", "name": "Acai Bowl", "price": 14.95},
+        {"item_id": "ITEM-56822", "name": "Cold Brew Coffee", "price": 5.95},
+        {"item_id": "ITEM-56823", "name": "Blueberry Muffin", "price": 4.95}
+      ]
+    },
+    "REST-56790": {
+      "restaurant_id": "REST-56790",
+      "name": "Little Ethiopia Cafe",
+      "category": "Ethiopian",
+      "rating": 4.6,
+      "address": "1041 S Fairfax Ave, Los Angeles, CA 90019",
+      "is_open": true,
+      "delivery_fee": 3.99,
+      "estimated_delivery_time": 45,
+      "menu": [
+        {"item_id": "ITEM-56816", "name": "Doro Wat (Chicken Stew)", "price": 16.95},
+        {"item_id": "ITEM-56817", "name": "Kitfo (Beef Tartare)", "price": 18.95},
+        {"item_id": "ITEM-56818", "name": "Veggie Combo Platter", "price": 15.95},
+        {"item_id": "ITEM-56819", "name": "Ethiopian Coffee", "price": 4.95}
+      ]
+    }
+  },
+  "menu": {
+    "ITEM-56780": {
+      "item_id": "ITEM-56780",
+      "restaurant_id": "REST-56780",
+      "name": "Pad Thai",
+      "category": "Noodles",
+      "options": [
+        {"option_id": "extra_chicken", "name": "Extra Chicken", "price": 3.00},
+        {"option_id": "extra_shrimp", "name": "Extra Shrimp", "price": 4.00},
+        {"option_id": "extra_spicy", "name": "Extra Spicy", "price": 0.00}
+      ],
+      "price": 14.95,
+      "available": true
+    },
+    "ITEM-56781": {
+      "item_id": "ITEM-56781",
+      "restaurant_id": "REST-56780",
+      "name": "Green Curry",
+      "category": "Curry",
+      "options": [
+        {"option_id": "mild_spice", "name": "Mild", "price": 0.00},
+        {"option_id": "medium_spice", "name": "Medium", "price": 0.00},
+        {"option_id": "hot_spice", "name": "Hot", "price": 0.00}
+      ],
+      "price": 15.95,
+      "available": true
+    },
+    "ITEM-56782": {
+      "item_id": "ITEM-56782",
+      "restaurant_id": "REST-56780",
+      "name": "Thai Spring Rolls (4 pcs)",
+      "category": "Appetizers",
+      "options": [],
+      "price": 7.95,
+      "available": true
+    },
+    "ITEM-56783": {
+      "item_id": "ITEM-56783",
+      "restaurant_id": "REST-56780",
+      "name": "Mango Sticky Rice",
+      "category": "Desserts",
+      "options": [],
+      "price": 8.95,
+      "available": false
+    },
+    "ITEM-56784": {
+      "item_id": "ITEM-56784",
+      "restaurant_id": "REST-56781",
+      "name": "Carne Asada Burrito",
+      "category": "Burritos",
+      "options": [
+        {"option_id": "super_size", "name": "Super Size (extra meat)", "price": 3.00},
+        {"option_id": "add_guac", "name": "Extra Guacamole", "price": 2.00}
+      ],
+      "price": 12.95,
+      "available": true
+    },
+    "ITEM-56785": {
+      "item_id": "ITEM-56785",
+      "restaurant_id": "REST-56781",
+      "name": "Street Tacos (3 pcs)",
+      "category": "Tacos",
+      "options": [
+        {"option_id": "al_pastor", "name": "Al Pastor", "price": 0.00},
+        {"option_id": "carnitas", "name": "Carnitas", "price": 0.00},
+        {"option_id": "barbacoa", "name": "Barbacoa", "price": 1.00}
+      ],
+      "price": 9.95,
+      "available": true
+    },
+    "ITEM-56786": {
+      "item_id": "ITEM-56786",
+      "restaurant_id": "REST-56781",
+      "name": "Chips & Guacamole",
+      "category": "Appetizers",
+      "options": [],
+      "price": 6.95,
+      "available": true
+    },
+    "ITEM-56787": {
+      "item_id": "ITEM-56787",
+      "restaurant_id": "REST-56781",
+      "name": "Churros (4 pcs)",
+      "category": "Desserts",
+      "options": [],
+      "price": 5.95,
+      "available": true
+    },
+    "ITEM-56788": {
+      "item_id": "ITEM-56788",
+      "restaurant_id": "REST-56782",
+      "name": "Chicken Tikka Masala",
+      "category": "Curry",
+      "options": [
+        {"option_id": "mild_spice", "name": "Mild", "price": 0.00},
+        {"option_id": "medium_spice", "name": "Medium", "price": 0.00},
+        {"option_id": "hot_spice", "name": "Hot", "price": 0.00}
+      ],
+      "price": 16.95,
+      "available": true
+    },
+    "ITEM-56789": {
+      "item_id": "ITEM-56789",
+      "restaurant_id": "REST-56782",
+      "name": "Lamb Biryani",
+      "category": "Rice",
+      "options": [],
+      "price": 18.95,
+      "available": true
+    },
+    "ITEM-56790": {
+      "item_id": "ITEM-56790",
+      "restaurant_id": "REST-56782",
+      "name": "Samosa (2 pcs)",
+      "category": "Appetizers",
+      "options": [],
+      "price": 5.95,
+      "available": true
+    },
+    "ITEM-56791": {
+      "item_id": "ITEM-56791",
+      "restaurant_id": "REST-56782",
+      "name": "Gulab Jamun (3 pcs)",
+      "category": "Desserts",
+      "options": [],
+      "price": 4.95,
+      "available": true
+    },
+    "ITEM-56792": {
+      "item_id": "ITEM-56792",
+      "restaurant_id": "REST-56783",
+      "name": "Galbi (Short Ribs)",
+      "category": "BBQ",
+      "options": [],
+      "price": 22.95,
+      "available": true
+    },
+    "ITEM-56793": {
+      "item_id": "ITEM-56793",
+      "restaurant_id": "REST-56783",
+      "name": "Bibimbap",
+      "category": "Rice Bowls",
+      "options": [
+        {"option_id": "extra_egg", "name": "Extra Fried Egg", "price": 1.50},
+        {"option_id": "tofu_sub", "name": "Substitute Tofu", "price": 0.00}
+      ],
+      "price": 14.95,
+      "available": true
+    },
+    "ITEM-56794": {
+      "item_id": "ITEM-56794",
+      "restaurant_id": "REST-56783",
+      "name": "Japchae",
+      "category": "Noodles",
+      "options": [],
+      "price": 12.95,
+      "available": true
+    },
+    "ITEM-56795": {
+      "item_id": "ITEM-56795",
+      "restaurant_id": "REST-56783",
+      "name": "Kimchi Fried Rice",
+      "category": "Rice",
+      "options": [],
+      "price": 13.95,
+      "available": false
+    },
+    "ITEM-56796": {
+      "item_id": "ITEM-56796",
+      "restaurant_id": "REST-56784",
+      "name": "Ahi Tuna Poke Bowl",
+      "category": "Bowls",
+      "options": [
+        {"option_id": "white_rice", "name": "White Rice", "price": 0.00},
+        {"option_id": "brown_rice", "name": "Brown Rice", "price": 0.00},
+        {"option_id": "mixed_greens", "name": "Mixed Greens Base", "price": 0.00}
+      ],
+      "price": 16.95,
+      "available": true
+    },
+    "ITEM-56797": {
+      "item_id": "ITEM-56797",
+      "restaurant_id": "REST-56784",
+      "name": "Salmon Poke Bowl",
+      "category": "Bowls",
+      "options": [
+        {"option_id": "white_rice", "name": "White Rice", "price": 0.00},
+        {"option_id": "brown_rice", "name": "Brown Rice", "price": 0.00}
+      ],
+      "price": 17.95,
+      "available": true
+    },
+    "ITEM-56798": {
+      "item_id": "ITEM-56798",
+      "restaurant_id": "REST-56784",
+      "name": "Seaweed Salad",
+      "category": "Sides",
+      "options": [],
+      "price": 6.95,
+      "available": true
+    },
+    "ITEM-56799": {
+      "item_id": "ITEM-56799",
+      "restaurant_id": "REST-56784",
+      "name": "Coconut Water",
+      "category": "Drinks",
+      "options": [],
+      "price": 3.95,
+      "available": true
+    },
+    "ITEM-56800": {
+      "item_id": "ITEM-56800",
+      "restaurant_id": "REST-56785",
+      "name": "Bulgogi Bowl",
+      "category": "Bowls",
+      "options": [],
+      "price": 15.95,
+      "available": true
+    },
+    "ITEM-56801": {
+      "item_id": "ITEM-56801",
+      "restaurant_id": "REST-56785",
+      "name": "Spicy Pork Bowl",
+      "category": "Bowls",
+      "options": [],
+      "price": 14.95,
+      "available": true
+    },
+    "ITEM-56802": {
+      "item_id": "ITEM-56802",
+      "restaurant_id": "REST-56785",
+      "name": "Korean Fried Chicken (6 pcs)",
+      "category": "Appetizers",
+      "options": [
+        {"option_id": "soy_garlic_sauce", "name": "Soy Garlic Sauce", "price": 0.00},
+        {"option_id": "gochujang_sauce", "name": "Gochujang Sauce", "price": 0.00}
+      ],
+      "price": 13.95,
+      "available": true
+    },
+    "ITEM-56803": {
+      "item_id": "ITEM-56803",
+      "restaurant_id": "REST-56785",
+      "name": "Tteokbokki",
+      "category": "Sides",
+      "options": [],
+      "price": 9.95,
+      "available": false
+    },
+    "ITEM-56804": {
+      "item_id": "ITEM-56804",
+      "restaurant_id": "REST-56786",
+      "name": "Tonkotsu Ramen",
+      "category": "Ramen",
+      "options": [
+        {"option_id": "extra_chashu", "name": "Extra Chashu Pork", "price": 3.50},
+        {"option_id": "extra_egg", "name": "Extra Soft-Boiled Egg", "price": 1.50}
+      ],
+      "price": 16.95,
+      "available": true
+    },
+    "ITEM-56805": {
+      "item_id": "ITEM-56805",
+      "restaurant_id": "REST-56786",
+      "name": "Spicy Miso Ramen",
+      "category": "Ramen",
+      "options": [
+        {"option_id": "extra_chashu", "name": "Extra Chashu Pork", "price": 3.50}
+      ],
+      "price": 17.95,
+      "available": true
+    },
+    "ITEM-56806": {
+      "item_id": "ITEM-56806",
+      "restaurant_id": "REST-56786",
+      "name": "Gyoza (6 pcs)",
+      "category": "Appetizers",
+      "options": [],
+      "price": 8.95,
+      "available": true
+    },
+    "ITEM-56807": {
+      "item_id": "ITEM-56807",
+      "restaurant_id": "REST-56786",
+      "name": "Matcha Ice Cream",
+      "category": "Desserts",
+      "options": [],
+      "price": 5.95,
+      "available": true
+    },
+    "ITEM-56808": {
+      "item_id": "ITEM-56808",
+      "restaurant_id": "REST-56787",
+      "name": "Smash Burger",
+      "category": "Burgers",
+      "options": [
+        {"option_id": "add_bacon", "name": "Add Bacon", "price": 2.00},
+        {"option_id": "add_avocado", "name": "Add Avocado", "price": 1.75},
+        {"option_id": "extra_cheese", "name": "Extra Cheese", "price": 1.50}
+      ],
+      "price": 14.95,
+      "available": true
+    },
+    "ITEM-56809": {
+      "item_id": "ITEM-56809",
+      "restaurant_id": "REST-56787",
+      "name": "Mushroom Swiss Burger",
+      "category": "Burgers",
+      "options": [
+        {"option_id": "add_bacon", "name": "Add Bacon", "price": 2.00}
+      ],
+      "price": 16.95,
+      "available": true
+    },
+    "ITEM-56810": {
+      "item_id": "ITEM-56810",
+      "restaurant_id": "REST-56787",
+      "name": "Truffle Fries",
+      "category": "Sides",
+      "options": [],
+      "price": 9.95,
+      "available": true
+    },
+    "ITEM-56811": {
+      "item_id": "ITEM-56811",
+      "restaurant_id": "REST-56787",
+      "name": "Oreo Milkshake",
+      "category": "Drinks",
+      "options": [],
+      "price": 7.95,
+      "available": false
+    },
+    "ITEM-56812": {
+      "item_id": "ITEM-56812",
+      "restaurant_id": "REST-56788",
+      "name": "Lamb Shawarma Plate",
+      "category": "Plates",
+      "options": [],
+      "price": 17.95,
+      "available": true
+    },
+    "ITEM-56813": {
+      "item_id": "ITEM-56813",
+      "restaurant_id": "REST-56788",
+      "name": "Falafel Wrap",
+      "category": "Wraps",
+      "options": [],
+      "price": 11.95,
+      "available": true
+    },
+    "ITEM-56814": {
+      "item_id": "ITEM-56814",
+      "restaurant_id": "REST-56788",
+      "name": "Hummus & Pita",
+      "category": "Appetizers",
+      "options": [],
+      "price": 7.95,
+      "available": true
+    },
+    "ITEM-56815": {
+      "item_id": "ITEM-56815",
+      "restaurant_id": "REST-56788",
+      "name": "Baklava (3 pcs)",
+      "category": "Desserts",
+      "options": [],
+      "price": 6.95,
+      "available": true
+    },
+    "ITEM-56816": {
+      "item_id": "ITEM-56816",
+      "restaurant_id": "REST-56790",
+      "name": "Doro Wat (Chicken Stew)",
+      "category": "Entrees",
+      "options": [],
+      "price": 16.95,
+      "available": true
+    },
+    "ITEM-56817": {
+      "item_id": "ITEM-56817",
+      "restaurant_id": "REST-56790",
+      "name": "Kitfo (Beef Tartare)",
+      "category": "Entrees",
+      "options": [
+        {"option_id": "leb_leb", "name": "Leb Leb (lightly cooked)", "price": 0.00},
+        {"option_id": "well_done", "name": "Well Done", "price": 0.00}
+      ],
+      "price": 18.95,
+      "available": true
+    },
+    "ITEM-56818": {
+      "item_id": "ITEM-56818",
+      "restaurant_id": "REST-56790",
+      "name": "Veggie Combo Platter",
+      "category": "Entrees",
+      "options": [],
+      "price": 15.95,
+      "available": true
+    },
+    "ITEM-56819": {
+      "item_id": "ITEM-56819",
+      "restaurant_id": "REST-56790",
+      "name": "Ethiopian Coffee",
+      "category": "Drinks",
+      "options": [],
+      "price": 4.95,
+      "available": true
+    },
+    "ITEM-56820": {
+      "item_id": "ITEM-56820",
+      "restaurant_id": "REST-56789",
+      "name": "Avocado Toast",
+      "category": "Toast",
+      "options": [
+        {"option_id": "add_poached_egg", "name": "Add Poached Egg", "price": 2.00},
+        {"option_id": "add_smoked_salmon", "name": "Add Smoked Salmon", "price": 4.00}
+      ],
+      "price": 13.95,
+      "available": true
+    },
+    "ITEM-56821": {
+      "item_id": "ITEM-56821",
+      "restaurant_id": "REST-56789",
+      "name": "Acai Bowl",
+      "category": "Bowls",
+      "options": [
+        {"option_id": "add_granola", "name": "Extra Granola", "price": 1.00}
+      ],
+      "price": 14.95,
+      "available": true
+    },
+    "ITEM-56822": {
+      "item_id": "ITEM-56822",
+      "restaurant_id": "REST-56789",
+      "name": "Cold Brew Coffee",
+      "category": "Drinks",
+      "options": [
+        {"option_id": "oat_milk", "name": "Oat Milk", "price": 0.75},
+        {"option_id": "vanilla_syrup", "name": "Vanilla Syrup", "price": 0.50}
+      ],
+      "price": 5.95,
+      "available": true
+    },
+    "ITEM-56823": {
+      "item_id": "ITEM-56823",
+      "restaurant_id": "REST-56789",
+      "name": "Blueberry Muffin",
+      "category": "Pastries",
+      "options": [],
+      "price": 4.95,
+      "available": false
+    }
+  },
+  "offers": {
+    "OFFER-56780": {
+      "offer_id": "OFFER-56780",
+      "discount": 5.00,
+      "min_order": 20.00,
+      "uber_one": false
+    },
+    "OFFER-56781": {
+      "offer_id": "OFFER-56781",
+      "discount": 3.49,
+      "min_order": 15.00,
+      "uber_one": false
+    },
+    "OFFER-56782": {
+      "offer_id": "OFFER-56782",
+      "discount": 8.00,
+      "min_order": 30.00,
+      "uber_one": true
+    },
+    "OFFER-56783": {
+      "offer_id": "OFFER-56783",
+      "discount": 10.00,
+      "min_order": 40.00,
+      "uber_one": true
+    },
+    "OFFER-56784": {
+      "offer_id": "OFFER-56784",
+      "discount": 4.00,
+      "min_order": 18.00,
+      "uber_one": false
+    },
+    "OFFER-56785": {
+      "offer_id": "OFFER-56785",
+      "discount": 2.00,
+      "min_order": 10.00,
+      "uber_one": false
+    }
+  },
+  "delivery_tracking": {
+    "ORD-56782": {
+      "order_id": "ORD-56782",
+      "courier_name": "Pending assignment",
+      "status": "preparing",
+      "eta_min": 35,
+      "current_stage": "restaurant_preparing"
+    },
+    "ORD-56788": {
+      "order_id": "ORD-56788",
+      "courier_name": "Diego R.",
+      "status": "en_route",
+      "eta_min": 15,
+      "current_stage": "en_route"
+    }
+  }
+}

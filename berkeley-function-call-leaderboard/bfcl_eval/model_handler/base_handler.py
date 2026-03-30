@@ -53,10 +53,11 @@ class BaseHandler:
     can_handle_image_input: bool
     can_handle_image_tool_response: bool
 
+    # @HuanzhiMao FIXME: Uncomment these after testing
     _REQUIRED_CAPABILITY_FLAGS = (
-        "can_handle_audio_input",
-        "can_handle_image_input",
-        "can_handle_image_tool_response",
+        # "can_handle_audio_input",
+        # "can_handle_image_input",
+        # "can_handle_image_tool_response",
     )
 
     def __init_subclass__(cls, **kwargs):

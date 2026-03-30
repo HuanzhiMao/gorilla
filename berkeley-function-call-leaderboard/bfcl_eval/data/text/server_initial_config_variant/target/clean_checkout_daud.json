@@ -1,0 +1,87 @@
+{
+  "_meta": {
+    "api_class": "TargetAPI",
+    "source_file": "target.py",
+    "description": "Minimal clean-cart Target state for Daud checkout scenarios",
+    "random_seed": 3456
+  },
+  "random_seed": 3456,
+  "profile": {
+    "name": "Aisha Patel",
+    "email": "aisha.patel@email.com",
+    "membership": {
+      "circle_member": true,
+      "red_card": true,
+      "circle_points": 4280,
+      "lifetime_circle_earnings": 127.5
+    },
+    "preferred_store_id": "TGT-STR-ATL-30309",
+    "addresses": {
+      "TGT-ADDR-ATL-001": {
+        "address_id": "TGT-ADDR-ATL-001",
+        "name": "Daud Waqas",
+        "street": "950 West Peachtree St NW",
+        "city": "Atlanta",
+        "state": "GA",
+        "zip": "30309",
+        "country": "US",
+        "is_default": true
+      }
+    },
+    "payment_methods": {
+      "TGT-PM-ATL-001": {
+        "payment_method_id": "TGT-PM-ATL-001",
+        "type": "credit",
+        "last_four": "1192",
+        "expiration_date": "2028-09",
+        "billing_address": "TGT-ADDR-ATL-001",
+        "is_default": true
+      }
+    },
+    "promos": {}
+  },
+  "cart": {
+    "items": [],
+    "subtotal": 0,
+    "applied_promo": null,
+    "shipping_option": null
+  },
+  "products": {
+    "TGT-DAUD-1001": {
+      "product_id": "TGT-DAUD-1001",
+      "name": "Nespresso Vertuo Coffee and Espresso Machine by De'Longhi",
+      "brand": "Nespresso",
+      "category": "Coffee Makers",
+      "department": "Kitchen",
+      "description": "Nespresso Vertuo Coffee and Espresso Machine by De'Longhi",
+      "price": 20500,
+      "in_store_price": 20500,
+      "rating": 4.7,
+      "review_count": 913,
+      "options": [
+        "shipping",
+        "order_pickup",
+        "drive_up",
+        "same_day_delivery"
+      ]
+    },
+    "TGT-DAUD-1002": {
+      "product_id": "TGT-DAUD-1002",
+      "name": "JBL Flip 6 Bluetooth Speaker",
+      "brand": "JBL",
+      "category": "Portable Audio",
+      "department": "Electronics",
+      "description": "JBL Flip 6 Bluetooth Speaker",
+      "price": 12999,
+      "in_store_price": 12999,
+      "rating": 4.7,
+      "review_count": 1302,
+      "options": [
+        "shipping",
+        "order_pickup",
+        "drive_up",
+        "same_day_delivery"
+      ]
+    }
+  }
+}

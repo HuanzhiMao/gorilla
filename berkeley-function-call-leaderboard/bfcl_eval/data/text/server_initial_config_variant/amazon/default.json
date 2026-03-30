@@ -1,0 +1,1452 @@
+{
+  "_meta": {
+    "api_class": "AmazonAPI",
+    "source_file": "amazon.py",
+    "description": "Initial state for the Amazon e-commerce API",
+    "random_seed": 9012
+  },
+  "random_seed": 9012,
+  "profile": {
+    "name": "Rachel Kim",
+    "email": "rachel.kim@email.com",
+    "membership": {"prime_member": true},
+    "addresses": {
+      "AMZ-ADDR-001": {
+        "address_id": "AMZ-ADDR-001",
+        "name": "Rachel Kim",
+        "street": "1420 NW Gilman Blvd",
+        "city": "Issaquah",
+        "state": "WA",
+        "zip": "98027",
+        "country": "US",
+        "is_default": true
+      },
+      "AMZ-ADDR-002": {
+        "address_id": "AMZ-ADDR-002",
+        "name": "Rachel Kim",
+        "street": "550 Terry Ave N, Apt 12B",
+        "city": "Seattle",
+        "state": "WA",
+        "zip": "98109",
+        "country": "US",
+        "is_default": false
+      },
+      "AMZ-ADDR-003": {
+        "address_id": "AMZ-ADDR-003",
+        "name": "David Kim",
+        "street": "8832 Greenwood Ave N",
+        "city": "Seattle",
+        "state": "WA",
+        "zip": "98103",
+        "country": "US",
+        "is_default": false
+      }
+    },
+    "payment_methods": {
+      "AMZ-PAY-001": {
+        "payment_method_id": "AMZ-PAY-001",
+        "type": "credit",
+        "last_four": "4829",
+        "expiration_date": "2027-08",
+        "billing_address": "AMZ-ADDR-001",
+        "is_default": true
+      },
+      "AMZ-PAY-002": {
+        "payment_method_id": "AMZ-PAY-002",
+        "type": "debit",
+        "last_four": "7153",
+        "expiration_date": "2028-03",
+        "billing_address": "AMZ-ADDR-002",
+        "is_default": false
+      },
+      "AMZ-PAY-003": {
+        "payment_method_id": "AMZ-PAY-003",
+        "type": "credit",
+        "last_four": "0092",
+        "expiration_date": "2026-11",
+        "billing_address": "AMZ-ADDR-001",
+        "is_default": false
+      }
+    },
+    "promos": {
+      "AMZ-COUP-101": {
+        "coupon_id": "AMZ-COUP-101",
+        "product_id": "AMZ-PROD-4001",
+        "discount_type": "percent",
+        "discount_value": 10,
+        "min_purchase": 0,
+        "expiry": "2027-06-30T23:59:59Z",
+        "used": false
+      },
+      "AMZ-COUP-102": {
+        "coupon_id": "AMZ-COUP-102",
+        "product_id": "AMZ-PROD-4004",
+        "discount_type": "flat",
+        "discount_value": 5000,
+        "min_purchase": 40000,
+        "expiry": "2027-03-31T23:59:59Z",
+        "used": false
+      },
+      "AMZ-COUP-103": {
+        "coupon_id": "AMZ-COUP-103",
+        "product_id": "AMZ-PROD-4010",
+        "discount_type": "percent",
+        "discount_value": 15,
+        "min_purchase": 2000,
+        "expiry": "2027-09-30T23:59:59Z",
+        "used": false
+      },
+      "AMZ-COUP-104": {
+        "coupon_id": "AMZ-COUP-104",
+        "product_id": "AMZ-PROD-4015",
+        "discount_type": "flat",
+        "discount_value": 2500,
+        "min_purchase": 10000,
+        "expiry": "2026-12-31T23:59:59Z",
+        "used": false
+      },
+      "AMZ-COUP-105": {
+        "coupon_id": "AMZ-COUP-105",
+        "applicable_product_ids": ["AMZ-PROD-4005", "AMZ-PROD-4006", "AMZ-PROD-4007"],
+        "discount_type": "percent",
+        "discount_value": 20,
+        "min_purchase": 5000,
+        "expiry": "2026-08-15T23:59:59Z",
+        "used": true
+      }
+    }
+  },
+  "cart": {
+    "items": [
+      {
+        "product_id": "AMZ-PROD-4001",
+        "variant_id": "AMZ-VAR-4001A",
+        "seller_id": "AMZ-SELL-001",
+        "quantity": 1,
+        "gift_wrap": false,
+        "gift_message": null
+      },
+      {
+        "product_id": "AMZ-PROD-4010",
+        "variant_id": "AMZ-VAR-4010A",
+        "seller_id": "AMZ-SELL-003",
+        "quantity": 2,
+        "gift_wrap": false,
+        "gift_message": null
+      },
+      {
+        "product_id": "AMZ-PROD-4004",
+        "variant_id": "AMZ-VAR-4004B",
+        "seller_id": "AMZ-SELL-002",
+        "quantity": 1,
+        "gift_wrap": true,
+        "gift_message": "Happy housewarming!"
+      }
+    ],
+    "subtotal": 0,
+    "applied_promo": null,
+    "shipping_option": null
+  },
+  "orders": {
+    "AMZ-ORD-30001": {
+      "order_id": "AMZ-ORD-30001",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4002",
+          "variant_id": "AMZ-VAR-4002A",
+          "seller_id": "AMZ-SELL-001",
+          "quantity": 1,
+          "price": 59900
+        }
+      ],
+      "total": 59900,
+      "status": "delivered",
+      "shipping_method": "prime_two_day",
+      "address_id": "AMZ-ADDR-001",
+      "payment_method_id": "AMZ-PAY-001",
+      "created_at": "2025-11-01T10:23:00Z"
+    },
+    "AMZ-ORD-30002": {
+      "order_id": "AMZ-ORD-30002",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4003",
+          "variant_id": "AMZ-VAR-4003A",
+          "seller_id": "AMZ-SELL-001",
+          "quantity": 1,
+          "price": 74999
+        }
+      ],
+      "total": 74999,
+      "status": "delivered",
+      "shipping_method": "prime_two_day",
+      "address_id": "AMZ-ADDR-001",
+      "payment_method_id": "AMZ-PAY-001",
+      "created_at": "2025-10-15T14:45:00Z"
+    },
+    "AMZ-ORD-30003": {
+      "order_id": "AMZ-ORD-30003",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4005",
+          "variant_id": "AMZ-VAR-4005B",
+          "seller_id": "AMZ-SELL-001",
+          "quantity": 1,
+          "price": 1499
+        },
+        {
+          "product_id": "AMZ-PROD-4008",
+          "variant_id": "AMZ-VAR-4008A",
+          "seller_id": "AMZ-SELL-003",
+          "quantity": 1,
+          "price": 4999
+        }
+      ],
+      "total": 6498,
+      "status": "delivered",
+      "shipping_method": "prime_two_day",
+      "address_id": "AMZ-ADDR-002",
+      "payment_method_id": "AMZ-PAY-002",
+      "created_at": "2025-09-20T08:12:00Z"
+    },
+    "AMZ-ORD-30004": {
+      "order_id": "AMZ-ORD-30004",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4012",
+          "variant_id": "AMZ-VAR-4012A",
+          "seller_id": "AMZ-SELL-002",
+          "quantity": 1,
+          "price": 15999
+        }
+      ],
+      "total": 15999,
+      "status": "shipped",
+      "shipping_method": "expedited",
+      "address_id": "AMZ-ADDR-001",
+      "payment_method_id": "AMZ-PAY-001",
+      "created_at": "2026-03-10T16:30:00Z"
+    },
+    "AMZ-ORD-30005": {
+      "order_id": "AMZ-ORD-30005",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4015",
+          "variant_id": "AMZ-VAR-4015A",
+          "seller_id": "AMZ-SELL-003",
+          "quantity": 2,
+          "price": 3499
+        },
+        {
+          "product_id": "AMZ-PROD-4018",
+          "variant_id": "AMZ-VAR-4018A",
+          "seller_id": "AMZ-SELL-001",
+          "quantity": 1,
+          "price": 8999
+        }
+      ],
+      "total": 15997,
+      "status": "processing",
+      "shipping_method": "prime_two_day",
+      "address_id": "AMZ-ADDR-003",
+      "payment_method_id": "AMZ-PAY-003",
+      "created_at": "2026-03-16T09:45:00Z"
+    },
+    "AMZ-ORD-30006": {
+      "order_id": "AMZ-ORD-30006",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4006",
+          "variant_id": "AMZ-VAR-4006A",
+          "seller_id": "AMZ-SELL-001",
+          "quantity": 1,
+          "price": 2199
+        }
+      ],
+      "total": 2199,
+      "status": "cancelled",
+      "shipping_method": "standard",
+      "address_id": "AMZ-ADDR-001",
+      "payment_method_id": "AMZ-PAY-001",
+      "created_at": "2025-12-05T11:00:00Z"
+    },
+    "AMZ-ORD-30007": {
+      "order_id": "AMZ-ORD-30007",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4009",
+          "variant_id": "AMZ-VAR-4009A",
+          "seller_id": "AMZ-SELL-002",
+          "quantity": 1,
+          "price": 24999
+        }
+      ],
+      "total": 24999,
+      "status": "delivered",
+      "shipping_method": "prime_one_day",
+      "address_id": "AMZ-ADDR-002",
+      "payment_method_id": "AMZ-PAY-002",
+      "created_at": "2025-08-22T13:15:00Z"
+    },
+    "AMZ-ORD-30008": {
+      "order_id": "AMZ-ORD-30008",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4014",
+          "variant_id": "AMZ-VAR-4014A",
+          "seller_id": "AMZ-SELL-004",
+          "quantity": 1,
+          "price": 6499
+        },
+        {
+          "product_id": "AMZ-PROD-4016",
+          "variant_id": "AMZ-VAR-4016A",
+          "seller_id": "AMZ-SELL-001",
+          "quantity": 3,
+          "price": 1299
+        }
+      ],
+      "total": 10396,
+      "status": "shipped",
+      "shipping_method": "prime_two_day",
+      "address_id": "AMZ-ADDR-001",
+      "payment_method_id": "AMZ-PAY-001",
+      "created_at": "2026-03-12T20:00:00Z"
+    },
+    "AMZ-ORD-30009": {
+      "order_id": "AMZ-ORD-30009",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4020",
+          "variant_id": "AMZ-VAR-4020A",
+          "seller_id": "AMZ-SELL-003",
+          "quantity": 1,
+          "price": 11999
+        }
+      ],
+      "total": 11999,
+      "status": "processing",
+      "shipping_method": "prime_two_day",
+      "address_id": "AMZ-ADDR-001",
+      "payment_method_id": "AMZ-PAY-001",
+      "created_at": "2026-03-17T07:30:00Z"
+    }
+  },
+  "returns": {
+    "AMZ-RET-5001": {
+      "return_id": "AMZ-RET-5001",
+      "order_id": "AMZ-ORD-30001",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4002",
+          "variant_id": "AMZ-VAR-4002A",
+          "quantity": 1,
+          "reason": "Defective screen"
+        }
+      ],
+      "reason": "Item arrived with a defective screen",
+      "status": "approved",
+      "created_at": "2025-11-08T16:30:00Z"
+    },
+    "AMZ-RET-5002": {
+      "return_id": "AMZ-RET-5002",
+      "order_id": "AMZ-ORD-30003",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4008",
+          "variant_id": "AMZ-VAR-4008A",
+          "quantity": 1,
+          "reason": "Wrong size"
+        }
+      ],
+      "reason": "Received the wrong size, needed Medium instead of Large",
+      "status": "refunded",
+      "created_at": "2025-09-28T10:15:00Z"
+    },
+    "AMZ-RET-5003": {
+      "return_id": "AMZ-RET-5003",
+      "order_id": "AMZ-ORD-30007",
+      "user_id": "AMZ-USR-9010",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4009",
+          "variant_id": "AMZ-VAR-4009A",
+          "quantity": 1,
+          "reason": "Changed mind"
+        }
+      ],
+      "reason": "No longer needed after finding a better alternative",
+      "status": "pending",
+      "created_at": "2026-03-15T14:00:00Z"
+    }
+  },
+  "reviews": {
+    "AMZ-REV-8001": {
+      "review_id": "AMZ-REV-8001",
+      "user_id": "AMZ-USR-9010",
+      "product_id": "AMZ-PROD-4001",
+      "rating": 5,
+      "title": "Best noise cancelling headphones I've owned",
+      "body": "Incredible sound quality and the noise cancellation is top-notch. Battery life easily lasts a full day of work. Highly recommend for frequent flyers.",
+      "helpful_votes": 42,
+      "created_at": "2025-12-05T11:20:00Z"
+    },
+    "AMZ-REV-8002": {
+      "review_id": "AMZ-REV-8002",
+      "user_id": "AMZ-USR-9011",
+      "product_id": "AMZ-PROD-4003",
+      "rating": 4,
+      "title": "Great vacuum but heavy",
+      "body": "The suction power is amazing and the laser detection is really cool. However, it's noticeably heavier than my old stick vacuum. Hard to use overhead for long periods.",
+      "helpful_votes": 18,
+      "created_at": "2025-12-09T08:45:00Z"
+    },
+    "AMZ-REV-8003": {
+      "review_id": "AMZ-REV-8003",
+      "user_id": "AMZ-USR-9012",
+      "product_id": "AMZ-PROD-4004",
+      "rating": 3,
+      "title": "Good but gets stuck on rugs",
+      "body": "The self-emptying feature is convenient but the robot frequently gets stuck on my thicker area rugs. Had to block off certain rooms. Object avoidance works well otherwise.",
+      "helpful_votes": 27,
+      "created_at": "2025-12-12T19:00:00Z"
+    },
+    "AMZ-REV-8004": {
+      "review_id": "AMZ-REV-8004",
+      "user_id": "AMZ-USR-9010",
+      "product_id": "AMZ-PROD-4005",
+      "rating": 5,
+      "title": "A modern classic - couldn't put it down",
+      "body": "Beautifully written with deeply compelling characters. The way the author weaves multiple timelines together is masterful. Finished it in two sittings.",
+      "helpful_votes": 31,
+      "created_at": "2025-10-01T15:30:00Z"
+    },
+    "AMZ-REV-8005": {
+      "review_id": "AMZ-REV-8005",
+      "user_id": "AMZ-USR-9013",
+      "product_id": "AMZ-PROD-4002",
+      "rating": 5,
+      "title": "Perfect tablet for students",
+      "body": "The M2 chip makes everything buttery smooth. I use it for note-taking with Apple Pencil and it replaced my laptop for most tasks. Battery lasts all day.",
+      "helpful_votes": 56,
+      "created_at": "2025-11-18T09:10:00Z"
+    },
+    "AMZ-REV-8006": {
+      "review_id": "AMZ-REV-8006",
+      "user_id": "AMZ-USR-9010",
+      "product_id": "AMZ-PROD-4009",
+      "rating": 4,
+      "title": "Solid running shoes but sizing runs small",
+      "body": "Great cushioning and very responsive feel on pavement. The breathable mesh keeps feet cool. However, I'd recommend going half a size up - they run quite narrow.",
+      "helpful_votes": 14,
+      "created_at": "2025-09-05T17:45:00Z"
+    },
+    "AMZ-REV-8007": {
+      "review_id": "AMZ-REV-8007",
+      "user_id": "AMZ-USR-9014",
+      "product_id": "AMZ-PROD-4010",
+      "rating": 2,
+      "title": "Disappointed - broke after 3 months",
+      "body": "The non-stick coating started flaking after just a few months of regular use. The handles also get very hot. Not worth the price. Returning for a refund.",
+      "helpful_votes": 89,
+      "created_at": "2026-01-20T12:00:00Z"
+    },
+    "AMZ-REV-8008": {
+      "review_id": "AMZ-REV-8008",
+      "user_id": "AMZ-USR-9011",
+      "product_id": "AMZ-PROD-4012",
+      "rating": 5,
+      "title": "Best yoga mat I've ever used",
+      "body": "The grip is phenomenal even when sweating. Thick enough to cushion knees but firm enough for balance poses. The alignment lines are a nice touch.",
+      "helpful_votes": 23,
+      "created_at": "2026-02-14T10:30:00Z"
+    },
+    "AMZ-REV-8009": {
+      "review_id": "AMZ-REV-8009",
+      "user_id": "AMZ-USR-9010",
+      "product_id": "AMZ-PROD-4014",
+      "rating": 4,
+      "title": "Great everyday backpack",
+      "body": "Lots of organizational pockets, comfortable shoulder straps, and the laptop compartment fits my 15-inch MacBook Pro perfectly. The water bottle pockets are a bit tight though.",
+      "helpful_votes": 8,
+      "created_at": "2026-03-01T08:00:00Z"
+    },
+    "AMZ-REV-8010": {
+      "review_id": "AMZ-REV-8010",
+      "user_id": "AMZ-USR-9015",
+      "product_id": "AMZ-PROD-4001",
+      "rating": 4,
+      "title": "Almost perfect - multipoint connection issues",
+      "body": "Sound quality is phenomenal and ANC is best in class. My only complaint is the multipoint Bluetooth connection drops occasionally when switching between phone and laptop.",
+      "helpful_votes": 37,
+      "created_at": "2026-01-05T14:20:00Z"
+    },
+    "AMZ-REV-8011": {
+      "review_id": "AMZ-REV-8011",
+      "user_id": "AMZ-USR-9010",
+      "product_id": "AMZ-PROD-4018",
+      "rating": 5,
+      "title": "Game changer for meal prep",
+      "body": "This instant pot has saved me hours every week. The pressure cook function is incredibly fast and the slow cook mode produces fall-off-the-bone tender meat. Easy to clean too.",
+      "helpful_votes": 19,
+      "created_at": "2026-02-28T19:15:00Z"
+    },
+    "AMZ-REV-8012": {
+      "review_id": "AMZ-REV-8012",
+      "user_id": "AMZ-USR-9012",
+      "product_id": "AMZ-PROD-4015",
+      "rating": 3,
+      "title": "Good tea but overpriced",
+      "body": "The flavor is nice and smooth, but at this price point I expected something more premium. The packaging is beautiful though, makes a nice gift.",
+      "helpful_votes": 5,
+      "created_at": "2026-03-10T11:45:00Z"
+    }
+  },
+  "products": {
+    "AMZ-PROD-4001": {
+      "product_id": "AMZ-PROD-4001",
+      "name": "Sony WH-1000XM5 Wireless Noise Cancelling Headphones",
+      "brand": "Sony",
+      "category": "Electronics",
+      "price": 34800,
+      "rating": 4.7,
+      "review_count": 12483,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4001A",
+          "attributes": {"color": "Black"},
+          "price": 34800,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4001B",
+          "attributes": {"color": "Silver"},
+          "price": 34800,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4001C",
+          "attributes": {"color": "Midnight Blue"},
+          "price": 34800,
+          "in_stock": false
+        }
+      ]
+    },
+    "AMZ-PROD-4002": {
+      "product_id": "AMZ-PROD-4002",
+      "name": "Apple iPad Air 11-inch (M2) 128GB",
+      "brand": "Apple",
+      "category": "Electronics",
+      "price": 59900,
+      "rating": 4.8,
+      "review_count": 8721,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4002A",
+          "attributes": {"color": "Space Gray", "storage": "128GB"},
+          "price": 59900,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4002B",
+          "attributes": {"color": "Starlight", "storage": "128GB"},
+          "price": 59900,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4002C",
+          "attributes": {"color": "Space Gray", "storage": "256GB"},
+          "price": 74900,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4003": {
+      "product_id": "AMZ-PROD-4003",
+      "name": "Dyson V15 Detect Cordless Vacuum",
+      "brand": "Dyson",
+      "category": "Household",
+      "price": 74999,
+      "rating": 4.5,
+      "review_count": 5342,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4003A",
+          "attributes": {"model": "V15 Detect"},
+          "price": 74999,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4003B",
+          "attributes": {"model": "V15 Detect+"},
+          "price": 82999,
+          "in_stock": false
+        }
+      ]
+    },
+    "AMZ-PROD-4004": {
+      "product_id": "AMZ-PROD-4004",
+      "name": "iRobot Roomba j7+ Self-Emptying Robot Vacuum",
+      "brand": "iRobot",
+      "category": "Household",
+      "price": 54900,
+      "rating": 4.3,
+      "review_count": 6218,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4004A",
+          "attributes": {"bundle": "Vacuum Only"},
+          "price": 54900,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4004B",
+          "attributes": {"bundle": "Vacuum + Braava Mop"},
+          "price": 89900,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4005": {
+      "product_id": "AMZ-PROD-4005",
+      "name": "Project Hail Mary: A Novel by Andy Weir",
+      "brand": "Ballantine Books",
+      "category": "Books",
+      "price": 1499,
+      "rating": 4.9,
+      "review_count": 42817,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4005A",
+          "attributes": {"format": "Kindle"},
+          "price": 999,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4005B",
+          "attributes": {"format": "Paperback"},
+          "price": 1499,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4005C",
+          "attributes": {"format": "Hardcover"},
+          "price": 2199,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4006": {
+      "product_id": "AMZ-PROD-4006",
+      "name": "Atomic Habits by James Clear",
+      "brand": "Avery",
+      "category": "Books",
+      "price": 1699,
+      "rating": 4.8,
+      "review_count": 98234,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4006A",
+          "attributes": {"format": "Hardcover"},
+          "price": 2199,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4006B",
+          "attributes": {"format": "Paperback"},
+          "price": 1699,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4006C",
+          "attributes": {"format": "Audiobook"},
+          "price": 2499,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4007": {
+      "product_id": "AMZ-PROD-4007",
+      "name": "The Midnight Library by Matt Haig",
+      "brand": "Penguin Books",
+      "category": "Books",
+      "price": 1399,
+      "rating": 4.6,
+      "review_count": 31205,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4007A",
+          "attributes": {"format": "Paperback"},
+          "price": 1399,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4007B",
+          "attributes": {"format": "Hardcover"},
+          "price": 1999,
+          "in_stock": false
+        }
+      ]
+    },
+    "AMZ-PROD-4008": {
+      "product_id": "AMZ-PROD-4008",
+      "name": "Levi's 501 Original Fit Jeans - Men's",
+      "brand": "Levi's",
+      "category": "Clothing",
+      "price": 4999,
+      "rating": 4.4,
+      "review_count": 15678,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4008A",
+          "attributes": {"color": "Medium Stonewash", "size": "32x32"},
+          "price": 4999,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4008B",
+          "attributes": {"color": "Dark Wash", "size": "32x32"},
+          "price": 4999,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4008C",
+          "attributes": {"color": "Medium Stonewash", "size": "34x32"},
+          "price": 4999,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4009": {
+      "product_id": "AMZ-PROD-4009",
+      "name": "Nike Air Zoom Pegasus 41 Running Shoes",
+      "brand": "Nike",
+      "category": "Clothing",
+      "price": 13000,
+      "rating": 4.5,
+      "review_count": 7892,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4009A",
+          "attributes": {"color": "Black/White", "size": "10"},
+          "price": 13000,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4009B",
+          "attributes": {"color": "Wolf Grey", "size": "10"},
+          "price": 13000,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4009C",
+          "attributes": {"color": "Black/White", "size": "10.5"},
+          "price": 13000,
+          "in_stock": false
+        }
+      ]
+    },
+    "AMZ-PROD-4010": {
+      "product_id": "AMZ-PROD-4010",
+      "name": "T-fal Professional Nonstick Fry Pan 12-inch",
+      "brand": "T-fal",
+      "category": "Kitchen",
+      "price": 3499,
+      "rating": 4.6,
+      "review_count": 21340,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4010A",
+          "attributes": {"size": "12-inch"},
+          "price": 3499,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4010B",
+          "attributes": {"size": "10-inch"},
+          "price": 2799,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4011": {
+      "product_id": "AMZ-PROD-4011",
+      "name": "KitchenAid Artisan Stand Mixer 5-Quart",
+      "brand": "KitchenAid",
+      "category": "Kitchen",
+      "price": 37999,
+      "rating": 4.8,
+      "review_count": 34521,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4011A",
+          "attributes": {"color": "Empire Red"},
+          "price": 37999,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4011B",
+          "attributes": {"color": "Onyx Black"},
+          "price": 37999,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4011C",
+          "attributes": {"color": "Pistachio"},
+          "price": 39999,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4012": {
+      "product_id": "AMZ-PROD-4012",
+      "name": "Manduka PRO Yoga Mat 71-inch",
+      "brand": "Manduka",
+      "category": "Sports",
+      "price": 13200,
+      "rating": 4.7,
+      "review_count": 8923,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4012A",
+          "attributes": {"color": "Black"},
+          "price": 13200,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4012B",
+          "attributes": {"color": "Sage"},
+          "price": 13200,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4013": {
+      "product_id": "AMZ-PROD-4013",
+      "name": "Hydro Flask Wide Mouth Water Bottle 32oz",
+      "brand": "Hydro Flask",
+      "category": "Sports",
+      "price": 4495,
+      "rating": 4.7,
+      "review_count": 19450,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4013A",
+          "attributes": {"color": "Pacific"},
+          "price": 4495,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4013B",
+          "attributes": {"color": "Black"},
+          "price": 4495,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4013C",
+          "attributes": {"color": "Alpine"},
+          "price": 4495,
+          "in_stock": false
+        }
+      ]
+    },
+    "AMZ-PROD-4014": {
+      "product_id": "AMZ-PROD-4014",
+      "name": "Osprey Daylite Plus Daypack",
+      "brand": "Osprey",
+      "category": "Sports",
+      "price": 6500,
+      "rating": 4.6,
+      "review_count": 5430,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4014A",
+          "attributes": {"color": "Black"},
+          "price": 6500,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4014B",
+          "attributes": {"color": "Silver Lining/Blueberry"},
+          "price": 6500,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4015": {
+      "product_id": "AMZ-PROD-4015",
+      "name": "Harney & Sons Japanese Sencha Green Tea 20 Sachets",
+      "brand": "Harney & Sons",
+      "category": "Kitchen",
+      "price": 1199,
+      "rating": 4.4,
+      "review_count": 4210,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4015A",
+          "attributes": {"variety": "Sencha"},
+          "price": 1199,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4015B",
+          "attributes": {"variety": "Dragon Pearl Jasmine"},
+          "price": 1399,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4016": {
+      "product_id": "AMZ-PROD-4016",
+      "name": "AmazonBasics AA Rechargeable Batteries 8-Pack",
+      "brand": "AmazonBasics",
+      "category": "Electronics",
+      "price": 1299,
+      "rating": 4.5,
+      "review_count": 67890,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4016A",
+          "attributes": {"size": "AA", "count": "8-Pack"},
+          "price": 1299,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4016B",
+          "attributes": {"size": "AAA", "count": "8-Pack"},
+          "price": 1199,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4017": {
+      "product_id": "AMZ-PROD-4017",
+      "name": "Samsung 65-inch Crystal UHD 4K Smart TV (DU8000)",
+      "brand": "Samsung",
+      "category": "Electronics",
+      "price": 54799,
+      "rating": 4.4,
+      "review_count": 11200,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4017A",
+          "attributes": {"size": "55-inch"},
+          "price": 42799,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4017B",
+          "attributes": {"size": "65-inch"},
+          "price": 54799,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4017C",
+          "attributes": {"size": "75-inch"},
+          "price": 69799,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4018": {
+      "product_id": "AMZ-PROD-4018",
+      "name": "Instant Pot Duo 7-in-1 Electric Pressure Cooker 6Qt",
+      "brand": "Instant Pot",
+      "category": "Kitchen",
+      "price": 8999,
+      "rating": 4.7,
+      "review_count": 145000,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4018A",
+          "attributes": {"size": "6-Quart"},
+          "price": 8999,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4018B",
+          "attributes": {"size": "8-Quart"},
+          "price": 10999,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4019": {
+      "product_id": "AMZ-PROD-4019",
+      "name": "Patagonia Better Sweater Fleece Jacket - Women's",
+      "brand": "Patagonia",
+      "category": "Clothing",
+      "price": 14900,
+      "rating": 4.7,
+      "review_count": 6789,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4019A",
+          "attributes": {"color": "New Navy", "size": "M"},
+          "price": 14900,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4019B",
+          "attributes": {"color": "Birch White", "size": "M"},
+          "price": 14900,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4019C",
+          "attributes": {"color": "New Navy", "size": "S"},
+          "price": 14900,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4020": {
+      "product_id": "AMZ-PROD-4020",
+      "name": "Anker PowerCore 26800mAh Portable Charger",
+      "brand": "Anker",
+      "category": "Electronics",
+      "price": 6599,
+      "rating": 4.6,
+      "review_count": 28900,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4020A",
+          "attributes": {"model": "26800mAh"},
+          "price": 6599,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4020B",
+          "attributes": {"model": "20000mAh"},
+          "price": 4599,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4021": {
+      "product_id": "AMZ-PROD-4021",
+      "name": "Lodge Pre-Seasoned Cast Iron Skillet 10.25-inch",
+      "brand": "Lodge",
+      "category": "Kitchen",
+      "price": 2797,
+      "rating": 4.7,
+      "review_count": 89100,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4021A",
+          "attributes": {"size": "10.25-inch"},
+          "price": 2797,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4021B",
+          "attributes": {"size": "12-inch"},
+          "price": 3697,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4022": {
+      "product_id": "AMZ-PROD-4022",
+      "name": "Crest 3D Whitestrips Professional Effects 20 Treatments",
+      "brand": "Crest",
+      "category": "Household",
+      "price": 4599,
+      "rating": 4.3,
+      "review_count": 52300,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4022A",
+          "attributes": {"treatment": "Professional Effects 20ct"},
+          "price": 4599,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4022B",
+          "attributes": {"treatment": "Glamorous White 14ct"},
+          "price": 3499,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4023": {
+      "product_id": "AMZ-PROD-4023",
+      "name": "Logitech MX Master 3S Wireless Mouse",
+      "brand": "Logitech",
+      "category": "Electronics",
+      "price": 9999,
+      "rating": 4.8,
+      "review_count": 10245,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4023A",
+          "attributes": {"color": "Graphite"},
+          "price": 9999,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4023B",
+          "attributes": {"color": "Pale Gray"},
+          "price": 9999,
+          "in_stock": true
+        }
+      ]
+    },
+    "AMZ-PROD-4024": {
+      "product_id": "AMZ-PROD-4024",
+      "name": "Coleman Sundome 4-Person Camping Tent",
+      "brand": "Coleman",
+      "category": "Sports",
+      "price": 7999,
+      "rating": 4.5,
+      "review_count": 14320,
+      "options": [
+        {
+          "variant_id": "AMZ-VAR-4024A",
+          "attributes": {"size": "4-Person", "color": "Navy/Grey"},
+          "price": 7999,
+          "in_stock": true
+        },
+        {
+          "variant_id": "AMZ-VAR-4024B",
+          "attributes": {"size": "6-Person", "color": "Navy/Grey"},
+          "price": 10999,
+          "in_stock": true
+        }
+      ]
+    }
+  },
+  "offers": {
+    "AMZ-OFFER-7001": {
+      "offer_id": "AMZ-OFFER-7001",
+      "product_id": "AMZ-PROD-4001",
+      "variant_id": "AMZ-VAR-4001A",
+      "seller_id": "AMZ-SELL-001",
+      "is_buy_box": true,
+      "in_stock": true,
+      "price": 34800,
+      "shipping_cost": 0,
+      "shipping_speed": "2-day",
+      "condition": "new",
+      "prime_eligible": true
+    },
+    "AMZ-OFFER-7002": {
+      "offer_id": "AMZ-OFFER-7002",
+      "product_id": "AMZ-PROD-4001",
+      "variant_id": "AMZ-VAR-4001A",
+      "seller_id": "AMZ-SELL-002",
+      "is_buy_box": false,
+      "in_stock": true,
+      "price": 32900,
+      "shipping_cost": 599,
+      "shipping_speed": "5-7 business days",
+      "condition": "new",
+      "prime_eligible": false
+    },
+    "AMZ-OFFER-7003": {
+      "offer_id": "AMZ-OFFER-7003",
+      "product_id": "AMZ-PROD-4002",
+      "variant_id": "AMZ-VAR-4002A",
+      "seller_id": "AMZ-SELL-001",
+      "is_buy_box": true,
+      "in_stock": true,
+      "price": 59900,
+      "shipping_cost": 0,
+      "shipping_speed": "2-day",
+      "condition": "new",
+      "prime_eligible": true
+    },
+    "AMZ-OFFER-7004": {
+      "offer_id": "AMZ-OFFER-7004",
+      "product_id": "AMZ-PROD-4003",
+      "variant_id": "AMZ-VAR-4003A",
+      "seller_id": "AMZ-SELL-001",
+      "is_buy_box": true,
+      "in_stock": true,
+      "price": 74999,
+      "shipping_cost": 0,
+      "shipping_speed": "2-day",
+      "condition": "new",
+      "prime_eligible": true
+    },
+    "AMZ-OFFER-7005": {
+      "offer_id": "AMZ-OFFER-7005",
+      "product_id": "AMZ-PROD-4004",
+      "variant_id": "AMZ-VAR-4004A",
+      "seller_id": "AMZ-SELL-002",
+      "is_buy_box": false,
+      "in_stock": true,
+      "price": 52900,
+      "shipping_cost": 899,
+      "shipping_speed": "3-5 business days",
+      "condition": "refurbished",
+      "prime_eligible": false
+    },
+    "AMZ-OFFER-7006": {
+      "offer_id": "AMZ-OFFER-7006",
+      "product_id": "AMZ-PROD-4004",
+      "variant_id": "AMZ-VAR-4004A",
+      "seller_id": "AMZ-SELL-001",
+      "is_buy_box": true,
+      "in_stock": true,
+      "price": 54900,
+      "shipping_cost": 0,
+      "shipping_speed": "2-day",
+      "condition": "new",
+      "prime_eligible": true
+    },
+    "AMZ-OFFER-7007": {
+      "offer_id": "AMZ-OFFER-7007",
+      "product_id": "AMZ-PROD-4010",
+      "variant_id": "AMZ-VAR-4010A",
+      "seller_id": "AMZ-SELL-003",
+      "is_buy_box": true,
+      "in_stock": true,
+      "price": 3499,
+      "shipping_cost": 0,
+      "shipping_speed": "2-day",
+      "condition": "new",
+      "prime_eligible": true
+    },
+    "AMZ-OFFER-7008": {
+      "offer_id": "AMZ-OFFER-7008",
+      "product_id": "AMZ-PROD-4011",
+      "variant_id": "AMZ-VAR-4011A",
+      "seller_id": "AMZ-SELL-001",
+      "is_buy_box": true,
+      "in_stock": true,
+      "price": 37999,
+      "shipping_cost": 0,
+      "shipping_speed": "2-day",
+      "condition": "new",
+      "prime_eligible": true
+    },
+    "AMZ-OFFER-7009": {
+      "offer_id": "AMZ-OFFER-7009",
+      "product_id": "AMZ-PROD-4011",
+      "variant_id": "AMZ-VAR-4011A",
+      "seller_id": "AMZ-SELL-004",
+      "is_buy_box": false,
+      "in_stock": true,
+      "price": 35999,
+      "shipping_cost": 799,
+      "shipping_speed": "5-7 business days",
+      "condition": "used_like_new",
+      "prime_eligible": false
+    },
+    "AMZ-OFFER-7010": {
+      "offer_id": "AMZ-OFFER-7010",
+      "product_id": "AMZ-PROD-4017",
+      "variant_id": "AMZ-VAR-4017B",
+      "seller_id": "AMZ-SELL-001",
+      "is_buy_box": true,
+      "in_stock": true,
+      "price": 54799,
+      "shipping_cost": 0,
+      "shipping_speed": "2-day",
+      "condition": "new",
+      "prime_eligible": true
+    },
+    "AMZ-OFFER-7011": {
+      "offer_id": "AMZ-OFFER-7011",
+      "product_id": "AMZ-PROD-4017",
+      "variant_id": "AMZ-VAR-4017B",
+      "seller_id": "AMZ-SELL-002",
+      "is_buy_box": false,
+      "in_stock": true,
+      "price": 49999,
+      "shipping_cost": 0,
+      "shipping_speed": "3-5 business days",
+      "condition": "refurbished",
+      "prime_eligible": false
+    },
+    "AMZ-OFFER-7012": {
+      "offer_id": "AMZ-OFFER-7012",
+      "product_id": "AMZ-PROD-4023",
+      "variant_id": "AMZ-VAR-4023A",
+      "seller_id": "AMZ-SELL-003",
+      "is_buy_box": true,
+      "in_stock": true,
+      "price": 9999,
+      "shipping_cost": 0,
+      "shipping_speed": "2-day",
+      "condition": "new",
+      "prime_eligible": true
+    }
+  },
+  "shipping_options": {
+    "standard": {
+      "name": "Standard Shipping",
+      "cost": 599,
+      "eta_days": [5, 8]
+    },
+    "expedited": {
+      "name": "Expedited Shipping",
+      "cost": 1299,
+      "eta_days": [2, 3]
+    },
+    "prime_two_day": {
+      "name": "Prime Two-Day",
+      "cost": 0,
+      "eta_days": [2, 2],
+      "requires_prime": true
+    },
+    "prime_one_day": {
+      "name": "Prime One-Day",
+      "cost": 0,
+      "eta_days": [1, 1],
+      "requires_prime": true
+    },
+    "prime_same_day": {
+      "name": "Prime Same-Day",
+      "cost": 0,
+      "eta_days": [0, 0],
+      "requires_prime": true
+    }
+  },
+  "sellers": {
+    "AMZ-SELL-001": {
+      "seller_id": "AMZ-SELL-001",
+      "name": "TechDirect Official",
+      "rating": 4.8,
+      "prime_eligible": true
+    },
+    "AMZ-SELL-002": {
+      "seller_id": "AMZ-SELL-002",
+      "name": "HomeGoods Marketplace",
+      "rating": 4.5,
+      "prime_eligible": false
+    },
+    "AMZ-SELL-003": {
+      "seller_id": "AMZ-SELL-003",
+      "name": "Kitchen & Beyond",
+      "rating": 4.7,
+      "prime_eligible": true
+    },
+    "AMZ-SELL-004": {
+      "seller_id": "AMZ-SELL-004",
+      "name": "ValueFinds Outlet",
+      "rating": 4.2,
+      "prime_eligible": false
+    }
+  },
+  "wishlists": {
+    "AMZ-WISH-001": {
+      "wishlist_id": "AMZ-WISH-001",
+      "user_id": "AMZ-USR-9010",
+      "name": "My Wish List",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4011",
+          "variant_id": "AMZ-VAR-4011C",
+          "added_at": "2026-01-15T10:00:00Z",
+          "note": "Pistachio color for the new kitchen"
+        },
+        {
+          "product_id": "AMZ-PROD-4017",
+          "variant_id": "AMZ-VAR-4017C",
+          "added_at": "2026-02-20T18:30:00Z",
+          "note": "75-inch for the living room upgrade"
+        },
+        {
+          "product_id": "AMZ-PROD-4019",
+          "variant_id": "AMZ-VAR-4019A",
+          "added_at": "2026-03-01T09:00:00Z",
+          "note": null
+        }
+      ],
+      "is_default": true,
+      "is_public": false,
+      "created_at": "2025-08-10T12:00:00Z"
+    },
+    "AMZ-WISH-002": {
+      "wishlist_id": "AMZ-WISH-002",
+      "user_id": "AMZ-USR-9010",
+      "name": "Camping Trip Gear",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4024",
+          "variant_id": "AMZ-VAR-4024A",
+          "added_at": "2026-03-05T14:00:00Z",
+          "note": "For summer trip to Olympic National Park"
+        },
+        {
+          "product_id": "AMZ-PROD-4013",
+          "variant_id": "AMZ-VAR-4013A",
+          "added_at": "2026-03-05T14:05:00Z",
+          "note": null
+        }
+      ],
+      "is_default": false,
+      "is_public": true,
+      "created_at": "2026-03-05T13:50:00Z"
+    },
+    "AMZ-WISH-003": {
+      "wishlist_id": "AMZ-WISH-003",
+      "user_id": "AMZ-USR-9011",
+      "name": "Birthday Ideas",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4002",
+          "variant_id": "AMZ-VAR-4002C",
+          "added_at": "2026-02-01T11:00:00Z",
+          "note": "256GB version preferred"
+        },
+        {
+          "product_id": "AMZ-PROD-4003",
+          "variant_id": "AMZ-VAR-4003A",
+          "added_at": "2026-02-01T11:10:00Z",
+          "note": null
+        },
+        {
+          "product_id": "AMZ-PROD-4023",
+          "variant_id": "AMZ-VAR-4023B",
+          "added_at": "2026-02-15T09:30:00Z",
+          "note": "Pale gray to match desk setup"
+        }
+      ],
+      "is_default": true,
+      "is_public": true,
+      "created_at": "2026-01-20T16:00:00Z"
+    },
+    "AMZ-WISH-004": {
+      "wishlist_id": "AMZ-WISH-004",
+      "user_id": "AMZ-USR-9013",
+      "name": "Reading List 2026",
+      "items": [
+        {
+          "product_id": "AMZ-PROD-4005",
+          "variant_id": "AMZ-VAR-4005C",
+          "added_at": "2026-01-02T08:00:00Z",
+          "note": "Hardcover collector's edition"
+        },
+        {
+          "product_id": "AMZ-PROD-4006",
+          "variant_id": "AMZ-VAR-4006B",
+          "added_at": "2026-01-02T08:05:00Z",
+          "note": null
+        },
+        {
+          "product_id": "AMZ-PROD-4007",
+          "variant_id": "AMZ-VAR-4007A",
+          "added_at": "2026-01-10T20:00:00Z",
+          "note": null
+        }
+      ],
+      "is_default": true,
+      "is_public": true,
+      "created_at": "2026-01-02T07:55:00Z"
+    }
+  }
+}

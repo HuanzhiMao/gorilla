@@ -1,0 +1,94 @@
+{
+  "_meta": {
+    "api_class": "YelpAPI",
+    "source_file": "yelp.py",
+    "description": "Two cafes - Yelp with CORRECT ratings (not swapped)",
+    "random_seed": 7890
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "yelp_bean_counter": {
+      "business_id": "yelp_bean_counter",
+      "name": "Bean Counter Cafe",
+      "category": "cafe",
+      "address": "2340 Polk St, San Francisco, CA 94109",
+      "rating": 4.6,
+      "review_count": 2,
+      "price_level": "$$",
+      "opening_hours": "Mon-Fri 06:00-18:00, Sat-Sun 07:00-17:00",
+      "phone": "+1-415-555-1678",
+      "website": "https://beancountercafe-sf.example.com"
+    },
+    "yelp_daily_grind": {
+      "business_id": "yelp_daily_grind",
+      "name": "The Daily Grind",
+      "category": "cafe",
+      "address": "1456 Grant Ave, San Francisco, CA 94133",
+      "rating": 3.8,
+      "review_count": 2,
+      "price_level": "$",
+      "opening_hours": "Mon-Sun 05:30-19:00",
+      "phone": "+1-415-555-1789",
+      "website": "https://thedailygrind-sf.example.com"
+    }
+  },
+  "reviews": {
+    "rev_ybc_cafe_001": {
+      "review_id": "rev_ybc_cafe_001",
+      "business_id": "yelp_bean_counter",
+      "author": {
+        "name": "Victoria Lee",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "The specialty lattes are exceptional. The lavender honey latte is my go-to. Fresh pastries daily. Cozy atmosphere and friendly baristas.",
+      "photos": ["specialty_latte.jpg"],
+      "created_at": "2026-03-15T08:30:00Z",
+      "helpful_count": 4
+    },
+    "rev_ybc_cafe_002": {
+      "review_id": "rev_ybc_cafe_002",
+      "business_id": "yelp_bean_counter",
+      "author": {
+        "name": "Jason Park",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Excellent ethically sourced coffee roasted in small batches. Great for remote work. A cut above the competition on Polk Street.",
+      "photos": [],
+      "created_at": "2026-03-17T09:00:00Z",
+      "helpful_count": 2
+    },
+    "rev_ydg_001": {
+      "review_id": "rev_ydg_001",
+      "business_id": "yelp_daily_grind",
+      "author": {
+        "name": "Karen Wilson",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Opens super early which is great. Solid drip coffee and decent breakfast sandwiches. Nothing fancy but reliably good. Fair prices.",
+      "photos": [],
+      "created_at": "2026-03-14T06:00:00Z",
+      "helpful_count": 2
+    },
+    "rev_ydg_002": {
+      "review_id": "rev_ydg_002",
+      "business_id": "yelp_daily_grind",
+      "author": {
+        "name": "Tom Rivera",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Good basic coffee shop. The morning crew is friendly and efficient. Good value for your dollar. My weekday caffeine stop.",
+      "photos": [],
+      "created_at": "2026-03-16T07:30:00Z",
+      "helpful_count": 1
+    }
+  },
+  "saved_places": {}
+}

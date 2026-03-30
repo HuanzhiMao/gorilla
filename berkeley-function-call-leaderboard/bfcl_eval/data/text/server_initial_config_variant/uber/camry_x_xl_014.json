@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "api_class": "UberAPI",
+    "source_file": "uber.py",
+    "description": "Morgan Lee with Toyota Camry driver, UberX and UberXL ride types for scenario 014"
+  },
+  "random_seed": 8003,
+  "profile": {
+    "name": "Morgan Lee",
+    "email": "morgan@example.com",
+    "phone": "+1-415-555-0114",
+    "saved_places": [],
+    "payment_method": [
+      {
+        "method_id": "PMT-014",
+        "type": "credit_card",
+        "last4": "1111"
+      }
+    ]
+  },
+  "rides": {},
+  "drivers": {
+    "DRV-014": {
+      "driver_id": "DRV-014",
+      "name": "David Okafor",
+      "rating": 4.95,
+      "vehicle": {
+        "make": "Toyota",
+        "model": "Camry",
+        "year": 2022,
+        "color": "Silver",
+        "license_plate": "7ABC123"
+      },
+      "availability": "available"
+    }
+  },
+  "ride_types": {
+    "uber_x": {
+      "ride_type_id": "uber_x",
+      "name": "UberX",
+      "base_fare": 2.5,
+      "capacity": 4,
+      "available": true
+    },
+    "uber_xl": {
+      "ride_type_id": "uber_xl",
+      "name": "UberXL",
+      "base_fare": 4.0,
+      "capacity": 6,
+      "available": true
+    }
+  },
+  "offers": {}
+}

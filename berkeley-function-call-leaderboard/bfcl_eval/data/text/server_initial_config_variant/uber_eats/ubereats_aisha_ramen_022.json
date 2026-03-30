@@ -1,0 +1,68 @@
+{
+  "_meta": {
+    "api_class": "UberEatsOrderAPI",
+    "source_file": "ubereats.py",
+    "description": "Aisha Patel in LA with Ramen House restaurant and Tonkotsu Ramen menu item for scenario 022"
+  },
+  "random_seed": 5678,
+  "profile": {
+    "name": "Aisha Patel",
+    "email": "aisha@example.com",
+    "phone": "+1-213-555-0178",
+    "address": [
+      {
+        "address_id": "addr_1",
+        "street": "421 W 6th St, Apt 8B",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90014",
+        "is_default": true
+      }
+    ],
+    "payment_method": [
+      {
+        "method_id": "pm_1",
+        "type": "visa",
+        "last4": "3291",
+        "expiration_date": "08/27",
+        "name": "Aisha Patel",
+        "is_default": true
+      }
+    ],
+    "promo": [],
+    "uber_one": false
+  },
+  "orders": {},
+  "restaurants": {
+    "REST-RAMEN-001": {
+      "restaurant_id": "REST-RAMEN-001",
+      "name": "Ramen House",
+      "category": "Ramen",
+      "rating": 4.8,
+      "address": "500 Test St, Los Angeles, CA 90014",
+      "is_open": true,
+      "delivery_fee": 0.0,
+      "menu": [
+        {
+          "item_id": "ITEM-RAMEN-001",
+          "name": "Tonkotsu Ramen",
+          "price": 16.5,
+          "option": []
+        }
+      ]
+    }
+  },
+  "menu": {
+    "ITEM-RAMEN-001": {
+      "item_id": "ITEM-RAMEN-001",
+      "restaurant_id": "REST-RAMEN-001",
+      "name": "Tonkotsu Ramen",
+      "category": "Ramen",
+      "options": [],
+      "price": 16.5,
+      "available": true
+    }
+  },
+  "offers": {},
+  "delivery_tracking": {}
+}

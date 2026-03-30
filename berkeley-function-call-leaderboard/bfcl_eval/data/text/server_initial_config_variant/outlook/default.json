@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "api_class": "OutlookAPI",
+    "source_file": "outlook.py",
+    "description": "Basic Outlook state for Sarah Chen with no emails for all scenarios"
+  },
+  "random_seed": 2001,
+  "profile": {
+    "sarah": {
+      "name": "Sarah Chen",
+      "email_address": "sarah.chen@company.com"
+    }
+  },
+  "emails": {},
+  "drafts": {},
+  "contacts": {},
+  "folders": {
+    "inbox": [],
+    "sent": [],
+    "junk": [],
+    "deleted": [],
+    "drafts": [],
+    "archive": []
+  }
+}

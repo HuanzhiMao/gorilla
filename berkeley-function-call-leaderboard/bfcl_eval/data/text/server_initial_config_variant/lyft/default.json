@@ -1,0 +1,547 @@
+{
+  "_meta": {
+    "api_class": "LyftAPI",
+    "source_file": "lyft.py",
+    "description": "Initial state for the Lyft ride-hailing API",
+    "random_seed": 8004
+  },
+  "random_seed": 8004,
+  "profile": {
+    "name": "Maria Gonzalez",
+    "email": "maria.gonzalez@email.com",
+    "phone": "+13125550201",
+    "rating": 4.88,
+    "saved_places": [
+      {
+        "name": "Home",
+        "address": "1455 N Dearborn St, Chicago, IL 60610"
+      },
+      {
+        "name": "Work",
+        "address": "233 S Wacker Dr, Chicago, IL 60606"
+      },
+      {
+        "name": "Parents",
+        "address": "2150 W Division St, Chicago, IL 60622"
+      }
+    ],
+    "payment_methods": [
+      {
+        "method_id": "LPAY-80040",
+        "type": "credit",
+        "last4": "3318",
+        "is_default": true
+      },
+      {
+        "method_id": "LPAY-80041",
+        "type": "debit",
+        "last4": "5602",
+        "is_default": false
+      }
+    ],
+    "promo_codes": [],
+    "round_up_enabled": true
+  },
+  "rides": {
+    "LRIDE-80040": {
+      "ride_id": "LRIDE-80040",
+      "ride_type": "Standard",
+      "pickup": {
+        "address": "1455 N Dearborn St, Chicago, IL 60610",
+        "lat": 41.9082,
+        "lng": -87.6298
+      },
+      "dropoff": {
+        "address": "233 S Wacker Dr, Chicago, IL 60606",
+        "lat": 41.8789,
+        "lng": -87.6359
+      },
+      "status": "completed",
+      "driver_id": "LDRV-80040",
+      "fare": 18.50,
+      "surge_multiplier": 1.0,
+      "scheduled_time": null,
+      "rating": 5,
+      "tip": 4.00,
+      "created_at": "2026-03-10T08:15:00-06:00",
+      "stops": []
+    },
+    "LRIDE-80041": {
+      "ride_id": "LRIDE-80041",
+      "ride_type": "Lux",
+      "pickup": {
+        "address": "Navy Pier, 600 E Grand Ave, Chicago, IL 60611",
+        "lat": 41.8919,
+        "lng": -87.6051
+      },
+      "dropoff": {
+        "address": "O'Hare International Airport, Chicago, IL 60666",
+        "lat": 41.9742,
+        "lng": -87.9073
+      },
+      "status": "completed",
+      "driver_id": "LDRV-80041",
+      "fare": 62.30,
+      "surge_multiplier": 1.5,
+      "scheduled_time": null,
+      "rating": 4,
+      "tip": 10.00,
+      "created_at": "2026-03-05T16:30:00-06:00",
+      "stops": []
+    },
+    "LRIDE-80042": {
+      "ride_id": "LRIDE-80042",
+      "ride_type": "XL",
+      "pickup": {
+        "address": "Wrigley Field, 1060 W Addison St, Chicago, IL 60613",
+        "lat": 41.9484,
+        "lng": -87.6553
+      },
+      "dropoff": {
+        "address": "Millennium Park, 201 E Randolph St, Chicago, IL 60602",
+        "lat": 41.8826,
+        "lng": -87.6226
+      },
+      "status": "completed",
+      "driver_id": "LDRV-80042",
+      "fare": 26.80,
+      "surge_multiplier": 1.25,
+      "scheduled_time": null,
+      "rating": 5,
+      "tip": 5.00,
+      "created_at": "2026-02-28T22:15:00-06:00",
+      "stops": [
+        {
+          "address": "2700 N Halsted St, Chicago, IL 60614",
+          "lat": 41.9303,
+          "lng": -87.6489
+        }
+      ]
+    },
+    "LRIDE-80043": {
+      "ride_id": "LRIDE-80043",
+      "ride_type": "Shared",
+      "pickup": {
+        "address": "Union Station, 225 S Canal St, Chicago, IL 60606",
+        "lat": 41.8786,
+        "lng": -87.6400
+      },
+      "dropoff": {
+        "address": "Hyde Park, 5700 S Lake Shore Dr, Chicago, IL 60637",
+        "lat": 41.7943,
+        "lng": -87.5802
+      },
+      "status": "completed",
+      "driver_id": "LDRV-80043",
+      "fare": 14.20,
+      "surge_multiplier": 1.0,
+      "scheduled_time": null,
+      "rating": 3,
+      "tip": 0,
+      "created_at": "2026-02-25T13:45:00-06:00",
+      "stops": []
+    },
+    "LRIDE-80044": {
+      "ride_id": "LRIDE-80044",
+      "ride_type": "Standard",
+      "pickup": {
+        "address": "Magnificent Mile, 625 N Michigan Ave, Chicago, IL 60611",
+        "lat": 41.8932,
+        "lng": -87.6244
+      },
+      "dropoff": {
+        "address": "Lincoln Park Zoo, 2001 N Clark St, Chicago, IL 60614",
+        "lat": 41.9211,
+        "lng": -87.6340
+      },
+      "status": "in_progress",
+      "driver_id": "LDRV-80044",
+      "fare": 12.60,
+      "surge_multiplier": 1.0,
+      "scheduled_time": null,
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-03-18T09:30:00-06:00",
+      "stops": []
+    },
+    "LRIDE-80045": {
+      "ride_id": "LRIDE-80045",
+      "ride_type": "Priority",
+      "pickup": {
+        "address": "2150 W Division St, Chicago, IL 60622",
+        "lat": 41.9032,
+        "lng": -87.6802
+      },
+      "dropoff": {
+        "address": "Art Institute of Chicago, 111 S Michigan Ave, Chicago, IL 60603",
+        "lat": 41.8796,
+        "lng": -87.6237
+      },
+      "status": "scheduled",
+      "driver_id": null,
+      "fare": 22.40,
+      "surge_multiplier": 1.0,
+      "scheduled_time": "2026-03-20T09:00:00-06:00",
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-03-17T21:00:00-06:00",
+      "stops": []
+    },
+    "LRIDE-80046": {
+      "ride_id": "LRIDE-80046",
+      "ride_type": "XL",
+      "pickup": {
+        "address": "Midway International Airport, Chicago, IL 60638",
+        "lat": 41.7868,
+        "lng": -87.7522
+      },
+      "dropoff": {
+        "address": "1455 N Dearborn St, Chicago, IL 60610",
+        "lat": 41.9082,
+        "lng": -87.6298
+      },
+      "status": "cancelled",
+      "driver_id": "LDRV-80045",
+      "fare": 32.00,
+      "surge_multiplier": 1.75,
+      "scheduled_time": null,
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-03-01T18:20:00-06:00",
+      "stops": []
+    },
+    "LRIDE-80047": {
+      "ride_id": "LRIDE-80047",
+      "ride_type": "Lux",
+      "pickup": {
+        "address": "Willis Tower, 233 S Wacker Dr, Chicago, IL 60606",
+        "lat": 41.8789,
+        "lng": -87.6359
+      },
+      "dropoff": {
+        "address": "Soldier Field, 1410 Special Olympics Dr, Chicago, IL 60605",
+        "lat": 41.8623,
+        "lng": -87.6167
+      },
+      "status": "matched",
+      "driver_id": "LDRV-80041",
+      "fare": 28.90,
+      "surge_multiplier": 1.0,
+      "scheduled_time": null,
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-03-18T08:45:00-06:00",
+      "stops": []
+    },
+    "LRIDE-80048": {
+      "ride_id": "LRIDE-80048",
+      "ride_type": "Standard",
+      "pickup": {
+        "address": "Chinatown, 2169 S China Pl, Chicago, IL 60616",
+        "lat": 41.8530,
+        "lng": -87.6316
+      },
+      "dropoff": {
+        "address": "Wicker Park, 1425 N Damen Ave, Chicago, IL 60622",
+        "lat": 41.9084,
+        "lng": -87.6772
+      },
+      "status": "completed",
+      "driver_id": "LDRV-80046",
+      "fare": 19.70,
+      "surge_multiplier": 1.3,
+      "scheduled_time": null,
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-02-20T11:00:00-06:00",
+      "stops": []
+    },
+    "LRIDE-80049": {
+      "ride_id": "LRIDE-80049",
+      "ride_type": "Shared",
+      "pickup": {
+        "address": "Museum of Science and Industry, 5700 S DuSable Lk Shore Dr, Chicago, IL 60637",
+        "lat": 41.7906,
+        "lng": -87.5831
+      },
+      "dropoff": {
+        "address": "Bucktown, 2000 N Milwaukee Ave, Chicago, IL 60647",
+        "lat": 41.9178,
+        "lng": -87.6790
+      },
+      "status": "completed",
+      "driver_id": "LDRV-80047",
+      "fare": 16.40,
+      "surge_multiplier": 1.0,
+      "scheduled_time": null,
+      "rating": 4,
+      "tip": 3.00,
+      "created_at": "2026-02-15T14:30:00-06:00",
+      "stops": []
+    },
+    "LRIDE-80050": {
+      "ride_id": "LRIDE-80050",
+      "ride_type": "Priority",
+      "pickup": {
+        "address": "River North, 300 W Hubbard St, Chicago, IL 60654",
+        "lat": 41.8899,
+        "lng": -87.6371
+      },
+      "dropoff": {
+        "address": "United Center, 1901 W Madison St, Chicago, IL 60612",
+        "lat": 41.8807,
+        "lng": -87.6742
+      },
+      "status": "completed",
+      "driver_id": "LDRV-80040",
+      "fare": 17.80,
+      "surge_multiplier": 1.5,
+      "scheduled_time": null,
+      "rating": 5,
+      "tip": 4.00,
+      "created_at": "2026-02-12T19:00:00-06:00",
+      "stops": []
+    },
+    "LRIDE-80051": {
+      "ride_id": "LRIDE-80051",
+      "ride_type": "Standard",
+      "pickup": {
+        "address": "Logan Square, 2500 N Milwaukee Ave, Chicago, IL 60647",
+        "lat": 41.9274,
+        "lng": -87.6977
+      },
+      "dropoff": {
+        "address": "West Loop, 800 W Randolph St, Chicago, IL 60607",
+        "lat": 41.8842,
+        "lng": -87.6474
+      },
+      "status": "scheduled",
+      "driver_id": null,
+      "fare": 15.20,
+      "surge_multiplier": 1.0,
+      "scheduled_time": "2026-03-19T08:00:00-06:00",
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-03-17T23:30:00-06:00",
+      "stops": []
+    }
+  },
+  "drivers": {
+    "LDRV-80040": {
+      "driver_id": "LDRV-80040",
+      "name": "Marcus Johnson",
+      "rating": 4.95,
+      "vehicle": {
+        "make": "Honda",
+        "model": "Accord",
+        "year": 2023,
+        "color": "Silver",
+        "license_plate": "IL-JKL234"
+      },
+      "phone": "+13125550301",
+      "availability": "available"
+    },
+    "LDRV-80041": {
+      "driver_id": "LDRV-80041",
+      "name": "Sofia Reyes",
+      "rating": 4.89,
+      "vehicle": {
+        "make": "Cadillac",
+        "model": "Escalade",
+        "year": 2024,
+        "color": "Black",
+        "license_plate": "IL-MNO567"
+      },
+      "phone": "+13125550302",
+      "availability": "on_trip"
+    },
+    "LDRV-80042": {
+      "driver_id": "LDRV-80042",
+      "name": "Tyler Washington",
+      "rating": 4.99,
+      "vehicle": {
+        "make": "BMW",
+        "model": "7 Series",
+        "year": 2024,
+        "color": "Black",
+        "license_plate": "IL-PQR890"
+      },
+      "phone": "+13125550303",
+      "availability": "available"
+    },
+    "LDRV-80043": {
+      "driver_id": "LDRV-80043",
+      "name": "Nina Kowalski",
+      "rating": 4.82,
+      "vehicle": {
+        "make": "Toyota",
+        "model": "Highlander",
+        "year": 2023,
+        "color": "White",
+        "license_plate": "IL-STU123"
+      },
+      "phone": "+13125550304",
+      "availability": "available"
+    },
+    "LDRV-80044": {
+      "driver_id": "LDRV-80044",
+      "name": "Derek Thompson",
+      "rating": 4.91,
+      "vehicle": {
+        "make": "Hyundai",
+        "model": "Sonata",
+        "year": 2024,
+        "color": "Blue",
+        "license_plate": "IL-VWX456"
+      },
+      "phone": "+13125550305",
+      "availability": "on_trip"
+    },
+    "LDRV-80045": {
+      "driver_id": "LDRV-80045",
+      "name": "Aisha Rahman",
+      "rating": 4.77,
+      "vehicle": {
+        "make": "Chevrolet",
+        "model": "Tahoe",
+        "year": 2022,
+        "color": "Gray",
+        "license_plate": "IL-YZA789"
+      },
+      "phone": "+13125550306",
+      "availability": "available"
+    },
+    "LDRV-80046": {
+      "driver_id": "LDRV-80046",
+      "name": "Patrick O'Brien",
+      "rating": 4.93,
+      "vehicle": {
+        "make": "Tesla",
+        "model": "Model Y",
+        "year": 2024,
+        "color": "Red",
+        "license_plate": "IL-BCD012"
+      },
+      "phone": "+13125550307",
+      "availability": "available"
+    },
+    "LDRV-80047": {
+      "driver_id": "LDRV-80047",
+      "name": "Carmen Diaz",
+      "rating": 4.86,
+      "vehicle": {
+        "make": "Ford",
+        "model": "Escape",
+        "year": 2023,
+        "color": "Green",
+        "license_plate": "IL-EFG345"
+      },
+      "phone": "+13125550308",
+      "availability": "available"
+    }
+  },
+  "ride_types": {
+    "Standard": {
+      "name": "Standard",
+      "base_fare": 4.50,
+      "per_mile": 1.15,
+      "per_minute": 0.22,
+      "minimum_fare": 7.50,
+      "description": "Affordable everyday rides",
+      "capacity": 4,
+      "available": true
+    },
+    "XL": {
+      "name": "XL",
+      "base_fare": 7.00,
+      "per_mile": 2.00,
+      "per_minute": 0.35,
+      "minimum_fare": 11.00,
+      "description": "Rides for groups up to 6",
+      "capacity": 6,
+      "available": true
+    },
+    "Lux": {
+      "name": "Lux",
+      "base_fare": 12.00,
+      "per_mile": 3.25,
+      "per_minute": 0.50,
+      "minimum_fare": 20.00,
+      "description": "Premium rides in luxury vehicles",
+      "capacity": 4,
+      "available": true
+    },
+    "Shared": {
+      "name": "Shared",
+      "base_fare": 3.00,
+      "per_mile": 0.90,
+      "per_minute": 0.18,
+      "minimum_fare": 5.50,
+      "description": "Share your ride and save",
+      "capacity": 2,
+      "available": true
+    },
+    "Priority": {
+      "name": "Priority",
+      "base_fare": 6.00,
+      "per_mile": 1.50,
+      "per_minute": 0.30,
+      "minimum_fare": 10.00,
+      "description": "Faster pickup, premium experience",
+      "capacity": 4,
+      "available": true
+    }
+  },
+  "offers": {
+    "LOFFER-80040": {
+      "offer_id": "LOFFER-80040",
+      "code": "CHI20RIDE",
+      "discount_type": "percent",
+      "discount_value": 20,
+      "min_fare": 12.00,
+      "max_discount": 8.00,
+      "valid_until": "2026-04-30T23:59:59-06:00",
+      "used": false
+    },
+    "LOFFER-80041": {
+      "offer_id": "LOFFER-80041",
+      "code": "LYFT10OFF",
+      "discount_type": "flat",
+      "discount_value": 10.00,
+      "min_fare": 15.00,
+      "max_discount": null,
+      "valid_until": "2026-05-15T23:59:59-06:00",
+      "used": false
+    },
+    "LOFFER-80042": {
+      "offer_id": "LOFFER-80042",
+      "code": "SPRING25",
+      "discount_type": "percent",
+      "discount_value": 25,
+      "min_fare": 20.00,
+      "max_discount": 12.00,
+      "valid_until": "2026-04-15T23:59:59-06:00",
+      "used": false
+    },
+    "LOFFER-80043": {
+      "offer_id": "LOFFER-80043",
+      "code": "LUXFREE",
+      "discount_type": "flat",
+      "discount_value": 15.00,
+      "min_fare": 25.00,
+      "max_discount": null,
+      "valid_until": "2026-03-31T23:59:59-06:00",
+      "used": true
+    },
+    "LOFFER-80044": {
+      "offer_id": "LOFFER-80044",
+      "code": "NEWUSER7",
+      "discount_type": "flat",
+      "discount_value": 7.00,
+      "min_fare": null,
+      "max_discount": null,
+      "valid_until": "2026-06-01T23:59:59-06:00",
+      "used": false
+    }
+  }
+}

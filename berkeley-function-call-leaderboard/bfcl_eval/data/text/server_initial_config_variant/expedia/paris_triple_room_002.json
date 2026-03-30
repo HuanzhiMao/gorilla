@@ -1,0 +1,62 @@
+{
+  "_meta": {
+    "api_class": "ExpediaAPI",
+    "source_file": "expedia.py",
+    "description": "Le Grand Hotel Paris Expedia listing with Triple Room for scenario 002"
+  },
+  "random_seed": 8001,
+  "profile": {
+    "name": "Ava Carter",
+    "email": "ava@example.com",
+    "payment_method": [
+      {
+        "method_id": "PMT-002",
+        "type": "credit_card",
+        "last4": "4242"
+      }
+    ]
+  },
+  "properties": {
+    "PROP-002E": {
+      "property_id": "PROP-002E",
+      "name": "Le Grand Hotel Paris",
+      "location": {
+        "city": "Paris",
+        "country": "France",
+        "address": "1 Rue de la Paix, Paris"
+      },
+      "star_rating": 4,
+      "review_score": 8.7,
+      "amenities": [
+        "wifi",
+        "breakfast",
+        "air_conditioning"
+      ],
+      "room_types": [
+        "RT-002E"
+      ],
+      "policies": {
+        "check_in_time": "15:00",
+        "check_out_time": "11:00",
+        "cancellation_policy_summary": "Free cancellation up to 24 hours before check-in."
+      }
+    }
+  },
+  "room_types": {
+    "RT-002E": {
+      "room_type_id": "RT-002E",
+      "property_id": "PROP-002E",
+      "name": "Triple Room",
+      "max_guests": 3,
+      "bed_type": "triple",
+      "amenities": [
+        "wifi",
+        "air_conditioning"
+      ],
+      "base_price_per_night": 380.0,
+      "taxes_and_fees": 57.0,
+      "refundable": true
+    }
+  },
+  "bookings": {}
+}

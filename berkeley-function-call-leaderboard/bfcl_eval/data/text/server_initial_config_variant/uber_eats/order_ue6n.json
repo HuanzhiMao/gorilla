@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "api_class": "UberEatsOrderAPI",
+    "source_file": "ubereats.py",
+    "description": "Sarah Chen UberEats order ORD_ue6n from Chipotle Mexican Grill, total $72.00, delivered"
+  },
+  "random_seed": 6001,
+  "profile": {
+    "name": "Sarah Chen",
+    "email": "sarah.chen@company.com",
+    "phone": "+1-555-555-0100",
+    "address": [
+      {
+        "address_id": "addr_1",
+        "street": "123 Main St",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94102",
+        "is_default": true
+      }
+    ],
+    "payment_method": [
+      {
+        "method_id": "pm_1",
+        "type": "visa",
+        "last4": "1234",
+        "expiration_date": "12/27",
+        "name": "Sarah Chen",
+        "is_default": true
+      }
+    ],
+    "promo": [],
+    "uber_one": false
+  },
+  "orders": {
+    "ORD_ue6n": {
+      "order_id": "ORD_ue6n",
+      "restaurant_id": "REST-CHIPOTLE-001",
+      "items": [
+        {"item_id": "ITEM-CH-001", "name": "Burrito Bowl - Chicken", "quantity": 1, "price": 13.50},
+        {"item_id": "ITEM-CH-002", "name": "Burrito Bowl - Steak", "quantity": 1, "price": 14.50},
+        {"item_id": "ITEM-CH-003", "name": "Burrito - Carnitas", "quantity": 1, "price": 13.00},
+        {"item_id": "ITEM-CH-004", "name": "Quesabirria Tacos (3)", "quantity": 1, "price": 15.50},
+        {"item_id": "ITEM-CH-005", "name": "Chips & Guacamole", "quantity": 2, "price": 5.50}
+      ],
+      "subtotal": 63.00,
+      "delivery_fee": 4.00,
+      "tax": 5.00,
+      "tip": 0.00,
+      "total": 72.00,
+      "status": "delivered",
+      "estimated_delivery": "2026-03-07T12:47:00Z",
+      "placed_at": "2026-03-07T12:05:00Z",
+      "delivered_at": "2026-03-07T12:47:00Z"
+    }
+  },
+  "restaurants": {
+    "REST-CHIPOTLE-001": {
+      "restaurant_id": "REST-CHIPOTLE-001",
+      "name": "Chipotle Mexican Grill",
+      "category": "Mexican",
+      "rating": 4.5,
+      "address": "456 Market St, San Francisco, CA 94105",
+      "is_open": true,
+      "delivery_fee": 4.00,
+      "menu": [
+        {"item_id": "ITEM-CH-001", "name": "Burrito Bowl - Chicken", "price": 13.50, "option": []},
+        {"item_id": "ITEM-CH-002", "name": "Burrito Bowl - Steak", "price": 14.50, "option": []},
+        {"item_id": "ITEM-CH-003", "name": "Burrito - Carnitas", "price": 13.00, "option": []},
+        {"item_id": "ITEM-CH-004", "name": "Quesabirria Tacos (3)", "price": 15.50, "option": []},
+        {"item_id": "ITEM-CH-005", "name": "Chips & Guacamole", "price": 5.50, "option": []}
+      ]
+    }
+  },
+  "offers": {},
+  "delivery_tracking": {}
+}

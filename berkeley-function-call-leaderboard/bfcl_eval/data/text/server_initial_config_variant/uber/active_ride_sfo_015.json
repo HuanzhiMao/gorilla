@@ -1,0 +1,73 @@
+{
+  "_meta": {
+    "api_class": "UberAPI",
+    "source_file": "uber.py",
+    "description": "Morgan Lee with active matched ride to SFO airport, driver on trip for scenario 015"
+  },
+  "random_seed": 8003,
+  "profile": {
+    "name": "Morgan Lee",
+    "email": "morgan@example.com",
+    "phone": "+1-415-555-0115",
+    "saved_places": [],
+    "payment_method": [
+      {
+        "method_id": "PMT-015",
+        "type": "credit_card",
+        "last4": "1111"
+      }
+    ]
+  },
+  "rides": {
+    "RIDE-015": {
+      "ride_id": "RIDE-015",
+      "ride_type": "uber_x",
+      "pickup": {"lat": 37.7749, "lng": -122.4194},
+      "dropoff": {"lat": 37.6213, "lng": -122.379},
+      "stops": [],
+      "status": "matched",
+      "fare_total": 28.0,
+      "surge_multiplier": 1.0,
+      "driver_id": "DRV-015",
+      "eta_pickup_min": 8,
+      "eta_dropoff_min": 25,
+      "scheduled_time": null,
+      "tip_amount": 0,
+      "rating": null,
+      "estimated_arrival": "2026-03-19T10:05:00Z",
+      "created_at": "2026-03-19T10:10:00Z"
+    }
+  },
+  "drivers": {
+    "DRV-015": {
+      "driver_id": "DRV-015",
+      "name": "David Okafor",
+      "rating": 4.95,
+      "vehicle": {
+        "make": "Toyota",
+        "model": "Camry",
+        "year": 2022,
+        "color": "Silver",
+        "license_plate": "7ABC123"
+      },
+      "availability": "on_trip"
+    }
+  },
+  "ride_types": {
+    "uber_x": {
+      "ride_type_id": "uber_x",
+      "name": "UberX",
+      "base_fare": 2.5,
+      "capacity": 4,
+      "available": true
+    },
+    "uber_xl": {
+      "ride_type_id": "uber_xl",
+      "name": "UberXL",
+      "base_fare": 4.0,
+      "capacity": 6,
+      "available": true
+    }
+  },
+  "offers": {}
+}

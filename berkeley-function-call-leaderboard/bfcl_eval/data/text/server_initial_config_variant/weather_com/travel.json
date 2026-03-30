@@ -1,0 +1,2920 @@
+{
+  "_meta": {
+    "api_class": "WeatherComAPI",
+    "source_file": "weather_com.py",
+    "description": "Initial state for Weather.com API - International/travel variant (S3, S10, S11, S12, S13, S16)"
+  },
+  "random_seed": 42,
+  "profile": {
+    "default_location": "New York, NY",
+    "saved_locations": [
+      {
+        "label": "Home",
+        "location": "New York, NY"
+      },
+      {
+        "label": "Office",
+        "location": "Chicago, IL"
+      },
+      {
+        "label": "Vacation",
+        "location": "Miami, FL"
+      }
+    ],
+    "unit": {
+      "temperature": "fahrenheit",
+      "wind": "mph",
+      "precipitation": "inches",
+      "distance": "miles"
+    },
+    "timezone": "America/New_York"
+  },
+  "current_weather": {
+    "Joshua Tree, CA": {
+      "location": "Joshua Tree, CA",
+      "observed_at": "2026-03-20T09:00:00-07:00",
+      "condition": "Sunny",
+      "temperature": 72,
+      "feels_like": 72,
+      "humidity": 12,
+      "wind": {
+        "speed": 4,
+        "direction": "NE"
+      },
+      "precipitation": 0.0,
+      "visibility": 10,
+      "uv_index": 9
+    },
+    "Maui, HI": {
+      "location": "Maui, HI",
+      "observed_at": "2026-03-20T06:00:00-10:00",
+      "condition": "Mostly Sunny",
+      "temperature": 76,
+      "feels_like": 80,
+      "humidity": 72,
+      "wind": {
+        "speed": 12,
+        "direction": "NE"
+      },
+      "precipitation": 0.0,
+      "visibility": 10,
+      "uv_index": 8
+    },
+    "Bali, Indonesia": {
+      "location": "Bali, Indonesia",
+      "observed_at": "2026-03-21T00:00:00+08:00",
+      "condition": "Partly Cloudy",
+      "temperature": 82,
+      "feels_like": 90,
+      "humidity": 82,
+      "wind": {
+        "speed": 8,
+        "direction": "W"
+      },
+      "precipitation": 0.0,
+      "visibility": 8,
+      "uv_index": 0
+    },
+    "Tokyo, Japan": {
+      "location": "Tokyo, Japan",
+      "observed_at": "2026-03-21T01:00:00+09:00",
+      "condition": "Clear",
+      "temperature": 52,
+      "feels_like": 50,
+      "humidity": 55,
+      "wind": {
+        "speed": 5,
+        "direction": "N"
+      },
+      "precipitation": 0.0,
+      "visibility": 10,
+      "uv_index": 0
+    },
+    "Bangkok, Thailand": {
+      "location": "Bangkok, Thailand",
+      "observed_at": "2026-03-20T23:00:00+07:00",
+      "condition": "Warm",
+      "temperature": 88,
+      "feels_like": 97,
+      "humidity": 78,
+      "wind": {
+        "speed": 5,
+        "direction": "S"
+      },
+      "precipitation": 0.0,
+      "visibility": 7,
+      "uv_index": 0
+    },
+    "Sydney, Australia": {
+      "location": "Sydney, Australia",
+      "observed_at": "2026-03-21T03:00:00+11:00",
+      "condition": "Partly Cloudy",
+      "temperature": 72,
+      "feels_like": 74,
+      "humidity": 65,
+      "wind": {
+        "speed": 10,
+        "direction": "NE"
+      },
+      "precipitation": 0.0,
+      "visibility": 10,
+      "uv_index": 0
+    },
+    "Reykjavik, Iceland": {
+      "location": "Reykjavik, Iceland",
+      "observed_at": "2026-03-20T16:00:00+00:00",
+      "condition": "Snow",
+      "temperature": 30,
+      "feels_like": 18,
+      "humidity": 80,
+      "wind": {
+        "speed": 22,
+        "direction": "N"
+      },
+      "precipitation": 0.3,
+      "visibility": 3,
+      "uv_index": 2
+    },
+    "New York, NY": {
+      "location": "New York, NY",
+      "observed_at": "2026-03-20T12:00:00-04:00",
+      "condition": "Mostly Sunny",
+      "temperature": 42,
+      "feels_like": 35,
+      "humidity": 48,
+      "wind": {
+        "speed": 12,
+        "direction": "NW"
+      },
+      "precipitation": 0.0,
+      "visibility": 10,
+      "uv_index": 5
+    },
+    "Chicago, IL": {
+      "location": "Chicago, IL",
+      "observed_at": "2026-03-20T11:00:00-05:00",
+      "condition": "Partly Cloudy",
+      "temperature": 45,
+      "feels_like": 38,
+      "humidity": 50,
+      "wind": {
+        "speed": 14,
+        "direction": "W"
+      },
+      "precipitation": 0.0,
+      "visibility": 10,
+      "uv_index": 4
+    },
+    "Miami, FL": {
+      "location": "Miami, FL",
+      "observed_at": "2026-03-20T12:00:00-04:00",
+      "condition": "Partly Cloudy",
+      "temperature": 83,
+      "feels_like": 88,
+      "humidity": 75,
+      "wind": {
+        "speed": 10,
+        "direction": "SE"
+      },
+      "precipitation": 0.0,
+      "visibility": 10,
+      "uv_index": 9
+    },
+    "Los Angeles, CA": {
+      "location": "Los Angeles, CA",
+      "observed_at": "2026-03-20T09:00:00-07:00",
+      "condition": "Sunny",
+      "temperature": 72,
+      "feels_like": 72,
+      "humidity": 35,
+      "wind": {
+        "speed": 6,
+        "direction": "SW"
+      },
+      "precipitation": 0.0,
+      "visibility": 10,
+      "uv_index": 7
+    },
+    "Seattle, WA": {
+      "location": "Seattle, WA",
+      "observed_at": "2026-03-20T09:00:00-07:00",
+      "condition": "Rain",
+      "temperature": 48,
+      "feels_like": 43,
+      "humidity": 88,
+      "wind": {
+        "speed": 12,
+        "direction": "S"
+      },
+      "precipitation": 0.35,
+      "visibility": 5,
+      "uv_index": 2
+    }
+  },
+  "hourly_forecast": {
+    "Joshua Tree, CA": {
+      "location": "Joshua Tree, CA",
+      "hours": [
+        {
+          "time": "2026-03-20T09:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 72,
+          "feels_like": 72,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 4,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-20T10:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 75,
+          "feels_like": 75,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-20T11:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 79,
+          "feels_like": 79,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-20T12:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 82,
+          "feels_like": 82,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-20T13:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 84,
+          "feels_like": 84,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "SE"
+          }
+        },
+        {
+          "time": "2026-03-20T14:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 85,
+          "feels_like": 85,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "SE"
+          }
+        },
+        {
+          "time": "2026-03-20T15:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 84,
+          "feels_like": 84,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-20T16:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 82,
+          "feels_like": 82,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-20T17:00:00-07:00",
+          "condition": "Clear",
+          "temperature": 78,
+          "feels_like": 78,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 4,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-20T18:00:00-07:00",
+          "condition": "Clear",
+          "temperature": 73,
+          "feels_like": 73,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 3,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T19:00:00-07:00",
+          "condition": "Clear",
+          "temperature": 68,
+          "feels_like": 68,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 3,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T20:00:00-07:00",
+          "condition": "Clear",
+          "temperature": 64,
+          "feels_like": 64,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 2,
+            "direction": "N"
+          }
+        }
+      ]
+    },
+    "Maui, HI": {
+      "location": "Maui, HI",
+      "hours": [
+        {
+          "time": "2026-03-20T06:00:00-10:00",
+          "condition": "Mostly Sunny",
+          "temperature": 76,
+          "feels_like": 80,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 12,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-20T07:00:00-10:00",
+          "condition": "Mostly Sunny",
+          "temperature": 77,
+          "feels_like": 81,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 13,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-20T08:00:00-10:00",
+          "condition": "Partly Cloudy",
+          "temperature": 78,
+          "feels_like": 82,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 14,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-20T09:00:00-10:00",
+          "condition": "Partly Cloudy",
+          "temperature": 80,
+          "feels_like": 85,
+          "precipitation_chance": 20,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 14,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-20T10:00:00-10:00",
+          "condition": "Partly Cloudy",
+          "temperature": 81,
+          "feels_like": 86,
+          "precipitation_chance": 20,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 15,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-20T11:00:00-10:00",
+          "condition": "Scattered Showers",
+          "temperature": 82,
+          "feels_like": 87,
+          "precipitation_chance": 35,
+          "precipitation_amount": 0.05,
+          "wind": {
+            "speed": 14,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-20T12:00:00-10:00",
+          "condition": "Scattered Showers",
+          "temperature": 81,
+          "feels_like": 86,
+          "precipitation_chance": 40,
+          "precipitation_amount": 0.08,
+          "wind": {
+            "speed": 13,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-20T13:00:00-10:00",
+          "condition": "Partly Cloudy",
+          "temperature": 80,
+          "feels_like": 85,
+          "precipitation_chance": 25,
+          "precipitation_amount": 0.02,
+          "wind": {
+            "speed": 12,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-20T14:00:00-10:00",
+          "condition": "Mostly Clear",
+          "temperature": 79,
+          "feels_like": 83,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 11,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-20T15:00:00-10:00",
+          "condition": "Mostly Clear",
+          "temperature": 78,
+          "feels_like": 82,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-20T16:00:00-10:00",
+          "condition": "Clear",
+          "temperature": 77,
+          "feels_like": 81,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 9,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-20T17:00:00-10:00",
+          "condition": "Clear",
+          "temperature": 76,
+          "feels_like": 80,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "NE"
+          }
+        }
+      ]
+    },
+    "Bali, Indonesia": {
+      "location": "Bali, Indonesia",
+      "hours": [
+        {
+          "time": "2026-03-21T00:00:00+08:00",
+          "condition": "Partly Cloudy",
+          "temperature": 82,
+          "feels_like": 90,
+          "precipitation_chance": 20,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T01:00:00+08:00",
+          "condition": "Mostly Clear",
+          "temperature": 80,
+          "feels_like": 87,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T02:00:00+08:00",
+          "condition": "Mostly Clear",
+          "temperature": 79,
+          "feels_like": 86,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T03:00:00+08:00",
+          "condition": "Clear",
+          "temperature": 78,
+          "feels_like": 84,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-21T04:00:00+08:00",
+          "condition": "Clear",
+          "temperature": 78,
+          "feels_like": 84,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 4,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-21T05:00:00+08:00",
+          "condition": "Clear",
+          "temperature": 77,
+          "feels_like": 83,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 4,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-21T06:00:00+08:00",
+          "condition": "Mostly Sunny",
+          "temperature": 79,
+          "feels_like": 85,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T07:00:00+08:00",
+          "condition": "Mostly Sunny",
+          "temperature": 81,
+          "feels_like": 88,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T08:00:00+08:00",
+          "condition": "Partly Cloudy",
+          "temperature": 83,
+          "feels_like": 91,
+          "precipitation_chance": 25,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T09:00:00+08:00",
+          "condition": "Partly Cloudy",
+          "temperature": 85,
+          "feels_like": 94,
+          "precipitation_chance": 30,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T10:00:00+08:00",
+          "condition": "Scattered Showers",
+          "temperature": 86,
+          "feels_like": 95,
+          "precipitation_chance": 45,
+          "precipitation_amount": 0.1,
+          "wind": {
+            "speed": 8,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-21T11:00:00+08:00",
+          "condition": "Thunderstorms",
+          "temperature": 84,
+          "feels_like": 93,
+          "precipitation_chance": 65,
+          "precipitation_amount": 0.3,
+          "wind": {
+            "speed": 10,
+            "direction": "NW"
+          }
+        }
+      ]
+    },
+    "Tokyo, Japan": {
+      "location": "Tokyo, Japan",
+      "hours": [
+        {
+          "time": "2026-03-21T01:00:00+09:00",
+          "condition": "Clear",
+          "temperature": 52,
+          "feels_like": 50,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "N"
+          }
+        },
+        {
+          "time": "2026-03-21T02:00:00+09:00",
+          "condition": "Clear",
+          "temperature": 51,
+          "feels_like": 49,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 4,
+            "direction": "N"
+          }
+        },
+        {
+          "time": "2026-03-21T03:00:00+09:00",
+          "condition": "Clear",
+          "temperature": 50,
+          "feels_like": 48,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 4,
+            "direction": "N"
+          }
+        },
+        {
+          "time": "2026-03-21T04:00:00+09:00",
+          "condition": "Clear",
+          "temperature": 49,
+          "feels_like": 47,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 3,
+            "direction": "N"
+          }
+        },
+        {
+          "time": "2026-03-21T05:00:00+09:00",
+          "condition": "Clear",
+          "temperature": 48,
+          "feels_like": 46,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 3,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-21T06:00:00+09:00",
+          "condition": "Sunny",
+          "temperature": 50,
+          "feels_like": 48,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 4,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-21T07:00:00+09:00",
+          "condition": "Sunny",
+          "temperature": 53,
+          "feels_like": 51,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-21T08:00:00+09:00",
+          "condition": "Sunny",
+          "temperature": 56,
+          "feels_like": 54,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-21T09:00:00+09:00",
+          "condition": "Mostly Sunny",
+          "temperature": 59,
+          "feels_like": 57,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-21T10:00:00+09:00",
+          "condition": "Mostly Sunny",
+          "temperature": 61,
+          "feels_like": 59,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "SE"
+          }
+        },
+        {
+          "time": "2026-03-21T11:00:00+09:00",
+          "condition": "Partly Cloudy",
+          "temperature": 63,
+          "feels_like": 61,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "SE"
+          }
+        },
+        {
+          "time": "2026-03-21T12:00:00+09:00",
+          "condition": "Partly Cloudy",
+          "temperature": 64,
+          "feels_like": 62,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 9,
+            "direction": "SE"
+          }
+        }
+      ]
+    },
+    "Bangkok, Thailand": {
+      "location": "Bangkok, Thailand",
+      "hours": [
+        {
+          "time": "2026-03-20T23:00:00+07:00",
+          "condition": "Warm",
+          "temperature": 88,
+          "feels_like": 97,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-21T00:00:00+07:00",
+          "condition": "Mostly Clear",
+          "temperature": 85,
+          "feels_like": 93,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 4,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-21T01:00:00+07:00",
+          "condition": "Mostly Clear",
+          "temperature": 83,
+          "feels_like": 90,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 3,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-21T02:00:00+07:00",
+          "condition": "Clear",
+          "temperature": 82,
+          "feels_like": 88,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 3,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-21T03:00:00+07:00",
+          "condition": "Clear",
+          "temperature": 81,
+          "feels_like": 87,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 2,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T04:00:00+07:00",
+          "condition": "Clear",
+          "temperature": 80,
+          "feels_like": 86,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 2,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T05:00:00+07:00",
+          "condition": "Clear",
+          "temperature": 80,
+          "feels_like": 85,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 2,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T06:00:00+07:00",
+          "condition": "Mostly Sunny",
+          "temperature": 82,
+          "feels_like": 88,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 3,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-21T07:00:00+07:00",
+          "condition": "Mostly Sunny",
+          "temperature": 85,
+          "feels_like": 93,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 4,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-21T08:00:00+07:00",
+          "condition": "Sunny",
+          "temperature": 88,
+          "feels_like": 97,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-21T09:00:00+07:00",
+          "condition": "Sunny",
+          "temperature": 90,
+          "feels_like": 100,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-21T10:00:00+07:00",
+          "condition": "Mostly Sunny",
+          "temperature": 92,
+          "feels_like": 103,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "SE"
+          }
+        }
+      ]
+    },
+    "Sydney, Australia": {
+      "location": "Sydney, Australia",
+      "hours": [
+        {
+          "time": "2026-03-21T03:00:00+11:00",
+          "condition": "Partly Cloudy",
+          "temperature": 72,
+          "feels_like": 74,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-21T04:00:00+11:00",
+          "condition": "Mostly Clear",
+          "temperature": 70,
+          "feels_like": 72,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-21T05:00:00+11:00",
+          "condition": "Clear",
+          "temperature": 68,
+          "feels_like": 68,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "N"
+          }
+        },
+        {
+          "time": "2026-03-21T06:00:00+11:00",
+          "condition": "Clear",
+          "temperature": 67,
+          "feels_like": 67,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "N"
+          }
+        },
+        {
+          "time": "2026-03-21T07:00:00+11:00",
+          "condition": "Sunny",
+          "temperature": 69,
+          "feels_like": 69,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-21T08:00:00+11:00",
+          "condition": "Sunny",
+          "temperature": 72,
+          "feels_like": 72,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-21T09:00:00+11:00",
+          "condition": "Sunny",
+          "temperature": 75,
+          "feels_like": 75,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "NE"
+          }
+        },
+        {
+          "time": "2026-03-21T10:00:00+11:00",
+          "condition": "Mostly Sunny",
+          "temperature": 77,
+          "feels_like": 78,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 11,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-21T11:00:00+11:00",
+          "condition": "Mostly Sunny",
+          "temperature": 78,
+          "feels_like": 80,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 12,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-21T12:00:00+11:00",
+          "condition": "Partly Cloudy",
+          "temperature": 79,
+          "feels_like": 81,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 12,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-21T13:00:00+11:00",
+          "condition": "Partly Cloudy",
+          "temperature": 78,
+          "feels_like": 80,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 11,
+            "direction": "SE"
+          }
+        },
+        {
+          "time": "2026-03-21T14:00:00+11:00",
+          "condition": "Partly Cloudy",
+          "temperature": 77,
+          "feels_like": 79,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "SE"
+          }
+        }
+      ]
+    },
+    "Reykjavik, Iceland": {
+      "location": "Reykjavik, Iceland",
+      "hours": [
+        {
+          "time": "2026-03-20T16:00:00+00:00",
+          "condition": "Snow",
+          "temperature": 30,
+          "feels_like": 18,
+          "precipitation_chance": 75,
+          "precipitation_amount": 0.1,
+          "wind": {
+            "speed": 22,
+            "direction": "N"
+          }
+        },
+        {
+          "time": "2026-03-20T17:00:00+00:00",
+          "condition": "Snow",
+          "temperature": 29,
+          "feels_like": 17,
+          "precipitation_chance": 80,
+          "precipitation_amount": 0.12,
+          "wind": {
+            "speed": 24,
+            "direction": "N"
+          }
+        },
+        {
+          "time": "2026-03-20T18:00:00+00:00",
+          "condition": "Heavy Snow",
+          "temperature": 28,
+          "feels_like": 15,
+          "precipitation_chance": 88,
+          "precipitation_amount": 0.18,
+          "wind": {
+            "speed": 26,
+            "direction": "N"
+          }
+        },
+        {
+          "time": "2026-03-20T19:00:00+00:00",
+          "condition": "Heavy Snow",
+          "temperature": 27,
+          "feels_like": 14,
+          "precipitation_chance": 90,
+          "precipitation_amount": 0.2,
+          "wind": {
+            "speed": 28,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T20:00:00+00:00",
+          "condition": "Snow",
+          "temperature": 27,
+          "feels_like": 13,
+          "precipitation_chance": 82,
+          "precipitation_amount": 0.15,
+          "wind": {
+            "speed": 27,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T21:00:00+00:00",
+          "condition": "Snow",
+          "temperature": 26,
+          "feels_like": 12,
+          "precipitation_chance": 78,
+          "precipitation_amount": 0.12,
+          "wind": {
+            "speed": 25,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T22:00:00+00:00",
+          "condition": "Light Snow",
+          "temperature": 26,
+          "feels_like": 12,
+          "precipitation_chance": 65,
+          "precipitation_amount": 0.08,
+          "wind": {
+            "speed": 23,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T23:00:00+00:00",
+          "condition": "Light Snow",
+          "temperature": 25,
+          "feels_like": 11,
+          "precipitation_chance": 55,
+          "precipitation_amount": 0.05,
+          "wind": {
+            "speed": 22,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T00:00:00+00:00",
+          "condition": "Cloudy",
+          "temperature": 25,
+          "feels_like": 12,
+          "precipitation_chance": 40,
+          "precipitation_amount": 0.02,
+          "wind": {
+            "speed": 20,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T01:00:00+00:00",
+          "condition": "Mostly Cloudy",
+          "temperature": 24,
+          "feels_like": 11,
+          "precipitation_chance": 30,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 18,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T02:00:00+00:00",
+          "condition": "Mostly Cloudy",
+          "temperature": 24,
+          "feels_like": 12,
+          "precipitation_chance": 25,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 16,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-21T03:00:00+00:00",
+          "condition": "Partly Cloudy",
+          "temperature": 23,
+          "feels_like": 12,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 14,
+            "direction": "W"
+          }
+        }
+      ]
+    },
+    "New York, NY": {
+      "location": "New York, NY",
+      "hours": [
+        {
+          "time": "2026-03-20T12:00:00-04:00",
+          "condition": "Mostly Sunny",
+          "temperature": 42,
+          "feels_like": 35,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 12,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T13:00:00-04:00",
+          "condition": "Mostly Sunny",
+          "temperature": 43,
+          "feels_like": 36,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 11,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T14:00:00-04:00",
+          "condition": "Sunny",
+          "temperature": 44,
+          "feels_like": 37,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T15:00:00-04:00",
+          "condition": "Sunny",
+          "temperature": 44,
+          "feels_like": 38,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T16:00:00-04:00",
+          "condition": "Mostly Sunny",
+          "temperature": 43,
+          "feels_like": 37,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 11,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T17:00:00-04:00",
+          "condition": "Partly Cloudy",
+          "temperature": 41,
+          "feels_like": 34,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T18:00:00-04:00",
+          "condition": "Partly Cloudy",
+          "temperature": 39,
+          "feels_like": 32,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 9,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T19:00:00-04:00",
+          "condition": "Mostly Clear",
+          "temperature": 37,
+          "feels_like": 30,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T20:00:00-04:00",
+          "condition": "Clear",
+          "temperature": 36,
+          "feels_like": 29,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T21:00:00-04:00",
+          "condition": "Clear",
+          "temperature": 35,
+          "feels_like": 28,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T22:00:00-04:00",
+          "condition": "Clear",
+          "temperature": 34,
+          "feels_like": 28,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T23:00:00-04:00",
+          "condition": "Clear",
+          "temperature": 33,
+          "feels_like": 27,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "W"
+          }
+        }
+      ]
+    },
+    "Chicago, IL": {
+      "location": "Chicago, IL",
+      "hours": [
+        {
+          "time": "2026-03-20T11:00:00-05:00",
+          "condition": "Partly Cloudy",
+          "temperature": 45,
+          "feels_like": 38,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 14,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T12:00:00-05:00",
+          "condition": "Partly Cloudy",
+          "temperature": 47,
+          "feels_like": 40,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 13,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T13:00:00-05:00",
+          "condition": "Mostly Sunny",
+          "temperature": 48,
+          "feels_like": 42,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 12,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T14:00:00-05:00",
+          "condition": "Mostly Sunny",
+          "temperature": 49,
+          "feels_like": 43,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 11,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T15:00:00-05:00",
+          "condition": "Partly Cloudy",
+          "temperature": 48,
+          "feels_like": 42,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 12,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T16:00:00-05:00",
+          "condition": "Partly Cloudy",
+          "temperature": 47,
+          "feels_like": 40,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 13,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T17:00:00-05:00",
+          "condition": "Mostly Cloudy",
+          "temperature": 45,
+          "feels_like": 38,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 14,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T18:00:00-05:00",
+          "condition": "Mostly Cloudy",
+          "temperature": 43,
+          "feels_like": 36,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 13,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T19:00:00-05:00",
+          "condition": "Cloudy",
+          "temperature": 42,
+          "feels_like": 35,
+          "precipitation_chance": 20,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 12,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T20:00:00-05:00",
+          "condition": "Cloudy",
+          "temperature": 41,
+          "feels_like": 34,
+          "precipitation_chance": 20,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 11,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T21:00:00-05:00",
+          "condition": "Mostly Cloudy",
+          "temperature": 40,
+          "feels_like": 33,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "NW"
+          }
+        },
+        {
+          "time": "2026-03-20T22:00:00-05:00",
+          "condition": "Mostly Cloudy",
+          "temperature": 39,
+          "feels_like": 33,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 9,
+            "direction": "NW"
+          }
+        }
+      ]
+    },
+    "Miami, FL": {
+      "location": "Miami, FL",
+      "hours": [
+        {
+          "time": "2026-03-20T12:00:00-04:00",
+          "condition": "Partly Cloudy",
+          "temperature": 83,
+          "feels_like": 88,
+          "precipitation_chance": 20,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "SE"
+          }
+        },
+        {
+          "time": "2026-03-20T13:00:00-04:00",
+          "condition": "Partly Cloudy",
+          "temperature": 84,
+          "feels_like": 89,
+          "precipitation_chance": 25,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 11,
+            "direction": "SE"
+          }
+        },
+        {
+          "time": "2026-03-20T14:00:00-04:00",
+          "condition": "Mostly Cloudy",
+          "temperature": 85,
+          "feels_like": 91,
+          "precipitation_chance": 30,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 12,
+            "direction": "SE"
+          }
+        },
+        {
+          "time": "2026-03-20T15:00:00-04:00",
+          "condition": "Scattered Showers",
+          "temperature": 84,
+          "feels_like": 90,
+          "precipitation_chance": 45,
+          "precipitation_amount": 0.08,
+          "wind": {
+            "speed": 13,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-20T16:00:00-04:00",
+          "condition": "Scattered Showers",
+          "temperature": 83,
+          "feels_like": 88,
+          "precipitation_chance": 40,
+          "precipitation_amount": 0.05,
+          "wind": {
+            "speed": 12,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-20T17:00:00-04:00",
+          "condition": "Partly Cloudy",
+          "temperature": 82,
+          "feels_like": 87,
+          "precipitation_chance": 25,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "SE"
+          }
+        },
+        {
+          "time": "2026-03-20T18:00:00-04:00",
+          "condition": "Mostly Clear",
+          "temperature": 80,
+          "feels_like": 84,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-20T19:00:00-04:00",
+          "condition": "Mostly Clear",
+          "temperature": 79,
+          "feels_like": 83,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-20T20:00:00-04:00",
+          "condition": "Clear",
+          "temperature": 78,
+          "feels_like": 81,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-20T21:00:00-04:00",
+          "condition": "Clear",
+          "temperature": 77,
+          "feels_like": 80,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-20T22:00:00-04:00",
+          "condition": "Clear",
+          "temperature": 76,
+          "feels_like": 79,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "E"
+          }
+        },
+        {
+          "time": "2026-03-20T23:00:00-04:00",
+          "condition": "Clear",
+          "temperature": 76,
+          "feels_like": 78,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "E"
+          }
+        }
+      ]
+    },
+    "Los Angeles, CA": {
+      "location": "Los Angeles, CA",
+      "hours": [
+        {
+          "time": "2026-03-20T09:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 72,
+          "feels_like": 72,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 6,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-20T10:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 74,
+          "feels_like": 74,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-20T11:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 76,
+          "feels_like": 76,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T12:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 78,
+          "feels_like": 78,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 9,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T13:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 79,
+          "feels_like": 79,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T14:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 80,
+          "feels_like": 80,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 10,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T15:00:00-07:00",
+          "condition": "Sunny",
+          "temperature": 79,
+          "feels_like": 79,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 9,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T16:00:00-07:00",
+          "condition": "Mostly Sunny",
+          "temperature": 77,
+          "feels_like": 77,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T17:00:00-07:00",
+          "condition": "Mostly Sunny",
+          "temperature": 75,
+          "feels_like": 75,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 7,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T18:00:00-07:00",
+          "condition": "Clear",
+          "temperature": 72,
+          "feels_like": 72,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 5,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T19:00:00-07:00",
+          "condition": "Clear",
+          "temperature": 69,
+          "feels_like": 69,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 4,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T20:00:00-07:00",
+          "condition": "Clear",
+          "temperature": 67,
+          "feels_like": 67,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 4,
+            "direction": "NW"
+          }
+        }
+      ]
+    },
+    "Seattle, WA": {
+      "location": "Seattle, WA",
+      "hours": [
+        {
+          "time": "2026-03-20T09:00:00-07:00",
+          "condition": "Rain",
+          "temperature": 48,
+          "feels_like": 43,
+          "precipitation_chance": 80,
+          "precipitation_amount": 0.12,
+          "wind": {
+            "speed": 12,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-20T10:00:00-07:00",
+          "condition": "Rain",
+          "temperature": 48,
+          "feels_like": 43,
+          "precipitation_chance": 82,
+          "precipitation_amount": 0.14,
+          "wind": {
+            "speed": 13,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-20T11:00:00-07:00",
+          "condition": "Rain",
+          "temperature": 49,
+          "feels_like": 44,
+          "precipitation_chance": 85,
+          "precipitation_amount": 0.15,
+          "wind": {
+            "speed": 14,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-20T12:00:00-07:00",
+          "condition": "Rain",
+          "temperature": 50,
+          "feels_like": 45,
+          "precipitation_chance": 80,
+          "precipitation_amount": 0.12,
+          "wind": {
+            "speed": 14,
+            "direction": "S"
+          }
+        },
+        {
+          "time": "2026-03-20T13:00:00-07:00",
+          "condition": "Light Rain",
+          "temperature": 50,
+          "feels_like": 45,
+          "precipitation_chance": 70,
+          "precipitation_amount": 0.08,
+          "wind": {
+            "speed": 13,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-20T14:00:00-07:00",
+          "condition": "Light Rain",
+          "temperature": 51,
+          "feels_like": 46,
+          "precipitation_chance": 65,
+          "precipitation_amount": 0.06,
+          "wind": {
+            "speed": 12,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-20T15:00:00-07:00",
+          "condition": "Cloudy",
+          "temperature": 51,
+          "feels_like": 46,
+          "precipitation_chance": 50,
+          "precipitation_amount": 0.03,
+          "wind": {
+            "speed": 11,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-20T16:00:00-07:00",
+          "condition": "Cloudy",
+          "temperature": 50,
+          "feels_like": 45,
+          "precipitation_chance": 40,
+          "precipitation_amount": 0.01,
+          "wind": {
+            "speed": 10,
+            "direction": "SW"
+          }
+        },
+        {
+          "time": "2026-03-20T17:00:00-07:00",
+          "condition": "Mostly Cloudy",
+          "temperature": 49,
+          "feels_like": 44,
+          "precipitation_chance": 35,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 9,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T18:00:00-07:00",
+          "condition": "Mostly Cloudy",
+          "temperature": 48,
+          "feels_like": 43,
+          "precipitation_chance": 30,
+          "precipitation_amount": 0.0,
+          "wind": {
+            "speed": 8,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T19:00:00-07:00",
+          "condition": "Cloudy",
+          "temperature": 47,
+          "feels_like": 42,
+          "precipitation_chance": 35,
+          "precipitation_amount": 0.02,
+          "wind": {
+            "speed": 8,
+            "direction": "W"
+          }
+        },
+        {
+          "time": "2026-03-20T20:00:00-07:00",
+          "condition": "Light Rain",
+          "temperature": 46,
+          "feels_like": 41,
+          "precipitation_chance": 55,
+          "precipitation_amount": 0.06,
+          "wind": {
+            "speed": 9,
+            "direction": "SW"
+          }
+        }
+      ]
+    }
+  },
+  "daily_forecast": {
+    "Joshua Tree, CA": {
+      "location": "Joshua Tree, CA",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 85,
+          "temp_min": 55,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:40",
+          "sunset": "18:50"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 87,
+          "temp_min": 56,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:39",
+          "sunset": "18:51"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 88,
+          "temp_min": 57,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:37",
+          "sunset": "18:52"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 86,
+          "temp_min": 55,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:36",
+          "sunset": "18:53"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Clear",
+          "temp_max": 84,
+          "temp_min": 54,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:35",
+          "sunset": "18:54"
+        }
+      ]
+    },
+    "Maui, HI": {
+      "location": "Maui, HI",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Mostly Clear",
+          "temp_max": 82,
+          "temp_min": 72,
+          "precipitation_chance": 30,
+          "precipitation_amount": 0.1,
+          "sunrise": "06:25",
+          "sunset": "18:35"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Clear",
+          "temp_max": 83,
+          "temp_min": 73,
+          "precipitation_chance": 20,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:24",
+          "sunset": "18:35"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 84,
+          "temp_min": 73,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:23",
+          "sunset": "18:36"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 83,
+          "temp_min": 72,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:22",
+          "sunset": "18:36"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 82,
+          "temp_min": 72,
+          "precipitation_chance": 20,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:21",
+          "sunset": "18:37"
+        }
+      ]
+    },
+    "Bali, Indonesia": {
+      "location": "Bali, Indonesia",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Mostly Clear",
+          "temp_max": 88,
+          "temp_min": 77,
+          "precipitation_chance": 30,
+          "precipitation_amount": 0.2,
+          "sunrise": "06:15",
+          "sunset": "18:20"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Scattered Showers",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 86,
+          "temp_min": 76,
+          "precipitation_chance": 55,
+          "precipitation_amount": 0.8,
+          "sunrise": "06:15",
+          "sunset": "18:20"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Thunderstorms",
+          "condition_night": "Mostly Cloudy",
+          "temp_max": 84,
+          "temp_min": 76,
+          "precipitation_chance": 70,
+          "precipitation_amount": 1.5,
+          "sunrise": "06:15",
+          "sunset": "18:19"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Clear",
+          "temp_max": 87,
+          "temp_min": 77,
+          "precipitation_chance": 25,
+          "precipitation_amount": 0.1,
+          "sunrise": "06:15",
+          "sunset": "18:19"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Clear",
+          "temp_max": 88,
+          "temp_min": 77,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:15",
+          "sunset": "18:19"
+        }
+      ]
+    },
+    "Tokyo, Japan": {
+      "location": "Tokyo, Japan",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Clear",
+          "temp_max": 62,
+          "temp_min": 48,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "sunrise": "05:45",
+          "sunset": "17:54"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Sunny",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 64,
+          "temp_min": 48,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "sunrise": "05:44",
+          "sunset": "17:55"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Clear",
+          "temp_max": 66,
+          "temp_min": 50,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "sunrise": "05:42",
+          "sunset": "17:56"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 68,
+          "temp_min": 52,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "sunrise": "05:41",
+          "sunset": "17:57"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 67,
+          "temp_min": 51,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "sunrise": "05:39",
+          "sunset": "17:58"
+        }
+      ]
+    },
+    "Bangkok, Thailand": {
+      "location": "Bangkok, Thailand",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Sunny",
+          "condition_night": "Mostly Clear",
+          "temp_max": 95,
+          "temp_min": 80,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:18",
+          "sunset": "18:22"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 96,
+          "temp_min": 81,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:17",
+          "sunset": "18:22"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 95,
+          "temp_min": 80,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:17",
+          "sunset": "18:22"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Scattered Showers",
+          "temp_max": 93,
+          "temp_min": 79,
+          "precipitation_chance": 35,
+          "precipitation_amount": 0.3,
+          "sunrise": "06:16",
+          "sunset": "18:22"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Scattered Showers",
+          "condition_night": "Mostly Cloudy",
+          "temp_max": 90,
+          "temp_min": 78,
+          "precipitation_chance": 50,
+          "precipitation_amount": 0.6,
+          "sunrise": "06:16",
+          "sunset": "18:22"
+        }
+      ]
+    },
+    "Sydney, Australia": {
+      "location": "Sydney, Australia",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 79,
+          "temp_min": 66,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:55",
+          "sunset": "19:00"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Mostly Clear",
+          "temp_max": 78,
+          "temp_min": 65,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:56",
+          "sunset": "18:59"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 80,
+          "temp_min": 66,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:57",
+          "sunset": "18:57"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 81,
+          "temp_min": 67,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:58",
+          "sunset": "18:56"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 79,
+          "temp_min": 65,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:59",
+          "sunset": "18:55"
+        }
+      ]
+    },
+    "Reykjavik, Iceland": {
+      "location": "Reykjavik, Iceland",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Snow",
+          "condition_night": "Mostly Cloudy",
+          "temp_max": 32,
+          "temp_min": 22,
+          "precipitation_chance": 80,
+          "precipitation_amount": 3.5,
+          "sunrise": "07:25",
+          "sunset": "19:40"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Clear",
+          "temp_max": 30,
+          "temp_min": 20,
+          "precipitation_chance": 20,
+          "precipitation_amount": 0.1,
+          "sunrise": "07:22",
+          "sunset": "19:43"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 33,
+          "temp_min": 22,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "sunrise": "07:19",
+          "sunset": "19:46"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Mostly Cloudy",
+          "condition_night": "Snow",
+          "temp_max": 31,
+          "temp_min": 21,
+          "precipitation_chance": 55,
+          "precipitation_amount": 1.2,
+          "sunrise": "07:16",
+          "sunset": "19:49"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Snow",
+          "condition_night": "Mostly Cloudy",
+          "temp_max": 28,
+          "temp_min": 19,
+          "precipitation_chance": 75,
+          "precipitation_amount": 2.8,
+          "sunrise": "07:13",
+          "sunset": "19:52"
+        }
+      ]
+    },
+    "New York, NY": {
+      "location": "New York, NY",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 44,
+          "temp_min": 30,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "sunrise": "07:02",
+          "sunset": "19:14"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Mostly Cloudy",
+          "temp_max": 46,
+          "temp_min": 32,
+          "precipitation_chance": 20,
+          "precipitation_amount": 0.0,
+          "sunrise": "07:00",
+          "sunset": "19:15"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Cloudy",
+          "condition_night": "Rain",
+          "temp_max": 48,
+          "temp_min": 36,
+          "precipitation_chance": 55,
+          "precipitation_amount": 0.8,
+          "sunrise": "06:59",
+          "sunset": "19:17"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Rain",
+          "condition_night": "Mostly Cloudy",
+          "temp_max": 50,
+          "temp_min": 38,
+          "precipitation_chance": 70,
+          "precipitation_amount": 1.2,
+          "sunrise": "06:57",
+          "sunset": "19:18"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Clear",
+          "temp_max": 52,
+          "temp_min": 35,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:56",
+          "sunset": "19:19"
+        }
+      ]
+    },
+    "Chicago, IL": {
+      "location": "Chicago, IL",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Mostly Cloudy",
+          "temp_max": 49,
+          "temp_min": 34,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:57",
+          "sunset": "19:12"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Cloudy",
+          "condition_night": "Rain",
+          "temp_max": 50,
+          "temp_min": 36,
+          "precipitation_chance": 50,
+          "precipitation_amount": 0.6,
+          "sunrise": "06:55",
+          "sunset": "19:14"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Rain",
+          "condition_night": "Mostly Cloudy",
+          "temp_max": 46,
+          "temp_min": 34,
+          "precipitation_chance": 65,
+          "precipitation_amount": 0.9,
+          "sunrise": "06:54",
+          "sunset": "19:15"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Mostly Cloudy",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 44,
+          "temp_min": 30,
+          "precipitation_chance": 25,
+          "precipitation_amount": 0.1,
+          "sunrise": "06:52",
+          "sunset": "19:16"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 50,
+          "temp_min": 32,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:51",
+          "sunset": "19:18"
+        }
+      ]
+    },
+    "Miami, FL": {
+      "location": "Miami, FL",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Mostly Clear",
+          "temp_max": 85,
+          "temp_min": 74,
+          "precipitation_chance": 20,
+          "precipitation_amount": 0.0,
+          "sunrise": "07:23",
+          "sunset": "19:31"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 86,
+          "temp_min": 74,
+          "precipitation_chance": 10,
+          "precipitation_amount": 0.0,
+          "sunrise": "07:22",
+          "sunset": "19:31"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 87,
+          "temp_min": 75,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "sunrise": "07:20",
+          "sunset": "19:32"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 86,
+          "temp_min": 74,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "sunrise": "07:19",
+          "sunset": "19:33"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Scattered Showers",
+          "temp_max": 85,
+          "temp_min": 73,
+          "precipitation_chance": 40,
+          "precipitation_amount": 0.4,
+          "sunrise": "07:18",
+          "sunset": "19:33"
+        }
+      ]
+    },
+    "Los Angeles, CA": {
+      "location": "Los Angeles, CA",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 80,
+          "temp_min": 58,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:52",
+          "sunset": "19:07"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 82,
+          "temp_min": 59,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:51",
+          "sunset": "19:08"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Sunny",
+          "condition_night": "Clear",
+          "temp_max": 81,
+          "temp_min": 58,
+          "precipitation_chance": 0,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:50",
+          "sunset": "19:09"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Mostly Sunny",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 78,
+          "temp_min": 57,
+          "precipitation_chance": 5,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:48",
+          "sunset": "19:10"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Mostly Cloudy",
+          "temp_max": 75,
+          "temp_min": 56,
+          "precipitation_chance": 15,
+          "precipitation_amount": 0.0,
+          "sunrise": "06:47",
+          "sunset": "19:11"
+        }
+      ]
+    },
+    "Seattle, WA": {
+      "location": "Seattle, WA",
+      "days": [
+        {
+          "date": "2026-03-20",
+          "condition_day": "Rain",
+          "condition_night": "Rain",
+          "temp_max": 51,
+          "temp_min": 42,
+          "precipitation_chance": 85,
+          "precipitation_amount": 1.5,
+          "sunrise": "07:07",
+          "sunset": "19:23"
+        },
+        {
+          "date": "2026-03-21",
+          "condition_day": "Mostly Cloudy",
+          "condition_night": "Partly Cloudy",
+          "temp_max": 52,
+          "temp_min": 40,
+          "precipitation_chance": 35,
+          "precipitation_amount": 0.2,
+          "sunrise": "07:05",
+          "sunset": "19:25"
+        },
+        {
+          "date": "2026-03-22",
+          "condition_day": "Partly Cloudy",
+          "condition_night": "Mostly Cloudy",
+          "temp_max": 54,
+          "temp_min": 41,
+          "precipitation_chance": 25,
+          "precipitation_amount": 0.1,
+          "sunrise": "07:03",
+          "sunset": "19:26"
+        },
+        {
+          "date": "2026-03-23",
+          "condition_day": "Rain",
+          "condition_night": "Rain",
+          "temp_max": 50,
+          "temp_min": 39,
+          "precipitation_chance": 80,
+          "precipitation_amount": 1.2,
+          "sunrise": "07:02",
+          "sunset": "19:27"
+        },
+        {
+          "date": "2026-03-24",
+          "condition_day": "Light Rain",
+          "condition_night": "Cloudy",
+          "temp_max": 49,
+          "temp_min": 38,
+          "precipitation_chance": 60,
+          "precipitation_amount": 0.5,
+          "sunrise": "07:00",
+          "sunset": "19:29"
+        }
+      ]
+    }
+  },
+  "alerts": {
+    "Reykjavik, Iceland": {
+      "location": "Reykjavik, Iceland",
+      "alerts": [
+        {
+          "alert_id": "alert_rkv_001",
+          "event": "Winter Storm Warning",
+          "severity": "severe",
+          "start_time": "2026-03-20T12:00:00+00:00",
+          "end_time": "2026-03-21T06:00:00+00:00",
+          "description": "Heavy snow and strong winds expected with blizzard conditions possible. Total snow accumulations of 15-25 cm. Winds gusting to 50 mph may cause whiteout conditions and dangerous travel. Avoid unnecessary travel."
+        }
+      ]
+    }
+  },
+  "location_index": {
+    "Bali, Indonesia": {
+      "location_id": "loc_bali",
+      "name": "Bali, Indonesia",
+      "numeric_index": 5027,
+      "country": "ID",
+      "lat": -8.3405,
+      "lon": 115.092
+    },
+    "Bangkok, Thailand": {
+      "location_id": "loc_bangkok",
+      "name": "Bangkok, Thailand",
+      "numeric_index": 5028,
+      "country": "TH",
+      "lat": 13.7563,
+      "lon": 100.5018
+    },
+    "Chicago, IL": {
+      "location_id": "loc_chicago",
+      "name": "Chicago, IL",
+      "numeric_index": 5002,
+      "state": "IL",
+      "country": "US",
+      "lat": 41.8781,
+      "lon": -87.6298
+    },
+    "Joshua Tree, CA": {
+      "location_id": "loc_joshua_tree",
+      "name": "Joshua Tree, CA",
+      "numeric_index": 5025,
+      "state": "CA",
+      "country": "US",
+      "lat": 34.1347,
+      "lon": -116.3131
+    },
+    "Los Angeles, CA": {
+      "location_id": "loc_los_angeles",
+      "name": "Los Angeles, CA",
+      "numeric_index": 5003,
+      "state": "CA",
+      "country": "US",
+      "lat": 34.0522,
+      "lon": -118.2437
+    },
+    "Maui, HI": {
+      "location_id": "loc_maui",
+      "name": "Maui, HI",
+      "numeric_index": 5026,
+      "state": "HI",
+      "country": "US",
+      "lat": 20.7984,
+      "lon": -156.3319
+    },
+    "Miami, FL": {
+      "location_id": "loc_miami",
+      "name": "Miami, FL",
+      "numeric_index": 5004,
+      "state": "FL",
+      "country": "US",
+      "lat": 25.7617,
+      "lon": -80.1918
+    },
+    "New York, NY": {
+      "location_id": "loc_new_york",
+      "name": "New York, NY",
+      "numeric_index": 5001,
+      "state": "NY",
+      "country": "US",
+      "lat": 40.7128,
+      "lon": -74.006
+    },
+    "Reykjavik, Iceland": {
+      "location_id": "loc_reykjavik",
+      "name": "Reykjavik, Iceland",
+      "numeric_index": 5030,
+      "country": "IS",
+      "lat": 64.1466,
+      "lon": -21.9426
+    },
+    "Seattle, WA": {
+      "location_id": "loc_seattle",
+      "name": "Seattle, WA",
+      "numeric_index": 5005,
+      "state": "WA",
+      "country": "US",
+      "lat": 47.6062,
+      "lon": -122.3321
+    },
+    "Sydney, Australia": {
+      "location_id": "loc_sydney",
+      "name": "Sydney, Australia",
+      "numeric_index": 5029,
+      "country": "AU",
+      "lat": -33.8688,
+      "lon": 151.2093
+    },
+    "Tokyo, Japan": {
+      "location_id": "loc_tokyo",
+      "name": "Tokyo, Japan",
+      "numeric_index": 5008,
+      "country": "JP",
+      "lat": 35.6762,
+      "lon": 139.6503
+    }
+  },
+  "air_quality": {
+    "Tokyo, Japan": {
+      "location": "Tokyo, Japan",
+      "aqi": 55,
+      "category": "Moderate",
+      "pm25": 14.2,
+      "pm10": 26.5,
+      "ozone": 0.04,
+      "no2": 0.017,
+      "health_advice": "Sensitive groups should limit prolonged outdoor exertion."
+    },
+    "New York, NY": {
+      "location": "New York, NY",
+      "aqi": 70,
+      "category": "Moderate",
+      "pm25": 19.5,
+      "pm10": 33.8,
+      "ozone": 0.044,
+      "no2": 0.021,
+      "health_advice": "Sensitive groups should limit prolonged outdoor exertion."
+    },
+    "Los Angeles, CA": {
+      "location": "Los Angeles, CA",
+      "aqi": 88,
+      "category": "Moderate",
+      "pm25": 24.0,
+      "pm10": 39.5,
+      "ozone": 0.057,
+      "no2": 0.027,
+      "health_advice": "Sensitive groups should limit prolonged outdoor exertion."
+    },
+    "Miami, FL": {
+      "location": "Miami, FL",
+      "aqi": 38,
+      "category": "Good",
+      "pm25": 7.0,
+      "pm10": 13.0,
+      "ozone": 0.029,
+      "no2": 0.008,
+      "health_advice": "Air quality is satisfactory."
+    }
+  },
+  "historical_weather": {
+    "Tokyo, Japan": {
+      "2026-03-17": {
+        "location": "Tokyo, Japan",
+        "date": "2026-03-17",
+        "condition": "Sunny",
+        "temp_high": 62,
+        "temp_low": 48,
+        "precipitation": 0.0,
+        "humidity": 45,
+        "wind": {
+          "speed": 6,
+          "direction": "NE"
+        }
+      }
+    },
+    "Reykjavik, Iceland": {
+      "2026-03-17": {
+        "location": "Reykjavik, Iceland",
+        "date": "2026-03-17",
+        "condition": "Snow",
+        "temp_high": 34,
+        "temp_low": 28,
+        "precipitation": 0.3,
+        "humidity": 80,
+        "wind": {
+          "speed": 22,
+          "direction": "N"
+        }
+      }
+    }
+  }
+}

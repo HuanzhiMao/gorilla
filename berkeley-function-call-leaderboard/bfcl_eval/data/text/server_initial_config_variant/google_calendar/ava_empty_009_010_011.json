@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "api_class": "GoogleCalendarAPI",
+    "source_file": "google_calendar.py",
+    "description": "Ava Carter primary calendar with no events, LA timezone for scenarios 009, 010, and 011"
+  },
+  "random_seed": 7001,
+  "profile": {
+    "name": "Ava Carter",
+    "email": "ava@example.com",
+    "timezone": "America/Los_Angeles"
+  },
+  "calendars": {
+    "cal_primary": {
+      "calendar_id": "cal_primary",
+      "name": "Ava Carter",
+      "is_primary": true
+    }
+  },
+  "events": {}
+}

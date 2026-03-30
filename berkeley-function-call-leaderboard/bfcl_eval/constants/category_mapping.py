@@ -143,6 +143,7 @@ TEST_COLLECTION_MAPPING = {
     "text:agentic": TEXT_AGENTIC_CATEGORY,
     "text:web_search": TEXT_WEB_SEARCH_CATEGORY,
     "text:memory": TEXT_MEMORY_CATEGORY,
+    "text:failing_tools": TEXT_FAILING_TOOLS_CATEGORY,
     # Vision categories
     "vision:web_search": VISION_WEB_SEARCH_CATEGORY,
     "vision:geoguessr": VISION_GEOGUESSR_CATEGORY,

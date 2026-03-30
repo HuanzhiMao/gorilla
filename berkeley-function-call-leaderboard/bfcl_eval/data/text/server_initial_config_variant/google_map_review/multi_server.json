@@ -1,0 +1,1324 @@
+{
+  "_meta": {
+    "api_class": "GoogleMapReviewAPI",
+    "source_file": "google_map_review.py",
+    "description": "Comprehensive multi-server state for Queries 26-50 covering restaurants, cafes, hotels, gyms, services, and more",
+    "random_seed": 3456
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "gp_giordanos": {
+      "business_id": "gp_giordanos",
+      "name": "Giordano's",
+      "category": "italian_restaurant",
+      "address": "730 N Rush St, Chicago, IL",
+      "rating": 4.5,
+      "review_count": 3,
+      "price_level": 2,
+      "opening_hours": "Mon-Thu 11:00-22:00, Fri-Sat 11:00-23:00, Sun 11:00-21:00",
+      "phone": "+1-312-555-0101",
+      "website": "https://giordanos-chicago.example.com"
+    },
+    "gp_ritual": {
+      "business_id": "gp_ritual",
+      "name": "Ritual Coffee Roasters",
+      "category": "cafe",
+      "address": "1026 Valencia St, San Francisco, CA",
+      "rating": 4.6,
+      "review_count": 3,
+      "price_level": 2,
+      "opening_hours": "Mon-Fri 06:00-19:00, Sat-Sun 07:00-19:00",
+      "phone": "+1-415-555-0202",
+      "website": "https://ritualcoffee-sf.example.com"
+    },
+    "gp_ace_hotel": {
+      "business_id": "gp_ace_hotel",
+      "name": "Ace Hotel Seattle",
+      "category": "hotel",
+      "address": "423 Pine St, Seattle, WA",
+      "rating": 4.3,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "24/7",
+      "phone": "+1-206-555-0303",
+      "website": "https://acehotel-seattle.example.com"
+    },
+    "gp_quickflow": {
+      "business_id": "gp_quickflow",
+      "name": "QuickFlow Plumbing",
+      "category": "plumber",
+      "address": "89 Service Rd, San Jose, CA",
+      "rating": 4.4,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Fri 07:00-18:00, Sat 08:00-14:00",
+      "phone": "+1-408-555-0404",
+      "website": "https://quickflowplumbing-sj.example.com"
+    },
+    "gp_fog_harbor": {
+      "business_id": "gp_fog_harbor",
+      "name": "Fog Harbor Fish House",
+      "category": "restaurant",
+      "address": "Pier 39, San Francisco, CA",
+      "rating": 4.5,
+      "review_count": 3,
+      "price_level": 3,
+      "opening_hours": "Mon-Sun 11:00-21:30",
+      "phone": "+1-415-555-0505",
+      "website": "https://fogharbor-sf.example.com"
+    },
+    "gp_ironfit": {
+      "business_id": "gp_ironfit",
+      "name": "IronFit Gym",
+      "category": "gym",
+      "address": "200 Gym Blvd, Austin, TX",
+      "rating": 4.3,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Fri 05:00-23:00, Sat-Sun 06:00-21:00",
+      "phone": "+1-512-555-0601",
+      "website": "https://ironfit-austin.example.com"
+    },
+    "gp_flexzone": {
+      "business_id": "gp_flexzone",
+      "name": "FlexZone Fitness",
+      "category": "gym",
+      "address": "305 Workout Dr, Austin, TX",
+      "rating": 4.1,
+      "review_count": 2,
+      "price_level": 1,
+      "opening_hours": "Mon-Fri 06:00-22:00, Sat-Sun 07:00-20:00",
+      "phone": "+1-512-555-0602",
+      "website": "https://flexzone-austin.example.com"
+    },
+    "gp_puregym": {
+      "business_id": "gp_puregym",
+      "name": "PureGym",
+      "category": "gym",
+      "address": "410 Health Ave, Austin, TX",
+      "rating": 4.5,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sun 05:00-23:00",
+      "phone": "+1-512-555-0603",
+      "website": "https://puregym-austin.example.com"
+    },
+    "gp_pawfect": {
+      "business_id": "gp_pawfect",
+      "name": "Pawfect Grooming",
+      "category": "pet_groomer",
+      "address": "22 Pet Lane, Denver, CO",
+      "rating": 4.7,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sat 08:00-18:00",
+      "phone": "+1-720-555-0701",
+      "website": "https://pawfectgrooming-denver.example.com"
+    },
+    "gp_techfix": {
+      "business_id": "gp_techfix",
+      "name": "TechFix Repair",
+      "category": "electronics_repair",
+      "address": "55 Tech Blvd, Portland, OR",
+      "rating": 4.2,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sat 09:00-19:00",
+      "phone": "+1-503-555-0801",
+      "website": "https://techfix-portland.example.com"
+    },
+    "gp_ocean_breeze": {
+      "business_id": "gp_ocean_breeze",
+      "name": "Ocean Breeze Hotel",
+      "category": "hotel",
+      "address": "100 Ocean Dr, Miami Beach, FL",
+      "rating": 4.6,
+      "review_count": 2,
+      "price_level": 3,
+      "opening_hours": "24/7",
+      "phone": "+1-305-555-0901",
+      "website": "https://oceanbreezehotel-miami.example.com"
+    },
+    "gp_swift_movers": {
+      "business_id": "gp_swift_movers",
+      "name": "Swift Movers",
+      "category": "moving_company",
+      "address": "88 Van Ness Ave, San Francisco, CA",
+      "rating": 4.5,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sat 07:00-19:00",
+      "phone": "+1-415-555-1001",
+      "website": "https://swiftmovers-sf.example.com"
+    },
+    "gp_citycare": {
+      "business_id": "gp_citycare",
+      "name": "CityCareMD Urgent Care",
+      "category": "clinic",
+      "address": "150 Medical Center Dr, Los Angeles, CA",
+      "rating": 4.3,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Fri 08:00-20:00, Sat-Sun 09:00-17:00",
+      "phone": "+1-213-555-1101",
+      "website": "https://citycaremd-la.example.com"
+    },
+    "gp_grand_table": {
+      "business_id": "gp_grand_table",
+      "name": "The Grand Table",
+      "category": "restaurant",
+      "address": "400 Broadway, New York, NY",
+      "rating": 4.6,
+      "review_count": 3,
+      "price_level": 3,
+      "opening_hours": "Mon-Thu 17:00-22:00, Fri-Sat 17:00-23:00, Sun 16:00-21:00",
+      "phone": "+1-212-555-1201",
+      "website": "https://thegrandtable-nyc.example.com"
+    },
+    "gp_happy_tails": {
+      "business_id": "gp_happy_tails",
+      "name": "Happy Tails Pet Boarding",
+      "category": "pet_boarding",
+      "address": "75 Country Rd, Denver, CO",
+      "rating": 4.5,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sun 07:00-20:00",
+      "phone": "+1-720-555-1301",
+      "website": "https://happytails-denver.example.com"
+    },
+    "gp_speedwash": {
+      "business_id": "gp_speedwash",
+      "name": "SpeedWash Laundromat",
+      "category": "laundromat",
+      "address": "33 Clean St, Brooklyn, NY",
+      "rating": 3.9,
+      "review_count": 2,
+      "price_level": 1,
+      "opening_hours": "Mon-Sun 06:00-22:00",
+      "phone": "+1-718-555-1401",
+      "website": "https://speedwash-bk.example.com"
+    },
+    "gp_pasta_palace": {
+      "business_id": "gp_pasta_palace",
+      "name": "Pasta Palace",
+      "category": "restaurant",
+      "address": "120 Waterfront Dr, Monterey, CA",
+      "rating": 4.4,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sun 11:00-21:00",
+      "phone": "+1-831-555-1501",
+      "website": "https://pastapalace-monterey.example.com"
+    },
+    "gp_burger_barn": {
+      "business_id": "gp_burger_barn",
+      "name": "Burger Barn",
+      "category": "restaurant",
+      "address": "145 Pier Ave, Monterey, CA",
+      "rating": 4.1,
+      "review_count": 2,
+      "price_level": 1,
+      "opening_hours": "Mon-Sun 10:30-20:00",
+      "phone": "+1-831-555-1502",
+      "website": "https://burgerbarn-monterey.example.com"
+    },
+    "gp_sushi_supreme": {
+      "business_id": "gp_sushi_supreme",
+      "name": "Sushi Supreme",
+      "category": "restaurant",
+      "address": "200 Ocean Ave, Monterey, CA",
+      "rating": 4.7,
+      "review_count": 2,
+      "price_level": 3,
+      "opening_hours": "Tue-Sun 11:30-21:30",
+      "phone": "+1-831-555-1503",
+      "website": "https://sushisupreme-monterey.example.com"
+    },
+    "gp_sparkle_wash": {
+      "business_id": "gp_sparkle_wash",
+      "name": "Sparkle Car Wash",
+      "category": "car_wash",
+      "address": "500 Auto Pkwy, Houston, TX",
+      "rating": 4.3,
+      "review_count": 2,
+      "price_level": 1,
+      "opening_hours": "Mon-Sat 07:00-19:00, Sun 08:00-17:00",
+      "phone": "+1-713-555-1601",
+      "website": "https://sparklecarwash-houston.example.com"
+    },
+    "gp_elite_plumbing": {
+      "business_id": "gp_elite_plumbing",
+      "name": "Elite Plumbing Services",
+      "category": "plumber",
+      "address": "78 Trade Way, Phoenix, AZ",
+      "rating": 4.5,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Fri 07:00-18:00, Sat 08:00-14:00",
+      "phone": "+1-602-555-1701",
+      "website": "https://eliteplumbing-phoenix.example.com"
+    },
+    "gp_bloom_florist": {
+      "business_id": "gp_bloom_florist",
+      "name": "Bloom & Blossom Florist",
+      "category": "florist",
+      "address": "300 Flower St, Portland, OR",
+      "rating": 4.6,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sat 08:00-18:00, Sun 09:00-15:00",
+      "phone": "+1-503-555-1801",
+      "website": "https://bloomblossom-portland.example.com"
+    },
+    "gp_fitlife": {
+      "business_id": "gp_fitlife",
+      "name": "FitLife Gym",
+      "category": "gym",
+      "address": "200 Fitness Ave, San Diego, CA",
+      "rating": 4.4,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Fri 05:00-23:00, Sat-Sun 06:00-21:00",
+      "phone": "+1-619-555-1901",
+      "website": "https://fitlife-sandiego.example.com"
+    },
+    "gp_ironworks": {
+      "business_id": "gp_ironworks",
+      "name": "Iron Works Gym",
+      "category": "gym",
+      "address": "350 Steel Blvd, San Diego, CA",
+      "rating": 4.2,
+      "review_count": 2,
+      "price_level": 1,
+      "opening_hours": "Mon-Fri 05:00-22:00, Sat-Sun 07:00-20:00",
+      "phone": "+1-619-555-1902",
+      "website": "https://ironworks-sandiego.example.com"
+    },
+    "gp_sunrise_brunch": {
+      "business_id": "gp_sunrise_brunch",
+      "name": "Sunrise Brunch House",
+      "category": "restaurant",
+      "address": "45 Morning St, Seattle, WA",
+      "rating": 4.5,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sun 07:00-15:00",
+      "phone": "+1-206-555-2001",
+      "website": "https://sunrisebrunch-seattle.example.com"
+    },
+    "gp_roadside_hero": {
+      "business_id": "gp_roadside_hero",
+      "name": "Roadside Hero Towing",
+      "category": "towing",
+      "address": "90 Highway Service Rd, Dallas, TX",
+      "rating": 4.3,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "24/7",
+      "phone": "+1-555-TOW-HELP",
+      "website": "https://roadsidehero-dallas.example.com"
+    },
+    "gp_prestige_detail": {
+      "business_id": "gp_prestige_detail",
+      "name": "Prestige Auto Detailing",
+      "category": "auto_detail",
+      "address": "120 Shine Blvd, Atlanta, GA",
+      "rating": 4.7,
+      "review_count": 2,
+      "price_level": 3,
+      "opening_hours": "Mon-Sat 08:00-18:00",
+      "phone": "+1-404-555-2101",
+      "website": "https://prestigedetail-atlanta.example.com"
+    },
+    "gp_diamond_care": {
+      "business_id": "gp_diamond_care",
+      "name": "Diamond Car Care",
+      "category": "auto_detail",
+      "address": "240 Polish Dr, Atlanta, GA",
+      "rating": 4.5,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sat 07:00-19:00",
+      "phone": "+1-404-555-2102",
+      "website": "https://diamondcarcare-atlanta.example.com"
+    },
+    "gp_oceanfront": {
+      "business_id": "gp_oceanfront",
+      "name": "Oceanfront Resort",
+      "category": "hotel",
+      "address": "1 Beach Rd, San Diego, CA",
+      "rating": 4.6,
+      "review_count": 2,
+      "price_level": 3,
+      "opening_hours": "24/7",
+      "phone": "+1-619-555-2201",
+      "website": "https://oceanfrontresort-sd.example.com"
+    },
+    "gp_oceanfront_bistro": {
+      "business_id": "gp_oceanfront_bistro",
+      "name": "Oceanfront Bistro",
+      "category": "restaurant",
+      "address": "3 Beach Rd, San Diego, CA",
+      "rating": 4.4,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sun 08:00-22:00",
+      "phone": "+1-619-555-2202",
+      "website": "https://oceanfrontbistro-sd.example.com"
+    },
+    "gp_maritime_museum": {
+      "business_id": "gp_maritime_museum",
+      "name": "Maritime Museum",
+      "category": "museum",
+      "address": "5 Harbor Blvd, San Diego, CA",
+      "rating": 4.5,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sun 10:00-17:00",
+      "phone": "+1-619-555-2203",
+      "website": "https://maritimemuseum-sd.example.com"
+    },
+    "gp_coastal_beans": {
+      "business_id": "gp_coastal_beans",
+      "name": "Coastal Beans Coffee",
+      "category": "cafe",
+      "address": "7 Boardwalk, San Diego, CA",
+      "rating": 4.3,
+      "review_count": 2,
+      "price_level": 1,
+      "opening_hours": "Mon-Sun 06:00-18:00",
+      "phone": "+1-619-555-2204",
+      "website": "https://coastalbeans-sd.example.com"
+    },
+    "gp_harbor_walks": {
+      "business_id": "gp_harbor_walks",
+      "name": "Harbor Walk Tours",
+      "category": "tour_company",
+      "address": "9 Dock St, San Diego, CA",
+      "rating": 4.7,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Sun 08:00-18:00",
+      "phone": "+1-619-555-2205",
+      "website": "https://harborwalks-sd.example.com"
+    }
+  },
+  "reviews": {
+    "rev_giordanos_001": {
+      "review_id": "rev_giordanos_001",
+      "business_id": "gp_giordanos",
+      "author": {
+        "name": "Kevin O'Brien",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "The deep-dish pizza is legendary. Waited 45 minutes but every bite was worth it. Thick, gooey cheese and a buttery crust that melts in your mouth.",
+      "photos": ["deep_dish.jpg"],
+      "created_at": "2026-02-15T18:00:00Z",
+      "helpful_count": 8
+    },
+    "rev_giordanos_002": {
+      "review_id": "rev_giordanos_002",
+      "business_id": "gp_giordanos",
+      "author": {
+        "name": "Maria Santos",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Classic Chicago deep-dish experience. The stuffed pizza was loaded with fresh ingredients. Service was a bit slow during peak hours but the food made up for it.",
+      "photos": [],
+      "created_at": "2026-03-01T19:30:00Z",
+      "helpful_count": 5
+    },
+    "rev_giordanos_003": {
+      "review_id": "rev_giordanos_003",
+      "business_id": "gp_giordanos",
+      "author": {
+        "name": "Tom Alvarez",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "A must-visit in Chicago. The sausage deep-dish is perfection. Great atmosphere and friendly staff. Order ahead if you can to skip the wait.",
+      "photos": [],
+      "created_at": "2026-03-10T20:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_ritual_001": {
+      "review_id": "rev_ritual_001",
+      "business_id": "gp_ritual",
+      "author": {
+        "name": "Sophie Liu",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "The gold standard of SF coffee. Their single-origin pour-overs are transcendent. The Valencia St location has perfect vibes for working or reading.",
+      "photos": ["pour_over.jpg"],
+      "created_at": "2026-02-20T09:00:00Z",
+      "helpful_count": 7
+    },
+    "rev_ritual_002": {
+      "review_id": "rev_ritual_002",
+      "business_id": "gp_ritual",
+      "author": {
+        "name": "James Porter",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Excellent specialty coffee. The baristas are knowledgeable and passionate. Prices are on the higher side but the quality justifies it.",
+      "photos": [],
+      "created_at": "2026-03-05T10:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_ritual_003": {
+      "review_id": "rev_ritual_003",
+      "business_id": "gp_ritual",
+      "author": {
+        "name": "Anika Patel",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Best espresso in the Mission. They roast their own beans and you can taste the difference. The seasonal blends are always a treat.",
+      "photos": [],
+      "created_at": "2026-03-12T08:30:00Z",
+      "helpful_count": 3
+    },
+    "rev_ace_hotel_001": {
+      "review_id": "rev_ace_hotel_001",
+      "business_id": "gp_ace_hotel",
+      "author": {
+        "name": "Rachel Kim",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Cool, minimalist hotel with a great location. The rooms are compact but stylishly designed. Loved the lobby bar and the local art on display.",
+      "photos": ["lobby.jpg"],
+      "created_at": "2026-02-22T14:00:00Z",
+      "helpful_count": 5
+    },
+    "rev_ace_hotel_002": {
+      "review_id": "rev_ace_hotel_002",
+      "business_id": "gp_ace_hotel",
+      "author": {
+        "name": "Ben Taylor",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Trendy boutique hotel in the heart of Seattle. Walking distance to Pike Place Market. Rooms are small but well-appointed. Great coffee in the lobby.",
+      "photos": [],
+      "created_at": "2026-03-08T11:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_quickflow_001": {
+      "review_id": "rev_quickflow_001",
+      "business_id": "gp_quickflow",
+      "author": {
+        "name": "Derek Hernandez",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Called them for an emergency leak and they were at my door within an hour. Fixed the problem quickly and the price was very reasonable. Will use again.",
+      "photos": [],
+      "created_at": "2026-02-28T10:00:00Z",
+      "helpful_count": 6
+    },
+    "rev_quickflow_002": {
+      "review_id": "rev_quickflow_002",
+      "business_id": "gp_quickflow",
+      "author": {
+        "name": "Nancy Chen",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Reliable plumbing service. Replaced our water heater efficiently. They cleaned up after themselves and explained everything. Fairly priced.",
+      "photos": [],
+      "created_at": "2026-03-06T15:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_fog_harbor_001": {
+      "review_id": "rev_fog_harbor_001",
+      "business_id": "gp_fog_harbor",
+      "author": {
+        "name": "Laura Mitchell",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Stunning views and the freshest seafood on the pier. The clam chowder in a bread bowl is iconic. A bit touristy but the quality is genuinely excellent.",
+      "photos": ["clam_chowder.jpg"],
+      "created_at": "2026-02-18T13:00:00Z",
+      "helpful_count": 9
+    },
+    "rev_fog_harbor_002": {
+      "review_id": "rev_fog_harbor_002",
+      "business_id": "gp_fog_harbor",
+      "author": {
+        "name": "Craig Johnson",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Great seafood restaurant with gorgeous bay views. The Dungeness crab is a must-try. Prices are steep but expected for the location. Book a window seat.",
+      "photos": [],
+      "created_at": "2026-03-02T18:30:00Z",
+      "helpful_count": 5
+    },
+    "rev_fog_harbor_003": {
+      "review_id": "rev_fog_harbor_003",
+      "business_id": "gp_fog_harbor",
+      "author": {
+        "name": "Hannah Brooks",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "One of the best dining experiences at Pier 39. The grilled salmon was perfectly cooked and the wine selection is impressive. Kid-friendly too.",
+      "photos": ["salmon_plate.jpg"],
+      "created_at": "2026-03-11T19:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_ironfit_001": {
+      "review_id": "rev_ironfit_001",
+      "business_id": "gp_ironfit",
+      "author": {
+        "name": "Tyler Grant",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Solid gym with great free weights section. The powerlifting area is well-equipped. Could use more squat racks during peak hours but overall a good spot.",
+      "photos": [],
+      "created_at": "2026-02-25T07:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_ironfit_002": {
+      "review_id": "rev_ironfit_002",
+      "business_id": "gp_ironfit",
+      "author": {
+        "name": "Brittany Cole",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Love the no-nonsense atmosphere. Great for serious lifters. The trainers are knowledgeable and the monthly rate is competitive for Austin.",
+      "photos": [],
+      "created_at": "2026-03-09T16:00:00Z",
+      "helpful_count": 2
+    },
+    "rev_flexzone_001": {
+      "review_id": "rev_flexzone_001",
+      "business_id": "gp_flexzone",
+      "author": {
+        "name": "Amanda Reyes",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Budget-friendly gym with the basics. The group fitness classes are fun and the schedule is flexible. Equipment is a bit dated but functional.",
+      "photos": [],
+      "created_at": "2026-02-20T18:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_flexzone_002": {
+      "review_id": "rev_flexzone_002",
+      "business_id": "gp_flexzone",
+      "author": {
+        "name": "Derek Wu",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Decent gym for the price. Clean enough and never too crowded. The cardio area is solid. Would like to see more dumbbells added.",
+      "photos": [],
+      "created_at": "2026-03-07T08:00:00Z",
+      "helpful_count": 1
+    },
+    "rev_puregym_001": {
+      "review_id": "rev_puregym_001",
+      "business_id": "gp_puregym",
+      "author": {
+        "name": "Stephanie Morris",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Best gym in Austin hands down. State-of-the-art equipment, clean facilities, and excellent personal trainers. The sauna and recovery area are a bonus.",
+      "photos": ["gym_floor.jpg"],
+      "created_at": "2026-02-18T06:30:00Z",
+      "helpful_count": 6
+    },
+    "rev_puregym_002": {
+      "review_id": "rev_puregym_002",
+      "business_id": "gp_puregym",
+      "author": {
+        "name": "Jake Ramirez",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Premium gym experience. Love the variety of classes - yoga, HIIT, spin, and more. The app integration for booking is seamless. Worth every penny.",
+      "photos": [],
+      "created_at": "2026-03-04T17:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_pawfect_001": {
+      "review_id": "rev_pawfect_001",
+      "business_id": "gp_pawfect",
+      "author": {
+        "name": "Emily Sato",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "My golden retriever came back looking like a show dog! The groomers are gentle and patient. They even trimmed his nails without any fuss. Highly recommend.",
+      "photos": ["groomed_dog.jpg"],
+      "created_at": "2026-02-22T11:00:00Z",
+      "helpful_count": 7
+    },
+    "rev_pawfect_002": {
+      "review_id": "rev_pawfect_002",
+      "business_id": "gp_pawfect",
+      "author": {
+        "name": "Marcus Bell",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Fantastic pet grooming salon. They handle my anxious poodle with such care. The grooming packages are reasonably priced and include a bandana. Love it!",
+      "photos": [],
+      "created_at": "2026-03-08T14:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_techfix_001": {
+      "review_id": "rev_techfix_001",
+      "business_id": "gp_techfix",
+      "author": {
+        "name": "Ryan Cooper",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Fixed my cracked iPhone screen in under an hour. Price was fair and they used quality parts. The repair comes with a 90-day warranty which is nice.",
+      "photos": [],
+      "created_at": "2026-02-26T12:00:00Z",
+      "helpful_count": 5
+    },
+    "rev_techfix_002": {
+      "review_id": "rev_techfix_002",
+      "business_id": "gp_techfix",
+      "author": {
+        "name": "Michelle Tran",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Brought in my laptop with a dead battery. They diagnosed and replaced it same day. Honest about what needed fixing vs what didn't. Good service.",
+      "photos": [],
+      "created_at": "2026-03-06T10:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_ocean_breeze_001": {
+      "review_id": "rev_ocean_breeze_001",
+      "business_id": "gp_ocean_breeze",
+      "author": {
+        "name": "Victoria Lane",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Breathtaking ocean views from every room. The pool area is pristine and the beach service is excellent. Staff went above and beyond for our anniversary trip.",
+      "photos": ["ocean_view.jpg"],
+      "created_at": "2026-02-14T16:00:00Z",
+      "helpful_count": 9
+    },
+    "rev_ocean_breeze_002": {
+      "review_id": "rev_ocean_breeze_002",
+      "business_id": "gp_ocean_breeze",
+      "author": {
+        "name": "Andre Williams",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Beautiful beachfront hotel. Rooms are spacious and modern. The on-site restaurant serves great seafood. Only downside is parking can be tight on weekends.",
+      "photos": [],
+      "created_at": "2026-03-03T11:00:00Z",
+      "helpful_count": 5
+    },
+    "rev_swift_movers_001": {
+      "review_id": "rev_swift_movers_001",
+      "business_id": "gp_swift_movers",
+      "author": {
+        "name": "David Park",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Moved our 2-bedroom apartment in under 4 hours. The crew was careful with our furniture and nothing was damaged. Transparent pricing with no hidden fees.",
+      "photos": [],
+      "created_at": "2026-02-20T09:00:00Z",
+      "helpful_count": 7
+    },
+    "rev_swift_movers_002": {
+      "review_id": "rev_swift_movers_002",
+      "business_id": "gp_swift_movers",
+      "author": {
+        "name": "Lisa Romano",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Professional and efficient movers. They showed up on time and wrapped everything carefully. The quote was accurate. Would definitely use them again.",
+      "photos": [],
+      "created_at": "2026-03-05T14:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_citycare_001": {
+      "review_id": "rev_citycare_001",
+      "business_id": "gp_citycare",
+      "author": {
+        "name": "Patricia Gomez",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Short wait time for a walk-in visit. The doctor was thorough and attentive. They accepted my insurance without any issues. Clean and modern facility.",
+      "photos": [],
+      "created_at": "2026-02-25T10:00:00Z",
+      "helpful_count": 5
+    },
+    "rev_citycare_002": {
+      "review_id": "rev_citycare_002",
+      "business_id": "gp_citycare",
+      "author": {
+        "name": "Robert Singh",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Good urgent care clinic when you need to be seen quickly. The staff is friendly and the online check-in system saves time. Reasonable co-pays.",
+      "photos": [],
+      "created_at": "2026-03-07T15:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_grand_table_001": {
+      "review_id": "rev_grand_table_001",
+      "business_id": "gp_grand_table",
+      "author": {
+        "name": "Catherine Shaw",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "An unforgettable dining experience. The tasting menu was exquisite - each course was a masterpiece. The wine pairings were impeccable. Worth the splurge.",
+      "photos": ["tasting_menu.jpg"],
+      "created_at": "2026-02-14T20:00:00Z",
+      "helpful_count": 10
+    },
+    "rev_grand_table_002": {
+      "review_id": "rev_grand_table_002",
+      "business_id": "gp_grand_table",
+      "author": {
+        "name": "Priya Sharma",
+        "is_current_user": true
+      },
+      "rating": 5,
+      "text": "Absolutely incredible dinner. The braised short rib was the best I've ever had and the service was impeccable. Our waiter made wonderful wine recommendations. A truly special evening.",
+      "photos": ["short_rib.jpg"],
+      "created_at": "2026-03-10T21:00:00Z",
+      "helpful_count": 6
+    },
+    "rev_grand_table_003": {
+      "review_id": "rev_grand_table_003",
+      "business_id": "gp_grand_table",
+      "author": {
+        "name": "Jonathan Reed",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Upscale restaurant with fantastic food. The ambiance is elegant without being stuffy. The prix fixe menu is a great value for the quality. Reserve well in advance.",
+      "photos": [],
+      "created_at": "2026-03-14T19:30:00Z",
+      "helpful_count": 4
+    },
+    "rev_happy_tails_001": {
+      "review_id": "rev_happy_tails_001",
+      "business_id": "gp_happy_tails",
+      "author": {
+        "name": "Olivia Martinez",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Left our dog here for a week while on vacation and he came back happy and healthy. They sent daily photo updates which eased our worry. Spacious play areas.",
+      "photos": ["play_area.jpg"],
+      "created_at": "2026-02-18T08:00:00Z",
+      "helpful_count": 8
+    },
+    "rev_happy_tails_002": {
+      "review_id": "rev_happy_tails_002",
+      "business_id": "gp_happy_tails",
+      "author": {
+        "name": "Brian Foster",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Great pet boarding facility. The staff clearly loves animals. They followed our feeding instructions to the letter. Only wish they had webcam access.",
+      "photos": [],
+      "created_at": "2026-03-04T16:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_speedwash_001": {
+      "review_id": "rev_speedwash_001",
+      "business_id": "gp_speedwash",
+      "author": {
+        "name": "Carmen Diaz",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Clean laundromat with modern machines. The app-based payment system is convenient. Machines are well-maintained and rarely out of order. Good hours too.",
+      "photos": [],
+      "created_at": "2026-02-22T10:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_speedwash_002": {
+      "review_id": "rev_speedwash_002",
+      "business_id": "gp_speedwash",
+      "author": {
+        "name": "Tyrone Jackson",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Decent neighborhood laundromat. The large capacity washers are a lifesaver for comforters. Could be a bit cleaner but the machines work well. Fair prices.",
+      "photos": [],
+      "created_at": "2026-03-06T09:00:00Z",
+      "helpful_count": 2
+    },
+    "rev_pasta_palace_001": {
+      "review_id": "rev_pasta_palace_001",
+      "business_id": "gp_pasta_palace",
+      "author": {
+        "name": "Nicole Freeman",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Charming waterfront pasta restaurant. The handmade fettuccine with pesto was divine. Great selection of local wines. The outdoor seating with ocean views is magical.",
+      "photos": ["pasta_dish.jpg"],
+      "created_at": "2026-02-20T19:00:00Z",
+      "helpful_count": 6
+    },
+    "rev_pasta_palace_002": {
+      "review_id": "rev_pasta_palace_002",
+      "business_id": "gp_pasta_palace",
+      "author": {
+        "name": "George Campbell",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Solid Italian fare in a lovely Monterey location. The seafood linguine was packed with fresh local catch. Portions are generous. Good value for the area.",
+      "photos": [],
+      "created_at": "2026-03-08T18:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_burger_barn_001": {
+      "review_id": "rev_burger_barn_001",
+      "business_id": "gp_burger_barn",
+      "author": {
+        "name": "Alex Turner",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Classic burger joint near the pier. The double cheeseburger with secret sauce is a local favorite. Fries are crispy and golden. Cash only so be prepared.",
+      "photos": ["double_cheese.jpg"],
+      "created_at": "2026-02-24T12:30:00Z",
+      "helpful_count": 4
+    },
+    "rev_burger_barn_002": {
+      "review_id": "rev_burger_barn_002",
+      "business_id": "gp_burger_barn",
+      "author": {
+        "name": "Sarah Nguyen",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "No-frills burger place with big flavors. The veggie burger is surprisingly good too. Quick service and outdoor picnic tables. A Monterey staple.",
+      "photos": [],
+      "created_at": "2026-03-05T13:00:00Z",
+      "helpful_count": 2
+    },
+    "rev_sushi_supreme_001": {
+      "review_id": "rev_sushi_supreme_001",
+      "business_id": "gp_sushi_supreme",
+      "author": {
+        "name": "Kenji Watanabe",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "The freshest sushi in Monterey, period. The omakase is a revelation - each piece showcases the chef's incredible skill. The fish is sourced daily from local boats.",
+      "photos": ["omakase.jpg"],
+      "created_at": "2026-02-16T19:30:00Z",
+      "helpful_count": 10
+    },
+    "rev_sushi_supreme_002": {
+      "review_id": "rev_sushi_supreme_002",
+      "business_id": "gp_sushi_supreme",
+      "author": {
+        "name": "Diana Foster",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Exceptional sushi restaurant. The special rolls are creative and beautifully presented. Sake selection is impressive. Make reservations - they fill up fast.",
+      "photos": [],
+      "created_at": "2026-03-04T20:00:00Z",
+      "helpful_count": 6
+    },
+    "rev_sparkle_wash_001": {
+      "review_id": "rev_sparkle_wash_001",
+      "business_id": "gp_sparkle_wash",
+      "author": {
+        "name": "Marcus Reed",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Quick and thorough car wash. The premium package includes interior vacuum and tire shine. My truck looked brand new. Reasonable prices for Houston.",
+      "photos": [],
+      "created_at": "2026-02-23T11:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_sparkle_wash_002": {
+      "review_id": "rev_sparkle_wash_002",
+      "business_id": "gp_sparkle_wash",
+      "author": {
+        "name": "Tanya Brooks",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Good car wash with friendly attendants. The express wash is a great deal. They have a loyalty program that gives you every 10th wash free. Nice touch.",
+      "photos": [],
+      "created_at": "2026-03-07T14:00:00Z",
+      "helpful_count": 2
+    },
+    "rev_elite_plumbing_001": {
+      "review_id": "rev_elite_plumbing_001",
+      "business_id": "gp_elite_plumbing",
+      "author": {
+        "name": "Roger Simmons",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Top-notch plumbing service. They repiped our entire kitchen and the work is pristine. Licensed, insured, and very professional. Fair pricing for the quality.",
+      "photos": [],
+      "created_at": "2026-02-19T10:00:00Z",
+      "helpful_count": 7
+    },
+    "rev_elite_plumbing_002": {
+      "review_id": "rev_elite_plumbing_002",
+      "business_id": "gp_elite_plumbing",
+      "author": {
+        "name": "Janet Lopez",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Responsive and reliable plumber. Fixed a stubborn clog that two other plumbers couldn't handle. They explained the issue clearly and offered solutions at different price points.",
+      "photos": [],
+      "created_at": "2026-03-06T13:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_bloom_florist_001": {
+      "review_id": "rev_bloom_florist_001",
+      "business_id": "gp_bloom_florist",
+      "author": {
+        "name": "Sandra White",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Stunning arrangements every time. They did the flowers for our wedding and every bouquet was breathtaking. Creative designs and the freshest flowers in Portland.",
+      "photos": ["wedding_flowers.jpg"],
+      "created_at": "2026-02-14T09:00:00Z",
+      "helpful_count": 8
+    },
+    "rev_bloom_florist_002": {
+      "review_id": "rev_bloom_florist_002",
+      "business_id": "gp_bloom_florist",
+      "author": {
+        "name": "Michael Chang",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Beautiful flower shop with a great selection. The weekly subscription bouquets are a wonderful value. The staff is helpful and can create custom arrangements on short notice.",
+      "photos": [],
+      "created_at": "2026-03-07T10:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_fitlife_001": {
+      "review_id": "rev_fitlife_001",
+      "business_id": "gp_fitlife",
+      "author": {
+        "name": "Carlos Mendez",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Great all-around gym. The equipment is modern and well-maintained. Love the rooftop workout area with ocean views. Group classes are energetic and fun.",
+      "photos": ["rooftop_gym.jpg"],
+      "created_at": "2026-02-22T06:00:00Z",
+      "helpful_count": 5
+    },
+    "rev_fitlife_002": {
+      "review_id": "rev_fitlife_002",
+      "business_id": "gp_fitlife",
+      "author": {
+        "name": "Amy Richardson",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Nice gym with a good mix of cardio and strength equipment. The personal trainers are motivating and knowledgeable. Locker rooms are always clean.",
+      "photos": [],
+      "created_at": "2026-03-08T17:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_ironworks_001": {
+      "review_id": "rev_ironworks_001",
+      "business_id": "gp_ironworks",
+      "author": {
+        "name": "Pete Gonzalez",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Hardcore lifting gym. The vibe is intense and motivating. Great selection of free weights and specialty bars. No frills, just iron and results.",
+      "photos": [],
+      "created_at": "2026-02-20T07:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_ironworks_002": {
+      "review_id": "rev_ironworks_002",
+      "business_id": "gp_ironworks",
+      "author": {
+        "name": "Tiffany Xu",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Budget-friendly gym for serious lifters. Plenty of platforms and racks. The community is welcoming despite the intense atmosphere. Great value membership.",
+      "photos": [],
+      "created_at": "2026-03-06T16:00:00Z",
+      "helpful_count": 2
+    },
+    "rev_sunrise_brunch_001": {
+      "review_id": "rev_sunrise_brunch_001",
+      "business_id": "gp_sunrise_brunch",
+      "author": {
+        "name": "Eleanor Price",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "The best brunch spot in Seattle. Their eggs benedict with smoked salmon is perfection. Fresh-squeezed juices and homemade pastries. Worth the weekend wait.",
+      "photos": ["eggs_benedict.jpg"],
+      "created_at": "2026-02-23T10:00:00Z",
+      "helpful_count": 7
+    },
+    "rev_sunrise_brunch_002": {
+      "review_id": "rev_sunrise_brunch_002",
+      "business_id": "gp_sunrise_brunch",
+      "author": {
+        "name": "Sam Davidson",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Lovely brunch restaurant with a warm atmosphere. The blueberry pancakes are fluffy and delicious. Coffee is bottomless. Gets busy on weekends so arrive early.",
+      "photos": [],
+      "created_at": "2026-03-09T09:30:00Z",
+      "helpful_count": 3
+    },
+    "rev_roadside_hero_001": {
+      "review_id": "rev_roadside_hero_001",
+      "business_id": "gp_roadside_hero",
+      "author": {
+        "name": "Wayne Barker",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Called them at 2 AM when my car broke down on the highway. They arrived in 25 minutes and towed me safely to a nearby shop. Fair pricing and very professional.",
+      "photos": [],
+      "created_at": "2026-02-28T02:30:00Z",
+      "helpful_count": 6
+    },
+    "rev_roadside_hero_002": {
+      "review_id": "rev_roadside_hero_002",
+      "business_id": "gp_roadside_hero",
+      "author": {
+        "name": "Kelly Nash",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Reliable towing service. They gave me an accurate ETA and the driver was friendly and careful with my vehicle. Prices are straightforward - no surprise fees.",
+      "photos": [],
+      "created_at": "2026-03-06T18:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_prestige_detail_001": {
+      "review_id": "rev_prestige_detail_001",
+      "business_id": "gp_prestige_detail",
+      "author": {
+        "name": "Vernon Hughes",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "My car has never looked this good. The full detail package is incredible - paint correction, ceramic coating, and interior deep clean. Worth every penny.",
+      "photos": ["detailed_car.jpg"],
+      "created_at": "2026-02-15T14:00:00Z",
+      "helpful_count": 9
+    },
+    "rev_prestige_detail_002": {
+      "review_id": "rev_prestige_detail_002",
+      "business_id": "gp_prestige_detail",
+      "author": {
+        "name": "Christine Yang",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Premium detailing service that lives up to its name. They spent 6 hours on my SUV and it looks showroom-fresh. The ceramic coating they applied is fantastic.",
+      "photos": [],
+      "created_at": "2026-03-04T15:00:00Z",
+      "helpful_count": 5
+    },
+    "rev_diamond_care_001": {
+      "review_id": "rev_diamond_care_001",
+      "business_id": "gp_diamond_care",
+      "author": {
+        "name": "Angela Curtis",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Excellent auto detailing at reasonable prices. The interior shampoo removed stains I thought were permanent. Very meticulous work and fast turnaround.",
+      "photos": [],
+      "created_at": "2026-02-22T11:00:00Z",
+      "helpful_count": 5
+    },
+    "rev_diamond_care_002": {
+      "review_id": "rev_diamond_care_002",
+      "business_id": "gp_diamond_care",
+      "author": {
+        "name": "Troy Anderson",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Good detailing shop. The hand wash and wax combo is a great value. They pay attention to the little things like door jambs and wheel wells. Solid work.",
+      "photos": [],
+      "created_at": "2026-03-07T12:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_oceanfront_001": {
+      "review_id": "rev_oceanfront_001",
+      "business_id": "gp_oceanfront",
+      "author": {
+        "name": "Diana Marshall",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Stunning beachfront resort with world-class amenities. The infinity pool overlooking the Pacific is breathtaking. Rooms are luxurious and the spa is heavenly.",
+      "photos": ["infinity_pool.jpg"],
+      "created_at": "2026-02-18T15:00:00Z",
+      "helpful_count": 8
+    },
+    "rev_oceanfront_002": {
+      "review_id": "rev_oceanfront_002",
+      "business_id": "gp_oceanfront",
+      "author": {
+        "name": "Richard Hayes",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Beautiful resort right on the beach. The suites are spacious with amazing views. The on-site restaurants are excellent. Valet parking could be faster.",
+      "photos": [],
+      "created_at": "2026-03-05T12:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_oceanfront_bistro_001": {
+      "review_id": "rev_oceanfront_bistro_001",
+      "business_id": "gp_oceanfront_bistro",
+      "author": {
+        "name": "Karen Phillips",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Lovely bistro with ocean views. The brunch menu is outstanding - try the crab cake eggs benedict. Great craft cocktail selection and a relaxed, beachy vibe.",
+      "photos": ["brunch_plate.jpg"],
+      "created_at": "2026-02-23T11:00:00Z",
+      "helpful_count": 6
+    },
+    "rev_oceanfront_bistro_002": {
+      "review_id": "rev_oceanfront_bistro_002",
+      "business_id": "gp_oceanfront_bistro",
+      "author": {
+        "name": "Steven Carter",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Solid beachside dining. The fish tacos are outstanding and the sunset dinner experience is romantic. Live music on Friday nights adds to the atmosphere.",
+      "photos": [],
+      "created_at": "2026-03-09T19:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_maritime_museum_001": {
+      "review_id": "rev_maritime_museum_001",
+      "business_id": "gp_maritime_museum",
+      "author": {
+        "name": "Howard Lin",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Fascinating museum with an incredible collection of historic ships you can actually board. The Star of India is a must-see. Great for kids and adults alike.",
+      "photos": ["star_of_india.jpg"],
+      "created_at": "2026-02-20T13:00:00Z",
+      "helpful_count": 7
+    },
+    "rev_maritime_museum_002": {
+      "review_id": "rev_maritime_museum_002",
+      "business_id": "gp_maritime_museum",
+      "author": {
+        "name": "Paula Griffith",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Great harbor museum with well-curated exhibits. The submarine tour is a unique experience. Allow at least 2-3 hours to see everything. Good gift shop too.",
+      "photos": [],
+      "created_at": "2026-03-08T10:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_coastal_beans_001": {
+      "review_id": "rev_coastal_beans_001",
+      "business_id": "gp_coastal_beans",
+      "author": {
+        "name": "Jesse Palmer",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Charming coffee shop right on the boardwalk. The cold brew is smooth and strong. Nice selection of pastries from a local bakery. Perfect spot to people-watch.",
+      "photos": ["boardwalk_coffee.jpg"],
+      "created_at": "2026-02-24T08:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_coastal_beans_002": {
+      "review_id": "rev_coastal_beans_002",
+      "business_id": "gp_coastal_beans",
+      "author": {
+        "name": "Nina Vasquez",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Solid coffee with a laid-back beach vibe. The iced matcha latte is refreshing on warm days. Friendly baristas and the outdoor seating is lovely.",
+      "photos": [],
+      "created_at": "2026-03-10T09:00:00Z",
+      "helpful_count": 2
+    },
+    "rev_harbor_walks_001": {
+      "review_id": "rev_harbor_walks_001",
+      "business_id": "gp_harbor_walks",
+      "author": {
+        "name": "Thomas Burke",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Incredible harbor walking tour. Our guide was a marine biologist and shared fascinating stories about the harbor's history and wildlife. The 2-hour tour flew by.",
+      "photos": ["harbor_tour.jpg"],
+      "created_at": "2026-02-22T10:00:00Z",
+      "helpful_count": 8
+    },
+    "rev_harbor_walks_002": {
+      "review_id": "rev_harbor_walks_002",
+      "business_id": "gp_harbor_walks",
+      "author": {
+        "name": "Grace Kim",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Best tour company in San Diego. The sunset harbor walk was magical. Small group sizes ensure a personal experience. They also provide great local restaurant recommendations.",
+      "photos": [],
+      "created_at": "2026-03-09T17:00:00Z",
+      "helpful_count": 5
+    }
+  },
+  "saved_places": {}
+}
