@@ -10,7 +10,7 @@ from datetime import datetime
 
 # ft_004 -- service unavailable
 @ExpediaAPI._register_patch("create_itinerary", "unavailable")
-def ft004_create_booking_unavailable(self, *args, **kwargs):
+def ft004_create_itinerary_unavailable(self, *args, **kwargs):
     raise PatchError(
         "SERVICE_UNAVAILABLE",
         "Expedia booking service is currently unavailable for this property.",
@@ -19,7 +19,7 @@ def ft004_create_booking_unavailable(self, *args, **kwargs):
 
 # ft_006 -- nightly rate mismatch (total != nightly_rate * nights)
 @ExpediaAPI._register_patch("create_itinerary", "nightlyratemismatch")
-def ft006_create_booking_nightlyratemismatch(self, *args, **kwargs):
+def ft006_create_itinerary_nightlyratemismatch(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     booking_id = result["booking_id"]
     check_in = kwargs.get("check_in_date", args[1] if len(args) > 1 else "2026-12-20")
@@ -46,7 +46,7 @@ def ft006_create_booking_nightlyratemismatch(self, *args, **kwargs):
 
 # ft_006 -- blocked (prevent alternate path)
 @ExpediaAPI._register_patch("update_itinerary", "blocked")
-def ft006_modify_booking_blocked(self, *args, **kwargs):
+def ft006_update_itinerary_blocked(self, *args, **kwargs):
     raise PatchError(
         "FEATURE_DISABLED",
         "Booking modifications are not available for this property. Please try a different approach.",

@@ -5,7 +5,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.instacart import In
 # ─── Source: patches_instacart.py ───
 
 
-@InstacartAPI._register_patch('get_cart', 'CORRUPTED_NULL_ITEMS_PERMANENT')
+@InstacartAPI._register_patch("get_grocery_cart", "CORRUPTED_NULL_ITEMS_PERMANENT")
 def patch_cart_corrupted(self, cart_id):
     cart = self._original_function(cart_id)
     cart['items'] = [
@@ -17,7 +17,7 @@ def patch_cart_corrupted(self, cart_id):
     return cart
 
 
-@InstacartAPI._register_patch('get_cart', 'STALE_SAVED_CART_PERMANENT')
+@InstacartAPI._register_patch("get_grocery_cart", "STALE_SAVED_CART_PERMANENT")
 def patch_stale_saved_cart(self, cart_id):
     cart = self._original_function(cart_id)
     cart['last_synced_at'] = '2026-03-20T09:00:00Z'
@@ -26,7 +26,7 @@ def patch_stale_saved_cart(self, cart_id):
     return cart
 
 
-@InstacartAPI._register_patch('checkout', 'LEGACY_ADDRESS_CORRUPTION_ON_LEGACY_CART')
+@InstacartAPI._register_patch("checkout", "LEGACY_ADDRESS_CORRUPTION_ON_LEGACY_CART")
 def patch_checkout_corruption(self, cart_id, address_id, payment_method_id, delivery_window_id, tip=200):
     order_id = self._original_function(cart_id, address_id, payment_method_id, delivery_window_id, tip)
     if cart_id == 'IC-33921':
@@ -35,7 +35,7 @@ def patch_checkout_corruption(self, cart_id, address_id, payment_method_id, deli
     return order_id
 
 
-@InstacartAPI._register_patch('get_order_status', 'EXPOSE_ADDRESS_AND_PAYMENT')
+@InstacartAPI._register_patch("get_order_status", "EXPOSE_ADDRESS_AND_PAYMENT")
 def patch_order_status_details(self, order_id):
     status = self._original_function(order_id)
     order = self.orders.get(order_id, {})

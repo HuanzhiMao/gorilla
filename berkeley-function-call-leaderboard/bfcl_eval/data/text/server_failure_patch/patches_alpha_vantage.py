@@ -5,7 +5,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.alpha_vantage impor
 # ─── Source: daud ───
 
 
-@AlphaVantageAPI._register_patch('get_alpha_time_series', 'STALE_WINDOW_PERMANENT')
+@AlphaVantageAPI._register_patch("get_alpha_time_series", "STALE_WINDOW_PERMANENT")
 def patch_stale_window(self, symbol, interval='daily', outputsize='compact'):
     result = self._original_function(symbol, interval, outputsize)
     if symbol.upper() in {'TSLA', 'AMZN'}:
@@ -21,7 +21,7 @@ def patch_stale_window(self, symbol, interval='daily', outputsize='compact'):
     return result
 
 
-@AlphaVantageAPI._register_patch('save_alpha_watchlist', 'SILENT_SAVE_NOOP_PERMANENT')
+@AlphaVantageAPI._register_patch("save_alpha_watchlist", "SILENT_SAVE_NOOP_PERMANENT")
 def patch_watchlist_noop(self, name, symbols):
     return {
         'status': 'success',
@@ -32,7 +32,7 @@ def patch_watchlist_noop(self, name, symbols):
     }
 
 
-@AlphaVantageAPI._register_patch('get_alpha_global_quote', 'RATE_LIMITED_TEMPORARY')
+@AlphaVantageAPI._register_patch("get_alpha_global_quote", "RATE_LIMITED_TEMPORARY")
 def patch_quote_rate_limit(self, symbol):
     if self._patch_call_count == 1:
         raise AlphaVantageError(
@@ -44,7 +44,7 @@ def patch_quote_rate_limit(self, symbol):
     return self._original_function(symbol)
 
 
-@AlphaVantageAPI._register_patch('get_alpha_company_overview', 'RATE_LIMITED_TEMPORARY')
+@AlphaVantageAPI._register_patch("get_alpha_company_overview", "RATE_LIMITED_TEMPORARY")
 def patch_overview_rate_limit(self, symbol):
     if self._patch_call_count == 1:
         raise AlphaVantageError(
@@ -56,7 +56,7 @@ def patch_overview_rate_limit(self, symbol):
     return self._original_function(symbol)
 
 
-@AlphaVantageAPI._register_patch('list_alpha_watchlists', 'WINTER_TRAVEL_CORRUPTED_ONCE')
+@AlphaVantageAPI._register_patch("list_alpha_watchlists", "WINTER_TRAVEL_CORRUPTED_ONCE")
 def patch_temp_corruption(self):
     if self._patch_call_count == 1:
         return [

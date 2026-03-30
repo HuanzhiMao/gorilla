@@ -5,7 +5,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.amazon import Amazo
 # ─── Source: daud ─────────────────────────────────────────────────────────────
 
 
-@AmazonAPI._register_patch('add_to_cart', 'ADD_TO_CART_503_PERMANENT')
+@AmazonAPI._register_patch("add_to_cart", "ADD_TO_CART_503_PERMANENT")
 def patch_add_to_cart_503(self, product_id, quantity, variant_id=None, seller_id=None, gift_wrap=False, gift_message=None):
     raise AmazonError(
         error_code='SERVICE_UNAVAILABLE',
@@ -15,7 +15,7 @@ def patch_add_to_cart_503(self, product_id, quantity, variant_id=None, seller_id
     )
 
 
-@AmazonAPI._register_patch('get_cart', 'GHOST_ITEMS_PERMANENT')
+@AmazonAPI._register_patch("get_cart", "GHOST_ITEMS_PERMANENT")
 def patch_get_cart_ghost(self):
     cart = self._original_function()
     cart['ghost_order_reference'] = 'AMZ-9918'
@@ -24,7 +24,7 @@ def patch_get_cart_ghost(self):
     return cart
 
 
-@AmazonAPI._register_patch('apply_coupon', 'CART_CORRUPTED_PERMANENT')
+@AmazonAPI._register_patch("apply_coupon", "CART_CORRUPTED_PERMANENT")
 def patch_coupon_corrupted(self, coupon_code):
     raise AmazonError(
         error_code='CART_CORRUPTED',
@@ -34,7 +34,7 @@ def patch_coupon_corrupted(self, coupon_code):
     )
 
 
-@AmazonAPI._register_patch('get_product_offers', 'NESTED_OFFERS_ONCE')
+@AmazonAPI._register_patch("get_product_offers", "NESTED_OFFERS_ONCE")
 def patch_nested_offers(self, product_id):
     offers = self._original_function(product_id)
     if self._patch_call_count == 1 and product_id == 'AMZ-DAUD-1006':
@@ -51,7 +51,7 @@ def patch_nested_offers(self, product_id):
     return offers
 
 
-@AmazonAPI._register_patch('add_to_cart', 'SELLER_REQUIRED_ONCE')
+@AmazonAPI._register_patch("add_to_cart", "SELLER_REQUIRED_ONCE")
 def patch_seller_required(self, product_id, quantity, variant_id=None, seller_id=None, gift_wrap=False, gift_message=None):
     if self._patch_call_count == 1 and product_id == 'AMZ-DAUD-1006' and not seller_id:
         raise AmazonError(
@@ -63,7 +63,7 @@ def patch_seller_required(self, product_id, quantity, variant_id=None, seller_id
     return self._original_function(product_id, quantity, variant_id, seller_id, gift_wrap, gift_message)
 
 
-@AmazonAPI._register_patch('add_to_cart', 'SILENT_REPLICATION_LAG_ONCE')
+@AmazonAPI._register_patch("add_to_cart", "SILENT_REPLICATION_LAG_ONCE")
 def patch_replication_lag(self, product_id, quantity, variant_id=None, seller_id=None, gift_wrap=False, gift_message=None):
     if self._patch_call_count == 1:
         return {

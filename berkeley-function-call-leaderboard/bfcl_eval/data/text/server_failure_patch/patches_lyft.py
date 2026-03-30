@@ -9,7 +9,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.lyft import LyftAPI
 
 # ft_012 -- fare breakdown mismatch
 @LyftAPI._register_patch("get_ride_estimates", "breakdownmismatch")
-def ft012_get_ride_estimates_breakdownmismatch(self, *args, **kwargs):
+def ft012_get_trip_estimates_breakdownmismatch(self, *args, **kwargs):
     results = self._original_function(*args, **kwargs)
     if results:
         results[0]["estimated_fare"] = 18.0
@@ -21,7 +21,7 @@ def ft012_get_ride_estimates_breakdownmismatch(self, *args, **kwargs):
 
 # ft_019 -- negative fare entry (targets XL by ride_type_id)
 @LyftAPI._register_patch("get_ride_estimates", "invalidentry")
-def ft019_get_ride_estimates_invalidentry(self, *args, **kwargs):
+def ft019_get_trip_estimates_invalidentry(self, *args, **kwargs):
     results = self._original_function(*args, **kwargs)
     for entry in results:
         if entry.get("ride_type_id", "").lower() == "xl":
@@ -34,7 +34,7 @@ def ft019_get_ride_estimates_invalidentry(self, *args, **kwargs):
 
 # ft_017 -- capacity violation (XL returns capacity=4)
 @LyftAPI._register_patch("book_ride", "capacityviolation")
-def ft017_request_ride_capacityviolation(self, *args, **kwargs):
+def ft017_book_ride_capacityviolation(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     ride_id = result["ride_id"]
     result["ride_type_id"] = "xl"
@@ -47,7 +47,7 @@ def ft017_request_ride_capacityviolation(self, *args, **kwargs):
 
 # ft_020 -- fixed fare override (Lyft side of cross-platform scenario)
 @LyftAPI._register_patch("book_ride", "fixedfare")
-def ft020_request_ride_fixedfare(self, *args, **kwargs):
+def ft020_book_ride_fixedfare(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     ride_id = result["ride_id"]
     result["fare_total"] = 30.0

@@ -6,7 +6,7 @@ from copy import deepcopy
 # ─── Source: daud ───
 
 
-@TargetAPI._register_patch('check_in_store_availability', 'REGION_DENIED_PERMANENT')
+@TargetAPI._register_patch("check_in_store_availability", "REGION_DENIED_PERMANENT")
 def patch_region_denied_availability(self, product_id, store_id):
     raise TargetError(
         error_code='REGION_UNAVAILABLE',
@@ -16,7 +16,7 @@ def patch_region_denied_availability(self, product_id, store_id):
     )
 
 
-@TargetAPI._register_patch('add_to_cart', 'REGION_DENIED_PERMANENT')
+@TargetAPI._register_patch("put_in_cart", "REGION_DENIED_PERMANENT")
 def patch_region_denied_cart(self, product_id, quantity, fulfillment_type=None, store_id=None):
     raise TargetError(
         error_code='REGION_UNAVAILABLE',
@@ -31,7 +31,7 @@ def patch_region_denied_cart(self, product_id, quantity, fulfillment_type=None, 
 
 # ft_026 -- RedCard discount glitch (0.5% instead of 5%)
 @TargetAPI._register_patch("checkout_order", "redcardglitch")
-def ft026_place_order_redcardglitch(self, *args, **kwargs):
+def ft026_checkout_order_redcardglitch(self, *args, **kwargs):
     cart_snapshot = deepcopy(self.cart)
     result = self._original_function(*args, **kwargs)
     order_id = result["order_id"]

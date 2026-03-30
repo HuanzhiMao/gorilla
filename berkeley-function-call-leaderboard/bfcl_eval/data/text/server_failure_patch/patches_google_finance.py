@@ -5,7 +5,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.google_finance impo
 # ─── Source: daud ───
 
 
-@GoogleFinanceAPI._register_patch('get_google_quote', 'QUOTE_ENDPOINT_GONE_PERMANENT')
+@GoogleFinanceAPI._register_patch("get_google_quote", "QUOTE_ENDPOINT_GONE_PERMANENT")
 def patch_quote_gone(self, symbol, exchange=None):
     raise GoogleFinanceError(
         error_code='ENDPOINT_GONE',
@@ -15,7 +15,7 @@ def patch_quote_gone(self, symbol, exchange=None):
     )
 
 
-@GoogleFinanceAPI._register_patch('get_google_price_chart', 'STALE_SIX_WEEKS_PERMANENT')
+@GoogleFinanceAPI._register_patch("get_google_price_chart", "STALE_SIX_WEEKS_PERMANENT")
 def patch_stale_chart(self, symbol, window='1M'):
     result = self._original_function(symbol, window)
     if symbol.upper() in {'ENPH', 'FSLR'}:
@@ -30,7 +30,7 @@ def patch_stale_chart(self, symbol, window='1M'):
     return result
 
 
-@GoogleFinanceAPI._register_patch('get_google_quote', 'SEMI_SCHEMA_SHIFT_PERMANENT')
+@GoogleFinanceAPI._register_patch("get_google_quote", "SEMI_SCHEMA_SHIFT_PERMANENT")
 def patch_schema_shift(self, symbol, exchange=None):
     quote = self._original_function(symbol, exchange)
     if symbol.upper() not in {'AVGO', 'QCOM', 'MRVL'}:

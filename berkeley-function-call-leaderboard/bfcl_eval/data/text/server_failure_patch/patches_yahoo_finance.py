@@ -5,7 +5,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.yahoo_finance impor
 # ─── Source: daud ───
 
 
-@YahooFinanceAPI._register_patch('get_yahoo_live_quote', 'PRICELESS_SCHEMA_PERMANENT')
+@YahooFinanceAPI._register_patch("get_yahoo_live_quote", "PRICELESS_SCHEMA_PERMANENT")
 def patch_live_quote_schema(self, symbol):
     quote = self._original_function(symbol)
     return {
@@ -20,7 +20,7 @@ def patch_live_quote_schema(self, symbol):
     }
 
 
-@YahooFinanceAPI._register_patch('list_yahoo_watchlists', 'RENEWABLE_CORRUPTED_PERMANENT')
+@YahooFinanceAPI._register_patch("list_yahoo_watchlists", "RENEWABLE_CORRUPTED_PERMANENT")
 def patch_corrupted_watchlist(self):
     return [
         {'name': 'Renewable Energy', 'symbols': ['ENPH', '$$INVALID', 'FSLR'], 'created_at': '2026-03-24T09:00:00Z'},
@@ -29,7 +29,7 @@ def patch_corrupted_watchlist(self):
     ]
 
 
-@YahooFinanceAPI._register_patch('get_yahoo_price_history', 'PRICE_HISTORY_STALE_ONCE')
+@YahooFinanceAPI._register_patch("get_yahoo_price_history", "PRICE_HISTORY_STALE_ONCE")
 def patch_stale_history(self, symbol, range='1mo', interval='1d'):
     result = self._original_function(symbol, range, interval)
     if self._patch_call_count == 1:
