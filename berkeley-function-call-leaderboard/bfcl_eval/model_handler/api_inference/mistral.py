@@ -118,14 +118,38 @@ class MistralHandler(BaseHandler):
     def add_first_turn_message_FC(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
+        for message in first_turn_message:
+            has_image = "image_content" in message
+            has_audio = "audio_content" in message
+            if has_image or has_audio:
+                new_content = []
+                new_content.append({"type": "text", "text": message["content"]})
+                if has_image:
+                    for image_content in message["image_content"]:
+                        new_content.append(
+                            {
+                                "type": "image_url",
+                                "image_url": f"data:{image_content['type']};base64,{image_content['image_base64']}",
+                            }
+                        )
+                    del message["image_content"]
+                if has_audio:
+                    for audio_content in message["audio_content"]:
+                        new_content.append(
+                            {
+                                "type": "input_audio",
+                                "input_audio": audio_content["audio_base64"],
+                            }
+                        )
+                    del message["audio_content"]
+                message["content"] = new_content
         inference_data["message"].extend(first_turn_message)
         return inference_data
 
     def _add_next_turn_user_message_FC(
         self, inference_data: dict, user_message: list[dict]
     ) -> dict:
-        inference_data["message"].extend(user_message)
-        return inference_data
+        return self.add_first_turn_message_FC(inference_data, user_message)
 
     def _add_assistant_message_FC(
         self, inference_data: dict, model_response_data: dict
@@ -185,6 +209,31 @@ class MistralHandler(BaseHandler):
     def add_first_turn_message_prompting(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
+        for message in first_turn_message:
+            has_image = "image_content" in message
+            has_audio = "audio_content" in message
+            if has_image or has_audio:
+                new_content = []
+                if has_image:
+                    for image_content in message["image_content"]:
+                        new_content.append(
+                            {
+                                "type": "image_url",
+                                "image_url": f"data:{image_content['type']};base64,{image_content['image_base64']}",
+                            }
+                        )
+                    del message["image_content"]
+                if has_audio:
+                    for audio_content in message["audio_content"]:
+                        new_content.append(
+                            {
+                                "type": "input_audio",
+                                "input_audio": audio_content["audio_base64"],
+                            }
+                        )
+                    del message["audio_content"]
+                new_content.append({"type": "text", "text": message["content"]})
+                message["content"] = new_content
         inference_data["message"].extend(first_turn_message)
         return inference_data
 

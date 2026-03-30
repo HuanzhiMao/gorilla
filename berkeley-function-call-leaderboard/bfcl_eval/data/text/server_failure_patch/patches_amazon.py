@@ -5,8 +5,8 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.amazon import Amazo
 # ─── Source: daud ─────────────────────────────────────────────────────────────
 
 
-@AmazonAPI._register_patch("add_to_cart", "ADD_TO_CART_503_PERMANENT")
-def patch_add_to_cart_503(self, product_id, quantity, variant_id=None, seller_id=None, gift_wrap=False, gift_message=None):
+@AmazonAPI._register_patch("add_to_cart", "503_permanent")
+def add_to_cart_503_permanent(self, product_id, quantity, variant_id=None, seller_id=None, gift_wrap=False, gift_message=None):
     raise AmazonError(
         error_code='SERVICE_UNAVAILABLE',
         message='503 Service Unavailable: High traffic, please retry.',
@@ -15,8 +15,8 @@ def patch_add_to_cart_503(self, product_id, quantity, variant_id=None, seller_id
     )
 
 
-@AmazonAPI._register_patch("get_cart", "GHOST_ITEMS_PERMANENT")
-def patch_get_cart_ghost(self):
+@AmazonAPI._register_patch("get_cart", "ghost_items_permanent")
+def get_cart_ghost_items_permanent(self):
     cart = self._original_function()
     cart['ghost_order_reference'] = 'AMZ-9918'
     cart['subtotal'] = 34782
@@ -24,8 +24,8 @@ def patch_get_cart_ghost(self):
     return cart
 
 
-@AmazonAPI._register_patch("apply_coupon", "CART_CORRUPTED_PERMANENT")
-def patch_coupon_corrupted(self, coupon_code):
+@AmazonAPI._register_patch("apply_coupon", "cart_corrupted_permanent")
+def apply_coupon_cart_corrupted_permanent(self, coupon_code):
     raise AmazonError(
         error_code='CART_CORRUPTED',
         message='Coupon application failed because the current cart contains corrupted legacy line items.',
@@ -34,8 +34,8 @@ def patch_coupon_corrupted(self, coupon_code):
     )
 
 
-@AmazonAPI._register_patch("get_product_offers", "NESTED_OFFERS_ONCE")
-def patch_nested_offers(self, product_id):
+@AmazonAPI._register_patch("get_product_offers", "nested_offers_once")
+def get_product_offers_nested_offers_once(self, product_id):
     offers = self._original_function(product_id)
     if self._patch_call_count == 1 and product_id == 'AMZ-DAUD-1006':
         primary = offers[0]
@@ -51,8 +51,8 @@ def patch_nested_offers(self, product_id):
     return offers
 
 
-@AmazonAPI._register_patch("add_to_cart", "SELLER_REQUIRED_ONCE")
-def patch_seller_required(self, product_id, quantity, variant_id=None, seller_id=None, gift_wrap=False, gift_message=None):
+@AmazonAPI._register_patch("add_to_cart", "seller_required_once")
+def add_to_cart_seller_required_once(self, product_id, quantity, variant_id=None, seller_id=None, gift_wrap=False, gift_message=None):
     if self._patch_call_count == 1 and product_id == 'AMZ-DAUD-1006' and not seller_id:
         raise AmazonError(
             error_code='UNPROCESSABLE_ENTITY',
@@ -63,8 +63,8 @@ def patch_seller_required(self, product_id, quantity, variant_id=None, seller_id
     return self._original_function(product_id, quantity, variant_id, seller_id, gift_wrap, gift_message)
 
 
-@AmazonAPI._register_patch("add_to_cart", "SILENT_REPLICATION_LAG_ONCE")
-def patch_replication_lag(self, product_id, quantity, variant_id=None, seller_id=None, gift_wrap=False, gift_message=None):
+@AmazonAPI._register_patch("add_to_cart", "silent_replication_lag_once")
+def add_to_cart_silent_replication_lag_once(self, product_id, quantity, variant_id=None, seller_id=None, gift_wrap=False, gift_message=None):
     if self._patch_call_count == 1:
         return {
             'status': 'success',
@@ -99,7 +99,7 @@ def place_order_session_expired(self, *args, **kwargs):
 
 # ft_027 -- service unavailable
 @AmazonAPI._register_patch("add_to_cart", "unavailable")
-def ft027_add_to_cart_unavailable(self, *args, **kwargs):
+def add_to_cart_unavailable(self, *args, **kwargs):
     raise AmazonError(
         "SERVICE_UNAVAILABLE",
         "Amazon add_to_cart is unavailable for this product.",

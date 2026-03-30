@@ -17,7 +17,7 @@ def _arg(args, kwargs, idx, name, default=None):
 # Note: Can also be achieved purely via initial state (payment_methods=[])
 # ============================================================================
 @DoorDashAPI._register_patch("place_dash", "s58_payment_not_found")
-def s58_place_dash(self, *args, **kwargs):
+def place_dash_s58_payment_not_found(self, *args, **kwargs):
     payment_method_id = _arg(args, kwargs, 3, "payment_method_id")
     raise DoorDashError(
         error_code="PAYMENT_METHOD_NOT_FOUND",
@@ -32,7 +32,7 @@ def s58_place_dash(self, *args, **kwargs):
 # Trigger: reorder fails because restaurant is closed
 # ============================================================================
 @DoorDashAPI._register_patch("reorder", "s59_pho_saigon_closed")
-def s59_reorder(self, *args, **kwargs):
+def reorder_s59_pho_saigon_closed(self, *args, **kwargs):
     raise DoorDashError(
         error_code="RESTAURANT_CLOSED",
         message="Restaurant is currently closed.",
@@ -46,7 +46,7 @@ def s59_reorder(self, *args, **kwargs):
 # Trigger: place_order always fails
 # ============================================================================
 @DoorDashAPI._register_patch("place_dash", "s62_restaurant_rejected_persistent")
-def s62_place_dash(self, *args, **kwargs):
+def place_dash_s62_restaurant_rejected_persistent(self, *args, **kwargs):
     raise DoorDashError(
         error_code="RESTAURANT_REJECTED",
         message="Restaurant failed to confirm the order.",
@@ -60,7 +60,7 @@ def s62_place_dash(self, *args, **kwargs):
 # Trigger: place_order fails if any item other than guac_dip is requested
 # ============================================================================
 @DoorDashAPI._register_patch("place_dash", "s63_partial_stock_only_guac")
-def s63_place_dash(self, *args, **kwargs):
+def place_dash_s63_partial_stock_only_guac(self, *args, **kwargs):
     items = _arg(args, kwargs, 1, "items", [])
     available_items = {"guac_dip"}
     bad_items = [

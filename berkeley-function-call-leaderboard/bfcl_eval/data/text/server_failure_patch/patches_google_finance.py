@@ -5,8 +5,8 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.google_finance impo
 # ─── Source: daud ───
 
 
-@GoogleFinanceAPI._register_patch("get_google_quote", "QUOTE_ENDPOINT_GONE_PERMANENT")
-def patch_quote_gone(self, symbol, exchange=None):
+@GoogleFinanceAPI._register_patch("get_google_quote", "quote_endpoint_gone_permanent")
+def get_google_quote_quote_endpoint_gone_permanent(self, symbol, exchange=None):
     raise GoogleFinanceError(
         error_code='ENDPOINT_GONE',
         message='HTTP 410 Gone. This Google Finance quote endpoint has been permanently discontinued.',
@@ -15,8 +15,8 @@ def patch_quote_gone(self, symbol, exchange=None):
     )
 
 
-@GoogleFinanceAPI._register_patch("get_google_price_chart", "STALE_SIX_WEEKS_PERMANENT")
-def patch_stale_chart(self, symbol, window='1M'):
+@GoogleFinanceAPI._register_patch("get_google_price_chart", "stale_six_weeks_permanent")
+def get_google_price_chart_stale_six_weeks_permanent(self, symbol, window='1M'):
     result = self._original_function(symbol, window)
     if symbol.upper() in {'ENPH', 'FSLR'}:
         result['points'] = [
@@ -30,8 +30,8 @@ def patch_stale_chart(self, symbol, window='1M'):
     return result
 
 
-@GoogleFinanceAPI._register_patch("get_google_quote", "SEMI_SCHEMA_SHIFT_PERMANENT")
-def patch_schema_shift(self, symbol, exchange=None):
+@GoogleFinanceAPI._register_patch("get_google_quote", "semi_schema_shift_permanent")
+def get_google_quote_semi_schema_shift_permanent(self, symbol, exchange=None):
     quote = self._original_function(symbol, exchange)
     if symbol.upper() not in {'AVGO', 'QCOM', 'MRVL'}:
         return quote
@@ -48,7 +48,7 @@ def patch_schema_shift(self, symbol, exchange=None):
 # ─── Source: jason ───
 
 
-@GoogleFinanceAPI._register_patch("get_google_quote", "UPSTREAM_TIMEOUT")
+@GoogleFinanceAPI._register_patch("get_google_quote", "upstream_timeout")
 def get_google_quote_upstream_timeout(self, symbol, exchange=None):
 
     if self._patch_call_count == 1:
@@ -61,8 +61,8 @@ def get_google_quote_upstream_timeout(self, symbol, exchange=None):
     return self._original_function(symbol, exchange)
 
 
-@GoogleFinanceAPI._register_patch("get_google_price_chart", "STALE_CHART_CACHE")
-def get_google_price_chart_stale(self, symbol, window="1M"):
+@GoogleFinanceAPI._register_patch("get_google_price_chart", "stale_chart_cache")
+def get_google_price_chart_stale_chart_cache(self, symbol, window="1M"):
     result = self._original_function(symbol, window)
     result["generated_at"] = "2026-03-18T15:00:00Z"
     if result.get("points"):
@@ -75,13 +75,13 @@ def get_google_price_chart_stale(self, symbol, window="1M"):
     return result
 
 
-@GoogleFinanceAPI._register_patch("save_google_watchlist", "SILENT_WATCHLIST_DROP")
-def save_google_watchlist_silent(self, name, symbols):
+@GoogleFinanceAPI._register_patch("save_google_watchlist", "silent_watchlist_drop")
+def save_google_watchlist_silent_watchlist_drop(self, name, symbols):
     return {"name": name, "symbols": [symbol.upper() for symbol in symbols], "created_at": "2026-03-23T15:00:00Z"}
 
 
-@GoogleFinanceAPI._register_patch("get_google_quote", "QUOTE_SCHEMA_SHIFT")
-def get_google_quote_schema(self, symbol, exchange=None):
+@GoogleFinanceAPI._register_patch("get_google_quote", "quote_schema_shift")
+def get_google_quote_quote_schema_shift(self, symbol, exchange=None):
     quote = self._original_function(symbol, exchange)
     return {
         "ticker": quote["symbol"],
@@ -92,8 +92,8 @@ def get_google_quote_schema(self, symbol, exchange=None):
     }
 
 
-@GoogleFinanceAPI._register_patch("list_google_watchlists", "CORRUPTED_WATCHLIST_INDEX")
-def list_google_watchlists_corrupted(self):
+@GoogleFinanceAPI._register_patch("list_google_watchlists", "corrupted_watchlist_index")
+def list_google_watchlists_corrupted_watchlist_index(self):
     return [
         {"name": "ai_leaders", "symbols": ["AAPL", "NVDA", "ZZZZ"], "created_at": "2026-03-20T18:15:00Z"},
         {"name": "ai_leaders", "symbols": ["MSFT"], "created_at": "2026-03-20T18:16:00Z"},

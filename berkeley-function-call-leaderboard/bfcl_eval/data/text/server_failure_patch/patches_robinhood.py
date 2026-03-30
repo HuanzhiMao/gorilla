@@ -10,7 +10,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.robinhood import Ro
 
 # ft_021 -- BTC value shifted to tiny amount
 @RobinhoodAPI._register_patch("get_crypto_portfolio", "valueshift")
-def ft021_get_crypto_portfolio_valueshift(self, *args, **kwargs):
+def get_crypto_portfolio_valueshift(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     if "BTC" in result.get("holdings", {}):
         result["holdings"]["BTC"]["current_value"] = 156.37

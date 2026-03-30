@@ -6,7 +6,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.zelle import ZelleA
 
 
 @ZelleAPI._register_patch("send_transfer", "phantom_send")
-def zelle_send_transfer_phantom(self, *args, **kwargs):
+def send_transfer_phantom_send(self, *args, **kwargs):
     """
     Returns a 200 OK with a valid-looking transaction_id and 'completed' status,
     but never actually persists the transaction. get_transaction on the returned
@@ -21,7 +21,7 @@ def zelle_send_transfer_phantom(self, *args, **kwargs):
 
 
 @ZelleAPI._register_patch("request_transfer", "phantom_request")
-def zelle_request_transfer_phantom(self, *args, **kwargs):
+def request_transfer_phantom_request(self, *args, **kwargs):
     """
     Returns a 200 OK with a valid-looking request_id and 'pending' status,
     but never actually persists the request. list_requests will have no record
@@ -36,7 +36,7 @@ def zelle_request_transfer_phantom(self, *args, **kwargs):
 
 
 @ZelleAPI._register_patch("get_contacts", "stale_contacts")
-def zelle_get_recipients_stale(self, *args, **kwargs):
+def get_contacts_stale_contacts(self, *args, **kwargs):
     """
     Returns the contact list but injects a stale last_synced timestamp from
     8 days ago and strips out any contact matching Alex Nguyen, simulating
@@ -51,7 +51,7 @@ def zelle_get_recipients_stale(self, *args, **kwargs):
 
 
 @ZelleAPI._register_patch("check_recipient_enrolled", "stale_enrollment")
-def zelle_check_recipient_enrolled_stale(self, *args, **kwargs):
+def check_recipient_enrolled_stale_enrollment(self, *args, **kwargs):
     """
     Always returns enrolled=false with status UNKNOWN for alex.nguyen@outlook.com,
     simulating a stale enrollment database that hasn't registered the user's
@@ -64,7 +64,7 @@ def zelle_check_recipient_enrolled_stale(self, *args, **kwargs):
 
 
 @ZelleAPI._register_patch("get_daily_limit", "stale_cache")
-def zelle_get_daily_limit_stale(self, *args, **kwargs):
+def get_daily_limit_stale_cache(self, *args, **kwargs):
     """
     Returns a daily limit response that looks healthy ($2,500 remaining)
     but carries a cached_at timestamp from 2 days ago. The real remaining
@@ -79,7 +79,7 @@ def zelle_get_daily_limit_stale(self, *args, **kwargs):
 
 
 @ZelleAPI._register_patch("send_transfer", "limit_exceeded")
-def zelle_send_transfer_limit_exceeded(self, *args, **kwargs):
+def send_transfer_limit_exceeded(self, *args, **kwargs):
     """
     Always returns DAILY_LIMIT_EXCEEDED revealing the true remaining
     limit is only $700, exposing the stale cache from get_daily_limit.
@@ -92,7 +92,7 @@ def zelle_send_transfer_limit_exceeded(self, *args, **kwargs):
 
 
 @ZelleAPI._register_patch("get_transfer", "schema_corruption")
-def zelle_get_transfer_schema_corruption(self, *args, **kwargs):
+def get_transfer_schema_corruption(self, *args, **kwargs):
     """
     Calls the original get_transaction but overwrites recipient_identifier
     with the sender's own email and nulls out the memo field, simulating
@@ -108,7 +108,7 @@ def zelle_get_transfer_schema_corruption(self, *args, **kwargs):
 
 
 @ZelleAPI._register_patch("get_transfer", "decimal_shift")
-def zelle_get_transfer_decimal_shift(self, *args, **kwargs):
+def get_transfer_decimal_shift(self, *args, **kwargs):
     """
     Calls the original get_transaction but multiplies the stored amount by 10,
     simulating a decimal-place shift in the transaction ledger. The send_money
@@ -126,7 +126,7 @@ def zelle_get_transfer_decimal_shift(self, *args, **kwargs):
 
 # ft_024 -- decimal shift (amount divided by 10)
 @ZelleAPI._register_patch("send_transfer", "decimalshift")
-def ft024_send_transfer_decimalshift(self, *args, **kwargs):
+def send_transfer_decimalshift(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     transaction_id = result["transaction_id"]
     amount = kwargs.get("amount", args[1] if len(args) > 1 else 150.0)

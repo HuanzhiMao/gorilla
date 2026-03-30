@@ -46,7 +46,7 @@ def create_booking_room_unavailable(self, *args, **kwargs):
 
 # ft_001 -- price mismatch with fake discount breakdown
 @BookingAPI._register_patch("create_booking", "pricemismatch")
-def ft001_create_booking_pricemismatch(self, *args, **kwargs):
+def create_booking_pricemismatch(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     booking_id = result["booking_id"]
     bad_total = 88000
@@ -63,7 +63,7 @@ def ft001_create_booking_pricemismatch(self, *args, **kwargs):
 
 # ft_005 -- discount glitch inflates total
 @BookingAPI._register_patch("create_booking", "discountglitch")
-def ft005_create_booking_discountglitch(self, *args, **kwargs):
+def create_booking_discountglitch(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     booking_id = result["booking_id"]
     bad_total = 332500
@@ -77,7 +77,7 @@ def ft005_create_booking_discountglitch(self, *args, **kwargs):
 
 # ft_008 -- room swap to wrong room type
 @BookingAPI._register_patch("create_booking", "roomswap")
-def ft008_create_booking_roomswap(self, *args, **kwargs):
+def create_booking_roomswap(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     reservation_id = result["booking_id"]
     result["room_id"] = "ROOM-008A"
@@ -92,7 +92,7 @@ def ft008_create_booking_roomswap(self, *args, **kwargs):
 
 # ft_009 -- persistent wrong dates/guests (Feb 11-14, 1 guest)
 @BookingAPI._register_patch("create_booking", "dateguestpersistent009")
-def ft009_create_booking_dateguestpersistent(self, *args, **kwargs):
+def create_booking_dateguestpersistent009(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     reservation_id = result["booking_id"]
     result["check_in"] = "2026-02-11"
@@ -107,7 +107,7 @@ def ft009_create_booking_dateguestpersistent(self, *args, **kwargs):
 
 # ft_010 -- persistent wrong dates/guests (Dec 21-24, 1 guest)
 @BookingAPI._register_patch("create_booking", "dateguestpersistent010")
-def ft010_create_booking_dateguestpersistent(self, *args, **kwargs):
+def create_booking_dateguestpersistent010(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     reservation_id = result["booking_id"]
     result["check_in"] = "2026-12-21"
@@ -122,7 +122,7 @@ def ft010_create_booking_dateguestpersistent(self, *args, **kwargs):
 
 # ft_011 -- ghost write (booking deleted from store after creation)
 @BookingAPI._register_patch("create_booking", "ghostwrite")
-def ft011_create_booking_ghostwrite(self, *args, **kwargs):
+def create_booking_ghostwrite(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     reservation_id = result["booking_id"]
     if reservation_id in self.bookings:
@@ -132,7 +132,7 @@ def ft011_create_booking_ghostwrite(self, *args, **kwargs):
 
 # ft_002 -- capacity-bypass: returns properties ignoring guest count
 @BookingAPI._register_patch("search_properties", "capbypass002")
-def ft002_search_properties_capbypass(self, *args, **kwargs):
+def search_properties_capbypass002(self, *args, **kwargs):
     city = kwargs.get("city", args[0] if args else "")
     limit = kwargs.get("limit", 20)
     results = []
@@ -155,7 +155,7 @@ def ft002_search_properties_capbypass(self, *args, **kwargs):
 
 # ft_007 -- capacity-bypass for hostels
 @BookingAPI._register_patch("search_properties", "capbypass007")
-def ft007_search_properties_capbypass(self, *args, **kwargs):
+def search_properties_capbypass007(self, *args, **kwargs):
     city = kwargs.get("city", args[0] if args else "")
     limit = kwargs.get("limit", 20)
     results = []
@@ -176,7 +176,7 @@ def ft007_search_properties_capbypass(self, *args, **kwargs):
 
 # ft_003 -- refund contradiction
 @BookingAPI._register_patch("cancel_booking", "refundcontradiction")
-def ft003_cancel_booking_refundcontradiction(self, *args, **kwargs):
+def cancel_booking_refundcontradiction(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     result["refund_amount"] = 17500
     result["free_cancellation"] = False
@@ -185,7 +185,7 @@ def ft003_cancel_booking_refundcontradiction(self, *args, **kwargs):
 
 # ft_001/ft_005/ft_008/ft_009/ft_010 -- blocked (identical implementations)
 @BookingAPI._register_patch("modify_booking", "blocked")
-def ft001_modify_booking_blocked(self, *args, **kwargs):
+def modify_booking_blocked(self, *args, **kwargs):
     raise BookingError(
         "FEATURE_DISABLED",
         "Booking modifications are not available for this property. Please try a different approach.",
@@ -194,7 +194,7 @@ def ft001_modify_booking_blocked(self, *args, **kwargs):
 
 # ft_001/ft_005/ft_008/ft_009 -- blocked (identical implementations)
 @BookingAPI._register_patch("get_property", "blocked")
-def ft001_get_property_blocked(self, *args, **kwargs):
+def get_property_blocked(self, *args, **kwargs):
     raise BookingError(
         "FEATURE_DISABLED",
         "Property details are temporarily not available. Please try a different approach.",

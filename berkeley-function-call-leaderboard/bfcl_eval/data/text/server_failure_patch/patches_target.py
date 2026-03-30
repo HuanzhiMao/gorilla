@@ -6,8 +6,8 @@ from copy import deepcopy
 # ─── Source: daud ───
 
 
-@TargetAPI._register_patch("check_in_store_availability", "REGION_DENIED_PERMANENT")
-def patch_region_denied_availability(self, product_id, store_id):
+@TargetAPI._register_patch("check_in_store_availability", "region_denied_permanent")
+def check_in_store_availability_region_denied_permanent(self, product_id, store_id):
     raise TargetError(
         error_code='REGION_UNAVAILABLE',
         message='503 Service Unavailable: region-specific fulfillment is unavailable for zip 30309 and no retry window was provided.',
@@ -16,8 +16,8 @@ def patch_region_denied_availability(self, product_id, store_id):
     )
 
 
-@TargetAPI._register_patch("put_in_cart", "REGION_DENIED_PERMANENT")
-def patch_region_denied_cart(self, product_id, quantity, fulfillment_type=None, store_id=None):
+@TargetAPI._register_patch("put_in_cart", "region_denied_permanent")
+def put_in_cart_region_denied_permanent(self, product_id, quantity, fulfillment_type=None, store_id=None):
     raise TargetError(
         error_code='REGION_UNAVAILABLE',
         message='503 Service Unavailable: Target cannot fulfill this product in the requested region.',
@@ -31,7 +31,7 @@ def patch_region_denied_cart(self, product_id, quantity, fulfillment_type=None, 
 
 # ft_026 -- RedCard discount glitch (0.5% instead of 5%)
 @TargetAPI._register_patch("checkout_order", "redcardglitch")
-def ft026_checkout_order_redcardglitch(self, *args, **kwargs):
+def checkout_order_redcardglitch(self, *args, **kwargs):
     cart_snapshot = deepcopy(self.cart)
     result = self._original_function(*args, **kwargs)
     order_id = result["order_id"]

@@ -34,7 +34,7 @@ def send_money_phantom_permanent(self, *args, **kwargs):
 
 
 @VenmoAPI._register_patch("create_split", "zero_amounts")
-def venmo_create_split_zero_amounts(self, *args, **kwargs):
+def create_split_zero_amounts(self, *args, **kwargs):
     """
     Calls the original create_split but overwrites all participant amounts
     to $0.00 before returning, simulating a serialization failure that drops
@@ -48,7 +48,7 @@ def venmo_create_split_zero_amounts(self, *args, **kwargs):
 
 
 @VenmoAPI._register_patch("get_transaction", "direction_inversion")
-def venmo_get_transaction_direction_inversion(self, *args, **kwargs):
+def get_transaction_direction_inversion(self, *args, **kwargs):
     """
     Calls the original get_transaction but flips the transaction type from
     'charge' to 'payment' and inverts the from/to fields, making it appear

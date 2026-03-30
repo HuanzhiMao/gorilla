@@ -10,7 +10,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.apple_music import 
 # Trigger: search_catalog returns empty albums for "Phosphor"
 # ============================================================================
 @AppleMusicAPI._register_patch("search_catalog", "s66_phosphor_removed")
-def s66_search_catalog(self, query, types=None, limit=10):
+def search_catalog_s66_phosphor_removed(self, query, types=None, limit=10):
     result = self._original_function(query, types, limit)
     if "phosphor" in query.lower():
         if "albums" in result:
@@ -24,7 +24,7 @@ def s66_search_catalog(self, query, types=None, limit=10):
 # Note: Can also be done via initial state with track_ids=[]
 # ============================================================================
 @AppleMusicAPI._register_patch("play_playlist", "s67_empty_playlist")
-def s67_play_playlist(self, playlist_id, track_offset=0):
+def play_playlist_s67_empty_playlist(self, playlist_id, track_offset=0):
     if playlist_id == "pl_morning":
         raise AppleMusicError(
             error_code="EMPTY_PLAYLIST",
@@ -41,7 +41,7 @@ def s67_play_playlist(self, playlist_id, track_offset=0):
 # Initial state has playback_states showing t_ghost as current track.
 # ============================================================================
 @AppleMusicAPI._register_patch("rate_track", "s68_ghost_track")
-def s68_rate_track(self, track_id, rating):
+def rate_track_s68_ghost_track(self, track_id, rating):
     if track_id == "t_ghost":
         raise AppleMusicError(
             error_code="TRACK_NOT_FOUND",
@@ -59,7 +59,7 @@ def s68_rate_track(self, track_id, rating):
 #        if the track isn't in catalog_tracks.
 # ============================================================================
 @AppleMusicAPI._register_patch("search_catalog", "s71_chrome_butterfly_removed")
-def s71_search_catalog(self, query, types=None, limit=10):
+def search_catalog_s71_chrome_butterfly_removed(self, query, types=None, limit=10):
     result = self._original_function(query, types, limit)
     if "chrome butterfly" in query.lower():
         if "tracks" in result:
@@ -72,7 +72,7 @@ def s71_search_catalog(self, query, types=None, limit=10):
 # Trigger: get_recently_added returns hardcoded stale data
 # ============================================================================
 @AppleMusicAPI._register_patch("get_recently_added", "s74_stale_recently_added")
-def s74_get_recently_added(self, limit=20):
+def get_recently_added_s74_stale_recently_added(self, limit=20):
     return [
         {
             "item_id": "alb_old_iu",
@@ -87,7 +87,7 @@ def s74_get_recently_added(self, limit=20):
 # Trigger: search_catalog returns empty artists for "King Solace"
 # ============================================================================
 @AppleMusicAPI._register_patch("search_catalog", "s76_king_solace_removed")
-def s76_search_catalog(self, query, types=None, limit=10):
+def search_catalog_s76_king_solace_removed(self, query, types=None, limit=10):
     result = self._original_function(query, types, limit)
     if "king solace" in query.lower():
         if "artists" in result:
@@ -102,7 +102,7 @@ def s76_search_catalog(self, query, types=None, limit=10):
 # "I just skipped a couple tracks"
 # ============================================================================
 @AppleMusicAPI._register_patch("get_playback_state", "s77_stale_playback")
-def s77_get_playback_state(self):
+def get_playback_state_s77_stale_playback(self):
     return {
         "track_id": "t_butter",
         "station_id": None,
@@ -118,7 +118,7 @@ def s77_get_playback_state(self):
 # Trigger: skip_to_next raises NO_ACTIVE_PLAYBACK
 # ============================================================================
 @AppleMusicAPI._register_patch("skip_to_next", "s79_no_active_playback")
-def s79_skip_to_next(self):
+def skip_to_next_s79_no_active_playback(self):
     raise AppleMusicError(
         error_code="NO_ACTIVE_PLAYBACK",
         message="No active playback session found.",

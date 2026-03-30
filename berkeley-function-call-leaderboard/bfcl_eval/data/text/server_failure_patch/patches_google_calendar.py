@@ -8,8 +8,8 @@ import uuid
 # ─── Source: jason ────────────────────────────────────────────────────────────
 
 
-@GoogleCalendarAPI._register_patch("get_free_busy", "AVAILABILITY_ENGINE_OFFLINE")
-def s25_get_free_busy(self, time_min, time_max):
+@GoogleCalendarAPI._register_patch("get_free_busy", "availability_engine_offline")
+def get_free_busy_availability_engine_offline(self, time_min, time_max):
     raise GoogleCalendarError(
         error_code="AVAILABILITY_ENGINE_OFFLINE",
         message="The availability engine is currently offline for maintenance.",
@@ -18,8 +18,8 @@ def s25_get_free_busy(self, time_min, time_max):
     )
 
 
-@GoogleCalendarAPI._register_patch("create_event", "WRITE_THROTTLED")
-def s26_create_event(self, calendar_id, title, start_time, end_time, **kwargs):
+@GoogleCalendarAPI._register_patch("create_event", "write_throttled")
+def create_event_write_throttled(self, calendar_id, title, start_time, end_time, **kwargs):
     if self._patch_call_count == 2:
         raise GoogleCalendarError(
             error_code="WRITE_THROTTLED",
@@ -30,8 +30,8 @@ def s26_create_event(self, calendar_id, title, start_time, end_time, **kwargs):
     return self._original_function(calendar_id, title, start_time, end_time, **kwargs)
 
 
-@GoogleCalendarAPI._register_patch("share_calendar", "SHARING_BLOCKED_BY_POLICY")
-def s27_share_calendar(self, calendar_id, email, role="reader"):
+@GoogleCalendarAPI._register_patch("share_calendar", "sharing_blocked_by_policy")
+def share_calendar_sharing_blocked_by_policy(self, calendar_id, email, role="reader"):
     raise GoogleCalendarError(
         error_code="SHARING_BLOCKED_BY_POLICY",
         message="Calendar sharing is blocked by your organization's admin policy.",
@@ -40,13 +40,13 @@ def s27_share_calendar(self, calendar_id, email, role="reader"):
     )
 
 
-@GoogleCalendarAPI._register_patch("get_free_busy", "STALE_FREE_BUSY_INDEX")
-def s30_get_free_busy(self, time_min, time_max):
+@GoogleCalendarAPI._register_patch("get_free_busy", "stale_free_busy_index")
+def get_free_busy_stale_free_busy_index(self, time_min, time_max):
     return {"time_min": time_min, "time_max": time_max, "busy": []}
 
 
-@GoogleCalendarAPI._register_patch("list_events", "STALE_SEARCH_INDEX")
-def s31_list_events(self, calendar_id=None, time_min=None, time_max=None, max_results=20):
+@GoogleCalendarAPI._register_patch("list_events", "stale_search_index")
+def list_events_stale_search_index(self, calendar_id=None, time_min=None, time_max=None, max_results=20):
     result = self._original_function(calendar_id, time_min, time_max, max_results)
     if self._patch_call_count == 1:
         for ev in result:
@@ -56,8 +56,8 @@ def s31_list_events(self, calendar_id=None, time_min=None, time_max=None, max_re
     return result
 
 
-@GoogleCalendarAPI._register_patch("search_events", "STALE_SEARCH_INDEX_PHANTOM")
-def s34_search_events(self, query, calendar_id=None):
+@GoogleCalendarAPI._register_patch("search_events", "stale_search_index_phantom")
+def search_events_stale_search_index_phantom(self, query, calendar_id=None):
     result = self._original_function(query, calendar_id)
     if "project alpha" in query.lower() or "alpha" in query.lower():
         result.insert(0, {
@@ -81,32 +81,32 @@ def s34_search_events(self, query, calendar_id=None):
     return result
 
 
-@GoogleCalendarAPI._register_patch("add_attendee", "SILENT_WRITE_CONFLICT")
-def s35_add_attendee(self, event_id, email, name=None):
+@GoogleCalendarAPI._register_patch("add_attendee", "silent_write_conflict")
+def add_attendee_silent_write_conflict(self, event_id, email, name=None):
     if self._patch_call_count == 2:
         return {"event_id": event_id, "email": email, "status": "added"}
     return self._original_function(event_id, email, name)
 
 
-@GoogleCalendarAPI._register_patch("move_event", "SILENT_MOVE_NOOP")
-def s36_move_event(self, event_id, new_calendar_id):
+@GoogleCalendarAPI._register_patch("move_event", "silent_move_noop")
+def move_event_silent_move_noop(self, event_id, new_calendar_id):
     return {"event_id": event_id, "calendar_id": new_calendar_id, "status": "moved"}
 
 
-@GoogleCalendarAPI._register_patch("rsvp_event", "SILENT_RSVP_DROP")
-def s37_rsvp_event(self, event_id, response):
+@GoogleCalendarAPI._register_patch("rsvp_event", "silent_rsvp_drop")
+def rsvp_event_silent_rsvp_drop(self, event_id, response):
     if self._patch_call_count == 1:
         return {"event_id": event_id, "response": response, "status": "updated"}
     return self._original_function(event_id, response)
 
 
-@GoogleCalendarAPI._register_patch("share_calendar", "SILENT_SHARE_NOOP")
-def s39_share_calendar(self, calendar_id, email, role="reader"):
+@GoogleCalendarAPI._register_patch("share_calendar", "silent_share_noop")
+def share_calendar_silent_share_noop(self, calendar_id, email, role="reader"):
     return {"calendar_id": calendar_id, "email": email, "role": role, "status": "shared"}
 
 
-@GoogleCalendarAPI._register_patch("add_attendee", "EVENT_VERSION_CONFLICT")
-def s40_add_attendee(self, event_id, email, name=None):
+@GoogleCalendarAPI._register_patch("add_attendee", "event_version_conflict")
+def add_attendee_event_version_conflict(self, event_id, email, name=None):
     if self._patch_call_count == 1:
         raise GoogleCalendarError(
             error_code="EVENT_VERSION_CONFLICT",
@@ -117,8 +117,8 @@ def s40_add_attendee(self, event_id, email, name=None):
     return self._original_function(event_id, email, name)
 
 
-@GoogleCalendarAPI._register_patch("update_event", "SYNC_RULE_OVERRIDE")
-def s41_update_event(self, event_id, title=None, start_time=None, end_time=None,
+@GoogleCalendarAPI._register_patch("update_event", "sync_rule_override")
+def update_event_sync_rule_override(self, event_id, title=None, start_time=None, end_time=None,
                      description=None, location=None, attendees=None, reminders=None):
     result = self._original_function(event_id, title, start_time, end_time,
                                      description, location, attendees, reminders)
@@ -130,8 +130,8 @@ def s41_update_event(self, event_id, title=None, start_time=None, end_time=None,
     return result
 
 
-@GoogleCalendarAPI._register_patch("create_event", "TIME_SLOT_CONFLICT")
-def s42_create_event(self, calendar_id, title, start_time, end_time, **kwargs):
+@GoogleCalendarAPI._register_patch("create_event", "time_slot_conflict")
+def create_event_time_slot_conflict(self, calendar_id, title, start_time, end_time, **kwargs):
     if self._patch_call_count == 1:
         raise GoogleCalendarError(
             error_code="TIME_SLOT_CONFLICT",
@@ -142,8 +142,8 @@ def s42_create_event(self, calendar_id, title, start_time, end_time, **kwargs):
     return self._original_function(calendar_id, title, start_time, end_time, **kwargs)
 
 
-@GoogleCalendarAPI._register_patch("get_event", "EVENT_NOT_FOUND")
-def s43_get_event(self, event_id):
+@GoogleCalendarAPI._register_patch("get_event", "event_not_found")
+def get_event_event_not_found(self, event_id):
     if "weekly_sync" in event_id.lower() or "phantom" in event_id.lower():
         raise GoogleCalendarError(
             error_code="EVENT_NOT_FOUND",
@@ -154,8 +154,8 @@ def s43_get_event(self, event_id):
     return self._original_function(event_id)
 
 
-@GoogleCalendarAPI._register_patch("create_event", "INVALID_ATTENDEE_FORMAT")
-def s45_create_event(self, calendar_id, title, start_time, end_time, **kwargs):
+@GoogleCalendarAPI._register_patch("create_event", "invalid_attendee_format")
+def create_event_invalid_attendee_format(self, calendar_id, title, start_time, end_time, **kwargs):
     if self._patch_call_count == 1:
         raise GoogleCalendarError(
             error_code="INVALID_ATTENDEE_FORMAT",
@@ -168,8 +168,8 @@ def s45_create_event(self, calendar_id, title, start_time, end_time, **kwargs):
     return self._original_function(calendar_id, title, start_time, end_time, **kwargs)
 
 
-@GoogleCalendarAPI._register_patch("quick_add_event", "AMBIGUOUS_TIME_EXPRESSION")
-def s48_quick_add_event(self, calendar_id, text):
+@GoogleCalendarAPI._register_patch("quick_add_event", "ambiguous_time_expression")
+def quick_add_event_ambiguous_time_expression(self, calendar_id, text):
     if self._patch_call_count == 1:
         raise GoogleCalendarError(
             error_code="AMBIGUOUS_TIME_EXPRESSION",
@@ -249,7 +249,7 @@ def create_event_attendee_delay_temporary(self, *args, **kwargs):
 
 # ft_023 -- AM/PM flip (event scheduled at 2-3 AM instead of requested time)
 @GoogleCalendarAPI._register_patch("create_event", "ampmflip")
-def ft023_create_event_ampmflip(self, *args, **kwargs):
+def create_event_ampmflip(self, *args, **kwargs):
     fixed_kwargs = dict(kwargs)
     start_time = fixed_kwargs.get("start_time")
     end_time = fixed_kwargs.get("end_time")
@@ -264,7 +264,7 @@ def ft023_create_event_ampmflip(self, *args, **kwargs):
 
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("quick_add_event", "blocked")
-def ft023_quick_add_event_blocked(self, *args, **kwargs):
+def quick_add_event_blocked(self, *args, **kwargs):
     raise GoogleCalendarError(
         "FEATURE_DISABLED",
         "This feature is currently disabled. Try using create_event instead.",
@@ -273,7 +273,7 @@ def ft023_quick_add_event_blocked(self, *args, **kwargs):
 
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("list_events", "blocked")
-def ft023_list_events_blocked(self, *args, **kwargs):
+def list_events_blocked(self, *args, **kwargs):
     raise GoogleCalendarError(
         "FEATURE_DISABLED",
         "This feature is currently disabled. Try using get_event instead.",
@@ -282,7 +282,7 @@ def ft023_list_events_blocked(self, *args, **kwargs):
 
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("search_events", "blocked")
-def ft023_search_events_blocked(self, *args, **kwargs):
+def search_events_blocked(self, *args, **kwargs):
     raise GoogleCalendarError(
         "FEATURE_DISABLED",
         "This feature is currently disabled. Try using get_event instead.",
@@ -291,7 +291,7 @@ def ft023_search_events_blocked(self, *args, **kwargs):
 
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("update_event", "blocked")
-def ft023_update_event_blocked(self, *args, **kwargs):
+def update_event_blocked(self, *args, **kwargs):
     raise GoogleCalendarError(
         "FEATURE_DISABLED",
         "This feature is currently disabled. Try a different approach to modify your event.",

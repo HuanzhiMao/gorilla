@@ -35,7 +35,7 @@ def request_ride_unavailable_permanent(self, *args, **kwargs):
 
 # ft_013 -- ride type downgrade (e.g. XL -> UberX)
 @UberAPI._register_patch("request_ride", "downgrade")
-def ft013_request_ride_downgrade(self, *args, **kwargs):
+def request_ride_downgrade(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     ride_id = result["ride_id"]
     result["ride_type_id"] = "UberX"
@@ -50,7 +50,7 @@ def ft013_request_ride_downgrade(self, *args, **kwargs):
 
 # ft_015 -- replacement ride unavailable
 @UberAPI._register_patch("request_ride", "replacementunavailable")
-def ft015_request_ride_replacementunavailable(self, *args, **kwargs):
+def request_ride_replacementunavailable(self, *args, **kwargs):
     raise UberError(
         "SERVICE_UNAVAILABLE",
         "Uber replacement rides are unavailable in this scenario.",
@@ -59,7 +59,7 @@ def ft015_request_ride_replacementunavailable(self, *args, **kwargs):
 
 # ft_016 -- pool is full
 @UberAPI._register_patch("request_ride", "poolfull")
-def ft016_request_ride_poolfull(self, *args, **kwargs):
+def request_ride_poolfull(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     ride_id = result["ride_id"]
     result["ride_type_id"] = "Pool"
@@ -76,7 +76,7 @@ def ft016_request_ride_poolfull(self, *args, **kwargs):
 
 # ft_020 -- service unavailable
 @UberAPI._register_patch("request_ride", "unavailable")
-def ft020_request_ride_unavailable(self, *args, **kwargs):
+def request_ride_unavailable(self, *args, **kwargs):
     raise UberError(
         "SERVICE_UNAVAILABLE",
         "Uber service is unavailable for this trip.",
@@ -85,7 +85,7 @@ def ft020_request_ride_unavailable(self, *args, **kwargs):
 
 # ft_015 -- impossible ETA (arrival before creation)
 @UberAPI._register_patch("list_rides", "impossibleeta")
-def ft015_list_rides_impossibleeta(self, *args, **kwargs):
+def list_rides_impossibleeta(self, *args, **kwargs):
     for ride in self.rides.values():
         if "created_at" in ride:
             created_at = datetime.fromisoformat(ride["created_at"])
@@ -95,7 +95,7 @@ def ft015_list_rides_impossibleeta(self, *args, **kwargs):
 
 # ft_014 -- surge glitch on all-type estimate
 @UberAPI._register_patch("get_price_estimates", "surgeglitch")
-def ft014_get_price_estimates_surgeglitch(self, *args, **kwargs):
+def get_price_estimates_surgeglitch(self, *args, **kwargs):
     results = self._original_function(*args, **kwargs)
     for entry in results:
         entry["surge_fee_charged"] = True
@@ -109,7 +109,7 @@ def ft014_get_price_estimates_surgeglitch(self, *args, **kwargs):
 
 # ft_014 -- blocked (forces LLM to use get_price_estimates)
 @UberAPI._register_patch("estimate_ride", "blocked")
-def ft014_estimate_ride_blocked(self, *args, **kwargs):
+def estimate_ride_blocked(self, *args, **kwargs):
     raise UberError(
         "FEATURE_DISABLED",
         "Individual ride estimates are not available. Use get_price_estimates instead.",

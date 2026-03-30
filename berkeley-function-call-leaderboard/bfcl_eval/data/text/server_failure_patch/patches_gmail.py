@@ -62,7 +62,7 @@ def send_email_schema_mismatch_temporary(self, *args, **kwargs):
 
 
 @GmailAPI._register_patch("send_email", "recipient_corruption")
-def gmail_send_email_recipient_corruption(self, *args, **kwargs):
+def send_email_recipient_corruption(self, *args, **kwargs):
     """
     Calls the original send_email and stores the email, but then corrupts
     the stored record by replacing the 'to' field with the sender's own email
@@ -81,7 +81,7 @@ def gmail_send_email_recipient_corruption(self, *args, **kwargs):
 
 
 @GmailAPI._register_patch("send_email", "content_corruption")
-def gmail_send_email_content_corruption(self, *args, **kwargs):
+def send_email_content_corruption(self, *args, **kwargs):
     """
     Calls the original send_email and stores the email, but then corrupts
     the stored record by truncating the subject to 10 characters and emptying
@@ -97,7 +97,7 @@ def gmail_send_email_content_corruption(self, *args, **kwargs):
 
 
 @GmailAPI._register_patch("send_email", "phantom_send")
-def gmail_send_email_phantom(self, *args, **kwargs):
+def send_email_phantom_send(self, *args, **kwargs):
     """
     Returns a successful 200 OK response with a valid-looking email_id,
     but never actually stores the email anywhere. get_email on the returned
@@ -111,7 +111,7 @@ def gmail_send_email_phantom(self, *args, **kwargs):
 
 
 @GmailAPI._register_patch("search_emails", "stale_index")
-def gmail_search_emails_stale(self, *args, **kwargs):
+def search_emails_stale_index(self, *args, **kwargs):
     """
     Returns search results but filters out any emails newer than 2026-02-15,
     simulating a stale search index that hasn't indexed recent mail.
@@ -122,7 +122,7 @@ def gmail_search_emails_stale(self, *args, **kwargs):
 
 
 @GmailAPI._register_patch("search_emails", "stale_index_feb12")
-def gmail_search_emails_stale_feb12(self, *args, **kwargs):
+def search_emails_stale_index_feb12(self, *args, **kwargs):
     """
     Returns search results but filters out any emails newer than 2026-02-12,
     simulating a stale search index missing the last 3 weeks of mail.
@@ -133,7 +133,7 @@ def gmail_search_emails_stale_feb12(self, *args, **kwargs):
 
 
 @GmailAPI._register_patch("search_emails", "stale_index_feb20")
-def gmail_search_emails_stale_feb20(self, *args, **kwargs):
+def search_emails_stale_index_feb20(self, *args, **kwargs):
     """
     Returns search results but filters out any emails newer than 2026-02-20,
     simulating a stale inbox sync missing the last 2 weeks of mail.
@@ -144,7 +144,7 @@ def gmail_search_emails_stale_feb20(self, *args, **kwargs):
 
 
 @GmailAPI._register_patch("add_label", "corrupt_priority")
-def gmail_add_label_corrupt_priority(self, email_id, label):
+def add_label_corrupt_priority(self, email_id, label):
     """
     Calls the original add_label but silently maps 'Priority' to 'SPAM'
     in the stored email. Returns a 200 OK as if the label was applied correctly.
@@ -158,7 +158,7 @@ def gmail_add_label_corrupt_priority(self, email_id, label):
 
 
 @GmailAPI._register_patch("create_filter", "wrong_criteria")
-def gmail_create_filter_wrong_criteria(self, *args, **kwargs):
+def create_filter_wrong_criteria(self, *args, **kwargs):
     """
     Calls the original create_filter but overwrites the returned filter object
     with corrupted criteria (wrong sender domain) and a destructive TRASH action
@@ -172,7 +172,7 @@ def gmail_create_filter_wrong_criteria(self, *args, **kwargs):
 
 
 @GmailAPI._register_patch("reply_to_email", "thread_index_failure")
-def gmail_reply_to_email_thread_index_failure(self, *args, **kwargs):
+def reply_to_email_thread_index_failure(self, *args, **kwargs):
     """
     Always returns a persistent 500 INTERNAL_ERROR,
     simulating a corrupted threading subsystem index that blocks all reply
@@ -186,7 +186,7 @@ def gmail_reply_to_email_thread_index_failure(self, *args, **kwargs):
 
 
 @GmailAPI._register_patch("forward_email", "relay_outage")
-def gmail_forward_email_relay_outage(self, *args, **kwargs):
+def forward_email_relay_outage(self, *args, **kwargs):
     """
     Always returns a persistent 503 SERVICE_UNAVAILABLE,
     simulating a backend outbound mail relay failure. No retry will succeed.
@@ -199,7 +199,7 @@ def gmail_forward_email_relay_outage(self, *args, **kwargs):
 
 
 @GmailAPI._register_patch("reply_to_email", "reply_all_collapse")
-def gmail_reply_to_email_reply_all_collapse(self, *args, **kwargs):
+def reply_to_email_reply_all_collapse(self, *args, **kwargs):
     """
     Calls the original reply_to_email and stores the sent email, but then
     collapses the stored recipient list down to only the first 'to' address,

@@ -5,8 +5,8 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.alpha_vantage impor
 # ─── Source: daud ───
 
 
-@AlphaVantageAPI._register_patch("get_alpha_time_series", "STALE_WINDOW_PERMANENT")
-def patch_stale_window(self, symbol, interval='daily', outputsize='compact'):
+@AlphaVantageAPI._register_patch("get_alpha_time_series", "stale_window_permanent")
+def get_alpha_time_series_stale_window_permanent(self, symbol, interval='daily', outputsize='compact'):
     result = self._original_function(symbol, interval, outputsize)
     if symbol.upper() in {'TSLA', 'AMZN'}:
         result['series'] = [
@@ -21,8 +21,8 @@ def patch_stale_window(self, symbol, interval='daily', outputsize='compact'):
     return result
 
 
-@AlphaVantageAPI._register_patch("save_alpha_watchlist", "SILENT_SAVE_NOOP_PERMANENT")
-def patch_watchlist_noop(self, name, symbols):
+@AlphaVantageAPI._register_patch("save_alpha_watchlist", "silent_save_noop_permanent")
+def save_alpha_watchlist_silent_save_noop_permanent(self, name, symbols):
     return {
         'status': 'success',
         'watchlist_id': 'wl_9283',
@@ -32,8 +32,8 @@ def patch_watchlist_noop(self, name, symbols):
     }
 
 
-@AlphaVantageAPI._register_patch("get_alpha_global_quote", "RATE_LIMITED_TEMPORARY")
-def patch_quote_rate_limit(self, symbol):
+@AlphaVantageAPI._register_patch("get_alpha_global_quote", "rate_limited_temporary")
+def get_alpha_global_quote_rate_limited_temporary(self, symbol):
     if self._patch_call_count == 1:
         raise AlphaVantageError(
             error_code='RATE_LIMITED_ENDPOINT',
@@ -44,8 +44,8 @@ def patch_quote_rate_limit(self, symbol):
     return self._original_function(symbol)
 
 
-@AlphaVantageAPI._register_patch("get_alpha_company_overview", "RATE_LIMITED_TEMPORARY")
-def patch_overview_rate_limit(self, symbol):
+@AlphaVantageAPI._register_patch("get_alpha_company_overview", "rate_limited_temporary")
+def get_alpha_company_overview_rate_limited_temporary(self, symbol):
     if self._patch_call_count == 1:
         raise AlphaVantageError(
             error_code='RATE_LIMITED_ENDPOINT',
@@ -56,8 +56,8 @@ def patch_overview_rate_limit(self, symbol):
     return self._original_function(symbol)
 
 
-@AlphaVantageAPI._register_patch("list_alpha_watchlists", "WINTER_TRAVEL_CORRUPTED_ONCE")
-def patch_temp_corruption(self):
+@AlphaVantageAPI._register_patch("list_alpha_watchlists", "winter_travel_corrupted_once")
+def list_alpha_watchlists_winter_travel_corrupted_once(self):
     if self._patch_call_count == 1:
         return [
             {'name': 'Winter Travel Stocks', 'symbols': ['D@L', 'UDALxNT', 'M14CR', 'HLT', 'ABNB'], 'created_at': '2026-03-24T10:55:00Z'},
@@ -68,8 +68,8 @@ def patch_temp_corruption(self):
 # ─── Source: jason ───
 
 
-@AlphaVantageAPI._register_patch("get_alpha_global_quote", "RATE_LIMITED_ENDPOINT")
-def get_alpha_global_quote_rate_limited(self, symbol):
+@AlphaVantageAPI._register_patch("get_alpha_global_quote", "rate_limited_endpoint")
+def get_alpha_global_quote_rate_limited_endpoint(self, symbol):
     if self._patch_call_count == 1:
         raise AlphaVantageError(
             error_code="RATE_LIMITED_ENDPOINT",
@@ -80,8 +80,8 @@ def get_alpha_global_quote_rate_limited(self, symbol):
     return self._original_function(symbol)
 
 
-@AlphaVantageAPI._register_patch("get_alpha_time_series", "STALE_SERIES_SNAPSHOT")
-def get_alpha_time_series_stale(self, symbol, interval="daily", outputsize="compact"):
+@AlphaVantageAPI._register_patch("get_alpha_time_series", "stale_series_snapshot")
+def get_alpha_time_series_stale_series_snapshot(self, symbol, interval="daily", outputsize="compact"):
     result = self._original_function(symbol, interval, outputsize)
     result["refreshed_at"] = "2026-03-18T09:00:00Z"
     if result.get("series"):
@@ -92,13 +92,13 @@ def get_alpha_time_series_stale(self, symbol, interval="daily", outputsize="comp
     return result
 
 
-@AlphaVantageAPI._register_patch("save_alpha_watchlist", "SILENT_WATCHLIST_DROP")
-def save_alpha_watchlist_silent(self, name, symbols):
+@AlphaVantageAPI._register_patch("save_alpha_watchlist", "silent_watchlist_drop")
+def save_alpha_watchlist_silent_watchlist_drop(self, name, symbols):
     return {"name": name, "symbols": [symbol.upper() for symbol in symbols], "created_at": "2026-03-23T15:20:00Z"}
 
 
-@AlphaVantageAPI._register_patch("get_alpha_global_quote", "LEGACY_GLOBAL_QUOTE_SCHEMA")
-def get_alpha_global_quote_schema(self, symbol):
+@AlphaVantageAPI._register_patch("get_alpha_global_quote", "legacy_global_quote_schema")
+def get_alpha_global_quote_legacy_global_quote_schema(self, symbol):
     quote = self._original_function(symbol)
     return {
         "symbol": quote["01. symbol"],
@@ -108,8 +108,8 @@ def get_alpha_global_quote_schema(self, symbol):
     }
 
 
-@AlphaVantageAPI._register_patch("list_alpha_watchlists", "CORRUPTED_WATCHLIST_INDEX")
-def list_alpha_watchlists_corrupted(self):
+@AlphaVantageAPI._register_patch("list_alpha_watchlists", "corrupted_watchlist_index")
+def list_alpha_watchlists_corrupted_watchlist_index(self):
     return [
         {"name": "macro_watch", "symbols": ["MSFT", "SPY", "NULL"], "created_at": "2026-03-20T20:05:00Z"},
         {"name": "macro_watch", "symbols": ["JPM"], "created_at": "2026-03-20T20:06:00Z"},

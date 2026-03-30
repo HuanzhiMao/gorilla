@@ -6,8 +6,8 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.weather_com import 
 # S0: Weather.com upstream forecast provider times out transiently
 # Trigger: get_hourly_forecast raises UPSTREAM_TIMEOUT on 1st call, succeeds on retry
 # ============================================================================
-@WeatherComAPI._register_patch("get_hourly_forecast", "UPSTREAM_TIMEOUT")
-def s0_get_hourly_forecast(self, location, hours=48):
+@WeatherComAPI._register_patch("get_hourly_forecast", "upstream_timeout")
+def get_hourly_forecast_upstream_timeout(self, location, hours=48):
 
     if self._patch_call_count == 1:
         raise WeatherComError(
@@ -23,8 +23,8 @@ def s0_get_hourly_forecast(self, location, hours=48):
 # S1: Weather.com compare_locations feature permanently suspended
 # Trigger: compare_locations always raises FEATURE_SUSPENDED
 # ============================================================================
-@WeatherComAPI._register_patch("compare_locations", "FEATURE_SUSPENDED")
-def s1_compare_locations(self, locations):
+@WeatherComAPI._register_patch("compare_locations", "feature_suspended")
+def compare_locations_feature_suspended(self, locations):
 
     raise WeatherComError(
         error_code="FEATURE_SUSPENDED",
@@ -39,8 +39,8 @@ def s1_compare_locations(self, locations):
 # Trigger: get_alerts raises ENDPOINT_QUOTA_EXCEEDED on 1st call for Houston,
 #          succeeds on retry
 # ============================================================================
-@WeatherComAPI._register_patch("get_alerts", "ENDPOINT_QUOTA_EXCEEDED")
-def s2_get_alerts(self, location):
+@WeatherComAPI._register_patch("get_alerts", "endpoint_quota_exceeded")
+def get_alerts_endpoint_quota_exceeded(self, location):
 
     if self._patch_call_count <= 1:
         raise WeatherComError(
@@ -59,8 +59,8 @@ def s2_get_alerts(self, location):
 # S4: Weather.com get_alert_details fails for specific alert undergoing migration
 # Trigger: get_alert_details always raises ALERT_RECORD_MIGRATING
 # ============================================================================
-@WeatherComAPI._register_patch("get_alert_details", "ALERT_RECORD_MIGRATING")
-def s4_get_alert_details(self, location, alert_id):
+@WeatherComAPI._register_patch("get_alert_details", "alert_record_migrating")
+def get_alert_details_alert_record_migrating(self, location, alert_id):
 
     raise WeatherComError(
         error_code="ALERT_RECORD_MIGRATING",
@@ -74,8 +74,8 @@ def s4_get_alert_details(self, location, alert_id):
 # S5: Weather.com weekend forecast cache is stale from days ago
 # Trigger: get_daily_forecast returns stale data with old generated_at
 # ============================================================================
-@WeatherComAPI._register_patch("get_daily_forecast", "STALE_CACHE")
-def s5_get_daily_forecast(self, location, days=10):
+@WeatherComAPI._register_patch("get_daily_forecast", "stale_cache")
+def get_daily_forecast_stale_cache(self, location, days=10):
     result = self._original_function(location, days)
     result["generated_at"] = "2026-03-16T06:00:00Z"
     result["_stale_warning"] = "Data generated 4 days ago"
@@ -90,8 +90,8 @@ def s5_get_daily_forecast(self, location, days=10):
 # S6: Weather.com current conditions stale from early morning; re-fetch corrects
 # Trigger: 1st call returns stale data (Clear, from 6am), 2nd call returns fresh
 # ============================================================================
-@WeatherComAPI._register_patch("get_current_weather", "STALE_OBSERVATION")
-def s6_get_current_weather(self, location):
+@WeatherComAPI._register_patch("get_current_weather", "stale_observation")
+def get_current_weather_stale_observation(self, location):
     if self._patch_call_count == 1:
         return {
             "location": location,
@@ -112,8 +112,8 @@ def s6_get_current_weather(self, location):
 # S7: Weather.com current wind observation permanently stale
 # Trigger: get_current_weather always returns 6-hour-old stale data
 # ============================================================================
-@WeatherComAPI._register_patch("get_current_weather", "STALE_OBSERVATION_PERMANENT")
-def s7_get_current_weather(self, location):
+@WeatherComAPI._register_patch("get_current_weather", "stale_observation_permanent")
+def get_current_weather_stale_observation_permanent(self, location):
     return {
         "location": location,
         "observed_at": "2026-03-20T08:00:00Z",
@@ -133,8 +133,8 @@ def s7_get_current_weather(self, location):
 # S8: Weather.com pollen forecast returns last spring's seasonal data
 # Trigger: get_daily_forecast returns data with year-old forecast_date
 # ============================================================================
-@WeatherComAPI._register_patch("get_daily_forecast", "STALE_SEASONAL_DATA")
-def s8_get_daily_forecast(self, location, days=10):
+@WeatherComAPI._register_patch("get_daily_forecast", "stale_seasonal_data")
+def get_daily_forecast_stale_seasonal_data(self, location, days=10):
     return {
         "location": location,
         "forecast_date": "2025-04-15",
@@ -161,8 +161,8 @@ def s8_get_daily_forecast(self, location, days=10):
 # S10: Weather.com save_location silently drops one of two saves (temporary)
 # Trigger: 1st call returns success but doesn't persist; retry works
 # ============================================================================
-@WeatherComAPI._register_patch("add_saved_location", "SILENT_WRITE_DROP")
-def s10_add_saved_location(self, label, location):
+@WeatherComAPI._register_patch("add_saved_location", "silent_write_drop")
+def add_saved_location_silent_write_drop(self, label, location):
     if self._patch_call_count == 1:
         return {"label": label, "location": location, "status": "added"}
     return self._original_function(label, location)
@@ -172,8 +172,8 @@ def s10_add_saved_location(self, label, location):
 # S11: Weather.com remove_saved_location permanently returns success but never removes
 # Trigger: remove_saved_location always returns success without removing
 # ============================================================================
-@WeatherComAPI._register_patch("remove_saved_location", "SILENT_DELETE_NOOP")
-def s11_remove_saved_location(self, label):
+@WeatherComAPI._register_patch("remove_saved_location", "silent_delete_noop")
+def remove_saved_location_silent_delete_noop(self, label):
     return {"label": label, "status": "removed"}
 
 
@@ -181,8 +181,8 @@ def s11_remove_saved_location(self, label):
 # S12/S13: Weather.com save_location permanently non-functional; all saves dropped
 # Trigger: add_saved_location always returns success but never persists
 # ============================================================================
-@WeatherComAPI._register_patch("add_saved_location", "SILENT_WRITE_DROP_PERMANENT")
-def s12_add_saved_location(self, label, location):
+@WeatherComAPI._register_patch("add_saved_location", "silent_write_drop_permanent")
+def add_saved_location_silent_write_drop_permanent(self, label, location):
     return {"label": label, "location": location, "status": "added"}
 
 
@@ -190,8 +190,8 @@ def s12_add_saved_location(self, label, location):
 # S14: Weather.com get_hourly_forecast returns partial data with zeroed placeholders
 # Trigger: hours 3-6 have zero precipitation/wind values
 # ============================================================================
-@WeatherComAPI._register_patch("get_hourly_forecast", "ZERO_FILLED_PLACEHOLDER")
-def s14_get_hourly_forecast(self, location, hours=48):
+@WeatherComAPI._register_patch("get_hourly_forecast", "zero_filled_placeholder")
+def get_hourly_forecast_zero_filled_placeholder(self, location, hours=48):
     result = self._original_function(location, hours)
     hour_list = result.get("hours", [])
     for i, hour in enumerate(hour_list):
@@ -206,8 +206,8 @@ def s14_get_hourly_forecast(self, location, hours=48):
 # S15: Weather.com location metadata index corrupted mid-session
 # Trigger: get_hourly_forecast raises LOCATION_TOKEN_STALE on 1st call, succeeds on retry
 # ============================================================================
-@WeatherComAPI._register_patch("get_hourly_forecast", "LOCATION_TOKEN_STALE")
-def s15_get_hourly_forecast(self, location, hours=48):
+@WeatherComAPI._register_patch("get_hourly_forecast", "location_token_stale")
+def get_hourly_forecast_location_token_stale(self, location, hours=48):
 
     if self._patch_call_count == 1:
         raise WeatherComError(
@@ -223,8 +223,8 @@ def s15_get_hourly_forecast(self, location, hours=48):
 # S16: Weather.com saved locations state corrupted by concurrent session
 # Trigger: get_saved_locations returns different data each call
 # ============================================================================
-@WeatherComAPI._register_patch("get_saved_locations", "CONCURRENT_MODIFICATION")
-def s16_get_saved_locations(self):
+@WeatherComAPI._register_patch("get_saved_locations", "concurrent_modification")
+def get_saved_locations_concurrent_modification(self):
     call = self._patch_call_count
     if call == 1:
         return [
@@ -289,8 +289,8 @@ def s16_get_saved_locations(self):
 # S17: Weather.com session context expires mid-workflow
 # Trigger: get_historical_weather raises SESSION_CONTEXT_EXPIRED on 1st call, succeeds on retry
 # ============================================================================
-@WeatherComAPI._register_patch("get_historical_weather", "SESSION_CONTEXT_EXPIRED")
-def s17_get_historical_weather(self, location, date):
+@WeatherComAPI._register_patch("get_historical_weather", "session_context_expired")
+def get_historical_weather_session_context_expired(self, location, date):
 
     if self._patch_call_count == 1:
         raise WeatherComError(
@@ -306,8 +306,8 @@ def s17_get_historical_weather(self, location, date):
 # S18: Weather.com search_location returns wrong city (Springfield, IL not MA)
 # Trigger: get_current_weather returns data for Springfield, IL instead of MA
 # ============================================================================
-@WeatherComAPI._register_patch("get_current_weather", "GEO_INDEX_CORRUPTION")
-def s18_get_current_weather(self, location):
+@WeatherComAPI._register_patch("get_current_weather", "geo_index_corruption")
+def get_current_weather_geo_index_corruption(self, location):
     return {
         "location": "Springfield, IL",
         "observed_at": "2026-03-20T14:00:00Z",
@@ -328,8 +328,8 @@ def s18_get_current_weather(self, location):
 # S19: Weather.com returns temperatures in Celsius despite US locale
 # Trigger: get_current_weather returns Celsius values (e.g., 26 for Miami)
 # ============================================================================
-@WeatherComAPI._register_patch("get_current_weather", "UNIT_PREFERENCE_CORRUPTED")
-def s19_get_current_weather(self, location):
+@WeatherComAPI._register_patch("get_current_weather", "unit_preference_corrupted")
+def get_current_weather_unit_preference_corrupted(self, location):
     return {
         "location": location,
         "observed_at": "2026-03-20T14:00:00Z",
@@ -349,8 +349,8 @@ def s19_get_current_weather(self, location):
 # S20: Weather.com get_air_quality expects numeric location index instead of string
 # Trigger: get_air_quality raises PARAMETER_TYPE_MISMATCH on 1st call
 # ============================================================================
-@WeatherComAPI._register_patch("get_air_quality", "PARAMETER_TYPE_MISMATCH")
-def s20_get_air_quality(self, location):
+@WeatherComAPI._register_patch("get_air_quality", "parameter_type_mismatch")
+def get_air_quality_parameter_type_mismatch(self, location):
 
     if self._patch_call_count == 1:
         raise WeatherComError(
@@ -371,8 +371,8 @@ def s20_get_air_quality(self, location):
 # S21/S24: Weather.com compare_locations requires undocumented parameters
 # Trigger: compare_locations always raises MISSING_REQUIRED_FIELD
 # ============================================================================
-@WeatherComAPI._register_patch("compare_locations", "MISSING_REQUIRED_FIELD")
-def s21_compare_locations(self, locations):
+@WeatherComAPI._register_patch("compare_locations", "missing_required_field")
+def compare_locations_missing_required_field(self, locations):
 
     if self._patch_call_count == 1:
         raise WeatherComError(
@@ -400,8 +400,8 @@ def s21_compare_locations(self, locations):
 # S22: Weather.com get_historical_weather requires undocumented date format
 # Trigger: get_historical_weather raises cascading schema errors
 # ============================================================================
-@WeatherComAPI._register_patch("get_historical_weather", "DATE_FORMAT_INVALID")
-def s22_get_historical_weather(self, location, date):
+@WeatherComAPI._register_patch("get_historical_weather", "date_format_invalid")
+def get_historical_weather_date_format_invalid(self, location, date):
 
     if self._patch_call_count == 1:
         raise WeatherComError(
