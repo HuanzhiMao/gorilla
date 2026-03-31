@@ -36,7 +36,7 @@ class OpenAIResponsesHandler(BaseHandler):
         include them if they are actually present so that we keep the call minimal
         and rely on the OpenAI SDK's own defaults when possible."""
 
-        kwargs = {}
+        kwargs = {"base_url": "https://us.api.openai.com/v1"}
 
         if api_key := os.getenv("OPENAI_API_KEY"):
             kwargs["api_key"] = api_key

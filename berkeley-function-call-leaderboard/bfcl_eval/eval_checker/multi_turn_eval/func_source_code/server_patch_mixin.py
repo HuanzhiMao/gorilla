@@ -63,6 +63,8 @@ class PatchableMixin:
             self._patch_call_count_mapping[method_name] += 1
             self._patch_call_count = self._patch_call_count_mapping[method_name]
             self._original_function = original
+            print(f"[DEBUG patch] INVOKED patched {self.__class__.__name__}.{method_name} ('{patch_name}', call #{self._patch_call_count})")
             return patch_fn(self, *args, **kwargs)
 
         setattr(self, method_name, types.MethodType(wrapper, self))
+        print(f"[DEBUG patch] Successfully patched {self.__class__.__name__}.{method_name} with '{patch_name}'")

@@ -19,7 +19,7 @@ from bfcl_eval.model_handler.utils import (
     retry_with_backoff,
     system_prompt_pre_processing_chat_model,
 )
-from bfcl_eval.utils import contain_multi_turn_interaction
+from bfcl_eval.utils import contain_multi_step_interaction
 
 
 class ClaudeHandler(BaseHandler):
@@ -139,7 +139,7 @@ class ClaudeHandler(BaseHandler):
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
         # caching enabled only for multi_turn category
-        caching_enabled: bool = contain_multi_turn_interaction(test_category)
+        caching_enabled: bool = contain_multi_step_interaction(test_category)
         inference_data["caching_enabled"] = caching_enabled
 
         return inference_data
@@ -327,7 +327,7 @@ class ClaudeHandler(BaseHandler):
         test_entry_id: str = test_entry["id"]
         test_category: str = test_entry_id.rsplit("_", 1)[0]
         # caching enabled only for multi_turn category
-        caching_enabled: bool = contain_multi_turn_interaction(test_category)
+        caching_enabled: bool = contain_multi_step_interaction(test_category)
 
         return {
             "message": [],

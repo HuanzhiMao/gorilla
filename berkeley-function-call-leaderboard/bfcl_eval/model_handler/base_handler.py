@@ -222,6 +222,7 @@ class BaseHandler:
                 if mc_rule.get("_released"):
                     continue
                 if mc_rule["condition"] == "after_n_turns" and turn_idx == mc_rule["value"]:
+                    print(f"[DEBUG missed_classes] Releasing holdout at turn {turn_idx}: {[d['name'] for d in mc_rule['holdout_func_docs']]}")
                     test_entry["function"].extend(mc_rule["holdout_func_docs"])
                     inference_data = self._compile_tools(inference_data, test_entry)
                     mc_rule["_released"] = True
@@ -336,6 +337,7 @@ class BaseHandler:
                     decoded_model_responses = self.decode_execute(
                         model_responses, has_tool_call_tag=False
                     )
+                    print(decoded_model_responses)
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",
@@ -423,6 +425,7 @@ class BaseHandler:
                                     mc_rule.setdefault("_invoke_count", 0)
                                     mc_rule["_invoke_count"] += 1
                                     if mc_rule["_invoke_count"] >= mc_rule["n"]:
+                                        print(f"[DEBUG missed_classes] Releasing holdout after {mc_rule['_invoke_count']} invocations of '{mc_rule['target_function']}': {[d['name'] for d in mc_rule['holdout_func_docs']]}")
                                         test_entry["function"].extend(mc_rule["holdout_func_docs"])
                                         inference_data = self._compile_tools(inference_data, test_entry)
                                         mc_rule["_released"] = True
