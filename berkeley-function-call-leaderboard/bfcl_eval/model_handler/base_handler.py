@@ -323,7 +323,7 @@ class BaseHandler:
                 # we don't need to decode or execute function calls.
                 # The eval will handle decoding separately.
                 if (
-                    not contain_multi_turn_interaction(test_entry_id)
+                    not contain_multi_step_interaction(test_entry_id)
                     and not category_allow_clarification
                 ):
                     break
@@ -371,7 +371,7 @@ class BaseHandler:
                 # Path 1: Model produced function calls → execute them
                 if has_function_calls:
                     # If it's a single-turn entry, we don't need to execute the function calls. The generation stops here.
-                    if not contain_multi_turn_interaction(test_entry_id):
+                    if not contain_multi_step_interaction(test_entry_id):
                         break
 
                     # Obtain the execution results
@@ -553,7 +553,7 @@ class BaseHandler:
             "latency": total_latency,
         }
 
-        if contain_multi_turn_interaction(test_entry_id):
+        if contain_multi_step_interaction(test_entry_id):
             metadata["inference_log"] = all_inference_log
 
         if not all(

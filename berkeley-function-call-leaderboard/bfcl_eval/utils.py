@@ -385,12 +385,16 @@ def is_js(test_category):
 def is_sql(test_category):
     return "sql" in test_category
 
+def is_failing_tools(test_category):
+    return "failing_tools" in test_category
 
-def contain_multi_turn_interaction(test_category):
+
+def contain_multi_step_interaction(test_category):
     return (
         is_multi_turn(test_category)
         or is_agentic(test_category)
         or contain_vision_input(test_category)
+        or is_failing_tools(test_category)
     )
 
 
@@ -684,7 +688,7 @@ def sort_key(entry):
     elif is_web_search(test_category):
         priority = 1
     # Single-turn happen third
-    elif not contain_multi_turn_interaction(test_category):
+    elif not contain_multi_step_interaction(test_category):
         priority = 2
     # Multi-turn happen fourth
     elif is_multi_turn(test_category):
@@ -695,6 +699,8 @@ def sort_key(entry):
         priority = 4
     elif contain_vision_input(test_category):
         priority = 5
+    elif is_failing_tools(test_category):
+        priority = 6
 
     return (priority, test_category, int(index))
 
@@ -959,17 +965,15 @@ def populate_test_cases_with_predefined_functions(test_cases: list[dict]) -> lis
     Multi-turn and Agentic test cases don't have the function doc in the prompt. We need to add them here.
     """
     for entry in test_cases:
-        # @HuanzhiMao double check this
-        if not contain_multi_turn_interaction(entry["id"]):
-            continue
-        involved_classes = entry["involved_classes"]
-        entry["function"] = []
-        for func_collection in involved_classes:
-            # func_doc is a list of dict
-            func_doc = load_file(
-                MULTI_TURN_FUNC_DOC_PATH / MULTI_TURN_FUNC_DOC_FILE_MAPPING[func_collection]
-            )
-            entry["function"].extend(func_doc)
+        if "involved_classes" in entry:
+            involved_classes = entry["involved_classes"]
+            entry["function"] = []
+            for func_collection in involved_classes:
+                # func_doc is a list of dict
+                func_doc = load_file(
+                    MULTI_TURN_FUNC_DOC_PATH / MULTI_TURN_FUNC_DOC_FILE_MAPPING[func_collection]
+                )
+                entry["function"].extend(func_doc)
 
         # Handle Miss Func category; we need to remove the holdout function docs
         if "missed_classes" in entry:
