@@ -1,6 +1,6 @@
 # Table of Supported Models
 
-Below is a comprehensive table of models supported for running leaderboard evaluations. Each model entry indicates whether it supports native Function Calling (FC) or requires a special prompt format to generate function calls. Models marked with `💻` are intended to be hosted locally (using vllm or sglang), while models without the `💻` icon are accessed via API calls. To quickly see all available models, you can also run the `bfcl models` command.
+Below is a comprehensive table of models supported for running leaderboard evaluations. Each model entry indicates whether it supports native Function Calling (FC) or requires a special prompt format to generate function calls. Models marked with `💻` are intended to be hosted locally (using vllm or sglang), while models without the `💻` icon are accessed via API calls. To quickly see all available models, you can also run the `mfcl models` command.
 
 ## Function Calling (FC) vs. Prompt Mode
 
@@ -14,7 +14,7 @@ Below is a comprehensive table of models supported for running leaderboard evalu
 
 For model names containing `{...}`, multiple versions are available. For example, `meta-llama/Llama-3.1-{8B,70B}-Instruct` means we support both models: `meta-llama/Llama-3.1-8B-Instruct` and `meta-llama/Llama-3.1-70B-Instruct`.
 
-| Base Model                             | Type             | Provider       | Model ID on BFCL                                            |
+| Base Model                             | Type             | Provider       | Model ID on MFCL                                            |
 | -------------------------------------- | ---------------- | -------------- | ----------------------------------------------------------- |
 | Amazon-Nova-2-Lite-v1:0                | Function Calling | Amazon         | nova-2-lite-v1.0                                            |
 | Amazon-Nova-Micro-v1:0                 | Function Calling | Amazon         | nova-micro-v1.0                                             |
@@ -56,7 +56,7 @@ For model names containing `{...}`, multiple versions are available. For example
 | GLM-4.5-Air                            | Function Calling | Zhipu AI       | glm-4.5-air-FC                                              |
 | GLM-4.6                                | Function Calling | Zhipu AI       | glm-4.6-FC                                                  |
 | GoGoAgent                              | Prompt           | BitAgent       | BitAgent/GoGoAgent                                          |
-| Gorilla-OpenFunctions-v2               | Function Calling | Gorilla LLM    | gorilla-openfunctions-v2                                    |
+| Gorilla-OpenFunctions-v2               | Function Calling | Anonymous    | gorilla-openfunctions-v2                                    |
 | GPT-4.1-2025-04-14                     | Function Calling | OpenAI         | gpt-4.1-2025-04-14-FC                                       |
 | GPT-4.1-2025-04-14                     | Prompt           | OpenAI         | gpt-4.1-2025-04-14                                          |
 | GPT-4.1-mini-2025-04-14                | Function Calling | OpenAI         | gpt-4.1-mini-2025-04-14-FC                                  |
@@ -163,4 +163,4 @@ For model names containing `{...}`, multiple versions are available. For example
 
 ---
 
-For more details and a summary of feature support across different models, see the [Berkeley Function Calling Leaderboard blog post](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html#prompt).
+For more details and a summary of feature support across different models, see the [Multimodal Function Calling Leaderboard blog post](

@@ -1,0 +1,94 @@
+{
+  "_meta": {
+    "api_class": "YelpAPI",
+    "source_file": "yelp.py",
+    "description": "Chicago 24-hour pharmacies - Yelp with current data",
+    "random_seed": 7890
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "yelp_walgreens": {
+      "business_id": "yelp_walgreens",
+      "name": "Walgreens",
+      "category": "pharmacy",
+      "address": "757 N Michigan Ave, Chicago, IL 60611",
+      "rating": 3.8,
+      "review_count": 2,
+      "price_level": "$$",
+      "opening_hours": "24 hours",
+      "phone": "+1-312-555-0134",
+      "website": "https://walgreens-michigan.example.com"
+    },
+    "yelp_cvs": {
+      "business_id": "yelp_cvs",
+      "name": "CVS Pharmacy",
+      "category": "pharmacy",
+      "address": "130 N State St, Chicago, IL 60602",
+      "rating": 3.5,
+      "review_count": 2,
+      "price_level": "$$",
+      "opening_hours": "24 hours",
+      "phone": "+1-312-555-0245",
+      "website": "https://cvs-statestreet.example.com"
+    }
+  },
+  "reviews": {
+    "rev_ywg_001": {
+      "review_id": "rev_ywg_001",
+      "business_id": "yelp_walgreens",
+      "author": {
+        "name": "Patricia Torres",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Convenient 24-hour Walgreens on the Mag Mile. Pharmacy is well-stocked and prescriptions are filled quickly. Good selection of essentials for late-night needs.",
+      "photos": [],
+      "created_at": "2026-03-15T22:30:00Z",
+      "helpful_count": 3
+    },
+    "rev_ywg_002": {
+      "review_id": "rev_ywg_002",
+      "business_id": "yelp_walgreens",
+      "author": {
+        "name": "James Peterson",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Reliable 24-hour pharmacy. Needed cold medicine at 3 AM and they had everything. Staff was helpful despite the late hour. A lifesaver in downtown Chicago.",
+      "photos": [],
+      "created_at": "2026-03-17T03:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_ycvs_001": {
+      "review_id": "rev_ycvs_001",
+      "business_id": "yelp_cvs",
+      "author": {
+        "name": "Angela Wright",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Good downtown pharmacy. The MinuteClinic is a huge plus when you need quick care. Open 24/7 which is essential for city living.",
+      "photos": [],
+      "created_at": "2026-03-14T11:30:00Z",
+      "helpful_count": 2
+    },
+    "rev_ycvs_002": {
+      "review_id": "rev_ycvs_002",
+      "business_id": "yelp_cvs",
+      "author": {
+        "name": "Kevin Lee",
+        "is_current_user": false
+      },
+      "rating": 3,
+      "text": "Standard CVS. Gets the job done for prescriptions and basic needs. 24-hour access is the main draw. Could use more staff during late-night hours.",
+      "photos": [],
+      "created_at": "2026-03-16T16:30:00Z",
+      "helpful_count": 1
+    }
+  },
+  "saved_places": {}
+}

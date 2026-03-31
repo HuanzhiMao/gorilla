@@ -1,0 +1,56 @@
+{
+  "_meta": {
+    "api_class": "GmailAPI",
+    "source_file": "gmail.py",
+    "description": "Gmail for Sarah Chen with email from clients@bigcorp.com about Q2 review scheduled for March 11"
+  },
+  "random_seed": 1003,
+  "profile": {
+    "sarah": {
+      "name": "Sarah Chen",
+      "email_address": "sarah.chen@company.com"
+    }
+  },
+  "emails": {
+    "eml_bc1": {
+      "email_id": "eml_bc1",
+      "thread_id": "thr_bc1",
+      "from": "clients@bigcorp.com",
+      "to": ["sarah.chen@company.com"],
+      "subject": "Q2 Quarterly Business Review - Agenda and Preparation",
+      "body": "Hello,\n\nPlease find attached the agenda for our upcoming Q2 Quarterly Business Review scheduled for March 11, 2026.\n\nTopics:\n1. Q1 Performance Review\n2. Q2 Projections\n3. Partnership Roadmap\n4. Action Items\n\nPlease come prepared with your team's Q1 metrics. Looking forward to a productive session.\n\nBest,\nBigCorp Account Team",
+      "date": "2026-03-05T11:00:00Z",
+      "read": true
+    },
+    "eml_bc2": {
+      "email_id": "eml_bc2",
+      "thread_id": "thr_bc2",
+      "from": "clients@bigcorp.com",
+      "to": ["sarah.chen@company.com"],
+      "subject": "Follow-up: Q1 Partnership Report",
+      "body": "Thank you for the Q1 report. We have reviewed the numbers and are pleased with the results.",
+      "date": "2026-02-28T15:00:00Z",
+      "read": true
+    }
+  },
+  "drafts": {},
+  "contacts": {
+    "contact_bigcorp": {
+      "contact_id": "contact_bigcorp",
+      "name": "BigCorp Clients",
+      "email_address": "clients@bigcorp.com"
+    }
+  },
+  "folders": {
+    "inbox": ["eml_bc1", "eml_bc2"],
+    "sent": [],
+    "spam": [],
+    "trash": [],
+    "starred": [],
+    "important": [],
+    "unread": [],
+    "category_primary": ["eml_bc1", "eml_bc2"],
+    "category_social": [],
+    "category_promotions": []
+  }
+}

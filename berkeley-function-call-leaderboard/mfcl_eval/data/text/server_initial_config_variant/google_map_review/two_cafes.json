@@ -1,0 +1,94 @@
+{
+  "_meta": {
+    "api_class": "GoogleMapReviewAPI",
+    "source_file": "google_map_review.py",
+    "description": "Two cafes - Query 19: patch swaps ratings between Bean Counter and Daily Grind",
+    "random_seed": 3456
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "gp_bean_counter": {
+      "business_id": "gp_bean_counter",
+      "name": "Bean Counter Cafe",
+      "category": "cafe",
+      "address": "2340 Polk St, San Francisco, CA 94109",
+      "rating": 4.6,
+      "review_count": 2,
+      "price_level": 2,
+      "opening_hours": "Mon-Fri 06:00-18:00, Sat-Sun 07:00-17:00",
+      "phone": "+1-415-555-1678",
+      "website": "https://beancountercafe-sf.example.com"
+    },
+    "gp_daily_grind": {
+      "business_id": "gp_daily_grind",
+      "name": "The Daily Grind",
+      "category": "cafe",
+      "address": "1456 Grant Ave, San Francisco, CA 94133",
+      "rating": 3.8,
+      "review_count": 2,
+      "price_level": 1,
+      "opening_hours": "Mon-Sun 05:30-19:00",
+      "phone": "+1-415-555-1789",
+      "website": "https://thedailygrind-sf.example.com"
+    }
+  },
+  "reviews": {
+    "rev_bc_cafe_001": {
+      "review_id": "rev_bc_cafe_001",
+      "business_id": "gp_bean_counter",
+      "author": {
+        "name": "Lisa Chang",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "The specialty lattes here are works of art. The lavender honey latte is my absolute favorite. Fresh pastries daily and a warm, inviting atmosphere.",
+      "photos": ["lavender_latte.jpg"],
+      "created_at": "2026-03-05T08:00:00Z",
+      "helpful_count": 5
+    },
+    "rev_bc_cafe_002": {
+      "review_id": "rev_bc_cafe_002",
+      "business_id": "gp_bean_counter",
+      "author": {
+        "name": "David Kim",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Top-notch coffee and a great work-from-cafe spot. The beans are sourced ethically and roasted in small batches. A cut above the chains.",
+      "photos": [],
+      "created_at": "2026-03-10T09:30:00Z",
+      "helpful_count": 3
+    },
+    "rev_dg_001": {
+      "review_id": "rev_dg_001",
+      "business_id": "gp_daily_grind",
+      "author": {
+        "name": "Mark Wilson",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Reliable no-frills coffee shop. Opens early which is great for early birds. The drip coffee is solid and cheap. Nothing fancy but consistent.",
+      "photos": [],
+      "created_at": "2026-03-02T06:30:00Z",
+      "helpful_count": 2
+    },
+    "rev_dg_002": {
+      "review_id": "rev_dg_002",
+      "business_id": "gp_daily_grind",
+      "author": {
+        "name": "Patricia Adams",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Good basic coffee at reasonable prices. The breakfast sandwiches are tasty and filling. Friendly morning crew. My weekday go-to.",
+      "photos": [],
+      "created_at": "2026-03-08T07:00:00Z",
+      "helpful_count": 1
+    }
+  },
+  "saved_places": {}
+}

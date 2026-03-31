@@ -1,0 +1,79 @@
+{
+  "_meta": {
+    "api_class": "AmazonAPI",
+    "source_file": "amazon.py",
+    "description": "Rachel Kim non-Prime member with Nespresso coffee maker product for price comparison scenario 027"
+  },
+  "random_seed": 4001,
+  "profile": {
+    "name": "Rachel Kim",
+    "email": "rachel@example.com",
+    "membership": {
+      "prime": false
+    },
+    "addresses": {
+      "AMZ-ADDR-001": {
+        "address_id": "AMZ-ADDR-001",
+        "name": "Rachel Kim",
+        "street": "1420 Example Ave",
+        "city": "Issaquah",
+        "state": "WA",
+        "zip": "98027",
+        "country": "US",
+        "is_default": true
+      }
+    },
+    "payment_methods": {
+      "AMZ-PAY-001": {
+        "payment_method_id": "AMZ-PAY-001",
+        "type": "credit",
+        "last_four": "4829",
+        "expiration_date": "2026-08",
+        "billing_address": "AMZ-ADDR-001",
+        "is_default": true
+      }
+    },
+    "promos": {}
+  },
+  "cart": {
+    "items": [],
+    "subtotal": 0,
+    "applied_promo": null,
+    "shipping_option": null
+  },
+  "orders": {},
+  "returns": {},
+  "reviews": {},
+  "products": {
+    "AMZ-PROD-9001": {
+      "product_id": "AMZ-PROD-9001",
+      "name": "Nespresso Vertuo Plus Coffee and Espresso Maker",
+      "brand": "Nespresso",
+      "category": "Kitchen",
+      "price": 19900,
+      "rating": 4.8,
+      "review_count": 1200,
+      "options": []
+    }
+  },
+  "offers": {},
+  "shipping_options": {
+    "standard": {
+      "name": "Standard Shipping",
+      "cost": 0,
+      "eta_days": [
+        5,
+        7
+      ]
+    }
+  },
+  "sellers": {
+    "AMZ-SELL-001": {
+      "seller_id": "AMZ-SELL-001",
+      "name": "Amazon.com",
+      "rating": 4.9,
+      "condition": "new"
+    }
+  },
+  "wishlists": {}
+}

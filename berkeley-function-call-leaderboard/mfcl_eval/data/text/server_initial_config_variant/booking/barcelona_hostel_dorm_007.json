@@ -1,0 +1,63 @@
+{
+  "_meta": {
+    "api_class": "BookingAPI",
+    "source_file": "booking.py",
+    "description": "Barcelona Gothic Quarter Hostel 6-Bed Mixed Dormitory non-refundable for scenario 007"
+  },
+  "random_seed": 8001,
+  "profile": {
+    "name": "Ava Carter",
+    "email": "ava@example.com",
+    "payment_method": [
+      {
+        "method_id": "PMT-007",
+        "type": "credit_card",
+        "last4": "4242"
+      }
+    ]
+  },
+  "properties": {
+    "PROP-007": {
+      "property_id": "PROP-007",
+      "name": "Barcelona Gothic Quarter Hostel",
+      "location": {
+        "city": "Barcelona",
+        "country": "Spain",
+        "address": "Carrer de la Boqueria, Barcelona"
+      },
+      "star_rating": 1,
+      "review_score": 7.8,
+      "amenities": [
+        "wifi",
+        "shared_kitchen",
+        "lounge",
+        "lockers"
+      ],
+      "room_types": [
+        "ROOM-007"
+      ],
+      "policies": {
+        "check_in_time": "15:00",
+        "check_out_time": "11:00",
+        "cancellation_policy_summary": "Non-refundable."
+      }
+    }
+  },
+  "room_types": {
+    "ROOM-007": {
+      "room_type_id": "ROOM-007",
+      "property_id": "PROP-007",
+      "name": "6-Bed Mixed Dormitory",
+      "max_guests": 1,
+      "bed_type": "bunk",
+      "amenities": [
+        "wifi",
+        "lockers"
+      ],
+      "base_price_per_night": 45.0,
+      "taxes_and_fees": 6.75,
+      "refundable": false
+    }
+  },
+  "bookings": {}
+}

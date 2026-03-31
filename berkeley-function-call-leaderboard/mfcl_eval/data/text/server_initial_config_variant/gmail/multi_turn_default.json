@@ -1,0 +1,377 @@
+{
+  "_meta": {
+    "api_class": "GmailAPI",
+    "source_file": "gmail.py",
+    "description": "Initial state for the Gmail email API"
+  },
+  "random_seed": 1234,
+  "profile": {
+    "user_001": {
+      "username": "user_001",
+      "name": "Alice Nakamura",
+      "email_address": "alice.nakamura@gmail.com"
+    },
+    "user_002": {
+      "username": "user_002",
+      "name": "Brian Torres",
+      "email_address": "brian.torres@gmail.com"
+    },
+    "user_003": {
+      "username": "user_003",
+      "name": "Maya Patel",
+      "email_address": "maya.patel@designhub.io"
+    }
+  },
+  "emails": {
+    "email_001": {
+      "email_id": "email_001",
+      "thread_id": "thread_001",
+      "from": "brian.torres@gmail.com",
+      "to": ["alice.nakamura@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Project Atlas - Kickoff",
+      "body": "Hi Alice,\n\nI wanted to reach out about the Project Atlas kickoff. We have the initial requirements document ready and I think we should schedule a meeting this week to align on timelines. The client expects the first milestone by mid-January.\n\nLet me know your availability.\n\nBest,\nBrian",
+      "attachments": ["project_atlas_requirements_v1.pdf"],
+      "labels": ["inbox", "unread", "important", "category_primary"],
+      "read": false,
+      "starred": false,
+      "important": true,
+      "created_at": "2024-12-02T09:15:00Z"
+    },
+    "email_002": {
+      "email_id": "email_002",
+      "thread_id": "thread_001",
+      "from": "alice.nakamura@gmail.com",
+      "to": ["brian.torres@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Re: Project Atlas - Kickoff",
+      "body": "Hi Brian,\n\nThanks for sending that over. I reviewed the requirements doc and it looks solid. I'm free Thursday afternoon or Friday morning for the kickoff meeting. I've also attached my resource allocation plan for Q1 so you can see how the team bandwidth lines up.\n\nLooking forward to getting this started.\n\nCheers,\nAlice",
+      "attachments": ["q1_resource_allocation.xlsx"],
+      "labels": ["sent"],
+      "read": true,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-02T14:32:00Z"
+    },
+    "email_003": {
+      "email_id": "email_003",
+      "thread_id": "thread_001",
+      "from": "brian.torres@gmail.com",
+      "to": ["alice.nakamura@gmail.com"],
+      "cc": ["maya.patel@designhub.io"],
+      "bcc": [],
+      "subject": "Re: Project Atlas - Kickoff",
+      "body": "Alice,\n\nThursday afternoon works perfectly. Let's do 2 PM. I'm also looping in Maya from the design team so she can share the initial wireframes during the call.\n\nI reviewed your resource plan - looks like we might need one more backend engineer. Let's discuss.\n\nThanks,\nBrian",
+      "attachments": [],
+      "labels": ["inbox", "starred", "category_primary"],
+      "read": true,
+      "starred": true,
+      "important": false,
+      "created_at": "2024-12-03T08:45:00Z"
+    },
+    "email_004": {
+      "email_id": "email_004",
+      "thread_id": "thread_001",
+      "from": "maya.patel@designhub.io",
+      "to": ["brian.torres@gmail.com", "alice.nakamura@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Re: Project Atlas - Kickoff",
+      "body": "Hi both,\n\nGreat, Thursday at 2 PM works for me. I'll have the wireframes for the dashboard and user management modules ready to present. I also have some UX research findings from a similar project that might be useful.\n\nSee you then!\n\nMaya",
+      "attachments": ["atlas_wireframes_draft_v1.fig"],
+      "labels": ["inbox", "unread", "category_primary"],
+      "read": false,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-03T10:20:00Z"
+    },
+    "email_005": {
+      "email_id": "email_005",
+      "thread_id": "thread_002",
+      "from": "brian.torres@gmail.com",
+      "to": ["alice.nakamura@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Budget Approval for Atlas Infrastructure",
+      "body": "Hi Alice,\n\nSeparate thread for the infrastructure budget. We need approval for the following:\n\n- AWS hosting: $2,400/month\n- CI/CD tooling: $350/month\n- Monitoring and logging: $200/month\n\nTotal monthly: $2,950. Can you get sign-off from finance by end of week?\n\nThanks,\nBrian",
+      "attachments": [],
+      "labels": ["inbox", "important", "category_primary"],
+      "read": true,
+      "starred": false,
+      "important": true,
+      "created_at": "2024-12-05T11:20:00Z"
+    },
+    "email_006": {
+      "email_id": "email_006",
+      "thread_id": "thread_002",
+      "from": "alice.nakamura@gmail.com",
+      "to": ["brian.torres@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Re: Budget Approval for Atlas Infrastructure",
+      "body": "Brian,\n\nI spoke with finance and they approved the infrastructure budget. They just asked us to do a quarterly review to make sure usage aligns with projections. I'll set up a recurring calendar event for that.\n\nWe're all set to proceed.\n\nAlice",
+      "attachments": [],
+      "labels": ["sent"],
+      "read": true,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-06T16:05:00Z"
+    },
+    "email_007": {
+      "email_id": "email_007",
+      "thread_id": "thread_003",
+      "from": "noreply@techdigest.com",
+      "to": ["alice.nakamura@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "TechDigest Weekly: Top Stories in Cloud Computing",
+      "body": "This week in TechDigest:\n\n1. AWS announces new region in Southeast Asia\n2. Kubernetes 1.29 released with major networking improvements\n3. The rise of edge computing: what it means for your infrastructure\n4. Five best practices for multi-cloud cost optimization\n\nRead more at techdigest.com/weekly/2024-12-01\n\nUnsubscribe: techdigest.com/unsubscribe",
+      "attachments": [],
+      "labels": ["inbox", "category_promotions"],
+      "read": true,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-01T06:00:00Z"
+    },
+    "email_008": {
+      "email_id": "email_008",
+      "thread_id": "thread_003",
+      "from": "noreply@techdigest.com",
+      "to": ["alice.nakamura@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "TechDigest Weekly: AI Infrastructure Trends",
+      "body": "This week in TechDigest:\n\n1. GPU shortage easing as new supply chains emerge\n2. MLOps platforms compared: which is right for your team?\n3. How to reduce AI inference costs by 40%\n4. Interview: CTO of DataBricks on the future of data lakehouses\n\nRead more at techdigest.com/weekly/2024-12-08\n\nUnsubscribe: techdigest.com/unsubscribe",
+      "attachments": [],
+      "labels": ["inbox", "unread", "category_promotions"],
+      "read": false,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-08T06:00:00Z"
+    },
+    "email_009": {
+      "email_id": "email_009",
+      "thread_id": "thread_004",
+      "from": "kevin.zhao@gmail.com",
+      "to": ["alice.nakamura@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Dinner plans this Saturday?",
+      "body": "Hey Alice,\n\nAre you free this Saturday for dinner? I was thinking we could try that new ramen place downtown - Tanaka Noodle House. I heard they have an amazing tonkotsu broth.\n\nLet me know!\n\nKevin",
+      "attachments": [],
+      "labels": ["inbox", "unread", "category_social"],
+      "read": false,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-04T18:30:00Z"
+    },
+    "email_010": {
+      "email_id": "email_010",
+      "thread_id": "thread_004",
+      "from": "alice.nakamura@gmail.com",
+      "to": ["kevin.zhao@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Re: Dinner plans this Saturday?",
+      "body": "Kevin,\n\nThat sounds great! I love ramen. Let's say 7 PM? I can make a reservation.\n\nAlice",
+      "attachments": [],
+      "labels": ["sent"],
+      "read": true,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-04T19:15:00Z"
+    },
+    "email_011": {
+      "email_id": "email_011",
+      "thread_id": "thread_004",
+      "from": "kevin.zhao@gmail.com",
+      "to": ["alice.nakamura@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Re: Dinner plans this Saturday?",
+      "body": "Perfect, 7 PM works! See you there.\n\nKevin",
+      "attachments": [],
+      "labels": ["inbox", "category_social"],
+      "read": true,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-04T19:45:00Z"
+    },
+    "email_012": {
+      "email_id": "email_012",
+      "thread_id": "thread_005",
+      "from": "lisa.chen@linkedin.com",
+      "to": ["alice.nakamura@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Lisa Chen has endorsed you for Project Management",
+      "body": "Alice Nakamura,\n\nLisa Chen has endorsed you for the skill Project Management on LinkedIn.\n\nView your profile: linkedin.com/in/alice-nakamura\n\nYou are receiving this email because you have a LinkedIn account.",
+      "attachments": [],
+      "labels": ["inbox", "category_social"],
+      "read": true,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-03T12:00:00Z"
+    },
+    "email_013": {
+      "email_id": "email_013",
+      "thread_id": "thread_006",
+      "from": "spam@winning-lottery.com",
+      "to": ["alice.nakamura@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "You have WON $5,000,000!!!",
+      "body": "Dear Winner,\n\nCongratulations! You have been selected as the winner of our international lottery. To claim your prize of $5,000,000, please reply with your full name, address, and bank account details.\n\nAct now before your prize expires!\n\nLottery Commission",
+      "attachments": [],
+      "labels": ["spam"],
+      "read": false,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-02T03:14:00Z"
+    },
+    "email_014": {
+      "email_id": "email_014",
+      "thread_id": "thread_007",
+      "from": "daniel.kim@atlas-corp.com",
+      "to": ["alice.nakamura@gmail.com", "brian.torres@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Sprint Planning Notes - Dec 9",
+      "body": "Hi team,\n\nHere are the notes from today's sprint planning session:\n\n- Backlog groomed: 24 items prioritized\n- Sprint goal: Complete user authentication module\n- Blockers: Waiting on API spec from partner team\n- Velocity target: 34 story points\n\nI've attached the detailed sprint board export. Please review your assigned tickets by EOD tomorrow.\n\nThanks,\nDaniel",
+      "attachments": ["sprint_board_dec9.pdf"],
+      "labels": ["inbox", "important", "category_primary"],
+      "read": true,
+      "starred": true,
+      "important": true,
+      "created_at": "2024-12-09T17:00:00Z"
+    },
+    "email_015": {
+      "email_id": "email_015",
+      "thread_id": "thread_007",
+      "from": "alice.nakamura@gmail.com",
+      "to": ["daniel.kim@atlas-corp.com"],
+      "cc": ["brian.torres@gmail.com"],
+      "bcc": [],
+      "subject": "Re: Sprint Planning Notes - Dec 9",
+      "body": "Daniel,\n\nThanks for the summary. I reviewed my tickets and everything looks reasonable. One question - should we pull in the password reset flow as well, or defer that to the next sprint?\n\nAlice",
+      "attachments": [],
+      "labels": ["sent"],
+      "read": true,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-09T18:30:00Z"
+    },
+    "email_016": {
+      "email_id": "email_016",
+      "thread_id": "thread_008",
+      "from": "offers@shopmart.com",
+      "to": ["alice.nakamura@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Holiday Sale: Up to 60% Off Electronics!",
+      "body": "Dear valued customer,\n\nDon't miss our biggest holiday sale of the year!\n\n- Laptops: up to 40% off\n- Headphones: up to 60% off\n- Smart home devices: buy 2 get 1 free\n\nShop now at shopmart.com/holiday-sale\n\nOffer ends December 25, 2024.\n\nUnsubscribe: shopmart.com/unsubscribe",
+      "attachments": [],
+      "labels": ["inbox", "category_promotions"],
+      "read": true,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-07T08:00:00Z"
+    },
+    "email_017": {
+      "email_id": "email_017",
+      "thread_id": "thread_002",
+      "from": "brian.torres@gmail.com",
+      "to": ["alice.nakamura@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Re: Budget Approval for Atlas Infrastructure",
+      "body": "Alice,\n\nPerfect, thanks for pushing that through quickly. I'll get the AWS accounts provisioned this week so we're ready to go after the kickoff.\n\nOne more thing - should we also budget for a staging environment? That would add roughly $800/month.\n\nBrian",
+      "attachments": [],
+      "labels": ["inbox", "unread", "category_primary"],
+      "read": false,
+      "starred": false,
+      "important": false,
+      "created_at": "2024-12-07T09:10:00Z"
+    }
+  },
+  "drafts": {
+    "draft_001": {
+      "draft_id": "draft_001",
+      "to": ["brian.torres@gmail.com"],
+      "cc": ["cfo@company.com"],
+      "bcc": [],
+      "subject": "Re: Budget Approval for Atlas Infrastructure",
+      "body": "Brian,\n\nGood idea on the staging environment. I'll add it to the budget request. The total would then be $3,750/month. I'll prepare a cost breakdown spreadsheet for the quarterly reviews and include projected scaling costs for Q2.",
+      "attachments": [],
+      "created_at": "2024-12-07T10:30:00Z"
+    },
+    "draft_002": {
+      "draft_id": "draft_002",
+      "to": ["team@atlas-corp.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "End of Year Team Retrospective",
+      "body": "Hi team,\n\nAs we wrap up 2024, I'd like to schedule an end-of-year retrospective. I'm thinking December 20th at 3 PM. We can reflect on what went well, what we can improve, and set goals for Q1 2025.\n\nPlease come prepared with your top 3 highlights and 1 area for improvement.",
+      "attachments": [],
+      "created_at": "2024-12-08T14:00:00Z"
+    },
+    "draft_003": {
+      "draft_id": "draft_003",
+      "to": ["kevin.zhao@gmail.com"],
+      "cc": [],
+      "bcc": [],
+      "subject": "Birthday gift idea",
+      "body": "Hey Kevin, I was thinking about getting Maya a gift card to that art supply store she likes. What do you think? Should we split it?",
+      "attachments": [],
+      "created_at": "2024-12-09T20:00:00Z"
+    }
+  },
+  "contacts": {
+    "brian.torres@gmail.com": {
+      "name": "Brian Torres",
+      "email_address": "brian.torres@gmail.com"
+    },
+    "maya.patel@designhub.io": {
+      "name": "Maya Patel",
+      "email_address": "maya.patel@designhub.io"
+    },
+    "kevin.zhao@gmail.com": {
+      "name": "Kevin Zhao",
+      "email_address": "kevin.zhao@gmail.com"
+    },
+    "daniel.kim@atlas-corp.com": {
+      "name": "Daniel Kim",
+      "email_address": "daniel.kim@atlas-corp.com"
+    },
+    "lisa.chen@linkedin.com": {
+      "name": "Lisa Chen",
+      "email_address": "lisa.chen@linkedin.com"
+    },
+    "cfo@company.com": {
+      "name": "James Wright",
+      "email_address": "cfo@company.com"
+    },
+    "team@atlas-corp.com": {
+      "name": "Atlas Corp Team",
+      "email_address": "team@atlas-corp.com"
+    },
+    "procurement@atlas-corp.com": {
+      "name": "Procurement Department",
+      "email_address": "procurement@atlas-corp.com"
+    }
+  },
+  "folders": {
+    "inbox": ["email_001", "email_003", "email_004", "email_005", "email_007", "email_008", "email_009", "email_011", "email_012", "email_014", "email_016", "email_017"],
+    "sent": ["email_002", "email_006", "email_010", "email_015"],
+    "spam": ["email_013"],
+    "trash": [],
+    "starred": ["email_003", "email_014"],
+    "important": ["email_001", "email_005", "email_014"],
+    "unread": ["email_001", "email_004", "email_008", "email_009", "email_017"],
+    "category_primary": ["email_001", "email_003", "email_004", "email_005", "email_014", "email_017"],
+    "category_social": ["email_009", "email_011", "email_012"],
+    "category_promotions": ["email_007", "email_008", "email_016"]
+  }
+}

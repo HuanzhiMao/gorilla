@@ -1,0 +1,761 @@
+{
+  "_meta": {
+    "api_class": "ExpediaAPI",
+    "source_file": "expedia.py",
+    "description": "Initial state for the Expedia accommodation booking API",
+    "random_seed": 8002
+  },
+  "random_seed": 8002,
+  "profile": {
+    "name": "Rachel Kim",
+    "email": "rachel.kim@email.com",
+    "phone": "+1-212-555-0198",
+    "saved_travelers": [
+      {
+        "name": "Daniel Kim",
+        "email": "daniel.kim@email.com",
+        "phone": "+1-212-555-0199"
+      },
+      {
+        "name": "Soo-Yeon Kim",
+        "email": "sooyeon.kim@email.com"
+      },
+      {
+        "name": "Emily Park",
+        "phone": "+1-646-555-0342"
+      }
+    ],
+    "payment_method": [
+      {
+        "payment_method_id": "PMT-80020",
+        "type": "credit_card",
+        "last_four": "4291",
+        "expiry": "2026-08"
+      },
+      {
+        "payment_method_id": "PMT-80021",
+        "type": "debit_card",
+        "last_four": "7803",
+        "expiry": "2027-01"
+      }
+    ]
+  },
+  "properties": {
+    "PROP-50001": {
+      "property_id": "PROP-50001",
+      "name": "The Manhattan Beacon Hotel",
+      "location": {
+        "city": "New York",
+        "region": "New York",
+        "country": "United States",
+        "address": "320 West 48th Street, New York, NY 10036"
+      },
+      "star_rating": 4,
+      "review_score": 8.6,
+      "amenities": ["wifi", "fitness_center", "restaurant", "bar", "concierge", "business_center", "room_service"],
+      "policies": {
+        "check_in_time": "15:00",
+        "check_out_time": "11:00",
+        "cancellation_policy_summary": "Free cancellation up to 48 hours before check-in"
+      }
+    },
+    "PROP-50002": {
+      "property_id": "PROP-50002",
+      "name": "Lumière Palace Paris",
+      "location": {
+        "city": "Paris",
+        "region": "Île-de-France",
+        "country": "France",
+        "address": "27 Avenue Montaigne, 75008 Paris"
+      },
+      "star_rating": 5,
+      "review_score": 9.4,
+      "amenities": ["wifi", "pool", "spa", "restaurant", "bar", "concierge", "valet_parking", "fitness_center", "room_service", "laundry"],
+      "policies": {
+        "check_in_time": "14:00",
+        "check_out_time": "12:00",
+        "cancellation_policy_summary": "Free cancellation up to 72 hours before check-in"
+      }
+    },
+    "PROP-50003": {
+      "property_id": "PROP-50003",
+      "name": "Sakura Gardens Shinjuku",
+      "location": {
+        "city": "Tokyo",
+        "region": "Kanto",
+        "country": "Japan",
+        "address": "3-14-5 Shinjuku, Shinjuku-ku, Tokyo 160-0022"
+      },
+      "star_rating": 4,
+      "review_score": 8.8,
+      "amenities": ["wifi", "restaurant", "laundry", "fitness_center", "business_center", "onsen"],
+      "policies": {
+        "check_in_time": "15:00",
+        "check_out_time": "10:00",
+        "cancellation_policy_summary": "Free cancellation up to 24 hours before check-in"
+      }
+    },
+    "PROP-50004": {
+      "property_id": "PROP-50004",
+      "name": "Desert Pearl Resort & Spa",
+      "location": {
+        "city": "Dubai",
+        "region": "Dubai",
+        "country": "United Arab Emirates",
+        "address": "Palm Jumeirah, Dubai"
+      },
+      "star_rating": 5,
+      "review_score": 9.2,
+      "amenities": ["wifi", "pool", "spa", "restaurant", "bar", "concierge", "valet_parking", "fitness_center", "private_beach", "water_sports"],
+      "policies": {
+        "check_in_time": "14:00",
+        "check_out_time": "12:00",
+        "cancellation_policy_summary": "Free cancellation up to 72 hours before check-in"
+      }
+    },
+    "PROP-50005": {
+      "property_id": "PROP-50005",
+      "name": "Riviera Sunrise Cancun",
+      "location": {
+        "city": "Cancun",
+        "region": "Quintana Roo",
+        "country": "Mexico",
+        "address": "Blvd. Kukulcan Km 9.5, Zona Hotelera, 77500 Cancun"
+      },
+      "star_rating": 4,
+      "review_score": 8.3,
+      "amenities": ["wifi", "pool", "spa", "restaurant", "bar", "private_beach", "water_sports", "kids_club", "fitness_center"],
+      "policies": {
+        "check_in_time": "15:00",
+        "check_out_time": "11:00",
+        "cancellation_policy_summary": "Free cancellation up to 48 hours before check-in"
+      }
+    },
+    "PROP-50006": {
+      "property_id": "PROP-50006",
+      "name": "The Kensington Court Hotel",
+      "location": {
+        "city": "London",
+        "region": "England",
+        "country": "United Kingdom",
+        "address": "15 Kensington Court, London W8 5DL"
+      },
+      "star_rating": 5,
+      "review_score": 9.1,
+      "amenities": ["wifi", "spa", "restaurant", "bar", "concierge", "afternoon_tea", "fitness_center", "room_service", "valet_parking"],
+      "policies": {
+        "check_in_time": "14:00",
+        "check_out_time": "11:00",
+        "cancellation_policy_summary": "Free cancellation up to 48 hours before check-in"
+      }
+    },
+    "PROP-50007": {
+      "property_id": "PROP-50007",
+      "name": "Budget Stay NYC Midtown",
+      "location": {
+        "city": "New York",
+        "region": "New York",
+        "country": "United States",
+        "address": "145 East 39th Street, New York, NY 10016"
+      },
+      "star_rating": 2,
+      "review_score": 7.1,
+      "amenities": ["wifi", "laundry"],
+      "policies": {
+        "check_in_time": "14:00",
+        "check_out_time": "11:00",
+        "cancellation_policy_summary": "Non-refundable"
+      }
+    },
+    "PROP-50008": {
+      "property_id": "PROP-50008",
+      "name": "Santorini Cliffside Suites",
+      "location": {
+        "city": "Santorini",
+        "region": "South Aegean",
+        "country": "Greece",
+        "address": "Oia, Santorini 847 02"
+      },
+      "star_rating": 5,
+      "review_score": 9.6,
+      "amenities": ["wifi", "pool", "spa", "restaurant", "bar", "concierge", "room_service", "airport_transfer"],
+      "policies": {
+        "check_in_time": "14:00",
+        "check_out_time": "11:00",
+        "cancellation_policy_summary": "Free cancellation up to 7 days before check-in"
+      }
+    },
+    "PROP-50009": {
+      "property_id": "PROP-50009",
+      "name": "Sydney Harbour View Inn",
+      "location": {
+        "city": "Sydney",
+        "region": "New South Wales",
+        "country": "Australia",
+        "address": "71 Macquarie Street, Sydney NSW 2000"
+      },
+      "star_rating": 3,
+      "review_score": 8.0,
+      "amenities": ["wifi", "restaurant", "bar", "fitness_center", "laundry", "parking"],
+      "policies": {
+        "check_in_time": "14:00",
+        "check_out_time": "10:00",
+        "cancellation_policy_summary": "Free cancellation up to 24 hours before check-in"
+      }
+    },
+    "PROP-50010": {
+      "property_id": "PROP-50010",
+      "name": "Alpine Chalet Zermatt",
+      "location": {
+        "city": "Zermatt",
+        "region": "Valais",
+        "country": "Switzerland",
+        "address": "Bahnhofstrasse 52, 3920 Zermatt"
+      },
+      "star_rating": 4,
+      "review_score": 9.0,
+      "amenities": ["wifi", "spa", "restaurant", "bar", "ski_storage", "fireplace_lounge", "fitness_center", "sauna"],
+      "policies": {
+        "check_in_time": "15:00",
+        "check_out_time": "10:00",
+        "cancellation_policy_summary": "Free cancellation up to 14 days before check-in"
+      }
+    },
+    "PROP-50011": {
+      "property_id": "PROP-50011",
+      "name": "Copacabana Beachfront Lodge",
+      "location": {
+        "city": "Rio de Janeiro",
+        "region": "Rio de Janeiro",
+        "country": "Brazil",
+        "address": "Av. Atlantica 2600, Copacabana, Rio de Janeiro"
+      },
+      "star_rating": 3,
+      "review_score": 7.8,
+      "amenities": ["wifi", "pool", "bar", "restaurant", "parking", "laundry"],
+      "policies": {
+        "check_in_time": "14:00",
+        "check_out_time": "11:00",
+        "cancellation_policy_summary": "Free cancellation up to 48 hours before check-in"
+      }
+    },
+    "PROP-50012": {
+      "property_id": "PROP-50012",
+      "name": "Gangnam Luxe Residence",
+      "location": {
+        "city": "Seoul",
+        "region": "Gyeonggi",
+        "country": "South Korea",
+        "address": "120 Teheran-ro, Gangnam-gu, Seoul 06236"
+      },
+      "star_rating": 5,
+      "review_score": 9.3,
+      "amenities": ["wifi", "pool", "spa", "restaurant", "bar", "concierge", "fitness_center", "business_center", "room_service", "valet_parking"],
+      "policies": {
+        "check_in_time": "15:00",
+        "check_out_time": "11:00",
+        "cancellation_policy_summary": "Free cancellation up to 48 hours before check-in"
+      }
+    }
+  },
+  "room_types": {
+    "RT-60001": {
+      "room_type_id": "RT-60001",
+      "property_id": "PROP-50001",
+      "name": "Standard Queen Room",
+      "max_guests": 2,
+      "bed_type": "queen",
+      "amenities": ["wifi", "tv", "minibar", "coffee_maker", "safe"],
+      "base_price_per_night": 189.00,
+      "taxes_and_fees": 32.13,
+      "refundable": true,
+      "breakfast_included": false
+    },
+    "RT-60002": {
+      "room_type_id": "RT-60002",
+      "property_id": "PROP-50001",
+      "name": "Deluxe King Suite",
+      "max_guests": 3,
+      "bed_type": "king",
+      "amenities": ["wifi", "tv", "minibar", "coffee_maker", "safe", "bathrobe", "living_area"],
+      "base_price_per_night": 349.00,
+      "taxes_and_fees": 59.33,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60003": {
+      "room_type_id": "RT-60003",
+      "property_id": "PROP-50002",
+      "name": "Classic Double Room",
+      "max_guests": 2,
+      "bed_type": "double",
+      "amenities": ["wifi", "tv", "minibar", "safe", "bathrobes", "luxury_toiletries"],
+      "base_price_per_night": 520.00,
+      "taxes_and_fees": 78.00,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60004": {
+      "room_type_id": "RT-60004",
+      "property_id": "PROP-50002",
+      "name": "Prestige Suite Montaigne",
+      "max_guests": 4,
+      "bed_type": "king",
+      "amenities": ["wifi", "tv", "minibar", "safe", "bathrobes", "luxury_toiletries", "living_room", "balcony", "butler_service"],
+      "base_price_per_night": 1250.00,
+      "taxes_and_fees": 187.50,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60005": {
+      "room_type_id": "RT-60005",
+      "property_id": "PROP-50003",
+      "name": "Compact Single Room",
+      "max_guests": 1,
+      "bed_type": "single",
+      "amenities": ["wifi", "tv", "tea_kettle", "safe"],
+      "base_price_per_night": 95.00,
+      "taxes_and_fees": 14.25,
+      "refundable": false,
+      "breakfast_included": false
+    },
+    "RT-60006": {
+      "room_type_id": "RT-60006",
+      "property_id": "PROP-50003",
+      "name": "Superior Twin Room",
+      "max_guests": 2,
+      "bed_type": "twin",
+      "amenities": ["wifi", "tv", "tea_kettle", "safe", "minibar", "yukata"],
+      "base_price_per_night": 175.00,
+      "taxes_and_fees": 26.25,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60007": {
+      "room_type_id": "RT-60007",
+      "property_id": "PROP-50004",
+      "name": "Palm View Room",
+      "max_guests": 2,
+      "bed_type": "king",
+      "amenities": ["wifi", "tv", "minibar", "safe", "balcony", "ocean_view"],
+      "base_price_per_night": 450.00,
+      "taxes_and_fees": 67.50,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60008": {
+      "room_type_id": "RT-60008",
+      "property_id": "PROP-50004",
+      "name": "Royal Penthouse Suite",
+      "max_guests": 6,
+      "bed_type": "king",
+      "amenities": ["wifi", "tv", "minibar", "safe", "private_pool", "butler_service", "living_room", "dining_room", "ocean_view"],
+      "base_price_per_night": 2800.00,
+      "taxes_and_fees": 420.00,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60009": {
+      "room_type_id": "RT-60009",
+      "property_id": "PROP-50005",
+      "name": "Garden View Double",
+      "max_guests": 2,
+      "bed_type": "double",
+      "amenities": ["wifi", "tv", "minibar", "safe", "balcony"],
+      "base_price_per_night": 185.00,
+      "taxes_and_fees": 29.60,
+      "refundable": true,
+      "breakfast_included": false
+    },
+    "RT-60010": {
+      "room_type_id": "RT-60010",
+      "property_id": "PROP-50005",
+      "name": "Oceanfront Family Suite",
+      "max_guests": 5,
+      "bed_type": "king_and_twin",
+      "amenities": ["wifi", "tv", "minibar", "safe", "balcony", "ocean_view", "kids_amenities"],
+      "base_price_per_night": 320.00,
+      "taxes_and_fees": 51.20,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60011": {
+      "room_type_id": "RT-60011",
+      "property_id": "PROP-50006",
+      "name": "Classic Heritage Room",
+      "max_guests": 2,
+      "bed_type": "queen",
+      "amenities": ["wifi", "tv", "minibar", "safe", "bathrobes", "nespresso"],
+      "base_price_per_night": 395.00,
+      "taxes_and_fees": 79.00,
+      "refundable": true,
+      "breakfast_included": false
+    },
+    "RT-60012": {
+      "room_type_id": "RT-60012",
+      "property_id": "PROP-50006",
+      "name": "Royal Garden Suite",
+      "max_guests": 4,
+      "bed_type": "king",
+      "amenities": ["wifi", "tv", "minibar", "safe", "bathrobes", "nespresso", "living_room", "garden_view", "butler_service"],
+      "base_price_per_night": 890.00,
+      "taxes_and_fees": 178.00,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60013": {
+      "room_type_id": "RT-60013",
+      "property_id": "PROP-50007",
+      "name": "Economy Double Room",
+      "max_guests": 2,
+      "bed_type": "double",
+      "amenities": ["wifi", "tv"],
+      "base_price_per_night": 79.00,
+      "taxes_and_fees": 13.43,
+      "refundable": false,
+      "breakfast_included": false
+    },
+    "RT-60014": {
+      "room_type_id": "RT-60014",
+      "property_id": "PROP-50007",
+      "name": "Economy Twin Room",
+      "max_guests": 2,
+      "bed_type": "twin",
+      "amenities": ["wifi", "tv"],
+      "base_price_per_night": 85.00,
+      "taxes_and_fees": 14.45,
+      "refundable": false,
+      "breakfast_included": false
+    },
+    "RT-60015": {
+      "room_type_id": "RT-60015",
+      "property_id": "PROP-50008",
+      "name": "Caldera View Suite",
+      "max_guests": 2,
+      "bed_type": "king",
+      "amenities": ["wifi", "tv", "minibar", "safe", "private_terrace", "plunge_pool", "caldera_view"],
+      "base_price_per_night": 680.00,
+      "taxes_and_fees": 102.00,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60016": {
+      "room_type_id": "RT-60016",
+      "property_id": "PROP-50008",
+      "name": "Honeymoon Cave Suite",
+      "max_guests": 2,
+      "bed_type": "king",
+      "amenities": ["wifi", "tv", "minibar", "safe", "private_terrace", "private_hot_tub", "caldera_view", "champagne_welcome"],
+      "base_price_per_night": 950.00,
+      "taxes_and_fees": 142.50,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60017": {
+      "room_type_id": "RT-60017",
+      "property_id": "PROP-50009",
+      "name": "Harbour View Queen Room",
+      "max_guests": 2,
+      "bed_type": "queen",
+      "amenities": ["wifi", "tv", "minibar", "safe", "harbour_view"],
+      "base_price_per_night": 210.00,
+      "taxes_and_fees": 31.50,
+      "refundable": true,
+      "breakfast_included": false
+    },
+    "RT-60018": {
+      "room_type_id": "RT-60018",
+      "property_id": "PROP-50009",
+      "name": "Standard Twin Room",
+      "max_guests": 2,
+      "bed_type": "twin",
+      "amenities": ["wifi", "tv", "safe"],
+      "base_price_per_night": 155.00,
+      "taxes_and_fees": 23.25,
+      "refundable": false,
+      "breakfast_included": false
+    },
+    "RT-60019": {
+      "room_type_id": "RT-60019",
+      "property_id": "PROP-50010",
+      "name": "Alpine Standard Room",
+      "max_guests": 2,
+      "bed_type": "queen",
+      "amenities": ["wifi", "tv", "minibar", "safe", "mountain_view", "heated_floors"],
+      "base_price_per_night": 290.00,
+      "taxes_and_fees": 43.50,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60020": {
+      "room_type_id": "RT-60020",
+      "property_id": "PROP-50010",
+      "name": "Matterhorn Penthouse",
+      "max_guests": 4,
+      "bed_type": "king",
+      "amenities": ["wifi", "tv", "minibar", "safe", "mountain_view", "private_balcony", "fireplace", "jacuzzi", "heated_floors"],
+      "base_price_per_night": 750.00,
+      "taxes_and_fees": 112.50,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60021": {
+      "room_type_id": "RT-60021",
+      "property_id": "PROP-50011",
+      "name": "Beach View Double",
+      "max_guests": 2,
+      "bed_type": "double",
+      "amenities": ["wifi", "tv", "minibar", "safe", "balcony"],
+      "base_price_per_night": 130.00,
+      "taxes_and_fees": 19.50,
+      "refundable": true,
+      "breakfast_included": false
+    },
+    "RT-60022": {
+      "room_type_id": "RT-60022",
+      "property_id": "PROP-50011",
+      "name": "Family Triple Room",
+      "max_guests": 4,
+      "bed_type": "double_and_single",
+      "amenities": ["wifi", "tv", "minibar", "safe"],
+      "base_price_per_night": 175.00,
+      "taxes_and_fees": 26.25,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60023": {
+      "room_type_id": "RT-60023",
+      "property_id": "PROP-50012",
+      "name": "Premium City View Room",
+      "max_guests": 2,
+      "bed_type": "king",
+      "amenities": ["wifi", "tv", "minibar", "safe", "nespresso", "city_view", "bathrobes"],
+      "base_price_per_night": 380.00,
+      "taxes_and_fees": 57.00,
+      "refundable": true,
+      "breakfast_included": true
+    },
+    "RT-60024": {
+      "room_type_id": "RT-60024",
+      "property_id": "PROP-50012",
+      "name": "Presidential Suite",
+      "max_guests": 4,
+      "bed_type": "king",
+      "amenities": ["wifi", "tv", "minibar", "safe", "living_room", "dining_area", "butler_service", "panoramic_view", "jacuzzi"],
+      "base_price_per_night": 1100.00,
+      "taxes_and_fees": 165.00,
+      "refundable": true,
+      "breakfast_included": true
+    }
+  },
+  "bookings": {
+    "BKG-70001": {
+      "booking_id": "BKG-70001",
+      "property_id": "PROP-50002",
+      "room_type_id": "RT-60003",
+      "guest_info": {
+        "name": "Rachel Kim",
+        "email": "rachel.kim@email.com",
+        "phone": "+1-212-555-0198"
+      },
+      "check_in_date": "2025-03-15",
+      "check_out_date": "2025-03-20",
+      "num_guests": 2,
+      "rooms_booked": 1,
+      "total_price": 2990.00,
+      "payment_status": "paid",
+      "booking_status": "confirmed",
+      "cancellation_policy_snapshot": "Free cancellation up to 72 hours before check-in",
+      "special_requests": "High floor preferred, extra pillows",
+      "created_at": "2025-01-10T14:22:00Z",
+      "updated_at": "2025-01-10T14:22:00Z"
+    },
+    "BKG-70002": {
+      "booking_id": "BKG-70002",
+      "property_id": "PROP-50003",
+      "room_type_id": "RT-60006",
+      "guest_info": {
+        "name": "Daniel Kim",
+        "email": "daniel.kim@email.com",
+        "phone": "+1-212-555-0199"
+      },
+      "check_in_date": "2025-04-01",
+      "check_out_date": "2025-04-07",
+      "num_guests": 2,
+      "rooms_booked": 1,
+      "total_price": 1207.50,
+      "payment_status": "paid",
+      "booking_status": "confirmed",
+      "cancellation_policy_snapshot": "Free cancellation up to 24 hours before check-in",
+      "special_requests": null,
+      "created_at": "2025-01-20T09:15:00Z",
+      "updated_at": "2025-01-20T09:15:00Z"
+    },
+    "BKG-70003": {
+      "booking_id": "BKG-70003",
+      "property_id": "PROP-50004",
+      "room_type_id": "RT-60008",
+      "guest_info": {
+        "name": "Rachel Kim",
+        "email": "rachel.kim@email.com",
+        "phone": "+1-212-555-0198"
+      },
+      "check_in_date": "2025-06-10",
+      "check_out_date": "2025-06-17",
+      "num_guests": 4,
+      "rooms_booked": 1,
+      "total_price": 22540.00,
+      "payment_status": "paid",
+      "booking_status": "confirmed",
+      "cancellation_policy_snapshot": "Free cancellation up to 72 hours before check-in",
+      "special_requests": "Airport transfer, late check-out if possible",
+      "created_at": "2025-02-05T18:40:00Z",
+      "updated_at": "2025-02-05T18:40:00Z"
+    },
+    "BKG-70004": {
+      "booking_id": "BKG-70004",
+      "property_id": "PROP-50001",
+      "room_type_id": "RT-60001",
+      "guest_info": {
+        "name": "Rachel Kim",
+        "email": "rachel.kim@email.com",
+        "phone": "+1-212-555-0198"
+      },
+      "check_in_date": "2024-12-20",
+      "check_out_date": "2024-12-23",
+      "num_guests": 1,
+      "rooms_booked": 1,
+      "total_price": 663.39,
+      "payment_status": "paid",
+      "booking_status": "confirmed",
+      "cancellation_policy_snapshot": "Free cancellation up to 48 hours before check-in",
+      "special_requests": null,
+      "created_at": "2024-11-28T11:00:00Z",
+      "updated_at": "2024-11-28T11:00:00Z"
+    },
+    "BKG-70005": {
+      "booking_id": "BKG-70005",
+      "property_id": "PROP-50005",
+      "room_type_id": "RT-60010",
+      "guest_info": {
+        "name": "Rachel Kim",
+        "email": "rachel.kim@email.com",
+        "phone": "+1-212-555-0198"
+      },
+      "check_in_date": "2025-07-20",
+      "check_out_date": "2025-07-27",
+      "num_guests": 4,
+      "rooms_booked": 1,
+      "total_price": 2598.40,
+      "payment_status": "paid",
+      "booking_status": "confirmed",
+      "cancellation_policy_snapshot": "Free cancellation up to 48 hours before check-in",
+      "special_requests": "Crib for infant, ocean-facing room",
+      "created_at": "2025-02-14T20:30:00Z",
+      "updated_at": "2025-02-14T20:30:00Z"
+    },
+    "BKG-70006": {
+      "booking_id": "BKG-70006",
+      "property_id": "PROP-50006",
+      "room_type_id": "RT-60011",
+      "guest_info": {
+        "name": "Rachel Kim",
+        "email": "rachel.kim@email.com"
+      },
+      "check_in_date": "2025-02-10",
+      "check_out_date": "2025-02-13",
+      "num_guests": 2,
+      "rooms_booked": 1,
+      "total_price": 1422.00,
+      "payment_status": "refunded",
+      "booking_status": "cancelled",
+      "cancellation_policy_snapshot": "Free cancellation up to 48 hours before check-in",
+      "special_requests": null,
+      "created_at": "2025-01-05T16:45:00Z",
+      "updated_at": "2025-01-30T08:20:00Z"
+    },
+    "BKG-70007": {
+      "booking_id": "BKG-70007",
+      "property_id": "PROP-50007",
+      "room_type_id": "RT-60013",
+      "guest_info": {
+        "name": "Emily Park",
+        "email": "rachel.kim@email.com",
+        "phone": "+1-646-555-0342"
+      },
+      "check_in_date": "2025-05-01",
+      "check_out_date": "2025-05-03",
+      "num_guests": 1,
+      "rooms_booked": 1,
+      "total_price": 184.86,
+      "payment_status": "paid",
+      "booking_status": "confirmed",
+      "cancellation_policy_snapshot": null,
+      "special_requests": "Quiet room away from elevator",
+      "created_at": "2025-03-01T12:00:00Z",
+      "updated_at": "2025-03-01T12:00:00Z"
+    },
+    "BKG-70008": {
+      "booking_id": "BKG-70008",
+      "property_id": "PROP-50008",
+      "room_type_id": "RT-60016",
+      "guest_info": {
+        "name": "Rachel Kim",
+        "email": "rachel.kim@email.com",
+        "phone": "+1-212-555-0198"
+      },
+      "check_in_date": "2025-09-05",
+      "check_out_date": "2025-09-10",
+      "num_guests": 2,
+      "rooms_booked": 1,
+      "total_price": 5462.50,
+      "payment_status": "pending",
+      "booking_status": "confirmed",
+      "cancellation_policy_snapshot": "Free cancellation up to 7 days before check-in",
+      "special_requests": "Anniversary celebration, champagne on arrival",
+      "created_at": "2025-03-10T21:15:00Z",
+      "updated_at": "2025-03-10T21:15:00Z"
+    },
+    "BKG-70009": {
+      "booking_id": "BKG-70009",
+      "property_id": "PROP-50010",
+      "room_type_id": "RT-60019",
+      "guest_info": {
+        "name": "Soo-Yeon Kim",
+        "email": "sooyeon.kim@email.com"
+      },
+      "check_in_date": "2025-12-22",
+      "check_out_date": "2025-12-29",
+      "num_guests": 2,
+      "rooms_booked": 1,
+      "total_price": 2334.50,
+      "payment_status": "paid",
+      "booking_status": "confirmed",
+      "cancellation_policy_snapshot": "Free cancellation up to 14 days before check-in",
+      "special_requests": "Ski pass arrangement",
+      "created_at": "2025-03-15T10:00:00Z",
+      "updated_at": "2025-03-15T10:00:00Z"
+    },
+    "BKG-70010": {
+      "booking_id": "BKG-70010",
+      "property_id": "PROP-50012",
+      "room_type_id": "RT-60023",
+      "guest_info": {
+        "name": "Rachel Kim",
+        "email": "rachel.kim@email.com",
+        "phone": "+1-212-555-0198"
+      },
+      "check_in_date": "2025-05-15",
+      "check_out_date": "2025-05-19",
+      "num_guests": 2,
+      "rooms_booked": 1,
+      "total_price": 1748.00,
+      "payment_status": "paid",
+      "booking_status": "confirmed",
+      "cancellation_policy_snapshot": "Free cancellation up to 48 hours before check-in",
+      "special_requests": null,
+      "created_at": "2025-02-28T07:30:00Z",
+      "updated_at": "2025-02-28T07:30:00Z"
+    }
+  }
+}

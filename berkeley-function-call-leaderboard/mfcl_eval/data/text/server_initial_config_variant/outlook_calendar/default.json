@@ -1,0 +1,786 @@
+{
+  "_meta": {
+    "api_class": "OutlookCalendarAPI",
+    "source_file": "outlook_calendar.py",
+    "description": "Initial state for the Microsoft Outlook Calendar scheduling and events API"
+  },
+  "random_seed": 7002,
+  "profile": {
+    "name": "Elena Vasquez",
+    "email": "elena.vasquez@contoso.com",
+    "timezone": "America/Chicago"
+  },
+  "calendars": {
+    "cal_001": {
+      "calendar_id": "cal_001",
+      "name": "Calendar",
+      "is_primary": true
+    },
+    "cal_002": {
+      "calendar_id": "cal_002",
+      "name": "Team Events",
+      "is_primary": false
+    },
+    "cal_003": {
+      "calendar_id": "cal_003",
+      "name": "Personal",
+      "is_primary": false
+    }
+  },
+  "room_resources": [
+    {"room_id": "room_maple", "name": "Conf Room Maple (3rd Floor)", "capacity": 12, "floor": 3, "equipment": ["projector", "whiteboard"]},
+    {"room_id": "room_oak", "name": "Conf Room Oak (2nd Floor)", "capacity": 8, "floor": 2, "equipment": ["whiteboard"]},
+    {"room_id": "room_summit", "name": "Summit Room (5th Floor)", "capacity": 20, "floor": 5, "equipment": ["projector", "video_conference", "whiteboard"]}
+  ],
+  "categories": [
+    {"name": "Urgent", "color": "red"},
+    {"name": "Travel", "color": "blue"},
+    {"name": "Client", "color": "green"},
+    {"name": "Internal", "color": "yellow"}
+  ],
+  "working_hours": {
+    "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    "start_time": "09:00",
+    "end_time": "17:00",
+    "timezone": "America/Chicago"
+  },
+  "events": {
+    "evt_001": {
+      "event_id": "evt_001",
+      "calendar_id": "cal_002",
+      "title": "Weekly Status Meeting",
+      "description": "Review sprint progress, discuss blockers, and plan next steps for the Orion project.",
+      "location": "Conf Room Maple (3rd Floor)",
+      "start_time": "2024-12-10T10:00:00-06:00",
+      "end_time": "2024-12-10T10:45:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "accepted" },
+        { "email": "priya.nair@contoso.com", "name": "Priya Nair", "response_status": "tentative" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": ["TU"]
+      },
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/19meeting_abc123",
+      "created_at": "2024-11-01T14:00:00-06:00",
+      "updated_at": "2024-12-03T09:15:00-06:00"
+    },
+    "evt_002": {
+      "event_id": "evt_002",
+      "calendar_id": "cal_001",
+      "title": "Client Call — Northwind Traders",
+      "description": "Quarterly review call with Northwind Traders. Agenda: contract renewal, SLA metrics, roadmap preview.",
+      "location": null,
+      "start_time": "2024-12-12T14:00:00-06:00",
+      "end_time": "2024-12-12T15:00:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "carol.ming@northwind.com", "name": "Carol Ming", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "needs_action" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 },
+        { "method": "email", "minutes_before": 1440 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/19meeting_def456",
+      "created_at": "2024-12-02T11:30:00-06:00",
+      "updated_at": "2024-12-08T16:45:00-06:00"
+    },
+    "evt_003": {
+      "event_id": "evt_003",
+      "calendar_id": "cal_002",
+      "title": "December Town Hall",
+      "description": "Company-wide all-hands meeting. CEO keynote, department highlights, and Q&A.",
+      "location": "Main Auditorium, Building A",
+      "start_time": "2024-12-18T00:00:00-06:00",
+      "end_time": "2024-12-19T00:00:00-06:00",
+      "all_day": true,
+      "status": "confirmed",
+      "organizer": {
+        "email": "hr@contoso.com",
+        "name": "HR Team"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 60 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-11-20T09:00:00-06:00",
+      "updated_at": "2024-12-10T13:00:00-06:00"
+    },
+    "evt_004": {
+      "event_id": "evt_004",
+      "calendar_id": "cal_001",
+      "title": "Focus Time — Deep Work",
+      "description": "Reserved focus time. No meetings or interruptions.",
+      "location": null,
+      "start_time": "2024-12-11T09:00:00-06:00",
+      "end_time": "2024-12-11T12:00:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [],
+      "reminders": [
+        { "method": "popup", "minutes_before": 5 }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": ["WE"]
+      },
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-11-04T08:00:00-06:00",
+      "updated_at": "2024-11-04T08:00:00-06:00"
+    },
+    "evt_005": {
+      "event_id": "evt_005",
+      "calendar_id": "cal_001",
+      "title": "1:1 with Tobias",
+      "description": "Weekly sync with Tobias on project deliverables and career development.",
+      "location": null,
+      "start_time": "2024-12-09T11:00:00-06:00",
+      "end_time": "2024-12-09T11:30:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 10 }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": ["MO"]
+      },
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/1to1_tobias001",
+      "created_at": "2024-10-15T09:00:00-06:00",
+      "updated_at": "2024-12-01T08:00:00-06:00"
+    },
+    "evt_006": {
+      "event_id": "evt_006",
+      "calendar_id": "cal_001",
+      "title": "1:1 with Priya",
+      "description": "Bi-weekly check-in with Priya on QA processes and test automation progress.",
+      "location": null,
+      "start_time": "2024-12-10T14:00:00-06:00",
+      "end_time": "2024-12-10T14:30:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "priya.nair@contoso.com", "name": "Priya Nair", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 10 }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 2,
+        "by_day": ["TU"]
+      },
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/1to1_priya001",
+      "created_at": "2024-10-20T10:00:00-06:00",
+      "updated_at": "2024-12-01T08:00:00-06:00"
+    },
+    "evt_007": {
+      "event_id": "evt_007",
+      "calendar_id": "cal_001",
+      "title": "Sprint Planning — Sprint 15",
+      "description": "Plan Sprint 15 backlog items, estimate story points, and assign owners.",
+      "location": "Conf Room Maple (3rd Floor)",
+      "start_time": "2024-12-09T13:00:00-06:00",
+      "end_time": "2024-12-09T15:00:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "accepted" },
+        { "email": "priya.nair@contoso.com", "name": "Priya Nair", "response_status": "accepted" },
+        { "email": "daniel.okafor@contoso.com", "name": "Daniel Okafor", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/sprint15plan",
+      "created_at": "2024-12-04T09:00:00-06:00",
+      "updated_at": "2024-12-06T14:00:00-06:00"
+    },
+    "evt_008": {
+      "event_id": "evt_008",
+      "calendar_id": "cal_001",
+      "title": "Daily Standup",
+      "description": "15-minute daily standup for the Orion team.",
+      "location": null,
+      "start_time": "2024-12-09T09:00:00-06:00",
+      "end_time": "2024-12-09T09:15:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "accepted" },
+        { "email": "priya.nair@contoso.com", "name": "Priya Nair", "response_status": "accepted" },
+        { "email": "daniel.okafor@contoso.com", "name": "Daniel Okafor", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 5 }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": ["MO", "TU", "WE", "TH", "FR"]
+      },
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/standup_orion",
+      "created_at": "2024-10-01T08:00:00-06:00",
+      "updated_at": "2024-11-15T10:00:00-06:00"
+    },
+    "evt_009": {
+      "event_id": "evt_009",
+      "calendar_id": "cal_002",
+      "title": "Mandatory Security Training",
+      "description": "Annual cybersecurity awareness training. Completion required by Dec 20.",
+      "location": null,
+      "start_time": "2024-12-13T10:00:00-06:00",
+      "end_time": "2024-12-13T11:30:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "it.security@contoso.com",
+        "name": "IT Security"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 30 },
+        { "method": "email", "minutes_before": 1440 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/sectraining2024",
+      "created_at": "2024-12-01T08:00:00-06:00",
+      "updated_at": "2024-12-05T14:00:00-06:00"
+    },
+    "evt_010": {
+      "event_id": "evt_010",
+      "calendar_id": "cal_001",
+      "title": "Client Demo — Woodgrove Bank",
+      "description": "Present the new reporting module to Woodgrove Bank stakeholders.",
+      "location": "Huddle Room Birch (2nd Floor)",
+      "start_time": "2024-12-16T15:00:00-06:00",
+      "end_time": "2024-12-16T16:00:00-06:00",
+      "all_day": false,
+      "status": "tentative",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "tentative" },
+        { "email": "mark.jensen@woodgrove.com", "name": "Mark Jensen", "response_status": "needs_action" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 30 },
+        { "method": "email", "minutes_before": 1440 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/woodgrove_demo",
+      "created_at": "2024-12-07T11:00:00-06:00",
+      "updated_at": "2024-12-12T09:30:00-06:00"
+    },
+    "evt_011": {
+      "event_id": "evt_011",
+      "calendar_id": "cal_001",
+      "title": "End-of-Year Performance Reviews",
+      "description": "Finalize performance reviews for direct reports.",
+      "location": null,
+      "start_time": "2024-12-19T00:00:00-06:00",
+      "end_time": "2024-12-20T00:00:00-06:00",
+      "all_day": true,
+      "status": "confirmed",
+      "organizer": {
+        "email": "hr@contoso.com",
+        "name": "HR Team"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "email", "minutes_before": 2880 },
+        { "method": "popup", "minutes_before": 1440 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-11-15T10:00:00-06:00",
+      "updated_at": "2024-12-10T08:00:00-06:00"
+    },
+    "evt_012": {
+      "event_id": "evt_012",
+      "calendar_id": "cal_001",
+      "title": "Sprint Retrospective — Sprint 14",
+      "description": "Reflect on Sprint 14. What worked well, what to improve, action items.",
+      "location": "Conf Room Maple (3rd Floor)",
+      "start_time": "2024-12-13T15:00:00-06:00",
+      "end_time": "2024-12-13T16:00:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "accepted" },
+        { "email": "priya.nair@contoso.com", "name": "Priya Nair", "response_status": "accepted" },
+        { "email": "daniel.okafor@contoso.com", "name": "Daniel Okafor", "response_status": "tentative" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/retro_sprint14",
+      "created_at": "2024-12-06T10:00:00-06:00",
+      "updated_at": "2024-12-10T11:00:00-06:00"
+    },
+    "evt_013": {
+      "event_id": "evt_013",
+      "calendar_id": "cal_002",
+      "title": "Office Holiday Party",
+      "description": "Annual Contoso holiday celebration. White elephant gift exchange.",
+      "location": "Atrium Lobby, Building A",
+      "start_time": "2024-12-20T16:00:00-06:00",
+      "end_time": "2024-12-20T19:00:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "hr@contoso.com",
+        "name": "HR Team"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "accepted" },
+        { "email": "priya.nair@contoso.com", "name": "Priya Nair", "response_status": "accepted" },
+        { "email": "daniel.okafor@contoso.com", "name": "Daniel Okafor", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 60 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-11-25T09:00:00-06:00",
+      "updated_at": "2024-12-15T10:00:00-06:00"
+    },
+    "evt_014": {
+      "event_id": "evt_014",
+      "calendar_id": "cal_001",
+      "title": "Budget Review — Q1 2025",
+      "description": "Review department budget proposals and headcount requests for Q1.",
+      "location": null,
+      "start_time": "2024-12-17T10:00:00-06:00",
+      "end_time": "2024-12-17T11:30:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "finance@contoso.com",
+        "name": "Finance Team"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "rachel.goldstein@contoso.com", "name": "Rachel Goldstein", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/budget_q1_2025",
+      "created_at": "2024-12-04T14:00:00-06:00",
+      "updated_at": "2024-12-10T08:00:00-06:00"
+    },
+    "evt_015": {
+      "event_id": "evt_015",
+      "calendar_id": "cal_001",
+      "title": "Architecture Review — Microservices Migration",
+      "description": "Review architecture proposals for migrating the monolith to microservices.",
+      "location": "Conf Room Maple (3rd Floor)",
+      "start_time": "2024-12-11T14:00:00-06:00",
+      "end_time": "2024-12-11T15:30:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "tobias.engstrom@contoso.com",
+        "name": "Tobias Engstrom"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "accepted" },
+        { "email": "daniel.okafor@contoso.com", "name": "Daniel Okafor", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/arch_review_ms",
+      "created_at": "2024-12-03T16:00:00-06:00",
+      "updated_at": "2024-12-08T09:00:00-06:00"
+    },
+    "evt_016": {
+      "event_id": "evt_016",
+      "calendar_id": "cal_003",
+      "title": "Holiday Travel — Flight to Denver",
+      "description": "United UA 1482, DFW to DEN. Departs 2:15 PM.",
+      "location": "DFW Airport, Terminal E",
+      "start_time": "2024-12-23T14:15:00-06:00",
+      "end_time": "2024-12-23T16:30:00-07:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [],
+      "reminders": [
+        { "method": "popup", "minutes_before": 180 },
+        { "method": "email", "minutes_before": 1440 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-01T20:00:00-06:00",
+      "updated_at": "2024-12-01T20:00:00-06:00"
+    },
+    "evt_017": {
+      "event_id": "evt_017",
+      "calendar_id": "cal_003",
+      "title": "Christmas Day",
+      "description": "Family celebration at parents' house in Denver.",
+      "location": "782 Aspen Dr, Denver, CO",
+      "start_time": "2024-12-25T00:00:00-07:00",
+      "end_time": "2024-12-26T00:00:00-07:00",
+      "all_day": true,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [],
+      "reminders": [],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-11-01T08:00:00-06:00",
+      "updated_at": "2024-11-01T08:00:00-06:00"
+    },
+    "evt_018": {
+      "event_id": "evt_018",
+      "calendar_id": "cal_001",
+      "title": "Q1 Kickoff Meeting",
+      "description": "Align on Q1 2025 OKRs, staffing plan, and major deliverables.",
+      "location": "Main Auditorium, Building A",
+      "start_time": "2025-01-02T10:00:00-06:00",
+      "end_time": "2025-01-02T12:00:00-06:00",
+      "all_day": false,
+      "status": "tentative",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "tentative" },
+        { "email": "priya.nair@contoso.com", "name": "Priya Nair", "response_status": "needs_action" },
+        { "email": "daniel.okafor@contoso.com", "name": "Daniel Okafor", "response_status": "needs_action" },
+        { "email": "rachel.goldstein@contoso.com", "name": "Rachel Goldstein", "response_status": "needs_action" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 30 },
+        { "method": "email", "minutes_before": 1440 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/q1kickoff2025",
+      "created_at": "2024-12-15T09:00:00-06:00",
+      "updated_at": "2024-12-15T09:00:00-06:00"
+    },
+    "evt_019": {
+      "event_id": "evt_019",
+      "calendar_id": "cal_001",
+      "title": "Vendor Call — Azure Support",
+      "description": "Discuss Azure subscription tier upgrade and reserved instance pricing.",
+      "location": null,
+      "start_time": "2024-12-12T11:00:00-06:00",
+      "end_time": "2024-12-12T11:30:00-06:00",
+      "all_day": false,
+      "status": "cancelled",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "azure.support@microsoft.com", "name": "Azure Support", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/azure_support",
+      "created_at": "2024-12-05T10:00:00-06:00",
+      "updated_at": "2024-12-11T16:00:00-06:00"
+    },
+    "evt_020": {
+      "event_id": "evt_020",
+      "calendar_id": "cal_002",
+      "title": "New Hire Onboarding — Lisa Park",
+      "description": "Welcome and onboarding session for new team member Lisa Park.",
+      "location": "Huddle Room Birch (2nd Floor)",
+      "start_time": "2024-12-16T09:00:00-06:00",
+      "end_time": "2024-12-16T10:30:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "lisa.park@contoso.com", "name": "Lisa Park", "response_status": "accepted" },
+        { "email": "hr@contoso.com", "name": "HR Team", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 30 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-09T11:00:00-06:00",
+      "updated_at": "2024-12-12T14:00:00-06:00"
+    },
+    "evt_021": {
+      "event_id": "evt_021",
+      "calendar_id": "cal_001",
+      "title": "Incident Post-Mortem — Prod Outage Dec 8",
+      "description": "Review root cause analysis of the December 8 production outage and define preventive measures.",
+      "location": null,
+      "start_time": "2024-12-10T16:00:00-06:00",
+      "end_time": "2024-12-10T17:00:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "daniel.okafor@contoso.com",
+        "name": "Daniel Okafor"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "accepted" },
+        { "email": "daniel.okafor@contoso.com", "name": "Daniel Okafor", "response_status": "accepted" },
+        { "email": "priya.nair@contoso.com", "name": "Priya Nair", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 10 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/postmortem_dec8",
+      "created_at": "2024-12-09T08:00:00-06:00",
+      "updated_at": "2024-12-09T15:00:00-06:00"
+    },
+    "evt_022": {
+      "event_id": "evt_022",
+      "calendar_id": "cal_003",
+      "title": "New Year's Eve Dinner",
+      "description": "Dinner reservation with friends at downtown restaurant.",
+      "location": "Nobu Dallas, 400 Crescent Ct",
+      "start_time": "2024-12-31T19:00:00-06:00",
+      "end_time": "2024-12-31T23:00:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "marcos.reyes@email.com", "name": "Marcos Reyes", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 120 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-10T20:00:00-06:00",
+      "updated_at": "2024-12-10T20:00:00-06:00"
+    },
+    "evt_023": {
+      "event_id": "evt_023",
+      "calendar_id": "cal_001",
+      "title": "Leadership Sync",
+      "description": "Monthly sync with VP of Engineering on department strategy and roadmap.",
+      "location": null,
+      "start_time": "2024-12-17T15:00:00-06:00",
+      "end_time": "2024-12-17T16:00:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "vp.engineering@contoso.com",
+        "name": "James Harrington"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "vp.engineering@contoso.com", "name": "James Harrington", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 }
+      ],
+      "recurrence": {
+        "freq": "monthly",
+        "interval": 1
+      },
+      "recurring_event_id": null,
+      "meeting_link": "https://teams.microsoft.com/l/meetup-join/leadership_sync",
+      "created_at": "2024-09-01T09:00:00-06:00",
+      "updated_at": "2024-12-01T08:00:00-06:00"
+    },
+    "evt_024": {
+      "event_id": "evt_024",
+      "calendar_id": "cal_002",
+      "title": "Lunch & Learn — AI/ML in Production",
+      "description": "Informal presentation on deploying ML models in production environments.",
+      "location": "Cafeteria, Building A",
+      "start_time": "2024-12-12T12:00:00-06:00",
+      "end_time": "2024-12-12T13:00:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "daniel.okafor@contoso.com",
+        "name": "Daniel Okafor"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "accepted" },
+        { "email": "daniel.okafor@contoso.com", "name": "Daniel Okafor", "response_status": "accepted" },
+        { "email": "priya.nair@contoso.com", "name": "Priya Nair", "response_status": "tentative" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-05T09:00:00-06:00",
+      "updated_at": "2024-12-09T11:00:00-06:00"
+    },
+    "evt_025": {
+      "event_id": "evt_025",
+      "calendar_id": "cal_003",
+      "title": "Return Flight — Denver to DFW",
+      "description": "United UA 921, DEN to DFW. Departs 11:00 AM.",
+      "location": "DEN Airport, Concourse B",
+      "start_time": "2024-12-27T11:00:00-07:00",
+      "end_time": "2024-12-27T14:15:00-06:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [],
+      "reminders": [
+        { "method": "popup", "minutes_before": 180 },
+        { "method": "email", "minutes_before": 1440 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-01T20:00:00-06:00",
+      "updated_at": "2024-12-01T20:00:00-06:00"
+    },
+    "evt_026": {
+      "event_id": "evt_026",
+      "calendar_id": "cal_001",
+      "title": "Code Freeze — Holiday Release",
+      "description": "No code deployments to production from Dec 22 through Jan 1.",
+      "location": null,
+      "start_time": "2024-12-22T00:00:00-06:00",
+      "end_time": "2025-01-02T00:00:00-06:00",
+      "all_day": true,
+      "status": "confirmed",
+      "organizer": {
+        "email": "elena.vasquez@contoso.com",
+        "name": "Elena Vasquez"
+      },
+      "attendees": [
+        { "email": "elena.vasquez@contoso.com", "name": "Elena Vasquez", "response_status": "accepted" },
+        { "email": "tobias.engstrom@contoso.com", "name": "Tobias Engstrom", "response_status": "accepted" },
+        { "email": "daniel.okafor@contoso.com", "name": "Daniel Okafor", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "email", "minutes_before": 2880 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-01T09:00:00-06:00",
+      "updated_at": "2024-12-10T08:00:00-06:00"
+    }
+  }
+}

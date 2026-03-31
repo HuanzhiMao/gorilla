@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "api_class": "YelpAPI",
+    "source_file": "yelp.py",
+    "description": "Green Leaf Cafe - Yelp with CORRECT hours (open till 21:00)",
+    "random_seed": 7890
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "yelp_green_leaf": {
+      "business_id": "yelp_green_leaf",
+      "name": "Green Leaf Cafe",
+      "category": "restaurant",
+      "address": "1234 Divisadero St, San Francisco, CA 94115",
+      "rating": 4.1,
+      "review_count": 3,
+      "price_level": "$$",
+      "opening_hours": "Mon-Sun 08:00-21:00",
+      "phone": "+1-415-555-0912",
+      "website": "https://greenleafcafe-sf.example.com"
+    }
+  },
+  "reviews": {
+    "rev_yglc_001": {
+      "review_id": "rev_yglc_001",
+      "business_id": "yelp_green_leaf",
+      "author": {
+        "name": "Sophie Martinez",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Love that they extended their hours to 9 PM! Had dinner here last night and the avocado burger was amazing. Great healthy options.",
+      "photos": ["avocado_burger.jpg"],
+      "created_at": "2026-03-14T20:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_yglc_002": {
+      "review_id": "rev_yglc_002",
+      "business_id": "yelp_green_leaf",
+      "author": {
+        "name": "David Chen",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Great dinner spot now with the new evening hours. The quinoa bowl is filling and nutritious. Smoothie bowls are perfect for dessert. Cozy vibe.",
+      "photos": [],
+      "created_at": "2026-03-16T19:30:00Z",
+      "helpful_count": 3
+    },
+    "rev_yglc_003": {
+      "review_id": "rev_yglc_003",
+      "business_id": "yelp_green_leaf",
+      "author": {
+        "name": "Amanda Foster",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Nice healthy cafe that's now open till 9 PM. The patio is lovely in the evening. Great vegetarian options and organic ingredients. Recommended!",
+      "photos": [],
+      "created_at": "2026-03-17T18:00:00Z",
+      "helpful_count": 2
+    }
+  },
+  "saved_places": {}
+}

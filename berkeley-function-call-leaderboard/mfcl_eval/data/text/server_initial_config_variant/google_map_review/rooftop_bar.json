@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "api_class": "GoogleMapReviewAPI",
+    "source_file": "google_map_review.py",
+    "description": "The Rooftop Bar - Query 10: is_open_now field is stale",
+    "random_seed": 3456
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "gp_rooftop_bar": {
+      "business_id": "gp_rooftop_bar",
+      "name": "The Rooftop Bar",
+      "category": "bar",
+      "address": "620 Jones St, Rooftop Level, San Francisco, CA 94102",
+      "rating": 4.4,
+      "review_count": 3,
+      "price_level": 3,
+      "opening_hours": "Mon-Sat 17:00-02:00, Sun Closed",
+      "phone": "+1-415-555-1100",
+      "website": "https://therooftopbar-sf.example.com",
+      "is_open_now": true
+    }
+  },
+  "reviews": {
+    "rev_rtb_001": {
+      "review_id": "rev_rtb_001",
+      "business_id": "gp_rooftop_bar",
+      "author": {
+        "name": "Chris Morgan",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Stunning views of the city skyline. The craft cocktails are creative and well-made. The spicy margarita is a standout. Perfect date night spot.",
+      "photos": ["skyline_view.jpg", "cocktails.jpg"],
+      "created_at": "2026-02-22T20:30:00Z",
+      "helpful_count": 8
+    },
+    "rev_rtb_002": {
+      "review_id": "rev_rtb_002",
+      "business_id": "gp_rooftop_bar",
+      "author": {
+        "name": "Laura Bennett",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Great ambiance and views. Drinks are pricey but it's a rooftop bar so expected. The small plates are decent. Gets crowded on weekends.",
+      "photos": [],
+      "created_at": "2026-03-01T21:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_rtb_003": {
+      "review_id": "rev_rtb_003",
+      "business_id": "gp_rooftop_bar",
+      "author": {
+        "name": "Jake Thompson",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Nice spot for after-work drinks. The sunset views are incredible. Note: they're closed on Sundays. Dress code is smart casual.",
+      "photos": ["sunset.jpg"],
+      "created_at": "2026-03-08T19:15:00Z",
+      "helpful_count": 3
+    }
+  },
+  "saved_places": {}
+}

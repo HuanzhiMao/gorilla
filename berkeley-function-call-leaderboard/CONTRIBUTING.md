@@ -16,8 +16,8 @@ We welcome your contributions to the Leaderboard! This guide provides step-by-st
 The repository is organized as follows:
 
 ```plaintext
-berkeley-function-call-leaderboard/
-├── bfcl_eval/
+multimodal-function-call-leaderboard/
+├── mfcl_eval/
 |   ├── constants/                # Global constants and configuration values
 │   ├── eval_checker/             # Evaluation modules
 │   │   ├── ast_eval/             # AST-based evaluation
@@ -46,8 +46,8 @@ To add a new model, focus primarily on the `model_handler` directory. You do not
 
 ## Where to Begin
 
-- **Base Handler:** Start by reviewing `bfcl_eval/model_handler/base_handler.py`. All model handlers inherit from this base class. The `inference_single_turn` and `inference_multi_turn` methods defined there are helpful for understanding the model response generation pipeline. The `base_handler.py` contains many useful details in the docstrings of each abstract method, so be sure to review them.
-  - If your model is hosted locally, you should also look at `bfcl_eval/model_handler/local_inference/base_oss_handler.py`.
+- **Base Handler:** Start by reviewing `mfcl_eval/model_handler/base_handler.py`. All model handlers inherit from this base class. The `inference_single_turn` and `inference_multi_turn` methods defined there are helpful for understanding the model response generation pipeline. The `base_handler.py` contains many useful details in the docstrings of each abstract method, so be sure to review them.
+  - If your model is hosted locally, you should also look at `mfcl_eval/model_handler/local_inference/base_oss_handler.py`.
 - **Reference Handlers:** Checkout some of the existing model handlers (such as `openai.py`, `claude.py`, etc); you can likely reuse some of the existing code if your new model outputs in a similar format.
   - If your model is OpenAI-compatible, the `openai.py` handler will be helpful (and you might be able to just use it as is).
   - If your model is locally hosted, the `llama_fc.py` handler or the `deepseek_coder.py` handler can be good starting points.
@@ -98,7 +98,7 @@ Regardless of mode or model type, you should implement the following methods to 
 
 ## Updating Model Config Mapping
 
-1. **Add a new entry in `bfcl_eval/constants/model_config.py`**
+1. **Add a new entry in `mfcl_eval/constants/model_config.py`**
 
    Populate every field in the `ModelConfig` dataclass:
 
@@ -132,11 +132,11 @@ Regardless of mode or model type, you should implement the following methods to 
 4. **Update Supported Models**
 
    1. Add your model to the list of supported models in `SUPPORTED_MODELS.md`. Include the model name and type (FC or Prompt) in the table.
-   2. Add a new entry in `bfcl_eval/constants/supported_models.py` as well.
+   2. Add a new entry in `mfcl_eval/constants/supported_models.py` as well.
 
 ## Submitting Your Pull Request
 
-- Raise a [Pull Request](https://github.com/ShishirPatil/gorilla/pulls) with your new Model Handler and the necessary updates to the model config.
+- Raise a [Pull Request]() with your new Model Handler and the necessary updates to the model config.
 - Ensure that the model you add is publicly accessible, either open-source or behind a publicly available API. While you may require authentication, billing, registration, or tokens, the general public should ultimately be able to access the endpoint.
   - If your model is not publicly accessible, we would still welcome your contribution, but we unfortunately cannot include it in the public-facing leaderboard.
 
@@ -147,4 +147,4 @@ Regardless of mode or model type, you should implement the following methods to 
 
 ---
 
-Thank you for contributing to the Berkeley Function Calling Leaderboard! We look forward to seeing your model added to the community.
+Thank you for contributing to the Multimodal Function Calling Leaderboard! We look forward to seeing your model added to the community.

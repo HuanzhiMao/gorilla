@@ -1,0 +1,95 @@
+{
+  "_meta": {
+    "api_class": "YelpAPI",
+    "source_file": "yelp.py",
+    "description": "Urban Grind Coffee - Yelp with ACCURATE review_count (34, not inflated)",
+    "random_seed": 7890
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "yelp_urban_grind": {
+      "business_id": "yelp_urban_grind",
+      "name": "Urban Grind Coffee",
+      "category": "cafe",
+      "address": "567 Hayes St, San Francisco, CA 94102",
+      "rating": 4.8,
+      "review_count": 34,
+      "price_level": "$$",
+      "opening_hours": "Mon-Fri 06:30-18:00, Sat-Sun 07:30-17:00",
+      "phone": "+1-415-555-1567",
+      "website": "https://urbangrindcoffee-sf.example.com"
+    }
+  },
+  "reviews": {
+    "rev_yug_001": {
+      "review_id": "rev_yug_001",
+      "business_id": "yelp_urban_grind",
+      "author": {
+        "name": "Hannah Chen",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "The best cortado in Hayes Valley. They roast in-house and you can taste the difference. The baristas really know their craft. A must-visit for coffee lovers.",
+      "photos": ["cortado_yelp.jpg"],
+      "created_at": "2026-03-14T08:00:00Z",
+      "helpful_count": 5
+    },
+    "rev_yug_002": {
+      "review_id": "rev_yug_002",
+      "business_id": "yelp_urban_grind",
+      "author": {
+        "name": "Marcus Lee",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Incredible pour-over with rotating single-origin beans. Great pastries from a local bakery. Small but charming space. My go-to in the neighborhood.",
+      "photos": [],
+      "created_at": "2026-03-16T09:30:00Z",
+      "helpful_count": 3
+    },
+    "rev_yug_003": {
+      "review_id": "rev_yug_003",
+      "business_id": "yelp_urban_grind",
+      "author": {
+        "name": "Olivia Foster",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Outstanding oat milk latte. The cold brew has beautiful chocolate notes. Great WiFi for remote work. A hidden gem with 34 reviews and counting!",
+      "photos": [],
+      "created_at": "2026-03-17T10:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_yug_004": {
+      "review_id": "rev_yug_004",
+      "business_id": "yelp_urban_grind",
+      "author": {
+        "name": "David Park",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "This tiny cafe punches way above its weight. The espresso is rich and perfectly extracted. The minimalist industrial decor is cool. Highly recommend.",
+      "photos": ["espresso_shot.jpg"],
+      "created_at": "2026-03-17T07:30:00Z",
+      "helpful_count": 2
+    },
+    "rev_yug_005": {
+      "review_id": "rev_yug_005",
+      "business_id": "yelp_urban_grind",
+      "author": {
+        "name": "Rachel Kim",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Excellent coffee with limited seating. The espresso is well-balanced and smooth. Morning rush can mean a wait. Worth it for the quality.",
+      "photos": [],
+      "created_at": "2026-03-17T08:15:00Z",
+      "helpful_count": 1
+    }
+  },
+  "saved_places": {}
+}

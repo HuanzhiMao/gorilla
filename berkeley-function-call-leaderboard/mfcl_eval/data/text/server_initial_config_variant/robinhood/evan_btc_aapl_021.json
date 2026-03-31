@@ -1,0 +1,53 @@
+{
+  "_meta": {
+    "api_class": "RobinhoodAPI",
+    "source_file": "robinhood.py",
+    "description": "Evan Ross individual account with $1000 buying power, BTC position and AAPL in portfolio for scenario 021"
+  },
+  "random_seed": 6001,
+  "profile": {
+    "name": "Evan Ross",
+    "email": "evan@example.com",
+    "account_type": "individual",
+    "buying_power": 1000.0,
+    "cash_balance": 1000.0
+  },
+  "portfolio": {
+    "BTC": {
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "type": "crypto",
+      "current_price": 104250.0,
+      "day_change": 1250.0,
+      "day_change_percent": 1.21,
+      "bid": 104200.0,
+      "ask": 104300.0,
+      "tradable": true,
+      "market_open": true
+    },
+    "AAPL": {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "type": "stock",
+      "current_price": 210.0,
+      "day_change": 1.5,
+      "day_change_percent": 0.72,
+      "bid": 209.95,
+      "ask": 210.05,
+      "tradable": true,
+      "market_open": true
+    }
+  },
+  "positions": {
+    "BTC": {
+      "symbol": "BTC",
+      "quantity": 0.001,
+      "average_cost": 95000.0,
+      "current_value": 104.25
+    }
+  },
+  "orders": {},
+  "watchlist": [],
+  "recurring_investments": {},
+  "dividends": {}
+}

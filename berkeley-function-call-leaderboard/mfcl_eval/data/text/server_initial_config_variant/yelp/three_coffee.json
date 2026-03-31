@@ -1,0 +1,132 @@
+{
+  "_meta": {
+    "api_class": "YelpAPI",
+    "source_file": "yelp.py",
+    "description": "Three coffee shops - Yelp with CURRENT accurate ratings",
+    "random_seed": 7890
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "yelp_peets": {
+      "business_id": "yelp_peets",
+      "name": "Peet's Coffee",
+      "category": "cafe",
+      "address": "2197 Shattuck Ave, Berkeley, CA 94704",
+      "rating": 4.3,
+      "review_count": 2,
+      "price_level": "$$",
+      "opening_hours": "Mon-Fri 05:30-20:00, Sat-Sun 06:00-20:00",
+      "phone": "+1-510-555-0134",
+      "website": "https://peets-berkeley.example.com"
+    },
+    "yelp_starbucks_reserve": {
+      "business_id": "yelp_starbucks_reserve",
+      "name": "Starbucks Reserve",
+      "category": "cafe",
+      "address": "1548 University Ave, Berkeley, CA 94703",
+      "rating": 4.1,
+      "review_count": 2,
+      "price_level": "$$$",
+      "opening_hours": "Mon-Sun 06:00-21:00",
+      "phone": "+1-510-555-0256",
+      "website": "https://starbucksreserve-berkeley.example.com"
+    },
+    "yelp_verve": {
+      "business_id": "yelp_verve",
+      "name": "Verve Coffee Roasters",
+      "category": "cafe",
+      "address": "2106 Cedar St, Berkeley, CA 94709",
+      "rating": 4.7,
+      "review_count": 2,
+      "price_level": "$$",
+      "opening_hours": "Mon-Fri 06:30-19:00, Sat-Sun 07:00-19:00",
+      "phone": "+1-510-555-0378",
+      "website": "https://vervecoffee-berkeley.example.com"
+    }
+  },
+  "reviews": {
+    "rev_ypt_001": {
+      "review_id": "rev_ypt_001",
+      "business_id": "yelp_peets",
+      "author": {
+        "name": "Natalie Chen",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "The OG Peet's is always reliable. Strong dark roast and good pastries. Historic Berkeley coffee spot with a loyal following.",
+      "photos": [],
+      "created_at": "2026-03-15T08:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_ypt_002": {
+      "review_id": "rev_ypt_002",
+      "business_id": "yelp_peets",
+      "author": {
+        "name": "James Wilson",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Still the best dark roast in the Bay Area. Major Dickason's is a classic for a reason. Great outdoor seating on Shattuck. A Berkeley institution.",
+      "photos": ["peets_cup.jpg"],
+      "created_at": "2026-03-17T09:30:00Z",
+      "helpful_count": 4
+    },
+    "rev_ysr_001": {
+      "review_id": "rev_ysr_001",
+      "business_id": "yelp_starbucks_reserve",
+      "author": {
+        "name": "Amanda Park",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "The Reserve experience is worth the premium. The barrel-aged cold brew is unlike anything else. Beautifully designed space. Staff really knows coffee.",
+      "photos": ["reserve_coffee.jpg"],
+      "created_at": "2026-03-14T10:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_ysr_002": {
+      "review_id": "rev_ysr_002",
+      "business_id": "yelp_starbucks_reserve",
+      "author": {
+        "name": "Brian Foster",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Elevated Starbucks experience. The siphon coffees are impressive. A bit pricey but you're paying for craft. Nice ambiance for studying.",
+      "photos": [],
+      "created_at": "2026-03-16T11:30:00Z",
+      "helpful_count": 2
+    },
+    "rev_yvv_001": {
+      "review_id": "rev_yvv_001",
+      "business_id": "yelp_verve",
+      "author": {
+        "name": "Christina Lee",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Verve is my top pick in the East Bay. The pour-over selections rotate weekly and are always exceptional. Beautiful latte art. Airy modern space.",
+      "photos": ["verve_latte.jpg"],
+      "created_at": "2026-03-15T07:30:00Z",
+      "helpful_count": 5
+    },
+    "rev_yvv_002": {
+      "review_id": "rev_yvv_002",
+      "business_id": "yelp_verve",
+      "author": {
+        "name": "Daniel Kim",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Consistently the best third-wave coffee around. The seasonal single-origin beans are always a treat. Great pastries from a local baker. My favorite cafe.",
+      "photos": [],
+      "created_at": "2026-03-17T08:00:00Z",
+      "helpful_count": 3
+    }
+  },
+  "saved_places": {}
+}

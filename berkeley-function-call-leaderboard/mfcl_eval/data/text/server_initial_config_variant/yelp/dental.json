@@ -1,0 +1,82 @@
+{
+  "_meta": {
+    "api_class": "YelpAPI",
+    "source_file": "yelp.py",
+    "description": "Bright Smiles Dental - Yelp with RECENT reviews (2026-02/03 dates)",
+    "random_seed": 7890
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "yelp_bright_smiles": {
+      "business_id": "yelp_bright_smiles",
+      "name": "Bright Smiles Dental",
+      "category": "dentist",
+      "address": "450 Sutter St, Suite 300, San Francisco, CA 94108",
+      "rating": 4.2,
+      "review_count": 4,
+      "price_level": "$$$",
+      "opening_hours": "Mon-Fri 08:00-17:00",
+      "phone": "+1-415-555-0890",
+      "website": "https://brightsmilesdental-sf.example.com"
+    }
+  },
+  "reviews": {
+    "rev_ybsd_001": {
+      "review_id": "rev_ybsd_001",
+      "business_id": "yelp_bright_smiles",
+      "author": {
+        "name": "Patricia Kim",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Dr. Nakamura is wonderful! She joined the practice recently and is incredibly skilled. My cleaning was thorough and painless. Modern equipment and a friendly team.",
+      "photos": [],
+      "created_at": "2026-02-28T10:00:00Z",
+      "helpful_count": 5
+    },
+    "rev_ybsd_002": {
+      "review_id": "rev_ybsd_002",
+      "business_id": "yelp_bright_smiles",
+      "author": {
+        "name": "Michael Torres",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "First visit with the new dentist Dr. Nakamura and I'm impressed. She took time to explain my treatment plan. The office has been recently renovated too.",
+      "photos": [],
+      "created_at": "2026-03-05T14:30:00Z",
+      "helpful_count": 3
+    },
+    "rev_ybsd_003": {
+      "review_id": "rev_ybsd_003",
+      "business_id": "yelp_bright_smiles",
+      "author": {
+        "name": "Jennifer Adams",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Dr. Nakamura did my filling and it was quick and painless. She's a great addition to the practice. Modern techniques and great bedside manner.",
+      "photos": [],
+      "created_at": "2026-03-10T09:00:00Z",
+      "helpful_count": 4
+    },
+    "rev_ybsd_004": {
+      "review_id": "rev_ybsd_004",
+      "business_id": "yelp_bright_smiles",
+      "author": {
+        "name": "Ryan Cooper",
+        "is_current_user": false
+      },
+      "rating": 3,
+      "text": "Good dental office. Dr. Nakamura is competent and gentle. Pricing is still on the higher side but the quality of work is good. Easy online booking.",
+      "photos": [],
+      "created_at": "2026-03-15T11:00:00Z",
+      "helpful_count": 2
+    }
+  },
+  "saved_places": {}
+}

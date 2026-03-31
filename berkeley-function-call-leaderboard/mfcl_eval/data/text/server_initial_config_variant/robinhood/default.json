@@ -1,0 +1,561 @@
+{
+  "_meta": {
+    "api_class": "RobinhoodAPI",
+    "source_file": "robinhood.py",
+    "description": "Initial state for the Robinhood trading API"
+  },
+  "random_seed": 6001,
+  "profile": {
+    "name": "Jordan Alvarado",
+    "email": "jordan.alvarado@email.com",
+    "account_type": "margin",
+    "buying_power": 12450.30,
+    "cash_balance": 8320.50,
+    "instant_deposit_limit": 5000.00,
+    "crypto_buying_power": 12450.30
+  },
+  "portfolio": {
+    "TSLA": {
+      "symbol": "TSLA",
+      "name": "Tesla, Inc.",
+      "type": "stock",
+      "current_price": 352.40,
+      "day_change": 3.50,
+      "day_change_percent": 1.00,
+      "bid": 352.35,
+      "ask": 352.45,
+      "tradable": true,
+      "market_open": true
+    },
+    "NVDA": {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corporation",
+      "type": "stock",
+      "current_price": 138.75,
+      "day_change": 2.55,
+      "day_change_percent": 1.87,
+      "bid": 138.70,
+      "ask": 138.80,
+      "tradable": true,
+      "market_open": true
+    },
+    "AMZN": {
+      "symbol": "AMZN",
+      "name": "Amazon.com, Inc.",
+      "type": "stock",
+      "current_price": 227.15,
+      "day_change": 2.35,
+      "day_change_percent": 1.05,
+      "bid": 227.10,
+      "ask": 227.20,
+      "tradable": true,
+      "market_open": true
+    },
+    "PLTR": {
+      "symbol": "PLTR",
+      "name": "Palantir Technologies Inc.",
+      "type": "stock",
+      "current_price": 75.30,
+      "day_change": 1.85,
+      "day_change_percent": 2.52,
+      "bid": 75.25,
+      "ask": 75.35,
+      "tradable": true,
+      "market_open": true
+    },
+    "SOFI": {
+      "symbol": "SOFI",
+      "name": "SoFi Technologies, Inc.",
+      "type": "stock",
+      "current_price": 14.82,
+      "day_change": 0.37,
+      "day_change_percent": 2.56,
+      "bid": 14.80,
+      "ask": 14.84,
+      "tradable": true,
+      "market_open": true
+    },
+    "AMD": {
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices, Inc.",
+      "type": "stock",
+      "current_price": 142.60,
+      "day_change": -1.20,
+      "day_change_percent": -0.83,
+      "bid": 142.55,
+      "ask": 142.65,
+      "tradable": true,
+      "market_open": true
+    },
+    "RIVN": {
+      "symbol": "RIVN",
+      "name": "Rivian Automotive, Inc.",
+      "type": "stock",
+      "current_price": 16.45,
+      "day_change": -0.32,
+      "day_change_percent": -1.91,
+      "bid": 16.42,
+      "ask": 16.48,
+      "tradable": true,
+      "market_open": true
+    },
+    "HOOD": {
+      "symbol": "HOOD",
+      "name": "Robinhood Markets, Inc.",
+      "type": "stock",
+      "current_price": 42.18,
+      "day_change": 0.95,
+      "day_change_percent": 2.30,
+      "bid": 42.15,
+      "ask": 42.21,
+      "tradable": true,
+      "market_open": true
+    },
+    "SNAP": {
+      "symbol": "SNAP",
+      "name": "Snap Inc.",
+      "type": "stock",
+      "current_price": 12.45,
+      "day_change": 0.18,
+      "day_change_percent": 1.47,
+      "bid": 12.43,
+      "ask": 12.47,
+      "tradable": true,
+      "market_open": true
+    },
+    "NIO": {
+      "symbol": "NIO",
+      "name": "NIO Inc.",
+      "type": "stock",
+      "current_price": 5.82,
+      "day_change": -0.14,
+      "day_change_percent": -2.35,
+      "bid": 5.80,
+      "ask": 5.84,
+      "tradable": true,
+      "market_open": true
+    },
+    "MARA": {
+      "symbol": "MARA",
+      "name": "Marathon Digital Holdings, Inc.",
+      "type": "stock",
+      "current_price": 23.70,
+      "day_change": 1.10,
+      "day_change_percent": 4.87,
+      "bid": 23.65,
+      "ask": 23.75,
+      "tradable": true,
+      "market_open": true
+    },
+    "COIN": {
+      "symbol": "COIN",
+      "name": "Coinbase Global, Inc.",
+      "type": "stock",
+      "current_price": 278.90,
+      "day_change": 5.40,
+      "day_change_percent": 1.97,
+      "bid": 278.85,
+      "ask": 278.95,
+      "tradable": true,
+      "market_open": true
+    },
+    "SQ": {
+      "symbol": "SQ",
+      "name": "Block, Inc.",
+      "type": "stock",
+      "current_price": 82.30,
+      "day_change": 0.65,
+      "day_change_percent": 0.80,
+      "bid": 82.25,
+      "ask": 82.35,
+      "tradable": true,
+      "market_open": true
+    },
+    "ROKU": {
+      "symbol": "ROKU",
+      "name": "Roku, Inc.",
+      "type": "stock",
+      "current_price": 88.15,
+      "day_change": -0.90,
+      "day_change_percent": -1.01,
+      "bid": 88.10,
+      "ask": 88.20,
+      "tradable": true,
+      "market_open": true
+    },
+    "ARKK": {
+      "symbol": "ARKK",
+      "name": "ARK Innovation ETF",
+      "type": "etf",
+      "current_price": 58.42,
+      "day_change": 0.73,
+      "day_change_percent": 1.27,
+      "bid": 58.40,
+      "ask": 58.44,
+      "tradable": true,
+      "market_open": true
+    },
+    "QQQ": {
+      "symbol": "QQQ",
+      "name": "Invesco QQQ Trust",
+      "type": "etf",
+      "current_price": 520.80,
+      "day_change": 4.10,
+      "day_change_percent": 0.79,
+      "bid": 520.75,
+      "ask": 520.85,
+      "tradable": true,
+      "market_open": true
+    },
+    "SPY": {
+      "symbol": "SPY",
+      "name": "SPDR S&P 500 ETF Trust",
+      "type": "etf",
+      "current_price": 598.40,
+      "day_change": 2.80,
+      "day_change_percent": 0.47,
+      "bid": 598.35,
+      "ask": 598.45,
+      "tradable": true,
+      "market_open": true
+    },
+    "BTC": {
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "type": "crypto",
+      "current_price": 104250.00,
+      "day_change": 1820.00,
+      "day_change_percent": 1.78,
+      "tradable": true,
+      "market_open": true
+    },
+    "ETH": {
+      "symbol": "ETH",
+      "name": "Ethereum",
+      "type": "crypto",
+      "current_price": 3920.50,
+      "day_change": 65.30,
+      "day_change_percent": 1.69,
+      "tradable": true,
+      "market_open": true
+    },
+    "SOL": {
+      "symbol": "SOL",
+      "name": "Solana",
+      "type": "crypto",
+      "current_price": 228.40,
+      "day_change": 8.75,
+      "day_change_percent": 3.98,
+      "tradable": true,
+      "market_open": true
+    },
+    "DOGE": {
+      "symbol": "DOGE",
+      "name": "Dogecoin",
+      "type": "crypto",
+      "current_price": 0.412,
+      "day_change": 0.018,
+      "day_change_percent": 4.57,
+      "tradable": true,
+      "market_open": true
+    },
+    "LCID": {
+      "symbol": "LCID",
+      "name": "Lucid Group, Inc.",
+      "type": "stock",
+      "current_price": 3.28,
+      "day_change": -0.07,
+      "day_change_percent": -2.09,
+      "bid": 3.27,
+      "ask": 3.29,
+      "tradable": true,
+      "market_open": true
+    },
+    "RKLB": {
+      "symbol": "RKLB",
+      "name": "Rocket Lab USA, Inc.",
+      "type": "stock",
+      "current_price": 24.15,
+      "day_change": 0.82,
+      "day_change_percent": 3.51,
+      "bid": 24.12,
+      "ask": 24.18,
+      "tradable": true,
+      "market_open": true
+    }
+  },
+  "positions": {
+    "TSLA": {
+      "symbol": "TSLA",
+      "quantity": 15.0,
+      "average_cost": 265.30
+    },
+    "NVDA": {
+      "symbol": "NVDA",
+      "quantity": 100.0,
+      "average_cost": 92.50
+    },
+    "AMZN": {
+      "symbol": "AMZN",
+      "quantity": 20.0,
+      "average_cost": 178.40
+    },
+    "PLTR": {
+      "symbol": "PLTR",
+      "quantity": 50.0,
+      "average_cost": 22.10
+    },
+    "SOFI": {
+      "symbol": "SOFI",
+      "quantity": 200.0,
+      "average_cost": 7.85
+    },
+    "AMD": {
+      "symbol": "AMD",
+      "quantity": 25.0,
+      "average_cost": 118.40
+    },
+    "HOOD": {
+      "symbol": "HOOD",
+      "quantity": 75.0,
+      "average_cost": 18.50
+    },
+    "BTC": {
+      "symbol": "BTC",
+      "quantity": 0.15,
+      "average_cost": 68500.00
+    },
+    "ETH": {
+      "symbol": "ETH",
+      "quantity": 2.5,
+      "average_cost": 3150.00
+    },
+    "SOL": {
+      "symbol": "SOL",
+      "quantity": 40.0,
+      "average_cost": 145.20
+    },
+    "DOGE": {
+      "symbol": "DOGE",
+      "quantity": 5000.0,
+      "average_cost": 0.165
+    },
+    "SPY": {
+      "symbol": "SPY",
+      "quantity": 5.0,
+      "average_cost": 545.20
+    }
+  },
+  "orders": {
+    "ord_001": {
+      "order_id": "ord_001",
+      "symbol": "TSLA",
+      "side": "buy",
+      "order_type": "market",
+      "quantity": 5.0,
+      "limit_price": null,
+      "stop_price": null,
+      "status": "filled",
+      "filled_price": 350.20,
+      "filled_at": "2024-12-10T15:42:00Z",
+      "placed_at": "2024-12-10T15:41:30Z",
+      "commission": 0.0
+    },
+    "ord_002": {
+      "order_id": "ord_002",
+      "symbol": "NVDA",
+      "side": "sell",
+      "order_type": "limit",
+      "quantity": 10.0,
+      "limit_price": 145.00,
+      "stop_price": null,
+      "status": "pending",
+      "filled_price": null,
+      "filled_at": null,
+      "placed_at": "2024-12-12T09:15:00Z",
+      "commission": 0.0
+    },
+    "ord_003": {
+      "order_id": "ord_003",
+      "symbol": "PLTR",
+      "side": "buy",
+      "order_type": "market",
+      "quantity": 25.0,
+      "limit_price": null,
+      "stop_price": null,
+      "status": "filled",
+      "filled_price": 72.15,
+      "filled_at": "2024-12-09T14:22:00Z",
+      "placed_at": "2024-12-09T14:21:45Z",
+      "commission": 0.0
+    },
+    "ord_004": {
+      "order_id": "ord_004",
+      "symbol": "AMD",
+      "side": "buy",
+      "order_type": "stop",
+      "quantity": 10.0,
+      "limit_price": null,
+      "stop_price": 135.00,
+      "status": "pending",
+      "filled_price": null,
+      "filled_at": null,
+      "placed_at": "2024-12-11T10:05:00Z",
+      "commission": 0.0
+    },
+    "ord_005": {
+      "order_id": "ord_005",
+      "symbol": "SOFI",
+      "side": "buy",
+      "order_type": "market",
+      "quantity": 100.0,
+      "limit_price": null,
+      "stop_price": null,
+      "status": "filled",
+      "filled_price": 13.25,
+      "filled_at": "2024-12-08T11:30:00Z",
+      "placed_at": "2024-12-08T11:29:30Z",
+      "commission": 0.0
+    },
+    "ord_006": {
+      "order_id": "ord_006",
+      "symbol": "BTC",
+      "side": "buy",
+      "order_type": "market",
+      "quantity": 0.05,
+      "limit_price": null,
+      "stop_price": null,
+      "status": "filled",
+      "filled_price": 98400.00,
+      "filled_at": "2024-12-07T16:00:00Z",
+      "placed_at": "2024-12-07T15:59:30Z",
+      "commission": 0.0
+    },
+    "ord_007": {
+      "order_id": "ord_007",
+      "symbol": "DOGE",
+      "side": "buy",
+      "order_type": "market",
+      "quantity": 2000.0,
+      "limit_price": null,
+      "stop_price": null,
+      "status": "filled",
+      "filled_price": 0.385,
+      "filled_at": "2024-12-06T09:45:00Z",
+      "placed_at": "2024-12-06T09:44:30Z",
+      "commission": 0.0
+    },
+    "ord_008": {
+      "order_id": "ord_008",
+      "symbol": "RIVN",
+      "side": "sell",
+      "order_type": "limit",
+      "quantity": 50.0,
+      "limit_price": 18.00,
+      "stop_price": null,
+      "status": "canceled",
+      "filled_price": null,
+      "filled_at": null,
+      "placed_at": "2024-12-05T13:20:00Z",
+      "commission": 0.0
+    }
+  },
+  "watchlist": [
+    "TSLA",
+    "NVDA",
+    "AMZN",
+    "PLTR",
+    "SOFI",
+    "AMD",
+    "RIVN",
+    "COIN",
+    "MARA",
+    "RKLB",
+    "NIO",
+    "SNAP"
+  ],
+  "recurring_investments": {
+    "ri_001": {
+      "recurring_id": "ri_001",
+      "symbol": "NVDA",
+      "amount": 250.00,
+      "frequency": "biweekly",
+      "next_date": "2024-12-20",
+      "status": "active"
+    },
+    "ri_002": {
+      "recurring_id": "ri_002",
+      "symbol": "SPY",
+      "amount": 500.00,
+      "frequency": "monthly",
+      "next_date": "2025-01-01",
+      "status": "active"
+    },
+    "ri_003": {
+      "recurring_id": "ri_003",
+      "symbol": "BTC",
+      "amount": 100.00,
+      "frequency": "weekly",
+      "next_date": "2024-12-16",
+      "status": "active"
+    },
+    "ri_004": {
+      "recurring_id": "ri_004",
+      "symbol": "TSLA",
+      "amount": 150.00,
+      "frequency": "monthly",
+      "next_date": "2025-01-01",
+      "status": "paused"
+    }
+  },
+  "dividends": {
+    "div_001": {
+      "dividend_id": "div_001",
+      "symbol": "NVDA",
+      "amount": 4.00,
+      "ex_date": "2024-12-05",
+      "pay_date": "2024-12-27",
+      "status": "pending"
+    },
+    "div_002": {
+      "dividend_id": "div_002",
+      "symbol": "AMZN",
+      "amount": 0.0,
+      "ex_date": "2024-12-15",
+      "pay_date": "2024-12-30",
+      "status": "pending"
+    },
+    "div_003": {
+      "dividend_id": "div_003",
+      "symbol": "SPY",
+      "amount": 8.92,
+      "ex_date": "2024-11-15",
+      "pay_date": "2024-11-29",
+      "status": "paid"
+    },
+    "div_004": {
+      "dividend_id": "div_004",
+      "symbol": "QQQ",
+      "amount": 3.45,
+      "ex_date": "2024-11-18",
+      "pay_date": "2024-12-02",
+      "status": "paid"
+    },
+    "div_005": {
+      "dividend_id": "div_005",
+      "symbol": "AMD",
+      "amount": 0.0,
+      "ex_date": "2024-12-10",
+      "pay_date": "2024-12-24",
+      "status": "pending"
+    },
+    "div_006": {
+      "dividend_id": "div_006",
+      "symbol": "HOOD",
+      "amount": 0.0,
+      "ex_date": "2024-12-12",
+      "pay_date": "2024-12-28",
+      "status": "pending"
+    }
+  }
+}

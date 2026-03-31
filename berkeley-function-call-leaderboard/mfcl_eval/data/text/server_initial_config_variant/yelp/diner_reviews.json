@@ -1,0 +1,146 @@
+{
+  "_meta": {
+    "api_class": "YelpAPI",
+    "source_file": "yelp.py",
+    "description": "Diners with user's own reviews - Yelp fallback",
+    "random_seed": 7890
+  },
+  "current_user_id": "USR-SOC-001",
+  "profile": {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com"
+  },
+  "businesses": {
+    "yelp_sunny_side": {
+      "business_id": "yelp_sunny_side",
+      "name": "Sunny Side Diner",
+      "category": "restaurant",
+      "address": "1890 Haight St, San Francisco, CA 94117",
+      "rating": 3.8,
+      "review_count": 4,
+      "price_level": "$",
+      "opening_hours": "Mon-Sun 06:00-15:00",
+      "phone": "+1-415-555-1200",
+      "website": "https://sunnysidediner-sf.example.com"
+    },
+    "yelp_mountain_view": {
+      "business_id": "yelp_mountain_view",
+      "name": "Mountain View Diner",
+      "category": "restaurant",
+      "address": "3456 24th St, San Francisco, CA 94114",
+      "rating": 4.0,
+      "review_count": 4,
+      "price_level": "$",
+      "opening_hours": "Mon-Sun 07:00-16:00",
+      "phone": "+1-415-555-1312",
+      "website": "https://mountainviewdiner-sf.example.com"
+    }
+  },
+  "reviews": {
+    "rev_yssd_2star": {
+      "review_id": "rev_yssd_2star",
+      "business_id": "yelp_sunny_side",
+      "author": {
+        "name": "Priya Sharma",
+        "is_current_user": true
+      },
+      "rating": 2,
+      "text": "Disappointing experience. The eggs were overcooked, toast was cold, and the coffee was burnt. Service was slow and inattentive. Won't be returning.",
+      "photos": [],
+      "created_at": "2026-02-10T08:30:00Z",
+      "helpful_count": 1
+    },
+    "rev_yssd_001": {
+      "review_id": "rev_yssd_001",
+      "business_id": "yelp_sunny_side",
+      "author": {
+        "name": "Tiffany Ross",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Solid diner breakfast. The hash browns are perfectly crispy. Good value for the portion size. Classic American diner experience.",
+      "photos": [],
+      "created_at": "2026-03-14T09:00:00Z",
+      "helpful_count": 2
+    },
+    "rev_yssd_002": {
+      "review_id": "rev_yssd_002",
+      "business_id": "yelp_sunny_side",
+      "author": {
+        "name": "Brandon Cole",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Great pancakes and friendly staff. The omelettes are filling. Nothing gourmet but a reliable neighborhood diner.",
+      "photos": [],
+      "created_at": "2026-03-16T10:00:00Z",
+      "helpful_count": 3
+    },
+    "rev_yssd_003": {
+      "review_id": "rev_yssd_003",
+      "business_id": "yelp_sunny_side",
+      "author": {
+        "name": "Wendy Park",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "Love this retro diner! The milkshakes are thick and the burgers are old-school delicious. Cash-friendly prices. A neighborhood gem.",
+      "photos": ["diner_interior.jpg"],
+      "created_at": "2026-03-17T11:30:00Z",
+      "helpful_count": 4
+    },
+    "rev_ymvd_3star": {
+      "review_id": "rev_ymvd_3star",
+      "business_id": "yelp_mountain_view",
+      "author": {
+        "name": "Priya Sharma",
+        "is_current_user": true
+      },
+      "rating": 3,
+      "text": "Average diner experience. Food was okay but nothing special. The waffles were decent. Portion sizes are good for the price but quality could improve.",
+      "photos": [],
+      "created_at": "2026-02-05T09:00:00Z",
+      "helpful_count": 0
+    },
+    "rev_ymvd_001": {
+      "review_id": "rev_ymvd_001",
+      "business_id": "yelp_mountain_view",
+      "author": {
+        "name": "Carlos Santos",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Good neighborhood diner. The french toast is their standout dish. Coffee is above average for a diner. Nice staff.",
+      "photos": [],
+      "created_at": "2026-03-15T08:30:00Z",
+      "helpful_count": 2
+    },
+    "rev_ymvd_002": {
+      "review_id": "rev_ymvd_002",
+      "business_id": "yelp_mountain_view",
+      "author": {
+        "name": "Kelly O'Brien",
+        "is_current_user": false
+      },
+      "rating": 5,
+      "text": "The chicken and waffles are incredible. Weekend brunch is always a treat here. Great vintage atmosphere and friendly servers.",
+      "photos": ["brunch.jpg"],
+      "created_at": "2026-03-16T10:30:00Z",
+      "helpful_count": 5
+    },
+    "rev_ymvd_003": {
+      "review_id": "rev_ymvd_003",
+      "business_id": "yelp_mountain_view",
+      "author": {
+        "name": "Alex Thompson",
+        "is_current_user": false
+      },
+      "rating": 4,
+      "text": "Charming diner with great corned beef hash. Love the retro decor. A bit of a wait on Sundays but that's to be expected.",
+      "photos": [],
+      "created_at": "2026-03-17T09:00:00Z",
+      "helpful_count": 3
+    }
+  },
+  "saved_places": {}
+}

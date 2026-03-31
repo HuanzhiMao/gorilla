@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "api_class": "LyftAPI",
+    "source_file": "lyft.py",
+    "description": "Taylor Brooks with Honda Accord driver Marcus Johnson, Standard and XL ride types for scenario 012"
+  },
+  "random_seed": 8004,
+  "profile": {
+    "name": "Taylor Brooks",
+    "email": "taylor@example.com",
+    "phone": "+1-415-555-0113",
+    "saved_places": [],
+    "payment_method": [
+      {
+        "method_id": "PMT-012-L",
+        "type": "credit_card",
+        "last4": "2222"
+      }
+    ]
+  },
+  "rides": {},
+  "drivers": {
+    "DRV-012-L": {
+      "driver_id": "DRV-012-L",
+      "name": "Marcus Johnson",
+      "rating": 4.9,
+      "vehicle": {
+        "make": "Honda",
+        "model": "Accord",
+        "year": 2023,
+        "color": "White",
+        "license_plate": "LFT-4444"
+      },
+      "availability": "available"
+    }
+  },
+  "ride_types": {
+    "standard": {
+      "ride_type_id": "standard",
+      "name": "Standard",
+      "base_fare": 2.5,
+      "capacity": 4,
+      "available": true
+    },
+    "xl": {
+      "ride_type_id": "xl",
+      "name": "Lyft XL",
+      "base_fare": 4.0,
+      "capacity": 6,
+      "available": true
+    }
+  },
+  "offers": {}
+}

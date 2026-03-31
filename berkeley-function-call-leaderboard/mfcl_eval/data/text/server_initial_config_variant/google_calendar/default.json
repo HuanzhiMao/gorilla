@@ -1,0 +1,700 @@
+{
+  "_meta": {
+    "api_class": "GoogleCalendarAPI",
+    "source_file": "google_calendar.py",
+    "description": "Initial state for the Google Calendar scheduling and events API"
+  },
+  "random_seed": 7001,
+  "profile": {
+    "name": "Nadia Petrova",
+    "email": "nadia.petrova@gmail.com",
+    "timezone": "America/New_York"
+  },
+  "calendars": {
+    "cal_001": {
+      "calendar_id": "cal_001",
+      "name": "Nadia Petrova",
+      "is_primary": true
+    },
+    "cal_002": {
+      "calendar_id": "cal_002",
+      "name": "Work",
+      "is_primary": false
+    },
+    "cal_003": {
+      "calendar_id": "cal_003",
+      "name": "Personal",
+      "is_primary": false
+    },
+    "cal_004": {
+      "calendar_id": "cal_004",
+      "name": "Fitness",
+      "is_primary": false
+    }
+  },
+  "calendar_acls": {},
+  "events": {
+    "evt_001": {
+      "event_id": "evt_001",
+      "calendar_id": "cal_002",
+      "title": "Weekly Team Meeting",
+      "description": "Sync on project progress, blockers, and upcoming milestones.",
+      "location": "Conference Room B",
+      "start_time": "2024-12-09T10:00:00-05:00",
+      "end_time": "2024-12-09T11:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "jordan.whitfield@gmail.com", "name": "Jordan Whitfield", "response_status": "accepted" },
+        { "email": "sam.delgado@company.com", "name": "Sam Delgado", "response_status": "tentative" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 10 }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": ["MO"]
+      },
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/abc-defg-hij",
+      "created_at": "2024-12-01T09:00:00-05:00",
+      "updated_at": "2024-12-05T14:22:00-05:00"
+    },
+    "evt_002": {
+      "event_id": "evt_002",
+      "calendar_id": "cal_003",
+      "title": "Lunch with Amara",
+      "description": "Catch up over lunch at the Thai place on 5th Ave.",
+      "location": "Siam Garden, 245 5th Ave, New York, NY",
+      "start_time": "2024-12-11T12:30:00-05:00",
+      "end_time": "2024-12-11T13:30:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "amara.osei@email.com", "name": "Amara Osei", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 30 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-03T18:15:00-05:00",
+      "updated_at": "2024-12-03T18:15:00-05:00"
+    },
+    "evt_003": {
+      "event_id": "evt_003",
+      "calendar_id": "cal_003",
+      "title": "Doctor Appointment",
+      "description": "Annual physical exam with Dr. Kim.",
+      "location": "NYC Health Partners, 88 Broad St, Ste 400",
+      "start_time": "2024-12-13T09:00:00-05:00",
+      "end_time": "2024-12-13T10:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [],
+      "reminders": [
+        { "method": "email", "minutes_before": 1440 },
+        { "method": "popup", "minutes_before": 60 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-11-28T10:30:00-05:00",
+      "updated_at": "2024-11-28T10:30:00-05:00"
+    },
+    "evt_004": {
+      "event_id": "evt_004",
+      "calendar_id": "cal_002",
+      "title": "Project Deadline: Q4 Report",
+      "description": "Final submission of Q4 financial summary and analysis.",
+      "location": null,
+      "start_time": "2024-12-20T00:00:00-05:00",
+      "end_time": "2024-12-21T00:00:00-05:00",
+      "all_day": true,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "jordan.whitfield@gmail.com", "name": "Jordan Whitfield", "response_status": "needs_action" }
+      ],
+      "reminders": [
+        { "method": "email", "minutes_before": 2880 },
+        { "method": "popup", "minutes_before": 1440 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-01T08:00:00-05:00",
+      "updated_at": "2024-12-06T11:45:00-05:00"
+    },
+    "evt_005": {
+      "event_id": "evt_005",
+      "calendar_id": "cal_002",
+      "title": "Daily Standup",
+      "description": "15-minute daily check-in with the engineering team.",
+      "location": null,
+      "start_time": "2024-12-09T09:00:00-05:00",
+      "end_time": "2024-12-09T09:15:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "jordan.whitfield@gmail.com",
+        "name": "Jordan Whitfield"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "jordan.whitfield@gmail.com", "name": "Jordan Whitfield", "response_status": "accepted" },
+        { "email": "riley.tanaka@company.com", "name": "Riley Tanaka", "response_status": "declined" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 5 }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": ["MO", "TU", "WE", "TH", "FR"]
+      },
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/xyz-uvwq-rst",
+      "created_at": "2024-11-25T16:00:00-05:00",
+      "updated_at": "2024-12-02T08:10:00-05:00"
+    },
+    "evt_006": {
+      "event_id": "evt_006",
+      "calendar_id": "cal_004",
+      "title": "Morning Yoga",
+      "description": "Vinyasa flow class at the studio.",
+      "location": "YogaWorks, 112 W 27th St, New York, NY",
+      "start_time": "2024-12-10T07:00:00-05:00",
+      "end_time": "2024-12-10T08:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [],
+      "reminders": [
+        { "method": "popup", "minutes_before": 45 }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": ["TU", "TH"]
+      },
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-11-15T20:00:00-05:00",
+      "updated_at": "2024-11-15T20:00:00-05:00"
+    },
+    "evt_007": {
+      "event_id": "evt_007",
+      "calendar_id": "cal_002",
+      "title": "1:1 with Jordan",
+      "description": "Bi-weekly sync on career goals and project assignments.",
+      "location": null,
+      "start_time": "2024-12-12T14:00:00-05:00",
+      "end_time": "2024-12-12T14:30:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "jordan.whitfield@gmail.com", "name": "Jordan Whitfield", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 10 }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 2
+      },
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/bcd-efgh-ijk",
+      "created_at": "2024-11-20T09:00:00-05:00",
+      "updated_at": "2024-12-05T09:00:00-05:00"
+    },
+    "evt_008": {
+      "event_id": "evt_008",
+      "calendar_id": "cal_003",
+      "title": "Holiday Shopping",
+      "description": "Pick up gifts for family and friends.",
+      "location": "Macy's Herald Square",
+      "start_time": "2024-12-14T11:00:00-05:00",
+      "end_time": "2024-12-14T14:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [],
+      "reminders": [
+        { "method": "popup", "minutes_before": 60 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-05T19:00:00-05:00",
+      "updated_at": "2024-12-05T19:00:00-05:00"
+    },
+    "evt_009": {
+      "event_id": "evt_009",
+      "calendar_id": "cal_002",
+      "title": "Sprint Retrospective",
+      "description": "Reflect on Sprint 14. What went well, what to improve.",
+      "location": "Conference Room A",
+      "start_time": "2024-12-13T15:00:00-05:00",
+      "end_time": "2024-12-13T16:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "jordan.whitfield@gmail.com", "name": "Jordan Whitfield", "response_status": "accepted" },
+        { "email": "sam.delgado@company.com", "name": "Sam Delgado", "response_status": "accepted" },
+        { "email": "riley.tanaka@company.com", "name": "Riley Tanaka", "response_status": "tentative" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/ret-rosp-ect",
+      "created_at": "2024-12-06T10:00:00-05:00",
+      "updated_at": "2024-12-10T11:00:00-05:00"
+    },
+    "evt_010": {
+      "event_id": "evt_010",
+      "calendar_id": "cal_001",
+      "title": "Christmas Eve Dinner",
+      "description": "Family dinner at Mom's place.",
+      "location": "142 Oak Lane, Brooklyn, NY",
+      "start_time": "2024-12-24T18:00:00-05:00",
+      "end_time": "2024-12-24T22:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "katya.petrova@email.com", "name": "Katya Petrova", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 120 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-01T12:00:00-05:00",
+      "updated_at": "2024-12-01T12:00:00-05:00"
+    },
+    "evt_011": {
+      "event_id": "evt_011",
+      "calendar_id": "cal_001",
+      "title": "Christmas Day",
+      "description": "",
+      "location": null,
+      "start_time": "2024-12-25T00:00:00-05:00",
+      "end_time": "2024-12-26T00:00:00-05:00",
+      "all_day": true,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [],
+      "reminders": [],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-11-01T08:00:00-05:00",
+      "updated_at": "2024-11-01T08:00:00-05:00"
+    },
+    "evt_012": {
+      "event_id": "evt_012",
+      "calendar_id": "cal_002",
+      "title": "Product Demo for Stakeholders",
+      "description": "Demo the new dashboard features to leadership team.",
+      "location": "Executive Board Room, 5th Floor",
+      "start_time": "2024-12-16T13:00:00-05:00",
+      "end_time": "2024-12-16T14:30:00-05:00",
+      "all_day": false,
+      "status": "tentative",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "jordan.whitfield@gmail.com", "name": "Jordan Whitfield", "response_status": "tentative" },
+        { "email": "maria.chen@company.com", "name": "Maria Chen", "response_status": "needs_action" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 30 },
+        { "method": "email", "minutes_before": 1440 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/dem-oprd-uct",
+      "created_at": "2024-12-08T10:00:00-05:00",
+      "updated_at": "2024-12-10T16:30:00-05:00"
+    },
+    "evt_013": {
+      "event_id": "evt_013",
+      "calendar_id": "cal_004",
+      "title": "5K Training Run",
+      "description": "Training run along the East River path.",
+      "location": "East River Greenway",
+      "start_time": "2024-12-14T07:30:00-05:00",
+      "end_time": "2024-12-14T08:30:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "amara.osei@email.com", "name": "Amara Osei", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 60 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-07T21:00:00-05:00",
+      "updated_at": "2024-12-07T21:00:00-05:00"
+    },
+    "evt_014": {
+      "event_id": "evt_014",
+      "calendar_id": "cal_002",
+      "title": "End-of-Year Budget Review",
+      "description": "Review department spending and plan allocation for Q1 2025.",
+      "location": null,
+      "start_time": "2024-12-17T10:00:00-05:00",
+      "end_time": "2024-12-17T11:30:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "maria.chen@company.com",
+        "name": "Maria Chen"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "maria.chen@company.com", "name": "Maria Chen", "response_status": "accepted" },
+        { "email": "jordan.whitfield@gmail.com", "name": "Jordan Whitfield", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/bud-getq-rev",
+      "created_at": "2024-12-04T14:00:00-05:00",
+      "updated_at": "2024-12-10T08:00:00-05:00"
+    },
+    "evt_015": {
+      "event_id": "evt_015",
+      "calendar_id": "cal_003",
+      "title": "New Year's Eve Party",
+      "description": "Rooftop party at Leo's apartment.",
+      "location": "450 W 42nd St, Apt 38B, New York, NY",
+      "start_time": "2024-12-31T20:00:00-05:00",
+      "end_time": "2025-01-01T01:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "leo.marchetti@email.com",
+        "name": "Leo Marchetti"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "amara.osei@email.com", "name": "Amara Osei", "response_status": "accepted" },
+        { "email": "leo.marchetti@email.com", "name": "Leo Marchetti", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 180 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-10T19:00:00-05:00",
+      "updated_at": "2024-12-12T10:00:00-05:00"
+    },
+    "evt_016": {
+      "event_id": "evt_016",
+      "calendar_id": "cal_001",
+      "title": "New Year's Day",
+      "description": "",
+      "location": null,
+      "start_time": "2025-01-01T00:00:00-05:00",
+      "end_time": "2025-01-02T00:00:00-05:00",
+      "all_day": true,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [],
+      "reminders": [],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-11-01T08:00:00-05:00",
+      "updated_at": "2024-11-01T08:00:00-05:00"
+    },
+    "evt_017": {
+      "event_id": "evt_017",
+      "calendar_id": "cal_002",
+      "title": "Q1 Kickoff Planning",
+      "description": "Align on goals, OKRs, and staffing for Q1 2025.",
+      "location": "Conference Room C",
+      "start_time": "2025-01-02T10:00:00-05:00",
+      "end_time": "2025-01-02T12:00:00-05:00",
+      "all_day": false,
+      "status": "tentative",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "jordan.whitfield@gmail.com", "name": "Jordan Whitfield", "response_status": "tentative" },
+        { "email": "sam.delgado@company.com", "name": "Sam Delgado", "response_status": "needs_action" },
+        { "email": "maria.chen@company.com", "name": "Maria Chen", "response_status": "needs_action" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 30 },
+        { "method": "email", "minutes_before": 1440 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/q1k-ickp-lan",
+      "created_at": "2024-12-15T09:00:00-05:00",
+      "updated_at": "2024-12-15T09:00:00-05:00"
+    },
+    "evt_018": {
+      "event_id": "evt_018",
+      "calendar_id": "cal_004",
+      "title": "Gym Session — Strength Training",
+      "description": "Upper body and core workout with trainer.",
+      "location": "Equinox, 97 Greenwich Ave, New York, NY",
+      "start_time": "2024-12-16T06:30:00-05:00",
+      "end_time": "2024-12-16T07:30:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [],
+      "reminders": [
+        { "method": "popup", "minutes_before": 30 }
+      ],
+      "recurrence": {
+        "freq": "weekly",
+        "interval": 1,
+        "by_day": ["MO", "WE", "FR"]
+      },
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-11-10T18:00:00-05:00",
+      "updated_at": "2024-11-10T18:00:00-05:00"
+    },
+    "evt_019": {
+      "event_id": "evt_019",
+      "calendar_id": "cal_002",
+      "title": "Client Call — Acme Corp",
+      "description": "Follow-up on integration issues and timeline adjustments.",
+      "location": null,
+      "start_time": "2024-12-18T15:00:00-05:00",
+      "end_time": "2024-12-18T16:00:00-05:00",
+      "all_day": false,
+      "status": "cancelled",
+      "organizer": {
+        "email": "sam.delgado@company.com",
+        "name": "Sam Delgado"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "sam.delgado@company.com", "name": "Sam Delgado", "response_status": "accepted" },
+        { "email": "contact@acmecorp.com", "name": "Acme Corp Rep", "response_status": "declined" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 15 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/acm-ecal-lxx",
+      "created_at": "2024-12-09T11:00:00-05:00",
+      "updated_at": "2024-12-15T09:30:00-05:00"
+    },
+    "evt_020": {
+      "event_id": "evt_020",
+      "calendar_id": "cal_003",
+      "title": "Book Club Meeting",
+      "description": "Discussing 'Project Hail Mary' by Andy Weir.",
+      "location": "Nadia's apartment",
+      "start_time": "2024-12-19T19:00:00-05:00",
+      "end_time": "2024-12-19T21:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "amara.osei@email.com", "name": "Amara Osei", "response_status": "accepted" },
+        { "email": "leo.marchetti@email.com", "name": "Leo Marchetti", "response_status": "tentative" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 60 }
+      ],
+      "recurrence": {
+        "freq": "monthly",
+        "interval": 1
+      },
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-02T20:00:00-05:00",
+      "updated_at": "2024-12-10T18:00:00-05:00"
+    },
+    "evt_021": {
+      "event_id": "evt_021",
+      "calendar_id": "cal_002",
+      "title": "Code Review Session",
+      "description": "Review PRs for the authentication module refactor.",
+      "location": null,
+      "start_time": "2024-12-11T16:00:00-05:00",
+      "end_time": "2024-12-11T17:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "jordan.whitfield@gmail.com",
+        "name": "Jordan Whitfield"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "jordan.whitfield@gmail.com", "name": "Jordan Whitfield", "response_status": "accepted" },
+        { "email": "riley.tanaka@company.com", "name": "Riley Tanaka", "response_status": "accepted" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 10 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": "https://meet.google.com/cod-erev-iew",
+      "created_at": "2024-12-08T14:00:00-05:00",
+      "updated_at": "2024-12-09T09:00:00-05:00"
+    },
+    "evt_022": {
+      "event_id": "evt_022",
+      "calendar_id": "cal_003",
+      "title": "Dentist Cleaning",
+      "description": "Routine cleaning with Dr. Patel.",
+      "location": "Bright Smiles Dental, 330 E 39th St, New York, NY",
+      "start_time": "2025-01-06T10:00:00-05:00",
+      "end_time": "2025-01-06T11:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [],
+      "reminders": [
+        { "method": "email", "minutes_before": 1440 },
+        { "method": "popup", "minutes_before": 60 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-12T15:00:00-05:00",
+      "updated_at": "2024-12-12T15:00:00-05:00"
+    },
+    "evt_023": {
+      "event_id": "evt_023",
+      "calendar_id": "cal_002",
+      "title": "Office Holiday Party",
+      "description": "Annual team holiday celebration. Ugly sweater contest and Secret Santa.",
+      "location": "Rooftop Lounge, Company HQ",
+      "start_time": "2024-12-20T17:00:00-05:00",
+      "end_time": "2024-12-20T20:00:00-05:00",
+      "all_day": false,
+      "status": "confirmed",
+      "organizer": {
+        "email": "maria.chen@company.com",
+        "name": "Maria Chen"
+      },
+      "attendees": [
+        { "email": "nadia.petrova@gmail.com", "name": "Nadia Petrova", "response_status": "accepted" },
+        { "email": "jordan.whitfield@gmail.com", "name": "Jordan Whitfield", "response_status": "accepted" },
+        { "email": "sam.delgado@company.com", "name": "Sam Delgado", "response_status": "accepted" },
+        { "email": "maria.chen@company.com", "name": "Maria Chen", "response_status": "accepted" },
+        { "email": "riley.tanaka@company.com", "name": "Riley Tanaka", "response_status": "tentative" }
+      ],
+      "reminders": [
+        { "method": "popup", "minutes_before": 60 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-05T10:00:00-05:00",
+      "updated_at": "2024-12-15T12:00:00-05:00"
+    },
+    "evt_024": {
+      "event_id": "evt_024",
+      "calendar_id": "cal_004",
+      "title": "Spin Class",
+      "description": "High-intensity spin class.",
+      "location": "SoulCycle, 12 E 18th St, New York, NY",
+      "start_time": "2024-12-15T09:00:00-05:00",
+      "end_time": "2024-12-15T09:45:00-05:00",
+      "all_day": false,
+      "status": "cancelled",
+      "organizer": {
+        "email": "nadia.petrova@gmail.com",
+        "name": "Nadia Petrova"
+      },
+      "attendees": [],
+      "reminders": [
+        { "method": "popup", "minutes_before": 30 }
+      ],
+      "recurrence": null,
+      "recurring_event_id": null,
+      "meeting_link": null,
+      "created_at": "2024-12-08T20:00:00-05:00",
+      "updated_at": "2024-12-13T08:00:00-05:00"
+    }
+  }
+}

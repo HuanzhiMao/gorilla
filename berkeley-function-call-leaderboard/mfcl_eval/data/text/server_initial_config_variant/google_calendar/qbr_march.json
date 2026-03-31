@@ -1,0 +1,58 @@
+{
+  "_meta": {
+    "api_class": "GoogleCalendarAPI",
+    "source_file": "google_calendar.py",
+    "description": "Google Calendar for Sarah Chen with Q2 QBR meeting on Mar 11 with clients@bigcorp.com"
+  },
+  "random_seed": 3001,
+  "profile": {
+    "name": "Sarah Chen",
+    "email": "sarah.chen@company.com",
+    "timezone": "America/New_York"
+  },
+  "calendars": {
+    "cal_primary": {
+      "calendar_id": "cal_primary",
+      "name": "Sarah Chen",
+      "is_primary": true
+    },
+    "cal_work": {
+      "calendar_id": "cal_work",
+      "name": "Work",
+      "is_primary": false
+    }
+  },
+  "events": {
+    "evt_qbr1": {
+      "event_id": "evt_qbr1",
+      "calendar_id": "cal_work",
+      "title": "Q2 Quarterly Business Review",
+      "description": "Quarterly business review with BigCorp clients. Please review Q1 metrics beforehand.",
+      "start": "2026-03-11T10:00:00-05:00",
+      "end": "2026-03-11T12:00:00-05:00",
+      "location": "Conference Room B",
+      "attendees": [
+        {"email": "sarah.chen@company.com", "response": "accepted"},
+        {"email": "clients@bigcorp.com", "response": "accepted"}
+      ],
+      "organizer": "sarah.chen@company.com",
+      "recurrence": null,
+      "all_day": false
+    },
+    "evt_standup": {
+      "event_id": "evt_standup",
+      "calendar_id": "cal_work",
+      "title": "Daily Standup",
+      "description": "Morning team standup",
+      "start": "2026-03-11T09:00:00-05:00",
+      "end": "2026-03-11T09:15:00-05:00",
+      "attendees": [
+        {"email": "sarah.chen@company.com", "response": "accepted"},
+        {"email": "eng@company.com", "response": "accepted"}
+      ],
+      "organizer": "pm@company.com",
+      "recurrence": "RRULE:FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR",
+      "all_day": false
+    }
+  }
+}

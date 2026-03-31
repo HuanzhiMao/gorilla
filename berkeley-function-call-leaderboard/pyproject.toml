@@ -3,13 +3,11 @@ requires = ["setuptools>=61.0", "wheel", "build", "setuptools-scm[toml]>=8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bfcl_eval"
+name = "mfcl_eval"
 dynamic = ["version"]
-description = "Berkeley Function Calling Leaderboard (BFCL)"
+description = "Multimodal Function Calling Leaderboard (MFCL)"
 authors = [
-    { name = "Huanzhi Mao", email = "huanzhimao@eecs.berkeley.edu" },
-    { name = "Shishir Patil", email = "shishirpatil@eecs.berkeley.edu" },
-    { name = "Sky Computing Lab", email = "sky@cs.berkeley.edu" },
+    { name = "Anonymous" },
 ]
 readme = "README.md"
 requires-python = ">=3.10"
@@ -53,16 +51,16 @@ dependencies = [
 ]
 
 [project.scripts]
-bfcl = "bfcl_eval.__main__:cli"
+mfcl = "mfcl_eval.__main__:cli"
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.packages.find]
-include = ["bfcl_eval*"]
+include = ["mfcl_eval*"]
 
 [tool.setuptools.package-data]
-"bfcl_eval" = [
+"mfcl_eval" = [
     "data/**/*",
     "scripts/*.py",
     "./test_case_ids_to_generate.json",
@@ -71,7 +69,7 @@ include = ["bfcl_eval*"]
 ]
 
 [project.urls]
-Repository = "https://github.com/ShishirPatil/gorilla/tree/main/berkeley-function-call-leaderboard"
+Repository = "https://anonymous.example.com"
 
 [project.optional-dependencies]
 oss_eval_vllm = ["vllm"]

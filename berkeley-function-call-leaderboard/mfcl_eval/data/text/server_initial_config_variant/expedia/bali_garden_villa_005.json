@@ -1,0 +1,66 @@
+{
+  "_meta": {
+    "api_class": "ExpediaAPI",
+    "source_file": "expedia.py",
+    "description": "Ubud Serenity Resort Bali Expedia Garden Villa for scenario 005"
+  },
+  "random_seed": 8001,
+  "profile": {
+    "name": "Ava Carter",
+    "email": "ava@example.com",
+    "payment_method": [
+      {
+        "method_id": "PMT-005",
+        "type": "credit_card",
+        "last4": "4242"
+      }
+    ]
+  },
+  "properties": {
+    "PROP-005E": {
+      "property_id": "PROP-005E",
+      "name": "Ubud Serenity Resort",
+      "location": {
+        "city": "Bali",
+        "country": "Indonesia",
+        "address": "Jl. Raya Ubud, Bali"
+      },
+      "star_rating": 5,
+      "review_score": 9.4,
+      "amenities": [
+        "wifi",
+        "pool",
+        "spa",
+        "restaurant",
+        "garden"
+      ],
+      "room_types": [
+        "RT-005E"
+      ],
+      "policies": {
+        "check_in_time": "15:00",
+        "check_out_time": "11:00",
+        "cancellation_policy_summary": "Free cancellation up to 24 hours before check-in."
+      }
+    }
+  },
+  "room_types": {
+    "RT-005E": {
+      "room_type_id": "RT-005E",
+      "property_id": "PROP-005E",
+      "name": "Garden Villa",
+      "max_guests": 2,
+      "bed_type": "king",
+      "amenities": [
+        "wifi",
+        "pool_access",
+        "spa_access",
+        "garden_view"
+      ],
+      "base_price_per_night": 500.0,
+      "taxes_and_fees": 75.0,
+      "refundable": true
+    }
+  },
+  "bookings": {}
+}

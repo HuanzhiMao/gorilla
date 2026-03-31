@@ -1,0 +1,558 @@
+{
+  "_meta": {
+    "api_class": "UberAPI",
+    "source_file": "uber.py",
+    "description": "Initial state for the Uber ride-hailing API",
+    "random_seed": 8003
+  },
+  "random_seed": 8003,
+  "profile": {
+    "name": "Alice Chen",
+    "email": "alice.chen@email.com",
+    "phone": "+14155550101",
+    "rating": 4.91,
+    "saved_places": [
+      {
+        "name": "Home",
+        "address": "742 Valencia St, San Francisco, CA 94110"
+      },
+      {
+        "name": "Work",
+        "address": "525 Market St, San Francisco, CA 94105"
+      },
+      {
+        "name": "Gym",
+        "address": "1 Embarcadero Center, San Francisco, CA 94111"
+      }
+    ],
+    "payment_methods": [
+      {
+        "method_id": "PAY-80030",
+        "type": "credit",
+        "last4": "4521",
+        "is_default": true
+      },
+      {
+        "method_id": "PAY-80031",
+        "type": "debit",
+        "last4": "9073",
+        "is_default": false
+      },
+      {
+        "method_id": "PAY-80032",
+        "type": "paypal",
+        "last4": null,
+        "is_default": false
+      }
+    ],
+    "promo_codes": []
+  },
+  "rides": {
+    "RIDE-80030": {
+      "ride_id": "RIDE-80030",
+      "ride_type": "UberX",
+      "pickup": {
+        "address": "742 Valencia St, San Francisco, CA 94110",
+        "lat": 37.7601,
+        "lng": -122.4216
+      },
+      "dropoff": {
+        "address": "525 Market St, San Francisco, CA 94105",
+        "lat": 37.7903,
+        "lng": -122.3990
+      },
+      "status": "completed",
+      "driver_id": "DRV-80030",
+      "fare": 19.75,
+      "surge_multiplier": 1.0,
+      "scheduled_time": null,
+      "rating": 5,
+      "tip": 4.00,
+      "created_at": "2026-02-20T08:10:00-08:00",
+      "stops": []
+    },
+    "RIDE-80031": {
+      "ride_id": "RIDE-80031",
+      "ride_type": "Comfort",
+      "pickup": {
+        "address": "1200 Haight St, San Francisco, CA 94117",
+        "lat": 37.7700,
+        "lng": -122.4437
+      },
+      "dropoff": {
+        "address": "San Francisco International Airport, San Francisco, CA 94128",
+        "lat": 37.6213,
+        "lng": -122.3790
+      },
+      "status": "completed",
+      "driver_id": "DRV-80031",
+      "fare": 45.30,
+      "surge_multiplier": 1.5,
+      "scheduled_time": null,
+      "rating": 4,
+      "tip": 8.00,
+      "created_at": "2026-02-18T14:30:00-08:00",
+      "stops": [
+        {
+          "address": "101 California St, San Francisco, CA 94111",
+          "lat": 37.7932,
+          "lng": -122.3982
+        }
+      ]
+    },
+    "RIDE-80032": {
+      "ride_id": "RIDE-80032",
+      "ride_type": "Black",
+      "pickup": {
+        "address": "1 Embarcadero Center, San Francisco, CA 94111",
+        "lat": 37.7948,
+        "lng": -122.3993
+      },
+      "dropoff": {
+        "address": "3250 24th St, San Francisco, CA 94110",
+        "lat": 37.7525,
+        "lng": -122.4180
+      },
+      "status": "scheduled",
+      "driver_id": null,
+      "fare": 35.00,
+      "surge_multiplier": 1.0,
+      "scheduled_time": "2026-03-20T17:30:00-07:00",
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-03-15T20:00:00-07:00",
+      "stops": []
+    },
+    "RIDE-80033": {
+      "ride_id": "RIDE-80033",
+      "ride_type": "XL",
+      "pickup": {
+        "address": "Pier 39, San Francisco, CA 94133",
+        "lat": 37.8087,
+        "lng": -122.4098
+      },
+      "dropoff": {
+        "address": "Golden Gate Park, San Francisco, CA 94118",
+        "lat": 37.7694,
+        "lng": -122.4862
+      },
+      "status": "cancelled",
+      "driver_id": "DRV-80032",
+      "fare": 28.00,
+      "surge_multiplier": 2.0,
+      "scheduled_time": null,
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-02-19T15:45:00-08:00",
+      "stops": []
+    },
+    "RIDE-80034": {
+      "ride_id": "RIDE-80034",
+      "ride_type": "UberX",
+      "pickup": {
+        "address": "Ferry Building, San Francisco, CA 94111",
+        "lat": 37.7955,
+        "lng": -122.3937
+      },
+      "dropoff": {
+        "address": "Castro Theatre, San Francisco, CA 94114",
+        "lat": 37.7609,
+        "lng": -122.4350
+      },
+      "status": "in_progress",
+      "driver_id": "DRV-80033",
+      "fare": 16.40,
+      "surge_multiplier": 1.2,
+      "scheduled_time": null,
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-03-18T09:15:00-07:00",
+      "stops": []
+    },
+    "RIDE-80035": {
+      "ride_id": "RIDE-80035",
+      "ride_type": "Comfort",
+      "pickup": {
+        "address": "Union Square, San Francisco, CA 94108",
+        "lat": 37.7879,
+        "lng": -122.4074
+      },
+      "dropoff": {
+        "address": "AT&T Park, San Francisco, CA 94107",
+        "lat": 37.7786,
+        "lng": -122.3893
+      },
+      "status": "completed",
+      "driver_id": "DRV-80034",
+      "fare": 14.25,
+      "surge_multiplier": 1.0,
+      "scheduled_time": null,
+      "rating": 5,
+      "tip": 3.00,
+      "created_at": "2026-02-15T19:00:00-08:00",
+      "stops": []
+    },
+    "RIDE-80036": {
+      "ride_id": "RIDE-80036",
+      "ride_type": "Green",
+      "pickup": {
+        "address": "Caltrain Station, San Francisco, CA 94107",
+        "lat": 37.7764,
+        "lng": -122.3948
+      },
+      "dropoff": {
+        "address": "Ghirardelli Square, San Francisco, CA 94109",
+        "lat": 37.8058,
+        "lng": -122.4228
+      },
+      "status": "completed",
+      "driver_id": "DRV-80035",
+      "fare": 22.10,
+      "surge_multiplier": 1.3,
+      "scheduled_time": null,
+      "rating": 3,
+      "tip": 0,
+      "created_at": "2026-02-10T12:30:00-08:00",
+      "stops": []
+    },
+    "RIDE-80037": {
+      "ride_id": "RIDE-80037",
+      "ride_type": "Black",
+      "pickup": {
+        "address": "Nob Hill, San Francisco, CA 94108",
+        "lat": 37.7930,
+        "lng": -122.4161
+      },
+      "dropoff": {
+        "address": "Presidio, San Francisco, CA 94129",
+        "lat": 37.7989,
+        "lng": -122.4662
+      },
+      "status": "matched",
+      "driver_id": "DRV-80032",
+      "fare": 31.50,
+      "surge_multiplier": 1.0,
+      "scheduled_time": null,
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-03-18T08:50:00-07:00",
+      "stops": []
+    },
+    "RIDE-80038": {
+      "ride_id": "RIDE-80038",
+      "ride_type": "UberX",
+      "pickup": {
+        "address": "SFMOMA, San Francisco, CA 94103",
+        "lat": 37.7857,
+        "lng": -122.4011
+      },
+      "dropoff": {
+        "address": "Twin Peaks, San Francisco, CA 94114",
+        "lat": 37.7544,
+        "lng": -122.4477
+      },
+      "status": "completed",
+      "driver_id": "DRV-80036",
+      "fare": 18.90,
+      "surge_multiplier": 1.4,
+      "scheduled_time": null,
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-02-05T17:20:00-08:00",
+      "stops": []
+    },
+    "RIDE-80039": {
+      "ride_id": "RIDE-80039",
+      "ride_type": "XL",
+      "pickup": {
+        "address": "Japantown, San Francisco, CA 94115",
+        "lat": 37.7853,
+        "lng": -122.4297
+      },
+      "dropoff": {
+        "address": "Fisherman's Wharf, San Francisco, CA 94133",
+        "lat": 37.8080,
+        "lng": -122.4177
+      },
+      "status": "completed",
+      "driver_id": "DRV-80037",
+      "fare": 21.60,
+      "surge_multiplier": 1.0,
+      "scheduled_time": null,
+      "rating": 5,
+      "tip": 5.00,
+      "created_at": "2026-01-28T11:00:00-08:00",
+      "stops": [
+        {
+          "address": "Lombard St, San Francisco, CA 94133",
+          "lat": 37.8021,
+          "lng": -122.4187
+        }
+      ]
+    },
+    "RIDE-80040": {
+      "ride_id": "RIDE-80040",
+      "ride_type": "Comfort",
+      "pickup": {
+        "address": "Dolores Park, San Francisco, CA 94114",
+        "lat": 37.7596,
+        "lng": -122.4269
+      },
+      "dropoff": {
+        "address": "Civic Center, San Francisco, CA 94102",
+        "lat": 37.7796,
+        "lng": -122.4185
+      },
+      "status": "cancelled",
+      "driver_id": null,
+      "fare": 13.50,
+      "surge_multiplier": 1.8,
+      "scheduled_time": null,
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-02-01T20:15:00-08:00",
+      "stops": []
+    },
+    "RIDE-80041": {
+      "ride_id": "RIDE-80041",
+      "ride_type": "Green",
+      "pickup": {
+        "address": "Hayes Valley, San Francisco, CA 94102",
+        "lat": 37.7759,
+        "lng": -122.4245
+      },
+      "dropoff": {
+        "address": "SoMa, San Francisco, CA 94103",
+        "lat": 37.7785,
+        "lng": -122.3964
+      },
+      "status": "scheduled",
+      "driver_id": null,
+      "fare": 12.80,
+      "surge_multiplier": 1.0,
+      "scheduled_time": "2026-03-19T07:45:00-07:00",
+      "rating": null,
+      "tip": 0,
+      "created_at": "2026-03-17T22:00:00-07:00",
+      "stops": []
+    }
+  },
+  "drivers": {
+    "DRV-80030": {
+      "driver_id": "DRV-80030",
+      "name": "David Okafor",
+      "rating": 4.92,
+      "vehicle": {
+        "make": "Toyota",
+        "model": "Camry",
+        "year": 2022,
+        "color": "Silver",
+        "license_plate": "8ABC123"
+      },
+      "phone": "+14155550301",
+      "availability": "available"
+    },
+    "DRV-80031": {
+      "driver_id": "DRV-80031",
+      "name": "Elena Petrov",
+      "rating": 4.87,
+      "vehicle": {
+        "make": "Chevrolet",
+        "model": "Suburban",
+        "year": 2023,
+        "color": "Black",
+        "license_plate": "8DEF456"
+      },
+      "phone": "+14155550302",
+      "availability": "available"
+    },
+    "DRV-80032": {
+      "driver_id": "DRV-80032",
+      "name": "Frank Liu",
+      "rating": 4.98,
+      "vehicle": {
+        "make": "Mercedes-Benz",
+        "model": "E-Class",
+        "year": 2024,
+        "color": "Black",
+        "license_plate": "8GHI789"
+      },
+      "phone": "+14155550303",
+      "availability": "on_trip"
+    },
+    "DRV-80033": {
+      "driver_id": "DRV-80033",
+      "name": "Samantha Brooks",
+      "rating": 4.85,
+      "vehicle": {
+        "make": "Honda",
+        "model": "Accord",
+        "year": 2023,
+        "color": "White",
+        "license_plate": "8JKL012"
+      },
+      "phone": "+14155550304",
+      "availability": "on_trip"
+    },
+    "DRV-80034": {
+      "driver_id": "DRV-80034",
+      "name": "Raj Patel",
+      "rating": 4.90,
+      "vehicle": {
+        "make": "Hyundai",
+        "model": "Ioniq 5",
+        "year": 2024,
+        "color": "Blue",
+        "license_plate": "8MNO345"
+      },
+      "phone": "+14155550305",
+      "availability": "available"
+    },
+    "DRV-80035": {
+      "driver_id": "DRV-80035",
+      "name": "Kenji Tanaka",
+      "rating": 4.79,
+      "vehicle": {
+        "make": "Tesla",
+        "model": "Model 3",
+        "year": 2024,
+        "color": "Red",
+        "license_plate": "8PQR678"
+      },
+      "phone": "+14155550306",
+      "availability": "available"
+    },
+    "DRV-80036": {
+      "driver_id": "DRV-80036",
+      "name": "Amara Diallo",
+      "rating": 4.95,
+      "vehicle": {
+        "make": "BMW",
+        "model": "X5",
+        "year": 2023,
+        "color": "Gray",
+        "license_plate": "8STU901"
+      },
+      "phone": "+14155550307",
+      "availability": "available"
+    },
+    "DRV-80037": {
+      "driver_id": "DRV-80037",
+      "name": "Carlos Mendez",
+      "rating": 4.88,
+      "vehicle": {
+        "make": "Ford",
+        "model": "Explorer",
+        "year": 2022,
+        "color": "Green",
+        "license_plate": "8VWX234"
+      },
+      "phone": "+14155550308",
+      "availability": "available"
+    }
+  },
+  "ride_types": {
+    "UberX": {
+      "name": "UberX",
+      "base_fare": 5.00,
+      "per_mile": 1.50,
+      "per_minute": 0.25,
+      "minimum_fare": 8.00,
+      "description": "Affordable everyday rides",
+      "capacity": 4,
+      "available": true
+    },
+    "Comfort": {
+      "name": "Comfort",
+      "base_fare": 8.00,
+      "per_mile": 2.00,
+      "per_minute": 0.35,
+      "minimum_fare": 12.00,
+      "description": "Newer cars with extra legroom",
+      "capacity": 4,
+      "available": true
+    },
+    "Black": {
+      "name": "Black",
+      "base_fare": 15.00,
+      "per_mile": 3.50,
+      "per_minute": 0.55,
+      "minimum_fare": 25.00,
+      "description": "Premium rides in luxury vehicles",
+      "capacity": 4,
+      "available": true
+    },
+    "XL": {
+      "name": "XL",
+      "base_fare": 7.50,
+      "per_mile": 2.25,
+      "per_minute": 0.40,
+      "minimum_fare": 12.00,
+      "description": "Affordable rides for groups up to 6",
+      "capacity": 6,
+      "available": true
+    },
+    "Green": {
+      "name": "Green",
+      "base_fare": 5.50,
+      "per_mile": 1.60,
+      "per_minute": 0.28,
+      "minimum_fare": 9.00,
+      "description": "Electric and hybrid vehicles",
+      "capacity": 4,
+      "available": true
+    }
+  },
+  "offers": {
+    "OFFER-80030": {
+      "offer_id": "OFFER-80030",
+      "code": "SF25OFF",
+      "discount_type": "percent",
+      "discount_value": 25,
+      "min_fare": 15.00,
+      "max_discount": 10.00,
+      "valid_until": "2026-04-30T23:59:59-07:00",
+      "used": false
+    },
+    "OFFER-80031": {
+      "offer_id": "OFFER-80031",
+      "code": "UBER5FLAT",
+      "discount_type": "flat",
+      "discount_value": 5.00,
+      "min_fare": 10.00,
+      "max_discount": null,
+      "valid_until": "2026-05-15T23:59:59-07:00",
+      "used": false
+    },
+    "OFFER-80032": {
+      "offer_id": "OFFER-80032",
+      "code": "SPRING30",
+      "discount_type": "percent",
+      "discount_value": 30,
+      "min_fare": 20.00,
+      "max_discount": 15.00,
+      "valid_until": "2026-04-01T23:59:59-07:00",
+      "used": false
+    },
+    "OFFER-80033": {
+      "offer_id": "OFFER-80033",
+      "code": "BLACKFRI",
+      "discount_type": "flat",
+      "discount_value": 12.00,
+      "min_fare": 30.00,
+      "max_discount": null,
+      "valid_until": "2026-03-31T23:59:59-07:00",
+      "used": true
+    },
+    "OFFER-80034": {
+      "offer_id": "OFFER-80034",
+      "code": "WELCOME10",
+      "discount_type": "flat",
+      "discount_value": 10.00,
+      "min_fare": null,
+      "max_discount": null,
+      "valid_until": "2026-06-01T23:59:59-07:00",
+      "used": false
+    }
+  }
+}
