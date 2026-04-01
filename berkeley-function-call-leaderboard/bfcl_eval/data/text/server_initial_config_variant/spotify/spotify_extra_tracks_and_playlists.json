@@ -1,0 +1,1598 @@
+{
+  "_meta": {
+    "api_class": "SpotifyAPI",
+    "source_file": "spotify.py",
+    "description": "Initial state for the Spotify music streaming API"
+  },
+  "random_seed": 1234,
+  "profile": {
+    "name": "Ethan Nakamura",
+    "email": "ethan.nakamura@email.com",
+    "premium": true,
+    "country": "US",
+    "followers": 47,
+    "following": [
+      "user_002",
+      "user_003"
+    ],
+    "devices": [
+      {
+        "device_id": "device_001",
+        "name": "Ethan's MacBook Pro",
+        "type": "computer",
+        "is_active": true
+      },
+      {
+        "device_id": "device_002",
+        "name": "Living Room Sonos",
+        "type": "speaker",
+        "is_active": false
+      },
+      {
+        "device_id": "device_003",
+        "name": "Ethan's iPhone 15",
+        "type": "smartphone",
+        "is_active": false
+      },
+      {
+        "device_id": "dev_friend_speaker_01",
+        "name": "Friend's apartment speaker",
+        "type": "speaker",
+        "is_active": false
+      }
+    ]
+  },
+  "player": {
+    "is_playing": true,
+    "current_song_id": "track_001",
+    "current_context": "spotify:playlist:playlist_001",
+    "progress_ms": 87500,
+    "shuffle": false,
+    "repeat_mode": "off",
+    "volume_percent": 65,
+    "active_device_id": "device_001",
+    "queue_song_ids": [
+      "track_003",
+      "track_005",
+      "track_008"
+    ]
+  },
+  "playlists": {
+    "playlist_001": {
+      "playlist_id": "playlist_001",
+      "name": "Late Night Frequencies",
+      "description": "Atmospheric tracks for after-hours listening",
+      "owner_id": "user_001",
+      "public": true,
+      "collaborative": false,
+      "songs": [
+        {
+          "song_id": "track_001",
+          "name": "Velvet Horizon",
+          "genre": [
+            "indie pop",
+            "dream pop"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_003",
+          "name": "Burning Latitude",
+          "genre": [
+            "alt rock",
+            "post-punk"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_005",
+          "name": "Midnight Voltage",
+          "genre": [
+            "electronic",
+            "house"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_008",
+          "name": "Afterglow Drift",
+          "genre": [
+            "chillwave",
+            "ambient"
+          ],
+          "play_count": 0
+        }
+      ],
+      "followers": 312,
+      "created_at": "2024-12-01T20:15:00Z"
+    },
+    "playlist_002": {
+      "playlist_id": "playlist_002",
+      "name": "Weekend Drive",
+      "description": "Perfect songs for a road trip",
+      "owner_id": "user_002",
+      "public": false,
+      "collaborative": true,
+      "songs": [
+        {
+          "song_id": "track_002",
+          "name": "Neon Downpour",
+          "genre": [
+            "indie pop",
+            "synth pop"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_004",
+          "name": "Paper Cathedral",
+          "genre": [
+            "alt rock",
+            "shoegaze"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_011",
+          "name": "Golden Coastline",
+          "genre": [
+            "surf rock",
+            "indie rock"
+          ],
+          "play_count": 0
+        }
+      ],
+      "followers": 89,
+      "created_at": "2024-12-08T14:30:00Z"
+    },
+    "playlist_003": {
+      "playlist_id": "playlist_003",
+      "name": "Morning Coffee",
+      "description": "Calm tunes to ease into the day",
+      "owner_id": "user_001",
+      "public": true,
+      "collaborative": false,
+      "songs": [
+        {
+          "song_id": "track_009",
+          "name": "Slow Sunrise",
+          "genre": [
+            "folk",
+            "acoustic"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_010",
+          "name": "Heather Fields",
+          "genre": [
+            "folk",
+            "singer-songwriter"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_015",
+          "name": "Dew on the Vine",
+          "genre": [
+            "jazz",
+            "bossa nova"
+          ],
+          "play_count": 0
+        }
+      ],
+      "followers": 1205,
+      "created_at": "2024-09-15T07:00:00Z"
+    },
+    "playlist_004": {
+      "playlist_id": "playlist_004",
+      "name": "Gym Power",
+      "description": "High energy tracks for working out",
+      "owner_id": "user_001",
+      "public": true,
+      "collaborative": false,
+      "songs": [
+        {
+          "song_id": "track_017",
+          "name": "Iron Circuit",
+          "genre": [
+            "hip-hop",
+            "trap"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_018",
+          "name": "Pressure Drop",
+          "genre": [
+            "hip-hop",
+            "rap"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_022",
+          "name": "Bass Cannon",
+          "genre": [
+            "electronic",
+            "dubstep"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_006",
+          "name": "Echoes of Mercury",
+          "genre": [
+            "electronic",
+            "techno"
+          ],
+          "play_count": 0
+        }
+      ],
+      "followers": 734,
+      "created_at": "2024-10-22T18:00:00Z"
+    },
+    "playlist_005": {
+      "playlist_id": "playlist_005",
+      "name": "Rainy Day Reads",
+      "description": "Soft background music for reading sessions",
+      "owner_id": "user_003",
+      "public": true,
+      "collaborative": false,
+      "songs": [
+        {
+          "song_id": "track_013",
+          "name": "Library Dust",
+          "genre": [
+            "classical crossover",
+            "ambient"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_014",
+          "name": "Pale Ink",
+          "genre": [
+            "classical crossover",
+            "neoclassical"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_008",
+          "name": "Afterglow Drift",
+          "genre": [
+            "chillwave",
+            "ambient"
+          ],
+          "play_count": 0
+        }
+      ],
+      "followers": 2100,
+      "created_at": "2024-08-10T12:00:00Z"
+    },
+    "playlist_006": {
+      "playlist_id": "playlist_006",
+      "name": "R&B Essentials",
+      "description": "Smooth R&B hits and deep cuts",
+      "owner_id": "user_001",
+      "public": true,
+      "collaborative": false,
+      "songs": [
+        {
+          "song_id": "track_019",
+          "name": "Satin Nights",
+          "genre": [
+            "r&b",
+            "soul"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_020",
+          "name": "Warm December",
+          "genre": [
+            "r&b",
+            "neo-soul"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_021",
+          "name": "Honey Glow",
+          "genre": [
+            "r&b",
+            "soul"
+          ],
+          "play_count": 0
+        }
+      ],
+      "followers": 560,
+      "created_at": "2024-11-05T21:30:00Z"
+    }
+  },
+  "artists": {
+    "artist_001": {
+      "artist_id": "artist_001",
+      "name": "Luna Prism",
+      "genre": [
+        "indie pop",
+        "dream pop",
+        "synth pop"
+      ],
+      "songs": [
+        {
+          "song_id": "track_001",
+          "name": "Velvet Horizon",
+          "genre": [
+            "indie pop",
+            "dream pop"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_002",
+          "name": "Neon Downpour",
+          "genre": [
+            "indie pop",
+            "synth pop"
+          ],
+          "play_count": 0
+        }
+      ],
+      "follower_count": 584300,
+      "monthly_listeners": 1230000,
+      "following": true,
+      "popularity": 72
+    },
+    "artist_002": {
+      "artist_id": "artist_002",
+      "name": "The Obsidian Waves",
+      "genre": [
+        "alt rock",
+        "post-punk",
+        "shoegaze"
+      ],
+      "songs": [
+        {
+          "song_id": "track_003",
+          "name": "Burning Latitude",
+          "genre": [
+            "alt rock",
+            "post-punk"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_004",
+          "name": "Paper Cathedral",
+          "genre": [
+            "alt rock",
+            "shoegaze"
+          ],
+          "play_count": 0
+        }
+      ],
+      "follower_count": 321700,
+      "monthly_listeners": 870000,
+      "following": false,
+      "popularity": 65
+    },
+    "artist_003": {
+      "artist_id": "artist_003",
+      "name": "DJ Korvus",
+      "genre": [
+        "electronic",
+        "house",
+        "techno"
+      ],
+      "songs": [
+        {
+          "song_id": "track_005",
+          "name": "Midnight Voltage",
+          "genre": [
+            "electronic",
+            "house"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_006",
+          "name": "Echoes of Mercury",
+          "genre": [
+            "electronic",
+            "techno"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_022",
+          "name": "Bass Cannon",
+          "genre": [
+            "electronic",
+            "dubstep"
+          ],
+          "play_count": 0
+        }
+      ],
+      "follower_count": 198400,
+      "monthly_listeners": 540000,
+      "following": true,
+      "popularity": 58
+    },
+    "artist_004": {
+      "artist_id": "artist_004",
+      "name": "Marguerite Lane",
+      "genre": [
+        "folk",
+        "acoustic",
+        "singer-songwriter"
+      ],
+      "songs": [
+        {
+          "song_id": "track_009",
+          "name": "Slow Sunrise",
+          "genre": [
+            "folk",
+            "acoustic"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_010",
+          "name": "Heather Fields",
+          "genre": [
+            "folk",
+            "singer-songwriter"
+          ],
+          "play_count": 0
+        }
+      ],
+      "follower_count": 142000,
+      "monthly_listeners": 410000,
+      "following": true,
+      "popularity": 54
+    },
+    "artist_005": {
+      "artist_id": "artist_005",
+      "name": "Surf Bureau",
+      "genre": [
+        "surf rock",
+        "indie rock",
+        "garage rock"
+      ],
+      "songs": [
+        {
+          "song_id": "track_011",
+          "name": "Golden Coastline",
+          "genre": [
+            "surf rock",
+            "indie rock"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_012",
+          "name": "Salt Air",
+          "genre": [
+            "surf rock",
+            "garage rock"
+          ],
+          "play_count": 0
+        }
+      ],
+      "follower_count": 89500,
+      "monthly_listeners": 320000,
+      "following": false,
+      "popularity": 48
+    },
+    "artist_006": {
+      "artist_id": "artist_006",
+      "name": "Sable Arch",
+      "genre": [
+        "classical crossover",
+        "neoclassical",
+        "ambient"
+      ],
+      "songs": [
+        {
+          "song_id": "track_013",
+          "name": "Library Dust",
+          "genre": [
+            "classical crossover",
+            "ambient"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_014",
+          "name": "Pale Ink",
+          "genre": [
+            "classical crossover",
+            "neoclassical"
+          ],
+          "play_count": 0
+        }
+      ],
+      "follower_count": 67200,
+      "monthly_listeners": 195000,
+      "following": false,
+      "popularity": 41
+    },
+    "artist_007": {
+      "artist_id": "artist_007",
+      "name": "Rio Samba Collective",
+      "genre": [
+        "jazz",
+        "bossa nova",
+        "latin"
+      ],
+      "songs": [
+        {
+          "song_id": "track_015",
+          "name": "Dew on the Vine",
+          "genre": [
+            "jazz",
+            "bossa nova"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_016",
+          "name": "Copacabana Twilight",
+          "genre": [
+            "bossa nova",
+            "latin"
+          ],
+          "play_count": 0
+        }
+      ],
+      "follower_count": 113800,
+      "monthly_listeners": 375000,
+      "following": false,
+      "popularity": 52
+    },
+    "artist_008": {
+      "artist_id": "artist_008",
+      "name": "Phantom Relay",
+      "genre": [
+        "hip-hop",
+        "trap",
+        "rap"
+      ],
+      "songs": [
+        {
+          "song_id": "track_017",
+          "name": "Iron Circuit",
+          "genre": [
+            "hip-hop",
+            "trap"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_018",
+          "name": "Pressure Drop",
+          "genre": [
+            "hip-hop",
+            "rap"
+          ],
+          "play_count": 0
+        }
+      ],
+      "follower_count": 452600,
+      "monthly_listeners": 1580000,
+      "following": true,
+      "popularity": 76
+    },
+    "artist_009": {
+      "artist_id": "artist_009",
+      "name": "Amara Sinclair",
+      "genre": [
+        "r&b",
+        "soul",
+        "neo-soul"
+      ],
+      "songs": [
+        {
+          "song_id": "track_019",
+          "name": "Satin Nights",
+          "genre": [
+            "r&b",
+            "soul"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_020",
+          "name": "Warm December",
+          "genre": [
+            "r&b",
+            "neo-soul"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_021",
+          "name": "Honey Glow",
+          "genre": [
+            "r&b",
+            "soul"
+          ],
+          "play_count": 0
+        }
+      ],
+      "follower_count": 278900,
+      "monthly_listeners": 920000,
+      "following": true,
+      "popularity": 68
+    },
+    "artist_010": {
+      "artist_id": "artist_010",
+      "name": "Cirrus Heights",
+      "genre": [
+        "chillwave",
+        "ambient",
+        "downtempo"
+      ],
+      "songs": [
+        {
+          "song_id": "track_007",
+          "name": "Cloud Terrace",
+          "genre": [
+            "chillwave",
+            "downtempo"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_008",
+          "name": "Afterglow Drift",
+          "genre": [
+            "chillwave",
+            "ambient"
+          ],
+          "play_count": 0
+        }
+      ],
+      "follower_count": 74300,
+      "monthly_listeners": 260000,
+      "following": false,
+      "popularity": 45
+    }
+  },
+  "albums": {
+    "album_001": {
+      "album_id": "album_001",
+      "name": "Glass Tides",
+      "artist_id": [
+        "artist_001"
+      ],
+      "release_date": "2024-12-06",
+      "total_tracks": 2,
+      "songs": [
+        {
+          "song_id": "track_001",
+          "name": "Velvet Horizon",
+          "genre": [
+            "indie pop",
+            "dream pop"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_002",
+          "name": "Neon Downpour",
+          "genre": [
+            "indie pop",
+            "synth pop"
+          ],
+          "play_count": 0
+        }
+      ],
+      "genre": [
+        "indie pop"
+      ],
+      "saved": true
+    },
+    "album_002": {
+      "album_id": "album_002",
+      "name": "Fractured Light",
+      "artist_id": [
+        "artist_002"
+      ],
+      "release_date": "2024-12-13",
+      "total_tracks": 2,
+      "songs": [
+        {
+          "song_id": "track_003",
+          "name": "Burning Latitude",
+          "genre": [
+            "alt rock",
+            "post-punk"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_004",
+          "name": "Paper Cathedral",
+          "genre": [
+            "alt rock",
+            "shoegaze"
+          ],
+          "play_count": 0
+        }
+      ],
+      "genre": [
+        "alt rock"
+      ],
+      "saved": false
+    },
+    "album_003": {
+      "album_id": "album_003",
+      "name": "Signal Decay",
+      "artist_id": [
+        "artist_003"
+      ],
+      "release_date": "2024-11-20",
+      "total_tracks": 3,
+      "songs": [
+        {
+          "song_id": "track_005",
+          "name": "Midnight Voltage",
+          "genre": [
+            "electronic",
+            "house"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_006",
+          "name": "Echoes of Mercury",
+          "genre": [
+            "electronic",
+            "techno"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_022",
+          "name": "Bass Cannon",
+          "genre": [
+            "electronic",
+            "dubstep"
+          ],
+          "play_count": 0
+        }
+      ],
+      "genre": [
+        "electronic"
+      ],
+      "saved": true
+    },
+    "album_004": {
+      "album_id": "album_004",
+      "name": "Low Clouds",
+      "artist_id": [
+        "artist_010"
+      ],
+      "release_date": "2024-10-15",
+      "total_tracks": 2,
+      "songs": [
+        {
+          "song_id": "track_007",
+          "name": "Cloud Terrace",
+          "genre": [
+            "chillwave",
+            "downtempo"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_008",
+          "name": "Afterglow Drift",
+          "genre": [
+            "chillwave",
+            "ambient"
+          ],
+          "play_count": 0
+        }
+      ],
+      "genre": [
+        "chillwave"
+      ],
+      "saved": false
+    },
+    "album_005": {
+      "album_id": "album_005",
+      "name": "Porch Light",
+      "artist_id": [
+        "artist_004"
+      ],
+      "release_date": "2024-09-01",
+      "total_tracks": 2,
+      "songs": [
+        {
+          "song_id": "track_009",
+          "name": "Slow Sunrise",
+          "genre": [
+            "folk",
+            "acoustic"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_010",
+          "name": "Heather Fields",
+          "genre": [
+            "folk",
+            "singer-songwriter"
+          ],
+          "play_count": 0
+        }
+      ],
+      "genre": [
+        "folk"
+      ],
+      "saved": true
+    },
+    "album_006": {
+      "album_id": "album_006",
+      "name": "Tide Machine",
+      "artist_id": [
+        "artist_005"
+      ],
+      "release_date": "2024-08-18",
+      "total_tracks": 2,
+      "songs": [
+        {
+          "song_id": "track_011",
+          "name": "Golden Coastline",
+          "genre": [
+            "surf rock",
+            "indie rock"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_012",
+          "name": "Salt Air",
+          "genre": [
+            "surf rock",
+            "garage rock"
+          ],
+          "play_count": 0
+        }
+      ],
+      "genre": [
+        "surf rock"
+      ],
+      "saved": false
+    },
+    "album_007": {
+      "album_id": "album_007",
+      "name": "Quiet Rooms",
+      "artist_id": [
+        "artist_006"
+      ],
+      "release_date": "2024-07-25",
+      "total_tracks": 2,
+      "songs": [
+        {
+          "song_id": "track_013",
+          "name": "Library Dust",
+          "genre": [
+            "classical crossover",
+            "ambient"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_014",
+          "name": "Pale Ink",
+          "genre": [
+            "classical crossover",
+            "neoclassical"
+          ],
+          "play_count": 0
+        }
+      ],
+      "genre": [
+        "classical crossover"
+      ],
+      "saved": false
+    },
+    "album_008": {
+      "album_id": "album_008",
+      "name": "Veludo",
+      "artist_id": [
+        "artist_007"
+      ],
+      "release_date": "2024-06-12",
+      "total_tracks": 2,
+      "songs": [
+        {
+          "song_id": "track_015",
+          "name": "Dew on the Vine",
+          "genre": [
+            "jazz",
+            "bossa nova"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_016",
+          "name": "Copacabana Twilight",
+          "genre": [
+            "bossa nova",
+            "latin"
+          ],
+          "play_count": 0
+        }
+      ],
+      "genre": [
+        "jazz",
+        "bossa nova"
+      ],
+      "saved": false
+    },
+    "album_009": {
+      "album_id": "album_009",
+      "name": "Hard Reset",
+      "artist_id": [
+        "artist_008"
+      ],
+      "release_date": "2025-01-10",
+      "total_tracks": 2,
+      "songs": [
+        {
+          "song_id": "track_017",
+          "name": "Iron Circuit",
+          "genre": [
+            "hip-hop",
+            "trap"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_018",
+          "name": "Pressure Drop",
+          "genre": [
+            "hip-hop",
+            "rap"
+          ],
+          "play_count": 0
+        }
+      ],
+      "genre": [
+        "hip-hop"
+      ],
+      "saved": true
+    },
+    "album_010": {
+      "album_id": "album_010",
+      "name": "Silk & Stone",
+      "artist_id": [
+        "artist_009"
+      ],
+      "release_date": "2024-11-28",
+      "total_tracks": 3,
+      "songs": [
+        {
+          "song_id": "track_019",
+          "name": "Satin Nights",
+          "genre": [
+            "r&b",
+            "soul"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_020",
+          "name": "Warm December",
+          "genre": [
+            "r&b",
+            "neo-soul"
+          ],
+          "play_count": 0
+        },
+        {
+          "song_id": "track_021",
+          "name": "Honey Glow",
+          "genre": [
+            "r&b",
+            "soul"
+          ],
+          "play_count": 0
+        }
+      ],
+      "genre": [
+        "r&b"
+      ],
+      "saved": true
+    },
+    "alb_wh": {
+      "album_id": "alb_wh",
+      "name": "Wandering Hearth",
+      "artist_id": "artist_day6",
+      "songs": [],
+      "release_date": "2024-01-01",
+      "saved": false
+    }
+  },
+  "songs": {
+    "track_001": {
+      "song_id": "track_001",
+      "name": "Velvet Horizon",
+      "artist_id": [
+        "artist_001"
+      ],
+      "album_id": "album_001",
+      "duration_ms": 234000,
+      "explicit": false,
+      "genre": [
+        "indie pop",
+        "dream pop"
+      ],
+      "popularity": 74,
+      "play_count": 0,
+      "saved": true
+    },
+    "track_002": {
+      "song_id": "track_002",
+      "name": "Neon Downpour",
+      "artist_id": [
+        "artist_001"
+      ],
+      "album_id": "album_001",
+      "duration_ms": 198000,
+      "explicit": true,
+      "genre": [
+        "indie pop",
+        "synth pop"
+      ],
+      "popularity": 69,
+      "play_count": 0,
+      "saved": true
+    },
+    "track_003": {
+      "song_id": "track_003",
+      "name": "Burning Latitude",
+      "artist_id": [
+        "artist_002"
+      ],
+      "album_id": "album_002",
+      "duration_ms": 267000,
+      "explicit": false,
+      "genre": [
+        "alt rock",
+        "post-punk"
+      ],
+      "popularity": 62,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_004": {
+      "song_id": "track_004",
+      "name": "Paper Cathedral",
+      "artist_id": [
+        "artist_002"
+      ],
+      "album_id": "album_002",
+      "duration_ms": 312000,
+      "explicit": false,
+      "genre": [
+        "alt rock",
+        "shoegaze"
+      ],
+      "popularity": 58,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_005": {
+      "song_id": "track_005",
+      "name": "Midnight Voltage",
+      "artist_id": [
+        "artist_003"
+      ],
+      "album_id": "album_003",
+      "duration_ms": 205000,
+      "explicit": true,
+      "genre": [
+        "electronic",
+        "house"
+      ],
+      "popularity": 71,
+      "play_count": 0,
+      "saved": true
+    },
+    "track_006": {
+      "song_id": "track_006",
+      "name": "Echoes of Mercury",
+      "artist_id": [
+        "artist_003"
+      ],
+      "album_id": "album_003",
+      "duration_ms": 318000,
+      "explicit": false,
+      "genre": [
+        "electronic",
+        "techno"
+      ],
+      "popularity": 55,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_007": {
+      "song_id": "track_007",
+      "name": "Cloud Terrace",
+      "artist_id": [
+        "artist_010"
+      ],
+      "album_id": "album_004",
+      "duration_ms": 274000,
+      "explicit": false,
+      "genre": [
+        "chillwave",
+        "downtempo"
+      ],
+      "popularity": 43,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_008": {
+      "song_id": "track_008",
+      "name": "Afterglow Drift",
+      "artist_id": [
+        "artist_010"
+      ],
+      "album_id": "album_004",
+      "duration_ms": 296000,
+      "explicit": false,
+      "genre": [
+        "chillwave",
+        "ambient"
+      ],
+      "popularity": 47,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_009": {
+      "song_id": "track_009",
+      "name": "Slow Sunrise",
+      "artist_id": [
+        "artist_004"
+      ],
+      "album_id": "album_005",
+      "duration_ms": 242000,
+      "explicit": false,
+      "genre": [
+        "folk",
+        "acoustic"
+      ],
+      "popularity": 56,
+      "play_count": 0,
+      "saved": true
+    },
+    "track_010": {
+      "song_id": "track_010",
+      "name": "Heather Fields",
+      "artist_id": [
+        "artist_004"
+      ],
+      "album_id": "album_005",
+      "duration_ms": 228000,
+      "explicit": false,
+      "genre": [
+        "folk",
+        "singer-songwriter"
+      ],
+      "popularity": 51,
+      "play_count": 0,
+      "saved": true
+    },
+    "track_011": {
+      "song_id": "track_011",
+      "name": "Golden Coastline",
+      "artist_id": [
+        "artist_005"
+      ],
+      "album_id": "album_006",
+      "duration_ms": 187000,
+      "explicit": false,
+      "genre": [
+        "surf rock",
+        "indie rock"
+      ],
+      "popularity": 49,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_012": {
+      "song_id": "track_012",
+      "name": "Salt Air",
+      "artist_id": [
+        "artist_005"
+      ],
+      "album_id": "album_006",
+      "duration_ms": 201000,
+      "explicit": false,
+      "genre": [
+        "surf rock",
+        "garage rock"
+      ],
+      "popularity": 44,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_013": {
+      "song_id": "track_013",
+      "name": "Library Dust",
+      "artist_id": [
+        "artist_006"
+      ],
+      "album_id": "album_007",
+      "duration_ms": 345000,
+      "explicit": false,
+      "genre": [
+        "classical crossover",
+        "ambient"
+      ],
+      "popularity": 38,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_014": {
+      "song_id": "track_014",
+      "name": "Pale Ink",
+      "artist_id": [
+        "artist_006"
+      ],
+      "album_id": "album_007",
+      "duration_ms": 289000,
+      "explicit": false,
+      "genre": [
+        "classical crossover",
+        "neoclassical"
+      ],
+      "popularity": 35,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_015": {
+      "song_id": "track_015",
+      "name": "Dew on the Vine",
+      "artist_id": [
+        "artist_007"
+      ],
+      "album_id": "album_008",
+      "duration_ms": 253000,
+      "explicit": false,
+      "genre": [
+        "jazz",
+        "bossa nova"
+      ],
+      "popularity": 50,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_016": {
+      "song_id": "track_016",
+      "name": "Copacabana Twilight",
+      "artist_id": [
+        "artist_007"
+      ],
+      "album_id": "album_008",
+      "duration_ms": 271000,
+      "explicit": false,
+      "genre": [
+        "bossa nova",
+        "latin"
+      ],
+      "popularity": 46,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_017": {
+      "song_id": "track_017",
+      "name": "Iron Circuit",
+      "artist_id": [
+        "artist_008"
+      ],
+      "album_id": "album_009",
+      "duration_ms": 194000,
+      "explicit": true,
+      "genre": [
+        "hip-hop",
+        "trap"
+      ],
+      "popularity": 81,
+      "play_count": 0,
+      "saved": true
+    },
+    "track_018": {
+      "song_id": "track_018",
+      "name": "Pressure Drop",
+      "artist_id": [
+        "artist_008"
+      ],
+      "album_id": "album_009",
+      "duration_ms": 212000,
+      "explicit": true,
+      "genre": [
+        "hip-hop",
+        "rap"
+      ],
+      "popularity": 77,
+      "play_count": 0,
+      "saved": true
+    },
+    "track_019": {
+      "song_id": "track_019",
+      "name": "Satin Nights",
+      "artist_id": [
+        "artist_009"
+      ],
+      "album_id": "album_010",
+      "duration_ms": 237000,
+      "explicit": false,
+      "genre": [
+        "r&b",
+        "soul"
+      ],
+      "popularity": 66,
+      "play_count": 0,
+      "saved": true
+    },
+    "track_020": {
+      "song_id": "track_020",
+      "name": "Warm December",
+      "artist_id": [
+        "artist_009"
+      ],
+      "album_id": "album_010",
+      "duration_ms": 261000,
+      "explicit": false,
+      "genre": [
+        "r&b",
+        "neo-soul"
+      ],
+      "popularity": 63,
+      "play_count": 0,
+      "saved": true
+    },
+    "track_021": {
+      "song_id": "track_021",
+      "name": "Honey Glow",
+      "artist_id": [
+        "artist_009"
+      ],
+      "album_id": "album_010",
+      "duration_ms": 219000,
+      "explicit": false,
+      "genre": [
+        "r&b",
+        "soul"
+      ],
+      "popularity": 60,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_022": {
+      "song_id": "track_022",
+      "name": "Bass Cannon",
+      "artist_id": [
+        "artist_003"
+      ],
+      "album_id": "album_003",
+      "duration_ms": 248000,
+      "explicit": true,
+      "genre": [
+        "electronic",
+        "dubstep"
+      ],
+      "popularity": 59,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_023": {
+      "song_id": "track_023",
+      "name": "Phantom Thread",
+      "artist_id": [
+        "artist_002"
+      ],
+      "album_id": "album_002",
+      "duration_ms": 283000,
+      "explicit": false,
+      "genre": [
+        "alt rock",
+        "post-punk"
+      ],
+      "popularity": 53,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_024": {
+      "song_id": "track_024",
+      "name": "Opal Skies",
+      "artist_id": [
+        "artist_001"
+      ],
+      "album_id": "album_001",
+      "duration_ms": 215000,
+      "explicit": false,
+      "genre": [
+        "indie pop",
+        "dream pop"
+      ],
+      "popularity": 64,
+      "play_count": 0,
+      "saved": true
+    },
+    "track_025": {
+      "song_id": "track_025",
+      "name": "Rust Belt Serenade",
+      "artist_id": [
+        "artist_004"
+      ],
+      "album_id": "album_005",
+      "duration_ms": 256000,
+      "explicit": false,
+      "genre": [
+        "folk",
+        "americana"
+      ],
+      "popularity": 42,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_026": {
+      "song_id": "track_026",
+      "name": "Undertow",
+      "artist_id": [
+        "artist_005"
+      ],
+      "album_id": "album_006",
+      "duration_ms": 192000,
+      "explicit": false,
+      "genre": [
+        "surf rock",
+        "punk"
+      ],
+      "popularity": 40,
+      "play_count": 0,
+      "saved": false
+    },
+    "track_027": {
+      "song_id": "track_027",
+      "name": "Overture in Amber",
+      "artist_id": [
+        "artist_006"
+      ],
+      "album_id": "album_007",
+      "duration_ms": 410000,
+      "explicit": false,
+      "genre": [
+        "classical crossover",
+        "ambient"
+      ],
+      "popularity": 32,
+      "play_count": 0,
+      "saved": false
+    }
+  },
+  "shows": {
+    "show_001": {
+      "show_id": "show_001",
+      "name": "The Sound Lab",
+      "publisher": "Resonance Media",
+      "description": "A weekly podcast exploring the science and craft behind modern music production",
+      "episodes": [
+        "episode_001",
+        "episode_002",
+        "episode_003"
+      ]
+    },
+    "show_002": {
+      "show_id": "show_002",
+      "name": "Genre Blender",
+      "publisher": "Crossfade Network",
+      "description": "Each episode mixes two unlikely genres and interviews artists who blur the lines",
+      "episodes": [
+        "episode_004",
+        "episode_005"
+      ]
+    },
+    "show_003": {
+      "show_id": "show_003",
+      "name": "Vinyl Confessions",
+      "publisher": "Wax & Groove",
+      "description": "Musicians reveal the albums that changed their lives and shaped their sound",
+      "episodes": [
+        "episode_006",
+        "episode_007",
+        "episode_008"
+      ]
+    }
+  },
+  "episodes": {
+    "episode_001": {
+      "episode_id": "episode_001",
+      "show_id": "show_001",
+      "name": "The Art of Reverb",
+      "duration_ms": 2460000,
+      "description": "How reverb shapes the emotional landscape of a song, from cathedrals to plate reverbs",
+      "release_date": "2024-12-05"
+    },
+    "episode_002": {
+      "episode_id": "episode_002",
+      "show_id": "show_001",
+      "name": "Sampling and the Law",
+      "duration_ms": 3180000,
+      "description": "A deep dive into the legal complexities of sampling in hip-hop and electronic music",
+      "release_date": "2024-12-12"
+    },
+    "episode_003": {
+      "episode_id": "episode_003",
+      "show_id": "show_001",
+      "name": "Mastering for Streaming",
+      "duration_ms": 2700000,
+      "description": "How loudness normalization on Spotify and other platforms changed the mastering game",
+      "release_date": "2024-12-19"
+    },
+    "episode_004": {
+      "episode_id": "episode_004",
+      "show_id": "show_002",
+      "name": "Country Meets Drum & Bass",
+      "duration_ms": 2880000,
+      "description": "When Nashville twang collides with breakbeats: artists who refuse to choose a lane",
+      "release_date": "2024-12-07"
+    },
+    "episode_005": {
+      "episode_id": "episode_005",
+      "show_id": "show_002",
+      "name": "Jazz Fusion Goes Ambient",
+      "duration_ms": 3060000,
+      "description": "Exploring the dreamy intersection of jazz improvisation and ambient soundscapes",
+      "release_date": "2024-12-14"
+    },
+    "episode_006": {
+      "episode_id": "episode_006",
+      "show_id": "show_003",
+      "name": "First Spin: Radiohead - OK Computer",
+      "duration_ms": 2520000,
+      "description": "A guitarist recalls hearing OK Computer for the first time in a basement in 1997",
+      "release_date": "2024-11-28"
+    },
+    "episode_007": {
+      "episode_id": "episode_007",
+      "show_id": "show_003",
+      "name": "First Spin: Lauryn Hill - The Miseducation",
+      "duration_ms": 2940000,
+      "description": "A producer explains how one album redirected an entire career",
+      "release_date": "2024-12-05"
+    },
+    "episode_008": {
+      "episode_id": "episode_008",
+      "show_id": "show_003",
+      "name": "First Spin: Daft Punk - Discovery",
+      "duration_ms": 2640000,
+      "description": "An electronic artist traces their obsession back to a single French house record",
+      "release_date": "2024-12-12"
+    }
+  },
+  "followed_users": {
+    "user_002": {
+      "user_id": "user_002",
+      "name": "Sofia Reyes",
+      "followers": 23,
+      "following_since": "2024-06-15T10:00:00Z"
+    },
+    "user_003": {
+      "user_id": "user_003",
+      "name": "Marcus Chen",
+      "followers": 105,
+      "following_since": "2024-08-22T14:30:00Z"
+    }
+  }
+}
