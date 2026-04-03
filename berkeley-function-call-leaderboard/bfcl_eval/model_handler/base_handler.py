@@ -237,7 +237,6 @@ class BaseHandler:
                     continue
                 if holdout_rule["condition"] == "after_n_turns" and turn_idx == holdout_rule["value"]:
                     released_func_names = [d['name'] for d in holdout_rule['holdout_func_docs']]
-                    tqdm.write(f"[missed_classes] Releasing holdout at turn {turn_idx}: {released_func_names}")
                     released_holdout_log.append({
                         "released_functions": released_func_names,
                         "condition": holdout_rule["condition"],
@@ -447,7 +446,6 @@ class BaseHandler:
                                     holdout_rule["_invoke_count"] += 1
                                     if holdout_rule["_invoke_count"] >= holdout_rule["n"]:
                                         released_func_names = [d['name'] for d in holdout_rule['holdout_func_docs']]
-                                        tqdm.write(f"[missed_classes] Releasing holdout after {holdout_rule['_invoke_count']} invocations of '{holdout_rule['target_function']}': {released_func_names}")
                                         current_step_inference_log.append(
                                             {
                                                 "role": "handler_log",
