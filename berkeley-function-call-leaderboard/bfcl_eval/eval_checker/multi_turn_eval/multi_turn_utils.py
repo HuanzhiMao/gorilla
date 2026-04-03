@@ -51,11 +51,9 @@ def _apply_failure_injections(involved_instances: dict, failure_injection: list)
     """
     _load_all_server_patches()
 
-    print(f"[DEBUG failure_injection] Applying {len(failure_injection)} patches: {failure_injection}")
     for spec in failure_injection:
         class_method, patch_name = spec["method"], spec["patch"]
         class_name, method_name = class_method.rsplit(".", 1)
-        print(f"[DEBUG failure_injection] Patching {class_name}.{method_name} with '{patch_name}'")
         if class_name not in involved_instances:
             raise ValueError(
                 f"failure_injection references class '{class_name}' "
@@ -107,7 +105,6 @@ def execute_multi_turn_func_call(
     class_method_name_mapping = {}
     involved_instances = {}
     newly_created = False
-    print(f"[DEBUG involved_classes] test_entry={test_entry_id}, involved_classes={involved_classes}")
     for class_name in involved_classes:
         module_name = CLASS_FILE_PATH_MAPPING[class_name]
         instance_name = f"{model_name}_{test_entry_id}_{class_name}_instance"
@@ -144,10 +141,6 @@ def execute_multi_turn_func_call(
     # Apply failure-injection patches once, right after instances are first created.
     if failure_injection and newly_created:
         _apply_failure_injections(involved_instances, failure_injection)
-    elif failure_injection and not newly_created:
-        print(f"[DEBUG failure_injection] Skipping patches (instances already exist): {failure_injection}")
-    elif not failure_injection:
-        print(f"[DEBUG failure_injection] No failure_injection for test_entry={test_entry_id}")
 
     execution_results = []
     for func_call in func_call_list:

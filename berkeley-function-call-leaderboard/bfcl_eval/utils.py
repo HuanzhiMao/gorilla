@@ -977,7 +977,6 @@ def populate_test_cases_with_predefined_functions(test_cases: list[dict]) -> lis
 
         # Handle Miss Func category; we need to remove the holdout function docs
         if "missed_classes" in entry:
-            print(f"[DEBUG missed_classes] entry={entry['id']}, missed_classes={entry['missed_classes']}")
             rules = entry["missed_classes"]
 
             for mc_rule in rules:
@@ -1005,8 +1004,6 @@ def populate_test_cases_with_predefined_functions(test_cases: list[dict]) -> lis
                                 break
 
                 mc_rule["holdout_func_docs"] = holdout_func_docs
-                print(f"[DEBUG missed_classes] Held out {len(holdout_func_docs)} func docs: {[d['name'] for d in holdout_func_docs]}")
-                print(f"[DEBUG missed_classes] Remaining functions after holdout: {[f['name'] for f in entry['function']]}")
 
     return test_cases
 

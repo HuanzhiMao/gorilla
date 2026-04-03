@@ -168,6 +168,19 @@ class BaseHandler:
             failure_injection=failure_injection,
         )
 
+        if failure_injection:
+            all_inference_log.append(
+                [
+                    {
+                        "role": "handler_log",
+                        "content": {
+                            "action": "failure_injection_applied",
+                            "patches": failure_injection,
+                        },
+                    }
+                ]
+            )
+
         if is_memory(test_category):
             assert (
                 len(involved_instances) == 1
@@ -633,6 +646,19 @@ class BaseHandler:
             is_evaL_run=False,
             failure_injection=failure_injection,
         )
+
+        if failure_injection:
+            all_inference_log.append(
+                [
+                    {
+                        "role": "handler_log",
+                        "content": {
+                            "action": "failure_injection_applied",
+                            "patches": failure_injection,
+                        },
+                    }
+                ]
+            )
 
         if is_memory(test_category):
             assert (
