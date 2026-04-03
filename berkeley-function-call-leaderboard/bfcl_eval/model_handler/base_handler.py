@@ -218,14 +218,21 @@ class BaseHandler:
                 )
                 self._compile_tools(inference_data, test_entry)
 
-            for mc_rule in missed_classes_rules:
-                if mc_rule.get("_released"):
+            released_holdout_log = []
+            for holdout_rule in missed_classes_rules:
+                if holdout_rule.get("_released"):
                     continue
-                if mc_rule["condition"] == "after_n_turns" and turn_idx == mc_rule["value"]:
-                    print(f"[DEBUG missed_classes] Releasing holdout at turn {turn_idx}: {[d['name'] for d in mc_rule['holdout_func_docs']]}")
-                    test_entry["function"].extend(mc_rule["holdout_func_docs"])
+                if holdout_rule["condition"] == "after_n_turns" and turn_idx == holdout_rule["value"]:
+                    released_func_names = [d['name'] for d in holdout_rule['holdout_func_docs']]
+                    tqdm.write(f"[missed_classes] Releasing holdout at turn {turn_idx}: {released_func_names}")
+                    released_holdout_log.append({
+                        "released_functions": released_func_names,
+                        "condition": holdout_rule["condition"],
+                        "triggered_turn": turn_idx,
+                    })
+                    test_entry["function"].extend(holdout_rule["holdout_func_docs"])
                     inference_data = self._compile_tools(inference_data, test_entry)
-                    mc_rule["_released"] = True
+                    holdout_rule["_released"] = True
                     assert (
                         len(current_turn_message) == 0
                     ), "Holdout turn should not have user message."
@@ -250,6 +257,8 @@ class BaseHandler:
             current_turn_inference_log: list[dict] = {
                 "begin_of_turn_query": current_turn_message_for_logging
             }
+            if released_holdout_log:
+                current_turn_inference_log["released_holdout_functions"] = released_holdout_log
             current_turn_input_token_count: list[float] = []
             current_turn_output_token_count: list[float] = []
             current_turn_latency: list[float] = []
@@ -412,23 +421,37 @@ class BaseHandler:
                             )
 
                     # Check if holdout functions should be released after this invocation
-                    for mc_rule in missed_classes_rules:
-                        if mc_rule.get("_released"):
+                    for holdout_rule in missed_classes_rules:
+                        if holdout_rule.get("_released"):
                             continue
-                        if mc_rule["condition"] == "after_n_invoke":
+                        if holdout_rule["condition"] == "after_n_invoke":
                             # target_function may be "ClassName.func_name"; decoded responses use bare func names
-                            target_func = mc_rule["target_function"]
+                            target_func = holdout_rule["target_function"]
                             if "." in target_func:
                                 target_func = target_func.split(".", 1)[1]
                             for func_call in decoded_model_responses:
                                 if isinstance(func_call, str) and func_call.startswith(target_func + "("):
-                                    mc_rule.setdefault("_invoke_count", 0)
-                                    mc_rule["_invoke_count"] += 1
-                                    if mc_rule["_invoke_count"] >= mc_rule["n"]:
-                                        print(f"[DEBUG missed_classes] Releasing holdout after {mc_rule['_invoke_count']} invocations of '{mc_rule['target_function']}': {[d['name'] for d in mc_rule['holdout_func_docs']]}")
-                                        test_entry["function"].extend(mc_rule["holdout_func_docs"])
+                                    holdout_rule.setdefault("_invoke_count", 0)
+                                    holdout_rule["_invoke_count"] += 1
+                                    if holdout_rule["_invoke_count"] >= holdout_rule["n"]:
+                                        released_func_names = [d['name'] for d in holdout_rule['holdout_func_docs']]
+                                        tqdm.write(f"[missed_classes] Releasing holdout after {holdout_rule['_invoke_count']} invocations of '{holdout_rule['target_function']}': {released_func_names}")
+                                        current_step_inference_log.append(
+                                            {
+                                                "role": "handler_log",
+                                                "content": {
+                                                    "action": "missed_classes_holdout_released",
+                                                    "released_functions": released_func_names,
+                                                    "condition": holdout_rule["condition"],
+                                                    "target_function": holdout_rule["target_function"],
+                                                    "invoke_count": holdout_rule["_invoke_count"],
+                                                    "required_invocations": holdout_rule["n"],
+                                                },
+                                            }
+                                        )
+                                        test_entry["function"].extend(holdout_rule["holdout_func_docs"])
                                         inference_data = self._compile_tools(inference_data, test_entry)
-                                        mc_rule["_released"] = True
+                                        holdout_rule["_released"] = True
                                     break
 
                     # If the model has taken too many steps, we force it to quit.
@@ -651,11 +674,19 @@ class BaseHandler:
         for turn_idx, current_turn_message in enumerate(all_multi_turn_messages):
             current_turn_message: list[dict]
 
-            for mc_rule in missed_classes_rules:
-                if mc_rule.get("_released"):
+            released_holdout_log = []
+            for holdout_rule in missed_classes_rules:
+                if holdout_rule.get("_released"):
                     continue
-                if mc_rule["condition"] == "after_n_turns" and turn_idx == mc_rule["value"]:
-                    mc_rule["_released"] = True
+                if holdout_rule["condition"] == "after_n_turns" and turn_idx == holdout_rule["value"]:
+                    released_func_names = [d['name'] for d in holdout_rule['holdout_func_docs']]
+                    tqdm.write(f"[missed_classes] Releasing holdout at turn {turn_idx}: {released_func_names}")
+                    released_holdout_log.append({
+                        "released_functions": released_func_names,
+                        "condition": "after_n_turns",
+                        "trigger_turn": turn_idx,
+                    })
+                    holdout_rule["_released"] = True
                     assert (
                         len(current_turn_message) == 0
                     ), "Holdout turn should not have user message."
@@ -663,7 +694,7 @@ class BaseHandler:
                         {
                             "role": "user",
                             "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING.format(
-                                functions=mc_rule["holdout_func_docs"]
+                                functions=holdout_rule["holdout_func_docs"]
                             ),
                         }
                     ]
@@ -681,7 +712,8 @@ class BaseHandler:
             current_turn_inference_log: list[dict] = {
                 "begin_of_turn_query": current_turn_message_for_logging
             }
-
+            if released_holdout_log:
+                current_turn_inference_log["released_holdout_functions"] = released_holdout_log
             current_turn_input_token_count: list[float] = []
             current_turn_output_token_count: list[float] = []
             current_turn_latency: list[float] = []
@@ -808,31 +840,46 @@ class BaseHandler:
                     )
 
                 # Check if holdout functions should be released after this invocation
-                for mc_rule in missed_classes_rules:
-                    if mc_rule.get("_released"):
+                for holdout_rule in missed_classes_rules:
+                    if holdout_rule.get("_released"):
                         continue
-                    if mc_rule["condition"] == "after_n_invoke":
+                    if holdout_rule["condition"] == "after_n_invoke":
                         # target_function may be "ClassName.func_name"; decoded responses use bare func names
-                        target_func = mc_rule["target_function"]
+                        target_func = holdout_rule["target_function"]
                         if "." in target_func:
                             target_func = target_func.split(".", 1)[1]
                         for func_call in decoded_model_responses:
                             if isinstance(func_call, str) and func_call.startswith(target_func + "("):
-                                mc_rule.setdefault("_invoke_count", 0)
-                                mc_rule["_invoke_count"] += 1
-                                if mc_rule["_invoke_count"] >= mc_rule["n"]:
+                                holdout_rule.setdefault("_invoke_count", 0)
+                                holdout_rule["_invoke_count"] += 1
+                                if holdout_rule["_invoke_count"] >= holdout_rule["n"]:
+                                    released_func_names = [d['name'] for d in holdout_rule['holdout_func_docs']]
+                                    tqdm.write(f"[missed_classes] Releasing holdout after {holdout_rule['_invoke_count']} invocations of '{holdout_rule['target_function']}': {released_func_names}")
+                                    current_step_inference_log.append(
+                                        {
+                                            "role": "handler_log",
+                                            "content": {
+                                                "action": "missed_classes_holdout_released",
+                                                "released_functions": released_func_names,
+                                                "condition": "after_n_invoke",
+                                                "target_function": holdout_rule["target_function"],
+                                                "invoke_count": holdout_rule["_invoke_count"],
+                                                "required_invocations": holdout_rule["n"],
+                                            },
+                                        }
+                                    )
                                     inference_data = self._add_next_turn_user_message_prompting(
                                         inference_data,
                                         [
                                             {
                                                 "role": "user",
                                                 "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING.format(
-                                                    functions=mc_rule["holdout_func_docs"]
+                                                    functions=holdout_rule["holdout_func_docs"]
                                                 ),
                                             }
                                         ],
                                     )
-                                    mc_rule["_released"] = True
+                                    holdout_rule["_released"] = True
                                 break
 
                 step_count += 1
