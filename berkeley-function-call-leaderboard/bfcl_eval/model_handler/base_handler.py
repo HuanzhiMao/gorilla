@@ -359,7 +359,6 @@ class BaseHandler:
                     decoded_model_responses = self.decode_execute(
                         model_responses, has_tool_call_tag=False
                     )
-                    print(decoded_model_responses)
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",
