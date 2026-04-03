@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import json
+import logging
 import os
 import re
 from copy import deepcopy
@@ -1066,6 +1067,9 @@ def resolve_initial_config_file_paths(
             "WeatherCom": { <contents of weather_com_west.json> }
         }
     """
+    
+    # @HuanzhiMao FIXME: Revert back after fixing dataset issue
+    """
     for entry in test_cases:
         init_config = entry.get("initial_config")
         if not isinstance(init_config, dict):
@@ -1076,6 +1080,27 @@ def resolve_initial_config_file_paths(
                 with open(config_path) as f:
                     init_config[class_name] = json.load(f)
     return test_cases
+
+    """
+    valid_test_cases = []
+    for entry in test_cases:
+        init_config = entry.get("initial_config")
+        if not isinstance(init_config, dict):
+            valid_test_cases.append(entry)
+            continue
+        try:
+            for class_name, config_value in init_config.items():
+                if isinstance(config_value, str):
+                    config_path = (base_dir / config_value).resolve()
+                    with open(config_path) as f:
+                        init_config[class_name] = json.load(f)
+            valid_test_cases.append(entry)
+        except Exception as e:
+            logging.warning(
+                f"Skipping entry '{entry.get('id', 'unknown')}' "
+                f"(source: {entry.get('_source', 'N/A')}): {e}"
+            )
+    return valid_test_cases
 
 
 def populate_initial_settings_for_memory_test_cases(
