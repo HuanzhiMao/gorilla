@@ -14,6 +14,7 @@ from bfcl_eval.eval_checker.ast_eval.ast_checker import ast_checker
 from bfcl_eval.eval_checker.eval_runner_helper import *
 from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_checker import (
     multi_turn_checker,
+    multi_turn_func_call_constraint_checker,
     multi_turn_irrelevance_checker,
 )
 from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
@@ -353,6 +354,123 @@ def _evaluate_single_multi_turn_entry(
         }
 
     return {"valid": True}
+
+
+def _evaluate_single_failing_tools_entry(
+    handler: BaseHandler,
+    index,
+    model_result_list,
+    ground_truth,
+    prompt_entry,
+    model_name,
+    test_category,
+):
+    """Helper method to process a single failing_tools entry.
+
+    Failing tools entries are single-turn multi-step interactions.
+    The model result is [[step1, step2, ...]] (one turn, multiple steps).
+    We decode the function calls and check must_be_called / must_not_be_called constraints.
+    """
+    if type(model_result_list) != list or len(model_result_list) != 1:
+        return {
+            "id": index,
+            "model_name": model_name,
+            "test_category": test_category,
+            "valid": False,
+            "error": {
+                "error_message": [
+                    "Error during inference phase. Model did not output a list of model responses."
+                ],
+                "error_type": "failing_tools:inference_error",
+            },
+            "prompt": prompt_entry,
+            "model_result": model_result_list,
+            "possible_answer": ground_truth,
+        }
+
+    # Decode model results into executable function calls
+    # model_result_list[0] is the single turn's list of steps
+    multi_turn_model_result_list_decoded: list[list[list[str]]] = []
+    single_turn_model_result_list_decoded = []
+    for model_result_item in model_result_list[0]:
+        try:
+            decoded_result: list[str] = handler.decode_execute(
+                model_result_item, has_tool_call_tag=False
+            )
+            if is_empty_execute_response(decoded_result):
+                continue
+            single_turn_model_result_list_decoded.append(decoded_result)
+        except Exception:
+            continue
+    multi_turn_model_result_list_decoded.append(single_turn_model_result_list_decoded)
+
+    # Check must_be_called and must_not_be_called constraints
+    constraint_result = multi_turn_func_call_constraint_checker(
+        multi_turn_model_result_list_decoded,
+        ground_truth,
+    )
+
+    if not constraint_result["valid"]:
+        return {
+            "id": index,
+            "model_name": model_name,
+            "test_category": test_category,
+            "valid": constraint_result.pop("valid"),
+            "error": constraint_result,
+            "prompt": prompt_entry,
+            "model_result_raw": model_result_list,
+            "model_result_decoded": multi_turn_model_result_list_decoded,
+            "possible_answer": ground_truth,
+        }
+
+    return {"valid": True}
+
+
+def failing_tools_runner(
+    handler: BaseHandler,
+    model_result,
+    prompt,
+    possible_answer,
+    model_name,
+    test_category,
+    score_dir,
+):
+    assert (
+        len(model_result) == len(prompt) == len(possible_answer)
+    ), f"The length of the model result ({len(model_result)}) does not match the length of the prompt ({len(prompt)}) or possible answer ({len(possible_answer)}). Please check the input files for completeness."
+
+    result = []
+    correct_count = 0
+    for i in range(len(model_result)):
+        index = model_result[i]["id"]
+        model_result_list = model_result[i]["result"]
+        ground_truth = possible_answer[i]["ground_truth"]
+        test_entry = prompt[i]
+
+        entry_result = _evaluate_single_failing_tools_entry(
+            handler,
+            index,
+            model_result_list,
+            ground_truth,
+            test_entry,
+            model_name,
+            test_category,
+        )
+
+        if entry_result["valid"]:
+            correct_count += 1
+        else:
+            entry_result["inference_log"] = model_result[i].get("inference_log", "")
+            result.append(entry_result)
+
+    return save_eval_results(
+        result,
+        correct_count,
+        model_result,
+        test_category,
+        model_name,
+        score_dir,
+    )
 
 
 def _evaluate_single_relevance_entry(
@@ -958,6 +1076,17 @@ def evaluate_task(
 
         elif is_agentic(test_category):
             accuracy, total_count = agentic_runner(
+                handler,
+                model_result,
+                prompt,
+                possible_answer,
+                model_name,
+                test_category,
+                score_dir,
+            )
+
+        elif is_failing_tools(test_category):
+            accuracy, total_count = failing_tools_runner(
                 handler,
                 model_result,
                 prompt,
