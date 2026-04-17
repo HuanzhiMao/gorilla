@@ -70,11 +70,12 @@ class ClaudeHandler(BaseHandler):
         """
         max_tokens is required to be set when querying, so we default to the model's max tokens
         """
-        if "claude-opus-4-6" in self.model_name:
+        # https://platform.claude.com/docs/en/about-claude/models/overview
+        if "opus" in self.model_name:
             return 128000
-        elif "claude-sonnet-4-6" in self.model_name:
+        elif "sonnet" in self.model_name:
             return 64000
-        elif "claude-haiku-4-5-20251001" in self.model_name:
+        elif "haiku" in self.model_name:
             return 64000
         else:
             raise ValueError(f"Unsupported model: {self.model_name}")

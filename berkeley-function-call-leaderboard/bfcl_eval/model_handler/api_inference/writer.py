@@ -2,7 +2,12 @@ import os
 import time
 
 from bfcl_eval.constants.enums import ModelStyle
-from bfcl_eval.model_handler.api_inference.openai_completion import OpenAICompletionsHandler
+from bfcl_eval.model_handler.api_inference.openai_completion import (
+    OpenAICompletionsHandler,
+)
+from bfcl_eval.model_handler.utils import retry_with_backoff
+from openai import RateLimitError
+from overrides import override
 from writerai import Writer
 
 
@@ -19,28 +24,11 @@ class WriterHandler(OpenAICompletionsHandler):
         self.model_style = ModelStyle.WRITER
         self.client = Writer(api_key=os.getenv("WRITER_API_KEY"))
 
-    #### FC methods ####
-
-    def _query_FC(self, inference_data: dict):
-        message: list[dict] = inference_data["message"]
-        tools = inference_data["tools"]
-        inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
-
+    @override
+    @retry_with_backoff(error_type=RateLimitError)
+    def generate_with_backoff(self, **kwargs):
         start_time = time.time()
-        if len(tools) > 0:
-            api_response = self.client.chat.chat(
-                messages=message,
-                model=self.model_name,
-                temperature=self.temperature,
-                tools=tools,
-                tool_choice="auto",
-            )
-        else:
-            api_response = self.client.chat.chat(
-                messages=message,
-                model=self.model_name,
-                temperature=self.temperature,
-            )
+        api_response = self.client.chat.chat(**kwargs)
         end_time = time.time()
 
         return api_response, end_time - start_time

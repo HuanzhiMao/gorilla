@@ -17,6 +17,10 @@ from tenacity.stop import stop_after_attempt
 
 
 class CohereHandler(BaseHandler):
+    can_handle_audio_input = False
+    can_handle_image_input = False
+    can_handle_image_tool_response = False
+    
     client: cohere.ClientV2
 
     def __init__(

@@ -21,6 +21,11 @@ from openai import OpenAI, RateLimitError
 
 
 class OpenAICompletionsHandler(BaseHandler):
+    can_handle_audio_input = False
+    can_handle_image_input = True
+    can_handle_image_tool_response = True
+    # @HuanzhiMao FIXME: Add audio support for openai completion. 
+    
     def __init__(
         self,
         model_name,
@@ -32,10 +37,6 @@ class OpenAICompletionsHandler(BaseHandler):
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_style = ModelStyle.OPENAI_COMPLETIONS
         self._client = None
-        # @HuanzhiMao FIXME: Add audio support for openai completion. 
-        self.can_handle_audio_input = False
-        self.can_handle_image_input = True
-        self.can_handle_image_tool_response = True
 
     @property
     def client(self):
