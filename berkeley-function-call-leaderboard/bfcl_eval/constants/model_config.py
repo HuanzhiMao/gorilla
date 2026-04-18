@@ -6,8 +6,6 @@ from bfcl_eval.model_handler.api_inference.claude import ClaudeHandler
 from bfcl_eval.model_handler.api_inference.cohere import CohereHandler
 from bfcl_eval.model_handler.api_inference.deepseek import DeepSeekAPIHandler
 from bfcl_eval.model_handler.api_inference.dm_cito import DMCitoHandler
-from bfcl_eval.model_handler.api_inference.fireworks import FireworksHandler
-from bfcl_eval.model_handler.api_inference.functionary import FunctionaryHandler
 from bfcl_eval.model_handler.api_inference.gemini import GeminiHandler
 from bfcl_eval.model_handler.api_inference.glm import GLMAPIHandler
 from bfcl_eval.model_handler.api_inference.gogoagent import GoGoAgentHandler
@@ -763,6 +761,7 @@ api_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
+    # @HuanzhiMao FIXME: Update qwen series
     "qwen3-0.6b-FC": ModelConfig(
         model_name="qwen3-0.6b",
         display_name="Qwen3-0.6B (FC)",
@@ -979,18 +978,6 @@ api_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "xiaoming-14B": ModelConfig(
-        model_name="xiaoming-14B",
-        display_name="xiaoming-14B (FC)",
-        url="https://www.mininglamp.com/",
-        org="Mininglamp",
-        license="Proprietary",
-        model_handler=MiningHandler,
-        input_price=None,
-        output_price=None,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
     "DM-Cito-8B-v3": ModelConfig(
         model_name="DM-Cito-8B-v3",
         display_name="DM-Cito-8B-v3 (Prompt)",
@@ -1015,11 +1002,11 @@ api_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "Ling/ling-lite-v1.5": ModelConfig(
-        model_name="Ling/ling-lite-v1.5",
-        display_name="ling-lite-v1.5 (Prompt)",
-        url="https://huggingface.co/inclusionAI/Ling-lite-1.5",
-        org="Ling",
+    "Ling-2.5-1T": ModelConfig(
+        model_name="Ling-2.5-1T",
+        display_name="Ling-2.5-1T (FC)",
+        url="https://huggingface.co/inclusionAI/Ling-2.5-1T",
+        org="inclusionAI",
         license="MIT",
         model_handler=LingAPIHandler,
         input_price=None,
@@ -1027,10 +1014,10 @@ api_inference_model_map = {
         is_fc_model=False,
         underscore_to_dot=False,
     ),
-    "glm-5-FC": ModelConfig(
-        model_name="glm-5",
-        display_name="GLM-5 (FC thinking)",
-        url="https://huggingface.co/zai-org/GLM-5",
+    "glm-5.1-FC": ModelConfig(
+        model_name="glm-5.1",
+        display_name="GLM-5.1 (FC thinking)",
+        url="https://huggingface.co/zai-org/GLM-5.1",
         org="Zhipu AI",
         license="MIT",
         model_handler=GLMAPIHandler,

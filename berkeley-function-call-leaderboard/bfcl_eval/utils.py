@@ -1304,6 +1304,20 @@ def process_geoguessr_test_case(test_cases: list[dict]) -> list[dict]:
     return test_cases
 
 
+def query_contains_image_input(message: dict) -> bool:
+    """Return True iff the message is a user message that carries raw image."""
+
+    assert type(message) == dict, "Message should be a dict"
+
+    contains_image = "image_content" in message
+
+    # If audio is present, it must come from the user.
+    if contains_image and message.get("role") != "user":
+        raise ValueError("Image input should only appear in user messages")
+    
+    return contains_image
+
+
 #### Audio helper methods ####
 
 
@@ -1417,4 +1431,10 @@ def query_contains_audio_input(message: dict) -> bool:
     if contains_audio and message.get("role") != "user":
         raise ValueError("Audio input should only appear in user messages")
 
+    if len(message.get("content", "")) > 0:
+        raise ValueError("Audio input should not have text content at the same time")
+
     return contains_audio
+
+
+# @HuanzhiMao FIXME: use data class to abstract the audio message and image message for clearer readability

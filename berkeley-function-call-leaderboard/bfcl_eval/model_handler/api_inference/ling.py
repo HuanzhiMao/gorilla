@@ -27,7 +27,7 @@ class LingAPIHandler(OpenAICompletionsHandler):
     ) -> None:
         super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
         self.model_style = ModelStyle.OPENAI_COMPLETIONS
-        api_url = "https://bailingchat.alipay.com"
+        api_url = "https://api.tbox.cn/api/llm/v1/"
         self.client = OpenAI(base_url=api_url, api_key=os.getenv("LING_API_KEY"))
 
     @retry_with_backoff(error_type=[RateLimitError, json.JSONDecodeError])

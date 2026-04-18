@@ -17,6 +17,11 @@ from bfcl_eval.model_handler.utils import (
     retry_with_backoff,
     system_prompt_pre_processing_chat_model,
 )
+from bfcl_eval.utils import (
+    audio_to_base64,
+    query_contains_audio_input,
+    query_contains_image_input,
+)
 from openai import OpenAI, RateLimitError
 
 
@@ -24,8 +29,7 @@ class OpenAICompletionsHandler(BaseHandler):
     can_handle_audio_input = False
     can_handle_image_input = True
     can_handle_image_tool_response = True
-    # @HuanzhiMao FIXME: Add audio support for openai completion. 
-    
+
     def __init__(
         self,
         model_name,
@@ -147,12 +151,11 @@ class OpenAICompletionsHandler(BaseHandler):
         self._add_reasoning_content_if_available_FC(api_response, response_data)
         return response_data
 
-    # @HuanzhiMao FIXME: add support for audio and vision
     def add_first_turn_message_FC(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
         for message in first_turn_message:
-            if "image_content" in message:
+            if query_contains_image_input(message):
                 image_content_list = message["image_content"]
                 new_content = []
                 new_content.append({"type": "text", "text": message["content"]})
@@ -167,9 +170,24 @@ class OpenAICompletionsHandler(BaseHandler):
                     )
                 message["content"] = new_content
                 del message["image_content"]
+
+            elif query_contains_audio_input(message):
+                message["content"] = [
+                    {
+                        "type": "input_audio",
+                        "input_audio": {
+                            "data": audio_to_base64(message["audio_content"]),
+                            "format": "mp3",
+                        },
+                    }
+                ]
+                del message["audio_content"]
+
             else:
                 message["content"] = [{"type": "text", "text": message["content"]}]
+
         inference_data["message"].extend(first_turn_message)
+
         return inference_data
 
     def _add_next_turn_user_message_FC(

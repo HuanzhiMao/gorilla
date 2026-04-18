@@ -24,8 +24,8 @@ class WriterHandler(OpenAICompletionsHandler):
         self.model_style = ModelStyle.WRITER
         self.client = Writer(api_key=os.getenv("WRITER_API_KEY"))
 
-    @override
     @retry_with_backoff(error_type=RateLimitError)
+    @override
     def generate_with_backoff(self, **kwargs):
         start_time = time.time()
         api_response = self.client.chat.chat(**kwargs)
