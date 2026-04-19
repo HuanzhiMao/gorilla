@@ -61,6 +61,9 @@ DEFAULT_STATE = {
     "businesses": {},
     "reviews": {},
     "saved_places": {},
+    "check_ins": [],
+    "collections": {},
+    "questions": {},
 }
 
 
@@ -87,6 +90,9 @@ class YelpAPI(PatchableMixin):
         self.businesses: Dict[str, Dict[str, Any]] = {}
         self.reviews: Dict[str, Dict[str, Any]] = {}
         self.saved_places: Dict[str, Dict[str, Any]] = {}
+        self.check_ins: List[Dict[str, Any]] = []
+        self.collections: Dict[str, Dict[str, Any]] = {}
+        self.questions: Dict[str, Dict[str, Any]] = {}
         self._api_description = (
             "This tool belongs to the Yelp API, which provides functionality "
             "for searching businesses, reading and writing reviews, and "
@@ -117,6 +123,9 @@ class YelpAPI(PatchableMixin):
         self.businesses = scenario.get("businesses", DEFAULT_STATE_COPY["businesses"])
         self.reviews = scenario.get("reviews", DEFAULT_STATE_COPY["reviews"])
         self.saved_places = scenario.get("saved_places", DEFAULT_STATE_COPY["saved_places"])
+        self.check_ins = scenario.get("check_ins", DEFAULT_STATE_COPY["check_ins"])
+        self.collections = scenario.get("collections", DEFAULT_STATE_COPY["collections"])
+        self.questions = scenario.get("questions", DEFAULT_STATE_COPY["questions"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -571,3 +580,321 @@ class YelpAPI(PatchableMixin):
             List[Dict[str, Any]]: Saved place objects with business_id and name.
         """
         return [deepcopy(s) for s in self.saved_places.values()]
+
+    # -----------------------------------------------------------------------
+    # Check-ins
+    # -----------------------------------------------------------------------
+
+    def check_in(self, business_id: str) -> Dict[str, Any]:
+        """
+        Check in at a business. Validates that the business exists.
+
+        Args:
+            business_id (str): The business to check in at.
+
+        Returns:
+            Dict[str, Any]:
+                business_id (str), business_name (str), timestamp (str),
+                status (str).
+        """
+        biz = self._require_business(business_id)
+        timestamp = _utc_now_iso()
+        self.check_ins.append({
+            "business_id": business_id,
+            "business_name": biz.get("name", ""),
+            "timestamp": timestamp,
+        })
+        biz["total_check_ins"] = biz.get("total_check_ins", 0) + 1
+        return {
+            "business_id": business_id,
+            "business_name": biz.get("name", ""),
+            "timestamp": timestamp,
+            "status": "checked_in",
+        }
+
+    def get_check_in_history(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """
+        Get the current user's check-in history, sorted newest first.
+
+        Args:
+            limit (int): Maximum number of check-ins to return. Defaults to 10.
+
+        Returns:
+            List[Dict[str, Any]]: Check-in objects with business_id,
+                business_name, and timestamp.
+        """
+        history = list(reversed(self.check_ins))
+        return deepcopy(history[:limit])
+
+    def get_check_in_count(self, business_id: str) -> Dict[str, Any]:
+        """
+        Get the total number of check-ins at a business by all users.
+
+        Args:
+            business_id (str): The business to get check-in count for.
+
+        Returns:
+            Dict[str, Any]:
+                business_id (str), total_check_ins (int).
+        """
+        biz = self._require_business(business_id)
+        return {
+            "business_id": business_id,
+            "total_check_ins": biz.get("total_check_ins", 0),
+        }
+
+    # -----------------------------------------------------------------------
+    # Collections (curated lists)
+    # -----------------------------------------------------------------------
+
+    def create_collection(
+        self, name: str, description: str = ""
+    ) -> Dict[str, Any]:
+        """
+        Create a new collection (curated list of businesses).
+
+        Args:
+            name (str): The name of the collection.
+            description (str, optional): A description for the collection.
+                Defaults to "".
+
+        Returns:
+            Dict[str, Any]:
+                collection_id (str), name (str), description (str),
+                status (str).
+        """
+        collection_id = self._new_id("collection")
+        self.collections[collection_id] = {
+            "collection_id": collection_id,
+            "name": name,
+            "description": description,
+            "businesses": [],
+            "created_at": _utc_now_iso(),
+        }
+        return {
+            "collection_id": collection_id,
+            "name": name,
+            "description": description,
+            "status": "created",
+        }
+
+    def add_to_collection(
+        self, collection_id: str, business_id: str, note: str = ""
+    ) -> Dict[str, Any]:
+        """
+        Add a business to a collection with an optional note.
+
+        Args:
+            collection_id (str): The collection to add the business to.
+            business_id (str): The business to add.
+            note (str, optional): A note about why this business is in the
+                collection. Defaults to "".
+
+        Returns:
+            Dict[str, Any]:
+                collection_id (str), business_id (str), status (str).
+        """
+        collection = self.collections.get(collection_id)
+        if not collection:
+            raise YelpError(
+                "COLLECTION_NOT_FOUND",
+                f"Collection '{collection_id}' not found.",
+                suggested_action="Use list_collections() to find valid collection IDs.",
+                context={"collection_id": collection_id},
+            )
+        biz = self._require_business(business_id)
+        for entry in collection["businesses"]:
+            if entry["business_id"] == business_id:
+                raise YelpError(
+                    "ALREADY_IN_COLLECTION",
+                    f"Business '{business_id}' is already in this collection.",
+                    suggested_action="Use remove_from_collection() first if you want to re-add.",
+                    context={
+                        "collection_id": collection_id,
+                        "business_id": business_id,
+                    },
+                )
+        collection["businesses"].append({
+            "business_id": business_id,
+            "business_name": biz.get("name", ""),
+            "note": note,
+            "added_at": _utc_now_iso(),
+        })
+        return {
+            "collection_id": collection_id,
+            "business_id": business_id,
+            "status": "added",
+        }
+
+    def remove_from_collection(
+        self, collection_id: str, business_id: str
+    ) -> Dict[str, Any]:
+        """
+        Remove a business from a collection.
+
+        Args:
+            collection_id (str): The collection to remove the business from.
+            business_id (str): The business to remove.
+
+        Returns:
+            Dict[str, Any]:
+                collection_id (str), business_id (str), status (str).
+        """
+        collection = self.collections.get(collection_id)
+        if not collection:
+            raise YelpError(
+                "COLLECTION_NOT_FOUND",
+                f"Collection '{collection_id}' not found.",
+                suggested_action="Use list_collections() to find valid collection IDs.",
+                context={"collection_id": collection_id},
+            )
+        for i, entry in enumerate(collection["businesses"]):
+            if entry["business_id"] == business_id:
+                collection["businesses"].pop(i)
+                return {
+                    "collection_id": collection_id,
+                    "business_id": business_id,
+                    "status": "removed",
+                }
+        raise YelpError(
+            "NOT_IN_COLLECTION",
+            f"Business '{business_id}' is not in this collection.",
+            suggested_action="Use get_collection() to see which businesses are in the collection.",
+            context={
+                "collection_id": collection_id,
+                "business_id": business_id,
+            },
+        )
+
+    def get_collection(self, collection_id: str) -> Dict[str, Any]:
+        """
+        View collection details including all businesses in the collection.
+
+        Args:
+            collection_id (str): The collection to view.
+
+        Returns:
+            Dict[str, Any]: Collection object with collection_id, name,
+                description, businesses list, and created_at.
+        """
+        collection = self.collections.get(collection_id)
+        if not collection:
+            raise YelpError(
+                "COLLECTION_NOT_FOUND",
+                f"Collection '{collection_id}' not found.",
+                suggested_action="Use list_collections() to find valid collection IDs.",
+                context={"collection_id": collection_id},
+            )
+        return deepcopy(collection)
+
+    def list_collections(self) -> List[Dict[str, Any]]:
+        """
+        List all user collections.
+
+        Returns:
+            List[Dict[str, Any]]: Collection summary objects with
+                collection_id, name, description, business_count, and
+                created_at.
+        """
+        results = []
+        for col in self.collections.values():
+            results.append({
+                "collection_id": col["collection_id"],
+                "name": col["name"],
+                "description": col["description"],
+                "business_count": len(col["businesses"]),
+                "created_at": col["created_at"],
+            })
+        return results
+
+    # -----------------------------------------------------------------------
+    # Business Q&A
+    # -----------------------------------------------------------------------
+
+    def ask_question(
+        self, business_id: str, question_text: str
+    ) -> Dict[str, Any]:
+        """
+        Post a question about a business.
+
+        Args:
+            business_id (str): The business to ask about.
+            question_text (str): The question text.
+
+        Returns:
+            Dict[str, Any]:
+                question_id (str), business_id (str), question_text (str),
+                status (str).
+        """
+        self._require_business(business_id)
+        question_id = self._new_id("question")
+        self.questions[question_id] = {
+            "question_id": question_id,
+            "business_id": business_id,
+            "question_text": question_text,
+            "author": self.profile.get("name", ""),
+            "answers": [],
+            "created_at": _utc_now_iso(),
+        }
+        return {
+            "question_id": question_id,
+            "business_id": business_id,
+            "question_text": question_text,
+            "status": "posted",
+        }
+
+    def answer_question(
+        self, question_id: str, answer_text: str
+    ) -> Dict[str, Any]:
+        """
+        Answer an existing question about a business.
+
+        Args:
+            question_id (str): The question to answer.
+            answer_text (str): The answer text.
+
+        Returns:
+            Dict[str, Any]:
+                question_id (str), answer_text (str), status (str).
+        """
+        question = self.questions.get(question_id)
+        if not question:
+            raise YelpError(
+                "QUESTION_NOT_FOUND",
+                f"Question '{question_id}' not found.",
+                suggested_action="Use get_questions() to find valid question IDs.",
+                context={"question_id": question_id},
+            )
+        question["answers"].append({
+            "answer_text": answer_text,
+            "author": self.profile.get("name", ""),
+            "created_at": _utc_now_iso(),
+        })
+        return {
+            "question_id": question_id,
+            "answer_text": answer_text,
+            "status": "answered",
+        }
+
+    def get_questions(
+        self, business_id: str, limit: int = 10
+    ) -> List[Dict[str, Any]]:
+        """
+        Get all questions and answers for a business.
+
+        Args:
+            business_id (str): The business to get questions for.
+            limit (int): Maximum number of questions to return. Defaults to 10.
+
+        Returns:
+            List[Dict[str, Any]]: Question objects with question_id,
+                business_id, question_text, author, answers list, and
+                created_at, sorted newest first.
+        """
+        self._require_business(business_id)
+        results = [
+            deepcopy(q) for q in self.questions.values()
+            if q.get("business_id") == business_id
+        ]
+        results.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        return results[:limit]

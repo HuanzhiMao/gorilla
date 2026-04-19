@@ -50,6 +50,10 @@ DEFAULT_STATE = {
     "drivers": {},
     "ride_types": {},
     "offers": {},
+    "scheduled_rides": {},
+    "wait_and_save": {},
+    "ride_challenges": [],
+    "ride_streak": {},
 }
 
 
@@ -77,12 +81,16 @@ class LyftAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = {"ride": 0}
+        self._id_counters = {"ride": 0, "scheduled_ride": 0, "ws_offer": 0}
         self.profile: Dict[str, Any]
         self.rides: Dict[str, Dict[str, Any]]
         self.drivers: Dict[str, Dict[str, Any]]
         self.ride_types: Dict[str, Dict[str, Any]]
         self.offers: Dict[str, Dict[str, Any]]
+        self.scheduled_rides: Dict[str, Dict[str, Any]]
+        self.wait_and_save: Dict[str, Dict[str, Any]]
+        self.ride_challenges: List[Dict[str, Any]]
+        self.ride_streak: Dict[str, Any]
         self._api_description = (
             "This tool belongs to the Lyft API, which provides "
             "ride-hailing with Prime Time pricing, Wait & Save, "
@@ -114,6 +122,10 @@ class LyftAPI(PatchableMixin):
         self.drivers = scenario.get("drivers", DEFAULT_STATE_COPY["drivers"])
         self.ride_types = scenario.get("ride_types", DEFAULT_STATE_COPY["ride_types"])
         self.offers = scenario.get("offers", DEFAULT_STATE_COPY["offers"])
+        self.scheduled_rides = scenario.get("scheduled_rides", DEFAULT_STATE_COPY["scheduled_rides"])
+        self.wait_and_save = scenario.get("wait_and_save", DEFAULT_STATE_COPY["wait_and_save"])
+        self.ride_challenges = scenario.get("ride_challenges", deepcopy(DEFAULT_STATE_COPY["ride_challenges"]))
+        self.ride_streak = scenario.get("ride_streak", deepcopy(DEFAULT_STATE_COPY["ride_streak"]))
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -561,3 +573,191 @@ class LyftAPI(PatchableMixin):
             List[Dict[str, Any]]: Offer objects that have not been used.
         """
         return [deepcopy(o) for o in self.offers.values() if not o.get("used")]
+
+    # ---- Scheduled Rides ----
+
+    def schedule_ride(
+        self, pickup: str, dropoff: str, ride_type: str,
+        scheduled_time: str,
+        payment_method_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Schedule a future ride.
+
+        Args:
+            pickup (str): Pickup address.
+            dropoff (str): Dropoff address.
+            ride_type (str): The ride type.
+            scheduled_time (str): ISO-8601 scheduled pickup time.
+            payment_method_id (str, optional): Payment method from profile.
+
+        Returns:
+            Dict[str, Any]: scheduled_ride_id, pickup, dropoff, ride_type,
+                scheduled_time, status.
+        """
+        self._require_ride_type(ride_type)
+        scheduled_ride_id = self._new_id("scheduled_ride")
+        now = _utc_now_iso()
+        self.scheduled_rides[scheduled_ride_id] = {
+            "scheduled_ride_id": scheduled_ride_id,
+            "pickup": pickup,
+            "dropoff": dropoff,
+            "ride_type": ride_type,
+            "scheduled_time": scheduled_time,
+            "payment_method_id": payment_method_id,
+            "status": "scheduled",
+            "created_at": now,
+        }
+        return deepcopy(self.scheduled_rides[scheduled_ride_id])
+
+    def list_scheduled_rides(
+        self, status: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        List scheduled rides, optionally filtered by status.
+
+        Args:
+            status (str, optional): Filter by status
+                (scheduled/cancelled/completed).
+
+        Returns:
+            List[Dict[str, Any]]: Scheduled ride objects sorted by
+                scheduled_time.
+        """
+        results = []
+        for r in self.scheduled_rides.values():
+            if status and r.get("status") != status:
+                continue
+            results.append(deepcopy(r))
+        results.sort(key=lambda x: x.get("scheduled_time", ""))
+        return results
+
+    def cancel_scheduled_ride(self, scheduled_ride_id: str) -> Dict[str, Any]:
+        """
+        Cancel a scheduled ride.
+
+        Args:
+            scheduled_ride_id (str): The scheduled ride to cancel.
+
+        Returns:
+            Dict[str, Any]: scheduled_ride_id, status "cancelled".
+        """
+        r = self.scheduled_rides.get(scheduled_ride_id)
+        if not r:
+            raise LyftError("SCHEDULED_RIDE_NOT_FOUND",
+                            f"Scheduled ride '{scheduled_ride_id}' not found.")
+        if r.get("status") == "cancelled":
+            raise LyftError("ALREADY_CANCELLED",
+                            "This scheduled ride is already cancelled.")
+        r["status"] = "cancelled"
+        return {"scheduled_ride_id": scheduled_ride_id, "status": "cancelled"}
+
+    # ---- Wait & Save ----
+
+    def get_wait_and_save_estimate(
+        self, pickup: str, dropoff: str,
+    ) -> Dict[str, Any]:
+        """
+        Get a Wait & Save fare estimate.
+
+        Args:
+            pickup (str): Pickup address.
+            dropoff (str): Dropoff address.
+
+        Returns:
+            Dict[str, Any]: pickup, dropoff, standard_fare,
+                discounted_fare, savings_amount, wait_time_minutes.
+        """
+        standard_fare = round(15.0 + self._rng.uniform(5, 25), 2)
+        savings_pct = 0.20
+        savings = round(standard_fare * savings_pct, 2)
+        discounted = round(standard_fare - savings, 2)
+        wait_time = self._rng.randint(5, 15)
+        offer_id = self._new_id("ws_offer")
+        self.wait_and_save[offer_id] = {
+            "offer_id": offer_id,
+            "pickup": pickup,
+            "dropoff": dropoff,
+            "standard_fare": standard_fare,
+            "discounted_fare": discounted,
+            "savings_amount": savings,
+            "wait_time_minutes": wait_time,
+        }
+        return deepcopy(self.wait_and_save[offer_id])
+
+    def request_wait_and_save_ride(
+        self, pickup: str, dropoff: str,
+        payment_method_id: Optional[str] = None,
+        offer_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Request a Wait & Save discounted ride.
+
+        Args:
+            pickup (str): Pickup address.
+            dropoff (str): Dropoff address.
+            payment_method_id (str, optional): Payment method from profile.
+            offer_id (str, optional): Offer ID from a previous estimate.
+
+        Returns:
+            Dict[str, Any]: ride_id, pickup, dropoff, fare,
+                wait_time_minutes, status.
+        """
+        if offer_id and offer_id in self.wait_and_save:
+            offer = self.wait_and_save[offer_id]
+            fare = offer.get("discounted_fare", 12.0)
+            wait_time = offer.get("wait_time_minutes", 10)
+        else:
+            fare = round(12.0 + self._rng.uniform(3, 18), 2)
+            wait_time = self._rng.randint(5, 15)
+
+        ride_id = self._new_id("ride")
+        now = _utc_now_iso()
+        self.rides[ride_id] = {
+            "ride_id": ride_id,
+            "pickup": {"address": pickup},
+            "dropoff": {"address": dropoff},
+            "ride_type": "Standard",
+            "status": "requesting",
+            "fare_total": fare,
+            "prime_time_pct": 0,
+            "wait_and_save": True,
+            "priority_pickup": False,
+            "driver_id": None,
+            "eta_pickup_min": wait_time,
+            "eta_dropoff_min": None,
+            "tip_amount": 0,
+            "rating": None,
+            "round_up_donation": 0,
+            "created_at": now,
+        }
+        return {
+            "ride_id": ride_id,
+            "pickup": pickup,
+            "dropoff": dropoff,
+            "fare": fare,
+            "wait_time_minutes": wait_time,
+            "status": "requesting",
+        }
+
+    # ---- Ride Challenges ----
+
+    def get_ride_challenges(self) -> List[Dict[str, Any]]:
+        """
+        Get active ride challenges with progress and rewards.
+
+        Returns:
+            List[Dict[str, Any]]: Challenge objects with challenge_id,
+                description, progress, target, reward.
+        """
+        return deepcopy(self.ride_challenges)
+
+    def get_ride_streak(self) -> Dict[str, Any]:
+        """
+        Get current and longest ride streak info.
+
+        Returns:
+            Dict[str, Any]: current_streak, longest_streak,
+                per_streak_reward, streak_status.
+        """
+        return deepcopy(self.ride_streak)

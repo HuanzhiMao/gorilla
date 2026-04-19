@@ -86,6 +86,8 @@ DEFAULT_STATE = {
     "drive_up_times": {},
     "delivery_windows": {},
     "registries": {},
+    "circle_earnings": [],
+    "birthday_offer": {},
 }
 
 
@@ -113,6 +115,8 @@ class TargetAPI(PatchableMixin):
         self.returns: Dict[str, Dict[str, Any]]
         self.reviews: Dict[str, Dict[str, Any]]
         self.registries: Dict[str, Dict[str, Any]]
+        self.circle_earnings: List[Dict[str, Any]]
+        self.birthday_offer: Dict[str, Any]
         self._api_description = (
             "This tool belongs to the Target shopping system, which allows users to "
             "search products, manage a shopping cart with multiple fulfillment options "
@@ -154,6 +158,8 @@ class TargetAPI(PatchableMixin):
         self.drive_up_times = scenario.get("drive_up_times", DEFAULT_STATE_COPY["drive_up_times"])
         self.delivery_windows = scenario.get("delivery_windows", DEFAULT_STATE_COPY["delivery_windows"])
         self.registries = scenario.get("registries", DEFAULT_STATE_COPY["registries"])
+        self.circle_earnings = scenario.get("circle_earnings", DEFAULT_STATE_COPY["circle_earnings"])
+        self.birthday_offer = scenario.get("birthday_offer", DEFAULT_STATE_COPY["birthday_offer"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -1760,3 +1766,345 @@ class TargetAPI(PatchableMixin):
             self.profile.setdefault("membership", {})["red_card"] = True
 
         return deepcopy(pm)
+
+    # -----------------------------------------------------------------------
+    # Gift Registry
+    # -----------------------------------------------------------------------
+
+    def create_gift_registry(
+        self,
+        name: str,
+        type: str,
+        event_date: Optional[str] = None,
+        co_registrant_name: Optional[str] = None,
+    ) -> str:
+        """
+        Create a new gift registry.
+
+        Args:
+            name (str): Name or title for the registry (e.g. "Sarah & John's
+                Wedding").
+            type (str): Registry type. One of "wedding", "baby", "birthday",
+                "housewarming".
+            event_date (str, optional): Date of the event in YYYY-MM-DD format.
+            co_registrant_name (str, optional): Name of the co-registrant (e.g.
+                partner's name for a wedding registry).
+
+        Returns:
+            str: The new registry_id.
+        """
+        user_id = self.user_id
+        valid_types = ("wedding", "baby", "birthday", "housewarming")
+        if type not in valid_types:
+            raise TargetError(
+                "INVALID_REGISTRY_TYPE",
+                f"Registry type '{type}' is not valid. Must be one of {valid_types}.",
+                suggested_action=f"Use one of: {', '.join(valid_types)}.",
+                context={"type": type},
+            )
+
+        registry_id = self._new_id("registry")
+        now = _utc_now_iso()
+        self.registries[registry_id] = {
+            "registry_id": registry_id,
+            "user_id": user_id,
+            "name": name,
+            "type": type,
+            "event_date": event_date,
+            "co_registrant_name": co_registrant_name,
+            "items": [],
+            "created_at": now,
+            "share_link": None,
+        }
+        return registry_id
+
+    def add_to_registry(
+        self,
+        registry_id: str,
+        product_id: str,
+        quantity_desired: int = 1,
+    ) -> Dict[str, Any]:
+        """
+        Add a product to a gift registry.
+
+        Args:
+            registry_id (str): The registry to add to.
+            product_id (str): The product to add.
+            quantity_desired (int): Number of this item desired. Defaults to 1.
+
+        Returns:
+            Dict[str, Any]: Updated registry object.
+        """
+        user_id = self.user_id
+        registry = self.registries.get(registry_id)
+        if not registry:
+            raise TargetError(
+                "REGISTRY_NOT_FOUND",
+                f"Registry '{registry_id}' not found.",
+                suggested_action="Use create_gift_registry() to create a registry first.",
+                context={"registry_id": registry_id},
+            )
+        if registry.get("user_id") != user_id:
+            raise TargetError(
+                "REGISTRY_ACCESS_DENIED",
+                "You do not own this registry.",
+                suggested_action="Use your own registry_id.",
+                context={"registry_id": registry_id},
+            )
+
+        self._require_product(product_id)
+
+        qty = int(quantity_desired)
+        if qty < 1:
+            raise TargetError(
+                "INVALID_QUANTITY",
+                "Quantity desired must be >= 1.",
+                suggested_action="Provide a quantity of at least 1.",
+                context={"quantity_desired": quantity_desired},
+            )
+
+        # Check for duplicates
+        for item in registry["items"]:
+            if item["product_id"] == product_id:
+                item["quantity_desired"] = qty
+                return deepcopy(registry)
+
+        registry["items"].append({
+            "product_id": product_id,
+            "quantity_desired": qty,
+            "quantity_fulfilled": 0,
+            "added_at": _utc_now_iso(),
+        })
+        return deepcopy(registry)
+
+    def get_registry(self, registry_id: str) -> Dict[str, Any]:
+        """
+        View a gift registry with fulfillment status for each item.
+
+        Args:
+            registry_id (str): The registry to view.
+
+        Returns:
+            Dict[str, Any]:
+                registry_id (str), name (str), type (str), event_date (str | None),
+                co_registrant_name (str | None), items (List[Dict] — each with
+                    product_id (str), quantity_desired (int),
+                    quantity_fulfilled (int), added_at (str)),
+                share_link (str | None), created_at (str).
+        """
+        registry = self.registries.get(registry_id)
+        if not registry:
+            raise TargetError(
+                "REGISTRY_NOT_FOUND",
+                f"Registry '{registry_id}' not found.",
+                suggested_action="Verify the registry_id.",
+                context={"registry_id": registry_id},
+            )
+        return deepcopy(registry)
+
+    def remove_from_registry(
+        self,
+        registry_id: str,
+        product_id: str,
+    ) -> Dict[str, Any]:
+        """
+        Remove a product from a gift registry.
+
+        Args:
+            registry_id (str): The registry to remove from.
+            product_id (str): The product to remove.
+
+        Returns:
+            Dict[str, Any]: Updated registry object.
+        """
+        user_id = self.user_id
+        registry = self.registries.get(registry_id)
+        if not registry:
+            raise TargetError(
+                "REGISTRY_NOT_FOUND",
+                f"Registry '{registry_id}' not found.",
+                suggested_action="Verify the registry_id.",
+                context={"registry_id": registry_id},
+            )
+        if registry.get("user_id") != user_id:
+            raise TargetError(
+                "REGISTRY_ACCESS_DENIED",
+                "You do not own this registry.",
+                suggested_action="Use your own registry_id.",
+                context={"registry_id": registry_id},
+            )
+
+        before = len(registry["items"])
+        registry["items"] = [
+            i for i in registry["items"] if i["product_id"] != product_id
+        ]
+        if len(registry["items"]) == before:
+            raise TargetError(
+                "ITEM_NOT_IN_REGISTRY",
+                f"Product '{product_id}' is not in registry '{registry_id}'.",
+                suggested_action="Call get_registry() to see current items.",
+                context={"registry_id": registry_id, "product_id": product_id},
+            )
+        return deepcopy(registry)
+
+    def share_registry(self, registry_id: str) -> Dict[str, Any]:
+        """
+        Generate a shareable link for a gift registry so others can view and
+        purchase items from it.
+
+        Args:
+            registry_id (str): The registry to share.
+
+        Returns:
+            Dict[str, Any]:
+                registry_id (str), share_link (str).
+        """
+        user_id = self.user_id
+        registry = self.registries.get(registry_id)
+        if not registry:
+            raise TargetError(
+                "REGISTRY_NOT_FOUND",
+                f"Registry '{registry_id}' not found.",
+                suggested_action="Verify the registry_id.",
+                context={"registry_id": registry_id},
+            )
+        if registry.get("user_id") != user_id:
+            raise TargetError(
+                "REGISTRY_ACCESS_DENIED",
+                "You do not own this registry.",
+                suggested_action="Use your own registry_id.",
+                context={"registry_id": registry_id},
+            )
+
+        share_link = f"https://www.target.com/gift-registry/share/{registry_id}"
+        registry["share_link"] = share_link
+        return {
+            "registry_id": registry_id,
+            "share_link": share_link,
+        }
+
+    # -----------------------------------------------------------------------
+    # Circle Earnings & Birthday
+    # -----------------------------------------------------------------------
+
+    def get_circle_earnings_history(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """
+        Retrieve past Circle earnings transactions for the current user,
+        showing how points were earned or spent.
+
+        Args:
+            limit (int): Maximum number of entries to return. Defaults to 10.
+
+        Returns:
+            List[Dict[str, Any]]: Earnings entries sorted newest first, each with:
+                date (str), description (str), points (int — positive for earned,
+                negative for redeemed), order_id (str | None).
+        """
+        user_id = self.user_id
+        results = [
+            deepcopy(e) for e in self.circle_earnings
+            if e.get("user_id") == user_id
+        ]
+        results.sort(key=lambda x: x.get("date", ""), reverse=True)
+        lim = max(1, int(limit))
+        return results[:lim]
+
+    def get_birthday_offer(self) -> Dict[str, Any]:
+        """
+        Check the current user's available birthday offer from Target Circle.
+
+        Returns:
+            Dict[str, Any]:
+                available (bool), discount_type (str | None — "percent" or "flat"),
+                discount_value (int | None — percent or cents),
+                valid_from (str | None), valid_until (str | None),
+                redeemed (bool).
+        """
+        user_id = self.user_id
+        offer = self.birthday_offer
+        if not offer or offer.get("user_id") != user_id:
+            return {
+                "available": False,
+                "discount_type": None,
+                "discount_value": None,
+                "valid_from": None,
+                "valid_until": None,
+                "redeemed": False,
+            }
+        return {
+            "available": True,
+            "discount_type": offer.get("discount_type", "percent"),
+            "discount_value": offer.get("discount_value", 5),
+            "valid_from": offer.get("valid_from"),
+            "valid_until": offer.get("valid_until"),
+            "redeemed": offer.get("redeemed", False),
+        }
+
+    def redeem_circle_points(
+        self,
+        points: int,
+        order_id: str,
+    ) -> Dict[str, Any]:
+        """
+        Redeem Target Circle points as payment toward an order. Points are
+        converted at 1 point = $0.01.
+
+        Args:
+            points (int): Number of points to redeem; must be >= 1.
+            order_id (str): The order to apply the points to.
+
+        Returns:
+            Dict[str, Any]:
+                redeemed (bool), points_used (int),
+                dollar_value (int, cents — equivalent dollar amount),
+                remaining_points (int).
+        """
+        user_id = self.user_id
+        order = self._require_order(order_id)
+        if order.get("user_id") != user_id:
+            raise TargetError(
+                "ORDER_ACCESS_DENIED",
+                "You do not own this order.",
+                suggested_action="Use get_order_details() with a valid order_id.",
+                context={"order_id": order_id},
+            )
+
+        pts = int(points)
+        if pts < 1:
+            raise TargetError(
+                "INVALID_POINTS",
+                "Points must be >= 1.",
+                suggested_action="Provide a positive number of points to redeem.",
+                context={"points": points},
+            )
+
+        membership = self.profile.get("membership", {})
+        available_points = int(membership.get("circle_points", 0))
+
+        if pts > available_points:
+            raise TargetError(
+                "INSUFFICIENT_POINTS",
+                f"You only have {available_points} points available.",
+                suggested_action=f"Redeem {available_points} or fewer points.",
+                context={"requested": pts, "available": available_points},
+            )
+
+        dollar_value = pts  # 1 point = $0.01
+        membership["circle_points"] = available_points - pts
+
+        # Record the earnings entry
+        now = _utc_now_iso()
+        self.circle_earnings.append({
+            "user_id": user_id,
+            "date": now,
+            "description": f"Redeemed {pts} points on order {order_id}",
+            "points": -pts,
+            "order_id": order_id,
+        })
+
+        return {
+            "redeemed": True,
+            "points_used": pts,
+            "dollar_value": dollar_value,
+            "remaining_points": available_points - pts,
+        }

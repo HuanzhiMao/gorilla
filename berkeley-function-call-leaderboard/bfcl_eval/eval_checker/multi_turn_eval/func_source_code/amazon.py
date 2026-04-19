@@ -80,6 +80,9 @@ DEFAULT_STATE = {
     "shipping_options": {},
     "sellers": {},
     "wishlists": {},
+    "subscriptions": {},
+    "price_alerts": {},
+    "price_history": {},
 }
 
 
@@ -95,7 +98,7 @@ class AmazonAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = { "order": 0, "return": 0, "review": 0, "wishlist": 0, "address": 0, "payment": 0, }
+        self._id_counters = { "order": 0, "return": 0, "review": 0, "wishlist": 0, "address": 0, "payment": 0, "subscription": 0, "alert": 0, }
         self.profile: Dict[str, Any]
         self.cart: Dict[str, Any]
         self.orders: Dict[str, Dict[str, Any]]
@@ -106,6 +109,9 @@ class AmazonAPI(PatchableMixin):
         self.shipping_options: Dict[str, Dict[str, Any]]
         self.sellers: Dict[str, Dict[str, Any]]
         self.wishlists: Dict[str, Dict[str, Any]]
+        self.subscriptions: Dict[str, Dict[str, Any]]
+        self.price_alerts: Dict[str, Dict[str, Any]]
+        self.price_history: Dict[str, List[Dict[str, Any]]]
         self._api_description = (
             "This tool belongs to the Amazon marketplace system, which allows users to "
             "search products from multiple sellers, manage carts and wish lists, select "
@@ -143,6 +149,9 @@ class AmazonAPI(PatchableMixin):
         self.shipping_options = scenario.get("shipping_options", DEFAULT_STATE_COPY["shipping_options"])
         self.sellers = scenario.get("sellers", DEFAULT_STATE_COPY["sellers"])
         self.wishlists = scenario.get("wishlists", DEFAULT_STATE_COPY["wishlists"])
+        self.subscriptions = scenario.get("subscriptions", DEFAULT_STATE_COPY["subscriptions"])
+        self.price_alerts = scenario.get("price_alerts", DEFAULT_STATE_COPY["price_alerts"])
+        self.price_history = scenario.get("price_history", DEFAULT_STATE_COPY["price_history"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -1515,3 +1524,330 @@ class AmazonAPI(PatchableMixin):
             "is_default": len(payment_methods) == 0,
         }
         return pm_id
+
+    # -----------------------------------------------------------------------
+    # Subscribe & Save
+    # -----------------------------------------------------------------------
+
+    def get_subscribe_save_options(self, product_id: str) -> Dict[str, Any]:
+        """
+        Retrieve Subscribe & Save options for a product, including available
+        subscription frequencies and corresponding discount percentages.
+
+        Args:
+            product_id (str): The product to get subscription options for.
+
+        Returns:
+            Dict[str, Any]:
+                product_id (str), available (bool),
+                frequencies (List[Dict] — each with frequency (str) and
+                    discount_percent (float)),
+                base_price (int, cents — Buy Box price before discount).
+        """
+        product = self._require_product(product_id)
+        bb = self._get_buy_box_offer(product_id)
+        base_price = int(bb["price"]) if bb else 0
+
+        # Check product-level subscribe_save flag
+        if not product.get("subscribe_save", False):
+            return {
+                "product_id": product_id,
+                "available": False,
+                "frequencies": [],
+                "base_price": base_price,
+            }
+
+        frequencies = [
+            {"frequency": "monthly", "discount_percent": 5.0},
+            {"frequency": "biweekly", "discount_percent": 5.0},
+            {"frequency": "quarterly", "discount_percent": 10.0},
+        ]
+        return {
+            "product_id": product_id,
+            "available": True,
+            "frequencies": frequencies,
+            "base_price": base_price,
+        }
+
+    def create_subscription(
+        self,
+        product_id: str,
+        frequency: str,
+        quantity: int = 1,
+        address_id: Optional[str] = None,
+        payment_method_id: Optional[str] = None,
+    ) -> str:
+        """
+        Start a recurring Subscribe & Save delivery for a product.
+
+        Args:
+            product_id (str): The product to subscribe to.
+            frequency (str): Delivery cadence. One of "monthly", "biweekly",
+                or "quarterly".
+            quantity (int): Number of units per delivery; must be >= 1.
+                Defaults to 1.
+            address_id (str, optional): Shipping address for deliveries.
+                Defaults to the user's default address.
+            payment_method_id (str, optional): Payment method to charge.
+                Defaults to the user's default payment method.
+
+        Returns:
+            str: The new subscription_id.
+        """
+        user_id = self.user_id
+        product = self._require_product(product_id)
+
+        if not product.get("subscribe_save", False):
+            raise AmazonError(
+                "SUBSCRIBE_SAVE_NOT_AVAILABLE",
+                f"Product '{product_id}' is not eligible for Subscribe & Save.",
+                suggested_action="Use get_subscribe_save_options() to check eligibility.",
+                context={"product_id": product_id},
+            )
+
+        valid_frequencies = ("monthly", "biweekly", "quarterly")
+        if frequency not in valid_frequencies:
+            raise AmazonError(
+                "INVALID_FREQUENCY",
+                f"Frequency '{frequency}' is not valid. Must be one of {valid_frequencies}.",
+                suggested_action=f"Use one of: {', '.join(valid_frequencies)}.",
+                context={"frequency": frequency},
+            )
+
+        qty = int(quantity)
+        if qty < 1:
+            raise AmazonError(
+                "INVALID_QUANTITY",
+                "Quantity must be >= 1.",
+                suggested_action="Provide a quantity of at least 1.",
+                context={"quantity": quantity},
+            )
+
+        # Resolve address
+        if not address_id:
+            for addr in self.profile.get("addresses", {}).values():
+                if addr.get("is_default"):
+                    address_id = addr["address_id"]
+                    break
+        if address_id and address_id not in self.profile.get("addresses", {}):
+            raise AmazonError(
+                "ADDRESS_NOT_FOUND",
+                f"Address '{address_id}' not found.",
+                suggested_action="Call list_addresses() to get valid address IDs.",
+                context={"address_id": address_id},
+            )
+
+        # Resolve payment method
+        if not payment_method_id:
+            for pm in self.profile.get("payment_methods", {}).values():
+                if pm.get("is_default"):
+                    payment_method_id = pm["payment_method_id"]
+                    break
+        if payment_method_id and payment_method_id not in self.profile.get("payment_methods", {}):
+            raise AmazonError(
+                "PAYMENT_METHOD_NOT_FOUND",
+                f"Payment method '{payment_method_id}' not found.",
+                suggested_action="Call list_payment_methods() to get valid method IDs.",
+                context={"payment_method_id": payment_method_id},
+            )
+
+        # Compute discounted price
+        bb = self._get_buy_box_offer(product_id)
+        base_price = int(bb["price"]) if bb else 0
+        discount_map = {"monthly": 5.0, "biweekly": 5.0, "quarterly": 10.0}
+        discount_pct = discount_map.get(frequency, 5.0)
+        discounted_price = int(round(base_price * (1.0 - discount_pct / 100.0)))
+
+        subscription_id = self._new_id("subscription")
+        now = _utc_now_iso()
+        self.subscriptions[subscription_id] = {
+            "subscription_id": subscription_id,
+            "product_id": product_id,
+            "user_id": user_id,
+            "frequency": frequency,
+            "quantity": qty,
+            "address_id": address_id,
+            "payment_method_id": payment_method_id,
+            "status": "active",
+            "base_price": base_price,
+            "discounted_price": discounted_price,
+            "discount_percent": discount_pct,
+            "created_at": now,
+            "next_delivery_at": now,
+        }
+        return subscription_id
+
+    def list_subscriptions(self) -> List[Dict[str, Any]]:
+        """
+        List all active Subscribe & Save subscriptions for the current user.
+
+        Returns:
+            List[Dict[str, Any]]: Subscriptions, each with:
+                subscription_id (str), product_id (str), frequency (str),
+                quantity (int), status (str), base_price (int, cents),
+                discounted_price (int, cents), discount_percent (float),
+                next_delivery_at (str).
+        """
+        user_id = self.user_id
+        results = []
+        for sub in self.subscriptions.values():
+            if sub.get("user_id") == user_id:
+                results.append(deepcopy(sub))
+        return results
+
+    def cancel_subscription(self, subscription_id: str) -> Dict[str, Any]:
+        """
+        Cancel an active Subscribe & Save subscription.
+
+        Args:
+            subscription_id (str): The subscription to cancel.
+
+        Returns:
+            Dict[str, Any]:
+                subscription_id (str), canceled (bool), status (str).
+        """
+        user_id = self.user_id
+        sub = self.subscriptions.get(subscription_id)
+        if not sub:
+            raise AmazonError(
+                "SUBSCRIPTION_NOT_FOUND",
+                f"Subscription '{subscription_id}' not found.",
+                suggested_action="Use list_subscriptions() to find valid subscription IDs.",
+                context={"subscription_id": subscription_id},
+            )
+        if sub.get("user_id") != user_id:
+            raise AmazonError(
+                "SUBSCRIPTION_ACCESS_DENIED",
+                "You do not own this subscription.",
+                suggested_action="Use list_subscriptions() to see your subscriptions.",
+                context={"subscription_id": subscription_id},
+            )
+        if sub.get("status") == "canceled":
+            return {
+                "subscription_id": subscription_id,
+                "canceled": False,
+                "status": "canceled",
+            }
+        sub["status"] = "canceled"
+        sub["canceled_at"] = _utc_now_iso()
+        return {
+            "subscription_id": subscription_id,
+            "canceled": True,
+            "status": "canceled",
+        }
+
+    # -----------------------------------------------------------------------
+    # Price Tracking
+    # -----------------------------------------------------------------------
+
+    def set_price_alert(
+        self,
+        product_id: str,
+        target_price: int,
+    ) -> str:
+        """
+        Set a price alert for a product. You will be notified when the Buy Box
+        price drops to or below the target price.
+
+        Args:
+            product_id (str): The product to track.
+            target_price (int): Target price in cents. Alert triggers when the
+                Buy Box price is at or below this value.
+
+        Returns:
+            str: The new alert_id.
+        """
+        user_id = self.user_id
+        self._require_product(product_id)
+        tp = int(target_price)
+        if tp < 0:
+            raise AmazonError(
+                "INVALID_PRICE",
+                "Target price must be >= 0.",
+                suggested_action="Provide a non-negative target price in cents.",
+                context={"target_price": target_price},
+            )
+
+        alert_id = self._new_id("alert")
+        bb = self._get_buy_box_offer(product_id)
+        current_price = int(bb["price"]) if bb else None
+
+        self.price_alerts[alert_id] = {
+            "alert_id": alert_id,
+            "product_id": product_id,
+            "user_id": user_id,
+            "target_price": tp,
+            "current_price": current_price,
+            "triggered": current_price is not None and current_price <= tp,
+            "created_at": _utc_now_iso(),
+        }
+        return alert_id
+
+    def list_price_alerts(self) -> List[Dict[str, Any]]:
+        """
+        List all price alerts for the current user, including current Buy Box
+        prices and whether the alert has been triggered.
+
+        Returns:
+            List[Dict[str, Any]]: Alerts, each with:
+                alert_id (str), product_id (str), target_price (int, cents),
+                current_price (int | None, cents), triggered (bool),
+                created_at (str).
+        """
+        user_id = self.user_id
+        results = []
+        for alert in self.price_alerts.values():
+            if alert.get("user_id") == user_id:
+                # Refresh current price
+                bb = self._get_buy_box_offer(alert["product_id"])
+                current_price = int(bb["price"]) if bb else None
+                alert["current_price"] = current_price
+                alert["triggered"] = current_price is not None and current_price <= alert["target_price"]
+                results.append(deepcopy(alert))
+        return results
+
+    def remove_price_alert(self, alert_id: str) -> Dict[str, Any]:
+        """
+        Remove a price alert.
+
+        Args:
+            alert_id (str): The alert to remove.
+
+        Returns:
+            Dict[str, Any]:
+                alert_id (str), removed (bool).
+        """
+        user_id = self.user_id
+        alert = self.price_alerts.get(alert_id)
+        if not alert:
+            raise AmazonError(
+                "ALERT_NOT_FOUND",
+                f"Price alert '{alert_id}' not found.",
+                suggested_action="Use list_price_alerts() to find valid alert IDs.",
+                context={"alert_id": alert_id},
+            )
+        if alert.get("user_id") != user_id:
+            raise AmazonError(
+                "ALERT_ACCESS_DENIED",
+                "You do not own this price alert.",
+                suggested_action="Use list_price_alerts() to see your alerts.",
+                context={"alert_id": alert_id},
+            )
+        del self.price_alerts[alert_id]
+        return {"alert_id": alert_id, "removed": True}
+
+    def get_price_history(self, product_id: str) -> List[Dict[str, Any]]:
+        """
+        Retrieve the price history for a product, showing how the Buy Box price
+        has changed over time.
+
+        Args:
+            product_id (str): The product to get price history for.
+
+        Returns:
+            List[Dict[str, Any]]: Price history entries sorted newest first,
+                each with: date (str), price (int, cents).
+        """
+        self._require_product(product_id)
+        history = self.price_history.get(product_id, [])
+        return deepcopy(sorted(history, key=lambda x: x.get("date", ""), reverse=True))

@@ -73,6 +73,8 @@ DEFAULT_STATE = {
     "room_resources": [],
     "categories": [],
     "working_hours": {},
+    "scheduling_polls": {},
+    "rooms": {},
 }
 
 
@@ -102,13 +104,15 @@ class OutlookCalendarAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = {"calendar": 0, "event": 0}
+        self._id_counters = {"calendar": 0, "event": 0, "poll": 0}
         self.profile: Dict[str, Any]
         self.calendars: Dict[str, Dict[str, Any]]
         self.events: Dict[str, Dict[str, Any]]
         self.room_resources: List[Dict[str, Any]]
         self.categories: List[Dict[str, Any]]
         self.working_hours: Dict[str, Any]
+        self.scheduling_polls: Dict[str, Dict[str, Any]]
+        self.rooms: Dict[str, Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Outlook Calendar API, which provides "
             "event scheduling, calendar management, attendee coordination, "
@@ -143,6 +147,8 @@ class OutlookCalendarAPI(PatchableMixin):
         self.room_resources = scenario.get("room_resources", DEFAULT_STATE_COPY["room_resources"])
         self.categories = scenario.get("categories", DEFAULT_STATE_COPY["categories"])
         self.working_hours = scenario.get("working_hours", DEFAULT_STATE_COPY["working_hours"])
+        self.scheduling_polls = scenario.get("scheduling_polls", DEFAULT_STATE_COPY["scheduling_polls"])
+        self.rooms = scenario.get("rooms", DEFAULT_STATE_COPY["rooms"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -724,3 +730,327 @@ class OutlookCalendarAPI(PatchableMixin):
             List[Dict[str, Any]]: Categories with name and color.
         """
         return deepcopy(self.categories)
+
+    # -----------------------------------------------------------------------
+    # Scheduling Poll / FindTime (Outlook-exclusive)
+    # -----------------------------------------------------------------------
+
+    def create_scheduling_poll(
+        self,
+        title: str,
+        proposed_times: List[Dict[str, str]],
+        attendees: List[str],
+        duration_minutes: int,
+        location: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create a scheduling poll (FindTime).  Propose multiple time slots
+        and let attendees vote on their preferred times.
+
+        Args:
+            title (str): Title of the meeting to schedule.
+            proposed_times (List[Dict[str, str]]): Proposed time options, each
+                with start_time (str) and end_time (str) in ISO-8601.
+            attendees (List[str]): List of attendee email addresses.
+            duration_minutes (int): Duration of the meeting in minutes.
+            location (str, optional): Meeting location.
+
+        Returns:
+            Dict[str, Any]: Poll object with poll_id, title, status, slots,
+                attendees, location, duration_minutes, created_at.
+        """
+        if not title:
+            raise OutlookCalendarError("EMPTY_TITLE", "Poll title cannot be empty.")
+        if not proposed_times:
+            raise OutlookCalendarError("NO_PROPOSED_TIMES",
+                                        "At least one proposed time is required.")
+        if not attendees:
+            raise OutlookCalendarError("NO_ATTENDEES",
+                                        "At least one attendee is required.")
+
+        poll_id = self._new_id("poll")
+        slots = []
+        for i, pt in enumerate(proposed_times):
+            slots.append({
+                "slot_id": f"{poll_id}_slot_{i + 1}",
+                "start_time": pt.get("start_time", ""),
+                "end_time": pt.get("end_time", ""),
+                "votes": [],
+            })
+
+        poll = {
+            "poll_id": poll_id,
+            "title": title,
+            "status": "open",
+            "slots": slots,
+            "attendees": attendees,
+            "location": location,
+            "duration_minutes": duration_minutes,
+            "created_at": _utc_now_iso(),
+        }
+        self.scheduling_polls[poll_id] = poll
+        return deepcopy(poll)
+
+    def get_scheduling_poll(self, poll_id: str) -> Dict[str, Any]:
+        """
+        View a scheduling poll with responses and the current leading time.
+
+        Args:
+            poll_id (str): The poll to retrieve.
+
+        Returns:
+            Dict[str, Any]: Poll object with poll_id, title, status, slots
+                (each with votes), attendees, location, duration_minutes,
+                leading_slot, created_at.
+        """
+        poll = self.scheduling_polls.get(poll_id)
+        if not poll:
+            raise OutlookCalendarError("POLL_NOT_FOUND",
+                                        f"Scheduling poll '{poll_id}' not found.",
+                                        suggested_action="Use create_scheduling_poll().")
+
+        result = deepcopy(poll)
+
+        # Determine leading slot (most "yes" votes)
+        best_slot = None
+        best_yes = -1
+        for slot in result.get("slots", []):
+            yes_count = sum(1 for v in slot.get("votes", []) if v.get("response") == "yes")
+            if yes_count > best_yes:
+                best_yes = yes_count
+                best_slot = slot.get("slot_id")
+        result["leading_slot"] = best_slot
+        return result
+
+    def vote_on_poll(
+        self,
+        poll_id: str,
+        votes: List[Dict[str, str]],
+    ) -> Dict[str, Any]:
+        """
+        Cast votes on a scheduling poll.
+
+        Args:
+            poll_id (str): The poll to vote on.
+            votes (List[Dict[str, str]]): List of votes, each with slot_id
+                (str) and response (str — "yes", "maybe", or "no").
+
+        Returns:
+            Dict[str, Any]: poll_id, votes_cast (int), status "voted".
+        """
+        poll = self.scheduling_polls.get(poll_id)
+        if not poll:
+            raise OutlookCalendarError("POLL_NOT_FOUND",
+                                        f"Scheduling poll '{poll_id}' not found.")
+        if poll.get("status") != "open":
+            raise OutlookCalendarError("POLL_CLOSED",
+                                        "This poll is no longer open for voting.")
+
+        voter_email = self.profile.get("email", "")
+        slot_map = {s["slot_id"]: s for s in poll.get("slots", [])}
+        votes_cast = 0
+
+        for vote in votes:
+            sid = vote.get("slot_id", "")
+            response = vote.get("response", "")
+            if response not in ("yes", "maybe", "no"):
+                raise OutlookCalendarError("INVALID_VOTE",
+                                            f"Vote response must be 'yes', 'maybe', or 'no', got '{response}'.")
+            slot = slot_map.get(sid)
+            if not slot:
+                raise OutlookCalendarError("SLOT_NOT_FOUND",
+                                            f"Slot '{sid}' not found in poll '{poll_id}'.")
+            # Remove any previous vote from this voter
+            slot["votes"] = [v for v in slot.get("votes", []) if v.get("email") != voter_email]
+            slot["votes"].append({"email": voter_email, "response": response})
+            votes_cast += 1
+
+        return {"poll_id": poll_id, "votes_cast": votes_cast, "status": "voted"}
+
+    def finalize_poll(self, poll_id: str) -> Dict[str, Any]:
+        """
+        Finalize a scheduling poll.  Picks the winning time slot (most "yes"
+        votes) and creates a calendar event.
+
+        Args:
+            poll_id (str): The poll to finalize.
+
+        Returns:
+            Dict[str, Any]: poll_id, event_id, winning_slot, status
+                "finalized".
+        """
+        poll = self.scheduling_polls.get(poll_id)
+        if not poll:
+            raise OutlookCalendarError("POLL_NOT_FOUND",
+                                        f"Scheduling poll '{poll_id}' not found.")
+        if poll.get("status") != "open":
+            raise OutlookCalendarError("POLL_ALREADY_FINALIZED",
+                                        "This poll has already been finalized.")
+
+        # Find slot with most "yes" votes
+        best_slot = None
+        best_yes = -1
+        for slot in poll.get("slots", []):
+            yes_count = sum(1 for v in slot.get("votes", []) if v.get("response") == "yes")
+            if yes_count > best_yes:
+                best_yes = yes_count
+                best_slot = slot
+
+        if not best_slot:
+            raise OutlookCalendarError("NO_SLOTS", "Poll has no slots to finalize.")
+
+        # Find the primary calendar
+        primary_cal = None
+        for cal in self.calendars.values():
+            if cal.get("is_primary"):
+                primary_cal = cal["calendar_id"]
+                break
+        if not primary_cal:
+            primary_cal = next(iter(self.calendars), None)
+        if not primary_cal:
+            raise OutlookCalendarError("NO_CALENDAR",
+                                        "No calendar available to create the event.")
+
+        attendee_list = [{"email": e} for e in poll.get("attendees", [])]
+        event = self.schedule_event(
+            calendar_id=primary_cal,
+            title=poll["title"],
+            start_time=best_slot["start_time"],
+            end_time=best_slot["end_time"],
+            location=poll.get("location"),
+            attendees=attendee_list,
+        )
+
+        poll["status"] = "finalized"
+        poll["winning_slot"] = best_slot["slot_id"]
+        poll["event_id"] = event["event_id"]
+
+        return {
+            "poll_id": poll_id,
+            "event_id": event["event_id"],
+            "winning_slot": best_slot["slot_id"],
+            "status": "finalized",
+        }
+
+    # -----------------------------------------------------------------------
+    # Room & Resource Booking (Outlook-exclusive, new)
+    # -----------------------------------------------------------------------
+
+    def list_rooms(self, building: Optional[str] = None) -> List[Dict[str, Any]]:
+        """
+        List available meeting rooms with capacity and equipment.
+
+        Args:
+            building (str, optional): Filter rooms by building name.
+
+        Returns:
+            List[Dict[str, Any]]: Room objects with room_id, name, capacity,
+                building, floor, equipment.
+        """
+        results = []
+        for room in self.rooms.values():
+            if building and room.get("building", "") != building:
+                continue
+            results.append(deepcopy(room))
+        return results
+
+    def check_room_availability(
+        self,
+        room_id: str,
+        start_time: str,
+        end_time: str,
+    ) -> Dict[str, Any]:
+        """
+        Check if a meeting room is available during a time range.
+
+        Args:
+            room_id (str): The room to check.
+            start_time (str): Start of range (ISO-8601).
+            end_time (str): End of range (ISO-8601).
+
+        Returns:
+            Dict[str, Any]: room_id, available (bool), conflicting_events
+                (List of event_ids if busy).
+        """
+        room = self.rooms.get(room_id)
+        if not room:
+            raise OutlookCalendarError("ROOM_NOT_FOUND",
+                                        f"Room '{room_id}' not found.",
+                                        suggested_action="Use list_rooms().")
+
+        conflicts = []
+        for ev in self.events.values():
+            if ev.get("status") == "cancelled":
+                continue
+            if ev.get("room_id") != room_id:
+                continue
+            if ev.get("end_time", "") <= start_time:
+                continue
+            if ev.get("start_time", "") >= end_time:
+                continue
+            conflicts.append(ev["event_id"])
+
+        return {
+            "room_id": room_id,
+            "available": len(conflicts) == 0,
+            "conflicting_events": conflicts,
+        }
+
+    def book_room(self, event_id: str, room_id: str) -> Dict[str, Any]:
+        """
+        Attach a room reservation to an existing event.  Validates the room
+        is free during the event's time range.
+
+        Args:
+            event_id (str): The event to attach the room to.
+            room_id (str): The room to book.
+
+        Returns:
+            Dict[str, Any]: room_id, event_id, room_name, status "booked".
+        """
+        ev = self._require_event(event_id)
+        room = self.rooms.get(room_id)
+        if not room:
+            raise OutlookCalendarError("ROOM_NOT_FOUND",
+                                        f"Room '{room_id}' not found.",
+                                        suggested_action="Use list_rooms().")
+
+        # Check availability
+        avail = self.check_room_availability(
+            room_id, ev.get("start_time", ""), ev.get("end_time", ""))
+        # Exclude current event from conflict check
+        conflicts = [c for c in avail.get("conflicting_events", []) if c != event_id]
+        if conflicts:
+            raise OutlookCalendarError("ROOM_BUSY",
+                                        f"Room '{room_id}' is not available during this time.",
+                                        context={"conflicting_events": conflicts})
+
+        ev["location"] = room.get("name", room_id)
+        ev["room_id"] = room_id
+        ev["updated_at"] = _utc_now_iso()
+        return {
+            "room_id": room_id,
+            "event_id": event_id,
+            "room_name": room.get("name"),
+            "status": "booked",
+        }
+
+    def release_room(self, event_id: str) -> Dict[str, Any]:
+        """
+        Release a room booking from an event.
+
+        Args:
+            event_id (str): The event to release the room from.
+
+        Returns:
+            Dict[str, Any]: event_id, room_id, status "released".
+        """
+        ev = self._require_event(event_id)
+        room_id = ev.get("room_id")
+        if not room_id:
+            raise OutlookCalendarError("NO_ROOM_BOOKED",
+                                        f"Event '{event_id}' does not have a room booking.")
+        ev.pop("room_id", None)
+        ev["location"] = None
+        ev["updated_at"] = _utc_now_iso()
+        return {"event_id": event_id, "room_id": room_id, "status": "released"}

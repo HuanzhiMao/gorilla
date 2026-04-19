@@ -45,6 +45,8 @@ DEFAULT_STATE = {
     "properties": {},
     "room_types": {},
     "bookings": {},
+    "genius_status": {},
+    "price_alerts": {},
 }
 
 
@@ -76,11 +78,13 @@ class BookingAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = {"booking": 0}
+        self._id_counters = {"booking": 0, "alert": 0}
         self.profile: Dict[str, Any]
         self.properties: Dict[str, Dict[str, Any]]
         self.room_types: Dict[str, Dict[str, Any]]
         self.bookings: Dict[str, Dict[str, Any]]
+        self.genius_status: Dict[str, Any]
+        self.price_alerts: Dict[str, Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Booking.com API, which provides "
             "accommodation search and booking, property details, room "
@@ -111,6 +115,8 @@ class BookingAPI(PatchableMixin):
         self.properties = scenario.get("properties", DEFAULT_STATE_COPY["properties"])
         self.room_types = scenario.get("room_types", DEFAULT_STATE_COPY["room_types"])
         self.bookings = scenario.get("bookings", DEFAULT_STATE_COPY["bookings"])
+        self.genius_status = scenario.get("genius_status", DEFAULT_STATE_COPY["genius_status"])
+        self.price_alerts = scenario.get("price_alerts", DEFAULT_STATE_COPY["price_alerts"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -430,3 +436,188 @@ class BookingAPI(PatchableMixin):
             b["special_requests"] = special_requests
         b["updated_at"] = _utc_now_iso()
         return deepcopy(b)
+
+    # ---- Genius Loyalty ----
+
+    def get_genius_status(self) -> Dict[str, Any]:
+        """
+        Get the user's Genius loyalty status.
+
+        Returns:
+            Dict[str, Any]: level, lifetime_bookings, perks,
+                bookings_to_next_level.
+        """
+        status = deepcopy(self.genius_status)
+        level = status.get("level", 1)
+        lifetime = status.get("lifetime_bookings", 0)
+        perks = status.get("perks", [])
+        if level < 3:
+            thresholds = {1: 5, 2: 15}
+            needed = thresholds.get(level, 0) - lifetime
+            needed = max(0, needed)
+        else:
+            needed = 0
+        status["bookings_to_next_level"] = needed
+        return status
+
+    def get_genius_deals(
+        self, city: Optional[str] = None,
+        check_in: Optional[str] = None,
+        check_out: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Get Genius-exclusive discounted properties.
+
+        Args:
+            city (str, optional): Filter by city.
+            check_in (str, optional): Check-in date (ISO date).
+            check_out (str, optional): Check-out date (ISO date).
+
+        Returns:
+            List[Dict[str, Any]]: Properties with genius_discount_percent
+                and discounted prices.
+        """
+        level = self.genius_status.get("level", 1)
+        results = []
+        for prop in self.properties.values():
+            discount = prop.get("genius_discount_percent", 0)
+            if discount <= 0:
+                continue
+            if city:
+                loc = prop.get("location", {})
+                if not _matches_query(loc.get("city", ""), city):
+                    continue
+            r = deepcopy(prop)
+            r["genius_discount_percent"] = discount
+            r["genius_level_required"] = 1 if discount <= 10 else (2 if discount <= 15 else 3)
+            if level >= r["genius_level_required"]:
+                r["eligible"] = True
+            else:
+                r["eligible"] = False
+            results.append(r)
+        return results
+
+    def apply_genius_discount(self, booking_id: str) -> Dict[str, Any]:
+        """
+        Apply Genius discount to an eligible booking.
+
+        Args:
+            booking_id (str): The booking to apply the discount to.
+
+        Returns:
+            Dict[str, Any]: booking_id, original_price, discounted_price,
+                discount_percent, status.
+        """
+        b = self._require_booking(booking_id)
+        if b.get("booking_status") != "confirmed":
+            raise BookingError("CANNOT_APPLY_DISCOUNT",
+                               "Can only apply Genius discount to confirmed bookings.")
+        if b.get("genius_discount_applied"):
+            raise BookingError("DISCOUNT_ALREADY_APPLIED",
+                               "Genius discount already applied to this booking.")
+        prop = self.properties.get(b.get("property_id", ""), {})
+        discount_pct = prop.get("genius_discount_percent", 0)
+        if discount_pct <= 0:
+            raise BookingError("NO_GENIUS_DISCOUNT",
+                               "This property does not offer a Genius discount.")
+        level = self.genius_status.get("level", 1)
+        required_level = 1 if discount_pct <= 10 else (2 if discount_pct <= 15 else 3)
+        if level < required_level:
+            raise BookingError("GENIUS_LEVEL_TOO_LOW",
+                               f"Genius Level {required_level} required for this discount.",
+                               context={"current_level": level, "required_level": required_level})
+        original = b.get("total_price", 0)
+        discount_amount = round(original * discount_pct / 100, 2)
+        new_price = round(original - discount_amount, 2)
+        b["total_price"] = new_price
+        b["genius_discount_applied"] = True
+        b["updated_at"] = _utc_now_iso()
+        return {
+            "booking_id": booking_id,
+            "original_price": original,
+            "discounted_price": new_price,
+            "discount_percent": discount_pct,
+            "status": "discount_applied",
+        }
+
+    # ---- Price Alerts ----
+
+    def set_price_alert(
+        self, property_id: str, check_in: str, check_out: str,
+        target_price: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """
+        Set a price alert for a property.
+
+        Args:
+            property_id (str): The property to monitor.
+            check_in (str): Check-in date (ISO date).
+            check_out (str): Check-out date (ISO date).
+            target_price (float, optional): Target price threshold.
+
+        Returns:
+            Dict[str, Any]: alert_id, property_id, check_in, check_out,
+                target_price, status.
+        """
+        self._require_property(property_id)
+        alert_id = self._new_id("alert")
+        now = _utc_now_iso()
+        # Compute current cheapest price
+        cheapest = None
+        for rt in self.room_types.values():
+            if rt.get("property_id") != property_id:
+                continue
+            price = rt.get("base_price_per_night", 0)
+            if cheapest is None or price < cheapest:
+                cheapest = price
+        self.price_alerts[alert_id] = {
+            "alert_id": alert_id,
+            "property_id": property_id,
+            "check_in": check_in,
+            "check_out": check_out,
+            "target_price": target_price,
+            "current_price": cheapest,
+            "status": "active",
+            "created_at": now,
+        }
+        return deepcopy(self.price_alerts[alert_id])
+
+    def list_price_alerts(self) -> List[Dict[str, Any]]:
+        """
+        List active price alerts with current prices.
+
+        Returns:
+            List[Dict[str, Any]]: Active alert objects with current_price.
+        """
+        results = []
+        for alert in self.price_alerts.values():
+            if alert.get("status") != "active":
+                continue
+            a = deepcopy(alert)
+            # Update current price
+            cheapest = None
+            for rt in self.room_types.values():
+                if rt.get("property_id") != alert.get("property_id"):
+                    continue
+                price = rt.get("base_price_per_night", 0)
+                if cheapest is None or price < cheapest:
+                    cheapest = price
+            a["current_price"] = cheapest
+            results.append(a)
+        return results
+
+    def remove_price_alert(self, alert_id: str) -> Dict[str, Any]:
+        """
+        Remove a price alert.
+
+        Args:
+            alert_id (str): The alert to remove.
+
+        Returns:
+            Dict[str, Any]: alert_id, status "removed".
+        """
+        alert = self.price_alerts.get(alert_id)
+        if not alert:
+            raise BookingError("ALERT_NOT_FOUND", f"Price alert '{alert_id}' not found.")
+        alert["status"] = "removed"
+        return {"alert_id": alert_id, "status": "removed"}

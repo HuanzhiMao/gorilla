@@ -80,6 +80,9 @@ DEFAULT_STATE = {
     "drafts": {},
     "contacts": {},
     "folders": {},
+    "quick_steps": {},
+    "categories": [],
+    "pinned_emails": [],
 }
 
 
@@ -109,6 +112,9 @@ class OutlookAPI(PatchableMixin):
         self.drafts: Dict[str, Dict[str, Any]] = {}
         self.contacts: Dict[str, Dict[str, Any]] = {}
         self.folders: Dict[str, List[str]] = {}
+        self.quick_steps: Dict[str, Dict[str, Any]] = {}
+        self.categories: List[Dict[str, str]] = []
+        self.pinned_emails: List[str] = []
         self._api_description = (
             "This tool belongs to the Outlook Email API, which provides "
             "functionality for sending, receiving, and organizing emails using "
@@ -140,6 +146,9 @@ class OutlookAPI(PatchableMixin):
         self.drafts = scenario.get("drafts", DEFAULT_STATE_COPY["drafts"])
         self.contacts = scenario.get("contacts", DEFAULT_STATE_COPY["contacts"])
         self.folders = scenario.get("folders", DEFAULT_STATE_COPY["folders"])
+        self.quick_steps = scenario.get("quick_steps", DEFAULT_STATE_COPY["quick_steps"])
+        self.categories = scenario.get("categories", DEFAULT_STATE_COPY["categories"])
+        self.pinned_emails = scenario.get("pinned_emails", DEFAULT_STATE_COPY["pinned_emails"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -928,3 +937,331 @@ class OutlookAPI(PatchableMixin):
             "email_address": email_address,
         }
         return {"name": name, "email_address": email_address}
+
+    # -----------------------------------------------------------------------
+    # Quick Steps (multi-action macros)
+    # -----------------------------------------------------------------------
+
+    def create_quick_step(
+        self,
+        name: str,
+        actions: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        """
+        Create a Quick Step — a reusable macro that performs multiple actions
+        on an email in sequence.
+
+        Args:
+            name (str): Display name for the Quick Step.
+            actions (List[Dict[str, Any]]): Ordered list of action objects.
+                Each action has:
+                    type (str): One of "move_to_folder", "mark_read", "flag",
+                        "categorize", "forward_to".
+                    params (Dict): Parameters for the action (e.g.
+                        {"folder": "archive"} for move_to_folder,
+                        {"email": "boss@co.com"} for forward_to,
+                        {"category": "Red Category"} for categorize).
+
+        Returns:
+            Dict[str, Any]:
+                quick_step_id (str), name (str), status (str).
+        """
+        self._require_user(self.user_id)
+        valid_types = ("move_to_folder", "mark_read", "flag", "categorize", "forward_to")
+        for action in actions:
+            if action.get("type") not in valid_types:
+                raise OutlookError(
+                    "INVALID_ACTION_TYPE",
+                    f"Action type '{action.get('type')}' is not valid.",
+                    suggested_action=f"Use one of: {', '.join(valid_types)}.",
+                    context={"action": action},
+                )
+        quick_step_id = self._new_id("quick_step")
+        self.quick_steps[quick_step_id] = {
+            "quick_step_id": quick_step_id,
+            "name": name,
+            "actions": actions,
+            "created_at": _utc_now_iso(),
+        }
+        return {
+            "quick_step_id": quick_step_id,
+            "name": name,
+            "status": "created",
+        }
+
+    def list_quick_steps(self) -> List[Dict[str, Any]]:
+        """
+        List all Quick Steps.
+
+        Returns:
+            List[Dict[str, Any]]: Quick Step objects with quick_step_id, name,
+                and actions.
+        """
+        self._require_user(self.user_id)
+        return [deepcopy(qs) for qs in self.quick_steps.values()]
+
+    def run_quick_step(
+        self,
+        quick_step_id: str,
+        email_id: str,
+    ) -> Dict[str, Any]:
+        """
+        Execute a Quick Step on an email, performing each action in sequence.
+
+        Args:
+            quick_step_id (str): The Quick Step to run.
+            email_id (str): The email to apply the Quick Step to.
+
+        Returns:
+            Dict[str, Any]:
+                quick_step_id (str), email_id (str),
+                actions_performed (List[str]), status (str).
+        """
+        qs = self.quick_steps.get(quick_step_id)
+        if not qs:
+            raise OutlookError(
+                "QUICK_STEP_NOT_FOUND",
+                f"Quick Step '{quick_step_id}' not found.",
+                suggested_action="Use list_quick_steps() to find valid IDs.",
+                context={"quick_step_id": quick_step_id},
+            )
+        em = self._require_email(email_id)
+        actions_performed = []
+        for action in qs.get("actions", []):
+            action_type = action.get("type")
+            params = action.get("params", {})
+            if action_type == "move_to_folder":
+                folder = params.get("folder", "inbox")
+                self.move_to_folder(email_id, folder)
+                actions_performed.append(f"move_to_folder:{folder}")
+            elif action_type == "mark_read":
+                self.set_as_read(email_id)
+                actions_performed.append("mark_read")
+            elif action_type == "flag":
+                self.flag_email(email_id)
+                actions_performed.append("flag")
+            elif action_type == "categorize":
+                category = params.get("category", "")
+                self.assign_category(email_id, category)
+                actions_performed.append(f"categorize:{category}")
+            elif action_type == "forward_to":
+                fwd_email = params.get("email", "")
+                if fwd_email:
+                    self.forward_mail_item(email_id, [fwd_email])
+                    actions_performed.append(f"forward_to:{fwd_email}")
+        return {
+            "quick_step_id": quick_step_id,
+            "email_id": email_id,
+            "actions_performed": actions_performed,
+            "status": "executed",
+        }
+
+    def delete_quick_step(self, quick_step_id: str) -> Dict[str, Any]:
+        """
+        Delete a Quick Step.
+
+        Args:
+            quick_step_id (str): The Quick Step to delete.
+
+        Returns:
+            Dict[str, Any]:
+                quick_step_id (str), status (str).
+        """
+        if quick_step_id not in self.quick_steps:
+            raise OutlookError(
+                "QUICK_STEP_NOT_FOUND",
+                f"Quick Step '{quick_step_id}' not found.",
+                suggested_action="Use list_quick_steps() to find valid IDs.",
+                context={"quick_step_id": quick_step_id},
+            )
+        del self.quick_steps[quick_step_id]
+        return {"quick_step_id": quick_step_id, "status": "deleted"}
+
+    # -----------------------------------------------------------------------
+    # Categories with colors
+    # -----------------------------------------------------------------------
+
+    VALID_CATEGORY_COLORS = ("red", "orange", "yellow", "green", "blue", "purple")
+
+    def create_category(self, name: str, color: str) -> Dict[str, Any]:
+        """
+        Create a new category with a color.
+
+        Args:
+            name (str): Category display name.
+            color (str): Category color. Must be one of "red", "orange",
+                "yellow", "green", "blue", "purple".
+
+        Returns:
+            Dict[str, Any]:
+                name (str), color (str), status (str).
+        """
+        self._require_user(self.user_id)
+        if color not in self.VALID_CATEGORY_COLORS:
+            raise OutlookError(
+                "INVALID_COLOR",
+                f"Color '{color}' is not valid.",
+                suggested_action=f"Use one of: {', '.join(self.VALID_CATEGORY_COLORS)}.",
+                context={"color": color},
+            )
+        for cat in self.categories:
+            if cat["name"] == name:
+                raise OutlookError(
+                    "CATEGORY_EXISTS",
+                    f"Category '{name}' already exists.",
+                    suggested_action="Use a different name or list_categories() to see existing ones.",
+                    context={"name": name},
+                )
+        self.categories.append({"name": name, "color": color})
+        return {"name": name, "color": color, "status": "created"}
+
+    def list_categories(self) -> List[Dict[str, str]]:
+        """
+        List all categories.
+
+        Returns:
+            List[Dict[str, str]]: Category objects with name and color.
+        """
+        self._require_user(self.user_id)
+        return deepcopy(self.categories)
+
+    def assign_category(self, email_id: str, category_name: str) -> Dict[str, Any]:
+        """
+        Assign a category to an email.
+
+        Args:
+            email_id (str): The email to categorize.
+            category_name (str): The category name to assign. Must exist.
+
+        Returns:
+            Dict[str, Any]:
+                email_id (str), categories (List[str]), status (str).
+        """
+        em = self._require_email(email_id)
+        if not any(c["name"] == category_name for c in self.categories):
+            raise OutlookError(
+                "CATEGORY_NOT_FOUND",
+                f"Category '{category_name}' not found.",
+                suggested_action="Use create_category() to create it first.",
+                context={"category_name": category_name},
+            )
+        email_cats = em.setdefault("categories", [])
+        if category_name not in email_cats:
+            email_cats.append(category_name)
+        return {
+            "email_id": email_id,
+            "categories": list(email_cats),
+            "status": "category_assigned",
+        }
+
+    def remove_category(self, email_id: str, category_name: str) -> Dict[str, Any]:
+        """
+        Remove a category from an email.
+
+        Args:
+            email_id (str): The email to modify.
+            category_name (str): The category name to remove.
+
+        Returns:
+            Dict[str, Any]:
+                email_id (str), categories (List[str]), status (str).
+        """
+        em = self._require_email(email_id)
+        email_cats = em.get("categories", [])
+        if category_name not in email_cats:
+            raise OutlookError(
+                "CATEGORY_NOT_ASSIGNED",
+                f"Category '{category_name}' is not assigned to email '{email_id}'.",
+                suggested_action="Use assign_category() to assign it first.",
+                context={"email_id": email_id, "category_name": category_name},
+            )
+        email_cats.remove(category_name)
+        return {
+            "email_id": email_id,
+            "categories": list(email_cats),
+            "status": "category_removed",
+        }
+
+    def get_emails_by_category(
+        self,
+        category_name: str,
+        limit: int = 20,
+    ) -> List[Dict[str, Any]]:
+        """
+        List all emails with a specific category assigned.
+
+        Args:
+            category_name (str): The category to filter by.
+            limit (int): Maximum number of emails to return. Defaults to 20.
+
+        Returns:
+            List[Dict[str, Any]]: Matching email objects sorted by created_at
+                descending.
+        """
+        self._require_user(self.user_id)
+        if not any(c["name"] == category_name for c in self.categories):
+            raise OutlookError(
+                "CATEGORY_NOT_FOUND",
+                f"Category '{category_name}' not found.",
+                suggested_action="Use create_category() to create it first.",
+                context={"category_name": category_name},
+            )
+        results = []
+        for em in self.emails.values():
+            if category_name in em.get("categories", []):
+                results.append(deepcopy(em))
+        results.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        return results[:limit]
+
+    # -----------------------------------------------------------------------
+    # Pin emails
+    # -----------------------------------------------------------------------
+
+    def pin_email(self, email_id: str) -> Dict[str, Any]:
+        """
+        Pin an email to the top of the folder view.
+
+        Args:
+            email_id (str): The email to pin.
+
+        Returns:
+            Dict[str, Any]:
+                email_id (str), pinned (bool), status (str).
+        """
+        em = self._require_email(email_id)
+        em["pinned"] = True
+        if email_id not in self.pinned_emails:
+            self.pinned_emails.append(email_id)
+        return {"email_id": email_id, "pinned": True, "status": "pinned"}
+
+    def unpin_email(self, email_id: str) -> Dict[str, Any]:
+        """
+        Unpin an email from the top of the folder view.
+
+        Args:
+            email_id (str): The email to unpin.
+
+        Returns:
+            Dict[str, Any]:
+                email_id (str), pinned (bool), status (str).
+        """
+        em = self._require_email(email_id)
+        em["pinned"] = False
+        if email_id in self.pinned_emails:
+            self.pinned_emails.remove(email_id)
+        return {"email_id": email_id, "pinned": False, "status": "unpinned"}
+
+    def list_pinned_emails(self) -> List[Dict[str, Any]]:
+        """
+        List all pinned emails.
+
+        Returns:
+            List[Dict[str, Any]]: Pinned email objects.
+        """
+        self._require_user(self.user_id)
+        results = []
+        for email_id in self.pinned_emails:
+            em = self.emails.get(email_id)
+            if em:
+                results.append(deepcopy(em))
+        return results

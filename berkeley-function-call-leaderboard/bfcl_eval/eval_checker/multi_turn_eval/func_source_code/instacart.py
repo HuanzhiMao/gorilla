@@ -91,6 +91,8 @@ DEFAULT_STATE = {
     "delivery_windows": {},
     "shoppers": {},
     "issues": {},
+    "recipes": {},
+    "purchase_history": [],
 }
 
 
@@ -105,7 +107,7 @@ class InstacartAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = { "cart": 0, "order": 0, "address": 0, "payment": 0, "issue": 0, }
+        self._id_counters = { "cart": 0, "order": 0, "address": 0, "payment": 0, "issue": 0, "recipe": 0, }
         self.profile: Dict[str, Any]
         self.cart: Dict[str, Any]
         self.orders: Dict[str, Dict[str, Any]]
@@ -119,6 +121,8 @@ class InstacartAPI(PatchableMixin):
         self.delivery_windows: Dict[str, List[Dict[str, Any]]]
         self.shoppers: Dict[str, Dict[str, Any]]
         self.issues: Dict[str, Dict[str, Any]]
+        self.recipes: Dict[str, Dict[str, Any]]
+        self.purchase_history: List[Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Instacart grocery delivery system, which allows "
             "users to search stores, browse store-specific product inventories, manage "
@@ -159,6 +163,8 @@ class InstacartAPI(PatchableMixin):
         self.delivery_windows = scenario.get("delivery_windows", DEFAULT_STATE_COPY["delivery_windows"])
         self.shoppers = scenario.get("shoppers", DEFAULT_STATE_COPY["shoppers"])
         self.issues = scenario.get("issues", DEFAULT_STATE_COPY["issues"])
+        self.recipes = scenario.get("recipes", DEFAULT_STATE_COPY["recipes"])
+        self.purchase_history = scenario.get("purchase_history", DEFAULT_STATE_COPY["purchase_history"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -1215,3 +1221,298 @@ class InstacartAPI(PatchableMixin):
             "is_default": len(existing) == 0,  # First card is default
         }
         return pm_id
+
+    # -----------------------------------------------------------------------
+    # Recipe-Based Shopping
+    # -----------------------------------------------------------------------
+
+    def search_recipes(
+        self,
+        query: str,
+        dietary_filter: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Search for recipes matching a text query with optional dietary filter.
+
+        Args:
+            query (str): Free-text search matched against recipe name and
+                description. Pass an empty string to match all.
+            dietary_filter (str, optional): Filter by dietary preference, e.g.
+                "vegetarian", "vegan", "gluten_free", "dairy_free", "keto".
+                None returns all recipes.
+
+        Returns:
+            List[Dict[str, Any]]: Matching recipes, each with:
+                recipe_id (str), name (str), description (str),
+                dietary_tags (List[str]), prep_time_minutes (int),
+                servings (int).
+        """
+        results = []
+        for recipe in self.recipes.values():
+            name = recipe.get("name", "")
+            desc = recipe.get("description", "")
+            if not _matches_query(name, query) and not _matches_query(desc, query):
+                continue
+            if dietary_filter:
+                tags = [t.lower() for t in recipe.get("dietary_tags", [])]
+                if dietary_filter.lower() not in tags:
+                    continue
+            results.append({
+                "recipe_id": recipe["recipe_id"],
+                "name": name,
+                "description": desc,
+                "dietary_tags": deepcopy(recipe.get("dietary_tags", [])),
+                "prep_time_minutes": recipe.get("prep_time_minutes", 0),
+                "servings": recipe.get("servings", 4),
+            })
+        return results
+
+    def get_recipe(self, recipe_id: str) -> Dict[str, Any]:
+        """
+        Retrieve full details for a recipe including ingredients list.
+
+        Args:
+            recipe_id (str): The recipe to look up.
+
+        Returns:
+            Dict[str, Any]:
+                recipe_id (str), name (str), description (str),
+                dietary_tags (List[str]), prep_time_minutes (int),
+                servings (int), ingredients (List[Dict] — each with
+                    name (str), quantity (str), unit (str),
+                    product_id (str | None — matching store product if known)).
+        """
+        recipe = self.recipes.get(recipe_id)
+        if not recipe:
+            raise InstacartError(
+                "RECIPE_NOT_FOUND",
+                f"Recipe '{recipe_id}' not found.",
+                suggested_action="Use search_recipes() to find valid recipe IDs.",
+                context={"recipe_id": recipe_id},
+            )
+        return deepcopy(recipe)
+
+    def add_recipe_to_cart(
+        self,
+        cart_id: str,
+        recipe_id: str,
+        servings: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """
+        Add all ingredients from a recipe to an existing cart. Matches recipe
+        ingredients to the store's inventory and adds matched items. Unmatched
+        ingredients are returned so the user can find substitutes.
+
+        Args:
+            cart_id (str): The cart to add ingredients to.
+            recipe_id (str): The recipe whose ingredients to add.
+            servings (int, optional): Number of servings to scale the recipe to.
+                Defaults to the recipe's default serving count.
+
+        Returns:
+            Dict[str, Any]:
+                cart_id (str), recipe_id (str), matched (List[Dict] — items
+                    successfully added with product_id, name, quantity),
+                unmatched (List[Dict] — ingredients not found in store with
+                    name, quantity, unit).
+        """
+        cart = self._require_cart(cart_id)
+        recipe = self.recipes.get(recipe_id)
+        if not recipe:
+            raise InstacartError(
+                "RECIPE_NOT_FOUND",
+                f"Recipe '{recipe_id}' not found.",
+                suggested_action="Use search_recipes() to find valid recipe IDs.",
+                context={"recipe_id": recipe_id},
+            )
+
+        store_id = cart.get("store_id")
+        if not store_id:
+            raise InstacartError(
+                "CART_NO_STORE",
+                "Cart does not have a store assigned.",
+                suggested_action="Create a cart with a store_id first.",
+                context={"cart_id": cart_id},
+            )
+
+        default_servings = recipe.get("servings", 4)
+        target_servings = int(servings) if servings is not None else default_servings
+        scale = target_servings / max(1, default_servings)
+
+        inv_map = self.store_inventory.get(store_id, {})
+        matched = []
+        unmatched = []
+
+        for ingredient in recipe.get("ingredients", []):
+            product_id = ingredient.get("product_id")
+            ing_name = ingredient.get("name", "")
+            ing_qty = ingredient.get("quantity", "1")
+            ing_unit = ingredient.get("unit", "each")
+
+            # Try to find product in store inventory
+            found_in_store = False
+            if product_id and product_id in inv_map:
+                inv = inv_map[product_id]
+                if inv.get("stock_level") != "out":
+                    found_in_store = True
+            else:
+                # Try to match by name
+                for pid, inv in inv_map.items():
+                    product = self.products.get(pid, {})
+                    if _matches_query(product.get("name", ""), ing_name):
+                        if inv.get("stock_level") != "out":
+                            product_id = pid
+                            found_in_store = True
+                            break
+
+            if found_in_store and product_id:
+                # Compute scaled quantity
+                try:
+                    base_qty = float(ing_qty)
+                except (ValueError, TypeError):
+                    base_qty = 1.0
+                scaled_qty = max(1, int(math.ceil(base_qty * scale)))
+
+                # Add to cart
+                cart["items"].append({
+                    "product_id": product_id,
+                    "quantity": scaled_qty,
+                    "replacement_pref": "best_match",
+                    "note": f"For recipe: {recipe.get('name', '')}",
+                })
+                matched.append({
+                    "product_id": product_id,
+                    "name": ing_name,
+                    "quantity": scaled_qty,
+                })
+            else:
+                unmatched.append({
+                    "name": ing_name,
+                    "quantity": ing_qty,
+                    "unit": ing_unit,
+                })
+
+        cart["subtotal"] = self._compute_cart_subtotal(cart)
+        cart["updated_at"] = _utc_now_iso()
+
+        return {
+            "cart_id": cart_id,
+            "recipe_id": recipe_id,
+            "matched": matched,
+            "unmatched": unmatched,
+        }
+
+    # -----------------------------------------------------------------------
+    # Buy It Again
+    # -----------------------------------------------------------------------
+
+    def get_buy_it_again(
+        self,
+        store_id: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Get a list of frequently purchased items for the current user, sorted
+        by purchase frequency. Optionally filter to a specific store.
+
+        Args:
+            store_id (str, optional): Filter results to items purchased from
+                this store. None returns items from all stores.
+
+        Returns:
+            List[Dict[str, Any]]: Past items sorted by purchase count (descending),
+                each with: product_id (str), name (str), brand (str),
+                purchase_count (int), last_purchased_at (str),
+                store_id (str).
+        """
+        user_id = self.user_id
+        # Aggregate purchase counts from purchase_history
+        item_counts: Dict[str, Dict[str, Any]] = {}
+        for entry in self.purchase_history:
+            if entry.get("user_id") != user_id:
+                continue
+            if store_id and entry.get("store_id") != store_id:
+                continue
+            pid = entry.get("product_id")
+            if not pid:
+                continue
+            if pid not in item_counts:
+                product = self.products.get(pid, {})
+                item_counts[pid] = {
+                    "product_id": pid,
+                    "name": product.get("name", ""),
+                    "brand": product.get("brand", ""),
+                    "purchase_count": 0,
+                    "last_purchased_at": entry.get("purchased_at", ""),
+                    "store_id": entry.get("store_id", ""),
+                }
+            item_counts[pid]["purchase_count"] += 1
+            # Track the most recent purchase
+            if entry.get("purchased_at", "") > item_counts[pid]["last_purchased_at"]:
+                item_counts[pid]["last_purchased_at"] = entry["purchased_at"]
+                item_counts[pid]["store_id"] = entry.get("store_id", "")
+
+        results = list(item_counts.values())
+        results.sort(key=lambda x: x["purchase_count"], reverse=True)
+        return results
+
+    def quick_add_past_items(
+        self,
+        cart_id: str,
+        product_ids: List[str],
+    ) -> Dict[str, Any]:
+        """
+        Quickly add multiple previously purchased items to a cart in one call.
+
+        Args:
+            cart_id (str): The cart to add items to.
+            product_ids (List[str]): List of product IDs to add (one unit each).
+
+        Returns:
+            Dict[str, Any]:
+                cart_id (str), added (List[str] — product IDs successfully added),
+                not_found (List[str] — product IDs not available in the store).
+        """
+        cart = self._require_cart(cart_id)
+        store_id = cart.get("store_id")
+        if not store_id:
+            raise InstacartError(
+                "CART_NO_STORE",
+                "Cart does not have a store assigned.",
+                suggested_action="Create a cart with a store_id first.",
+                context={"cart_id": cart_id},
+            )
+
+        inv_map = self.store_inventory.get(store_id, {})
+        added = []
+        not_found = []
+
+        for pid in product_ids:
+            inv = inv_map.get(pid)
+            if inv and inv.get("stock_level") != "out":
+                # Check if already in cart
+                existing = None
+                for item in cart["items"]:
+                    if item["product_id"] == pid:
+                        existing = item
+                        break
+                if existing:
+                    existing["quantity"] += 1
+                else:
+                    cart["items"].append({
+                        "product_id": pid,
+                        "quantity": 1,
+                        "replacement_pref": "best_match",
+                        "note": "",
+                    })
+                added.append(pid)
+            else:
+                not_found.append(pid)
+
+        cart["subtotal"] = self._compute_cart_subtotal(cart)
+        cart["updated_at"] = _utc_now_iso()
+
+        return {
+            "cart_id": cart_id,
+            "added": added,
+            "not_found": not_found,
+        }

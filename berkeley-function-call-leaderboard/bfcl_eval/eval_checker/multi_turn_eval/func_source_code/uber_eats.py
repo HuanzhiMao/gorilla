@@ -66,6 +66,10 @@ DEFAULT_STATE = {
     "menu": {},
     "offers": {},
     "delivery_tracking": {},
+    "delivery_windows": {},
+    "grocery_stores": {},
+    "grocery_catalog": {},
+    "group_orders": {},
 }
 
 
@@ -84,6 +88,10 @@ class UberEatsOrderAPI(PatchableMixin):
         self.menu: Dict[str, Dict[str, Any]] = {}
         self.offers: Dict[str, Dict[str, Any]] = {}
         self.delivery_tracking: Dict[str, Dict[str, Any]] = {}
+        self.delivery_windows: Dict[str, List[Dict[str, Any]]] = {}
+        self.grocery_stores: Dict[str, Dict[str, Any]] = {}
+        self.grocery_catalog: Dict[str, Dict[str, Any]] = {}
+        self.group_orders: Dict[str, Dict[str, Any]] = {}
         self._api_description = (
             "This tool belongs to the UberEats food delivery ordering system, which allows "
             "users to browse restaurants, view menus, place and track food delivery orders, "
@@ -110,12 +118,20 @@ class UberEatsOrderAPI(PatchableMixin):
         self._random = random.Random(
             scenario.get("random_seed", DEFAULT_STATE_COPY["random_seed"])
         )
+        # self.user_id is referenced by several public methods and patches (e.g.,
+        # error contexts). It is not guaranteed to be present in every scenario
+        # file, so we fall back to a safe default to avoid AttributeError.
+        self.user_id = scenario.get("user_id", "user_1")
         self.profile = scenario.get("profile", DEFAULT_STATE_COPY["profile"])
         self.orders = scenario.get("orders", DEFAULT_STATE_COPY["orders"])
         self.restaurants = scenario.get("restaurants", DEFAULT_STATE_COPY["restaurants"])
         self.menu = scenario.get("menu", DEFAULT_STATE_COPY["menu"])
         self.offers = scenario.get("offers", DEFAULT_STATE_COPY["offers"])
         self.delivery_tracking = scenario.get("delivery_tracking", DEFAULT_STATE_COPY["delivery_tracking"])
+        self.delivery_windows = scenario.get("delivery_windows", DEFAULT_STATE_COPY["delivery_windows"])
+        self.grocery_stores = scenario.get("grocery_stores", DEFAULT_STATE_COPY["grocery_stores"])
+        self.grocery_catalog = scenario.get("grocery_catalog", DEFAULT_STATE_COPY["grocery_catalog"])
+        self.group_orders = scenario.get("group_orders", DEFAULT_STATE_COPY["group_orders"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -799,3 +815,635 @@ class UberEatsOrderAPI(PatchableMixin):
             else []
         )
         return {"uber_one": uber_one, "benefits": benefits}
+
+    # -----------------------------------------------------------------------
+    # Scheduled delivery
+    # -----------------------------------------------------------------------
+
+    def get_delivery_windows(self, restaurant_id: str) -> List[Dict[str, Any]]:
+        """
+        Retrieve available 30-minute delivery windows for the next 24 hours.
+
+        Args:
+            restaurant_id (str): The restaurant to get delivery windows for.
+
+        Returns:
+            List[Dict[str, Any]]: Available windows, each with:
+                window_id (str), start_time (str — ISO 8601), end_time (str — ISO 8601),
+                available (bool).
+        """
+        self._require_restaurant(restaurant_id)
+        windows = self.delivery_windows.get(restaurant_id, [])
+        return deepcopy(windows)
+
+    def schedule_order(
+        self,
+        restaurant_id: str,
+        items: List[Dict[str, Any]],
+        delivery_address_id: str,
+        payment_method_id: str,
+        window_id: str,
+        tip: float = 0.0,
+        offer_id: Optional[str] = None,
+    ) -> str:
+        """
+        Place a food delivery order scheduled for a specific delivery window.
+
+        Args:
+            restaurant_id (str): The restaurant to order from.
+            items (List[Dict]): Items to order. Each dict requires:
+                item_id (str), quantity (int >= 1).
+                Optional: selected_options (List), special_instructions (str).
+            delivery_address_id (str): Address ID from your profile to deliver to.
+            payment_method_id (str): Payment method ID from your profile to charge.
+            window_id (str): Delivery window ID from get_delivery_windows().
+            tip (float): Courier tip in dollars. Defaults to 0.0.
+            offer_id (str, optional): Offer ID from your promo wallet to apply.
+
+        Returns:
+            str: The new order_id. The order begins in "scheduled" status.
+        """
+        restaurant = self._require_restaurant(restaurant_id)
+        if not items:
+            raise UberEatsError(
+                "EMPTY_ORDER",
+                "Cannot place an order with no items.",
+                suggested_action="Provide at least one item.",
+                context={},
+            )
+
+        # Validate window
+        windows = self.delivery_windows.get(restaurant_id, [])
+        window = None
+        for w in windows:
+            if w.get("window_id") == window_id:
+                window = w
+                break
+        if not window:
+            raise UberEatsError(
+                "WINDOW_NOT_FOUND",
+                f"Delivery window '{window_id}' not found for restaurant '{restaurant_id}'.",
+                suggested_action="Use get_delivery_windows() to find valid window IDs.",
+                context={"window_id": window_id, "restaurant_id": restaurant_id},
+            )
+        if not window.get("available", True):
+            raise UberEatsError(
+                "WINDOW_UNAVAILABLE",
+                f"Delivery window '{window_id}' is no longer available.",
+                suggested_action="Choose a different delivery window.",
+                context={"window_id": window_id},
+            )
+
+        address = self._require_address(delivery_address_id)
+        self._require_payment_method(payment_method_id)
+
+        # Validate and enrich items
+        enriched_items = []
+        subtotal = 0.0
+        for entry in items:
+            item_id = entry.get("item_id")
+            item = self._require_menu_item(item_id)
+            if not item.get("available", True):
+                raise UberEatsError(
+                    "ITEM_UNAVAILABLE",
+                    f"Item '{item_id}' is currently unavailable.",
+                    suggested_action="Choose a different item from get_menu().",
+                    context={"item_id": item_id},
+                )
+            if item.get("restaurant_id") != restaurant_id:
+                raise UberEatsError(
+                    "ITEM_NOT_FROM_RESTAURANT",
+                    f"Item '{item_id}' does not belong to restaurant '{restaurant_id}'.",
+                    suggested_action="Only order items from the selected restaurant.",
+                    context={"item_id": item_id, "restaurant_id": restaurant_id},
+                )
+            qty = max(1, int(entry.get("quantity", 1)))
+            price = float(item.get("price", 0.0))
+            subtotal += price * qty
+            enriched_items.append(
+                {
+                    "item_id": item_id,
+                    "name": item.get("name"),
+                    "price": price,
+                    "quantity": qty,
+                    "selected_options": entry.get("selected_options", []),
+                    "special_instructions": entry.get("special_instructions", ""),
+                }
+            )
+
+        # Compute fees
+        delivery_fee = round(float(restaurant.get("delivery_fee", 2.99)), 2)
+        service_fee = round(subtotal * 0.10, 2)
+        tax = round(subtotal * 0.095, 2)
+        tip_amount = round(max(0.0, float(tip)), 2)
+
+        # Apply offer
+        applied_promo = None
+        discount = 0.0
+        if offer_id:
+            offer = self.offers.get(offer_id)
+            if not offer:
+                raise UberEatsError(
+                    "OFFER_NOT_FOUND",
+                    f"Offer '{offer_id}' not found.",
+                    suggested_action="Check get_available_offers() for valid offer IDs.",
+                    context={"offer_id": offer_id},
+                )
+            profile_promos = self.profile.get("promo", [])
+            if offer_id not in profile_promos:
+                raise UberEatsError(
+                    "OFFER_NOT_IN_WALLET",
+                    f"Offer '{offer_id}' is not in your promo wallet.",
+                    suggested_action="Only offers in your promo wallet can be applied.",
+                    context={"offer_id": offer_id},
+                )
+            min_order = float(offer.get("min_order", 0.0))
+            if subtotal < min_order:
+                raise UberEatsError(
+                    "OFFER_MIN_ORDER_NOT_MET",
+                    f"Order subtotal ${subtotal:.2f} is below the minimum ${min_order:.2f} for this offer.",
+                    suggested_action="Add more items to meet the minimum order requirement.",
+                    context={
+                        "offer_id": offer_id,
+                        "min_order": min_order,
+                        "subtotal": subtotal,
+                    },
+                )
+            if offer.get("uber_one") and not self.profile.get("uber_one", False):
+                raise UberEatsError(
+                    "UBER_ONE_REQUIRED",
+                    "This offer requires an active Uber One membership.",
+                    suggested_action="Subscribe to Uber One to use this offer.",
+                    context={"offer_id": offer_id},
+                )
+            discount = round(float(offer.get("discount", 0.0)), 2)
+            applied_promo = {"offer_id": offer_id, "discount": discount}
+            self.profile["promo"] = [o for o in profile_promos if o != offer_id]
+
+        total = round(
+            max(
+                0.0, subtotal + delivery_fee + service_fee + tax + tip_amount - discount
+            ),
+            2,
+        )
+        order_id = self._new_id("order")
+        now = _utc_now_iso()
+
+        self.orders[order_id] = {
+            "order_id": order_id,
+            "restaurant_id": restaurant_id,
+            "restaurant_name": restaurant.get("name"),
+            "items": enriched_items,
+            "fees": {
+                "delivery_fee": delivery_fee,
+                "service_fee": service_fee,
+                "tax": tax,
+                "tip": tip_amount,
+            },
+            "total": total,
+            "status": "scheduled",
+            "created_at": now,
+            "applied_promo": applied_promo,
+            "delivery_address": {
+                "street": address.get("street"),
+                "city": address.get("city"),
+                "state": address.get("state"),
+                "zip": address.get("zip"),
+            },
+            "scheduled_window": {
+                "window_id": window_id,
+                "start_time": window.get("start_time"),
+                "end_time": window.get("end_time"),
+            },
+            "eta_min": 0,
+        }
+
+        return order_id
+
+    # -----------------------------------------------------------------------
+    # Grocery delivery
+    # -----------------------------------------------------------------------
+
+    def search_grocery_stores(
+        self,
+        query: str = "",
+        category: Optional[str] = None,
+        open_only: bool = False,
+    ) -> List[Dict[str, Any]]:
+        """
+        Search for grocery stores by name or category.
+
+        Args:
+            query (str): Text matched against store name. Empty string matches all.
+            category (str, optional): Filter by store category (e.g. "organic", "convenience", "supermarket").
+            open_only (bool): If True, return only currently open stores. Defaults to False.
+
+        Returns:
+            List[Dict[str, Any]]: Matching stores, each with:
+                store_id (str), name (str), category (str),
+                rating (float), address (str), is_open (bool).
+        """
+        q = (query or "").strip().lower()
+        out = []
+        for s in self.grocery_stores.values():
+            if q and q not in (s.get("name") or "").lower():
+                continue
+            if category and category.lower() != (s.get("category") or "").lower():
+                continue
+            if open_only and not s.get("is_open", False):
+                continue
+            out.append(
+                {
+                    "store_id": s["store_id"],
+                    "name": s.get("name"),
+                    "category": s.get("category"),
+                    "rating": s.get("rating"),
+                    "address": s.get("address"),
+                    "is_open": s.get("is_open"),
+                }
+            )
+        return out
+
+    def get_grocery_catalog(
+        self,
+        store_id: str,
+        category: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Browse a grocery store's product catalog, optionally filtered by aisle/category.
+
+        Args:
+            store_id (str): The grocery store whose catalog to fetch.
+            category (str, optional): Filter by product category/aisle (e.g. "produce", "dairy", "snacks").
+
+        Returns:
+            List[Dict[str, Any]]: Products, each with:
+                item_id (str), name (str), category (str), price (float),
+                unit (str — e.g. "each", "lb", "oz"), available (bool).
+        """
+        store = self.grocery_stores.get(store_id)
+        if not store:
+            raise UberEatsError(
+                "STORE_NOT_FOUND",
+                f"Grocery store '{store_id}' not found.",
+                suggested_action="Use search_grocery_stores() to find valid store IDs.",
+                context={"store_id": store_id},
+            )
+        items = [
+            item
+            for item in self.grocery_catalog.values()
+            if item.get("store_id") == store_id
+            and (not category or (item.get("category") or "").lower() == category.lower())
+        ]
+        return deepcopy(items)
+
+    def set_substitution_preference(
+        self,
+        order_id: str,
+        item_id: str,
+        preference: str,
+        substitute_item_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Set the substitution preference for an item in a grocery order.
+
+        Args:
+            order_id (str): The grocery order to update.
+            item_id (str): The item to set the preference for.
+            preference (str): One of "refund", "substitute", or "contact_me".
+            substitute_item_id (str, optional): Required when preference is "substitute".
+                The item to substitute with if the original is unavailable.
+
+        Returns:
+            Dict[str, Any]: Updated substitution preferences for the order, with:
+                order_id (str), item_id (str), preference (str),
+                substitute_item_id (str | None).
+        """
+        o = self._require_order(order_id)
+        valid_prefs = {"refund", "substitute", "contact_me"}
+        if preference not in valid_prefs:
+            raise UberEatsError(
+                "INVALID_PREFERENCE",
+                f"Preference must be one of {valid_prefs}, got '{preference}'.",
+                suggested_action="Use 'refund', 'substitute', or 'contact_me'.",
+                context={"preference": preference},
+            )
+        if preference == "substitute" and not substitute_item_id:
+            raise UberEatsError(
+                "SUBSTITUTE_REQUIRED",
+                "A substitute_item_id is required when preference is 'substitute'.",
+                suggested_action="Provide substitute_item_id from the grocery catalog.",
+                context={"preference": preference},
+            )
+        # Verify item is in the order
+        found = False
+        for item in o.get("items", []):
+            if item.get("item_id") == item_id:
+                found = True
+                break
+        if not found:
+            raise UberEatsError(
+                "ITEM_NOT_IN_ORDER",
+                f"Item '{item_id}' is not part of order '{order_id}'.",
+                suggested_action="Check the order items with get_order().",
+                context={"order_id": order_id, "item_id": item_id},
+            )
+
+        subs = o.setdefault("substitution_preferences", {})
+        subs[item_id] = {
+            "preference": preference,
+            "substitute_item_id": substitute_item_id,
+        }
+        return {
+            "order_id": order_id,
+            "item_id": item_id,
+            "preference": preference,
+            "substitute_item_id": substitute_item_id,
+        }
+
+    # -----------------------------------------------------------------------
+    # Group orders
+    # -----------------------------------------------------------------------
+
+    def create_group_order(
+        self,
+        restaurant_id: str,
+        deadline_minutes: int = 30,
+    ) -> Dict[str, Any]:
+        """
+        Create a new group order session for a restaurant.
+
+        Args:
+            restaurant_id (str): The restaurant to create a group order for. Must be open.
+            deadline_minutes (int): Minutes until the group order closes for new items.
+                Defaults to 30.
+
+        Returns:
+            Dict[str, Any]: group_order_id (str), restaurant_id (str),
+                restaurant_name (str), status (str — "open"),
+                deadline_minutes (int), participants (List), created_at (str).
+        """
+        restaurant = self._require_restaurant(restaurant_id)
+        if not restaurant.get("is_open", False):
+            raise UberEatsError(
+                "RESTAURANT_CLOSED",
+                "Restaurant is currently closed.",
+                suggested_action="Choose another restaurant or try again during open hours.",
+                context={"restaurant_id": restaurant_id},
+            )
+        group_order_id = self._new_id("group_order")
+        now = _utc_now_iso()
+        host_name = self.profile.get("name", "Host")
+
+        self.group_orders[group_order_id] = {
+            "group_order_id": group_order_id,
+            "restaurant_id": restaurant_id,
+            "restaurant_name": restaurant.get("name"),
+            "status": "open",
+            "deadline_minutes": deadline_minutes,
+            "host": host_name,
+            "participants": [
+                {"name": host_name, "items": []}
+            ],
+            "created_at": now,
+        }
+        return deepcopy(self.group_orders[group_order_id])
+
+    def join_group_order(
+        self,
+        group_order_id: str,
+        participant_name: str,
+    ) -> Dict[str, Any]:
+        """
+        Join an existing group order session.
+
+        Args:
+            group_order_id (str): The group order to join.
+            participant_name (str): Display name of the participant joining.
+
+        Returns:
+            Dict[str, Any]: Updated group order with the new participant added.
+        """
+        go = self.group_orders.get(group_order_id)
+        if not go:
+            raise UberEatsError(
+                "GROUP_ORDER_NOT_FOUND",
+                f"Group order '{group_order_id}' not found.",
+                suggested_action="Check the group order ID and try again.",
+                context={"group_order_id": group_order_id},
+            )
+        if go.get("status") != "open":
+            raise UberEatsError(
+                "GROUP_ORDER_CLOSED",
+                f"Group order '{group_order_id}' is no longer accepting participants.",
+                suggested_action="The group order has already been finalized or closed.",
+                context={"group_order_id": group_order_id, "status": go.get("status")},
+            )
+        # Check for duplicate name
+        for p in go.get("participants", []):
+            if p.get("name") == participant_name:
+                raise UberEatsError(
+                    "PARTICIPANT_ALREADY_JOINED",
+                    f"Participant '{participant_name}' has already joined this group order.",
+                    suggested_action="Use a different name or add items directly.",
+                    context={"group_order_id": group_order_id, "participant_name": participant_name},
+                )
+        go["participants"].append({"name": participant_name, "items": []})
+        return deepcopy(go)
+
+    def add_group_order_items(
+        self,
+        group_order_id: str,
+        participant_name: str,
+        items: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        """
+        Add items to a group order on behalf of a participant.
+
+        Args:
+            group_order_id (str): The group order to add items to.
+            participant_name (str): The participant adding items.
+            items (List[Dict]): Items to add. Each dict requires:
+                item_id (str), quantity (int >= 1).
+                Optional: selected_options (List), special_instructions (str).
+
+        Returns:
+            Dict[str, Any]: Updated group order.
+        """
+        go = self.group_orders.get(group_order_id)
+        if not go:
+            raise UberEatsError(
+                "GROUP_ORDER_NOT_FOUND",
+                f"Group order '{group_order_id}' not found.",
+                suggested_action="Check the group order ID and try again.",
+                context={"group_order_id": group_order_id},
+            )
+        if go.get("status") != "open":
+            raise UberEatsError(
+                "GROUP_ORDER_CLOSED",
+                f"Group order '{group_order_id}' is no longer accepting items.",
+                suggested_action="The group order has already been finalized.",
+                context={"group_order_id": group_order_id, "status": go.get("status")},
+            )
+        # Find participant
+        participant = None
+        for p in go.get("participants", []):
+            if p.get("name") == participant_name:
+                participant = p
+                break
+        if not participant:
+            raise UberEatsError(
+                "PARTICIPANT_NOT_FOUND",
+                f"Participant '{participant_name}' has not joined this group order.",
+                suggested_action="Join the group order first with join_group_order().",
+                context={"group_order_id": group_order_id, "participant_name": participant_name},
+            )
+        if not items:
+            raise UberEatsError(
+                "EMPTY_ITEMS",
+                "No items provided.",
+                suggested_action="Provide at least one item.",
+                context={},
+            )
+        restaurant_id = go["restaurant_id"]
+        for entry in items:
+            item_id = entry.get("item_id")
+            item = self._require_menu_item(item_id)
+            if not item.get("available", True):
+                raise UberEatsError(
+                    "ITEM_UNAVAILABLE",
+                    f"Item '{item_id}' is currently unavailable.",
+                    suggested_action="Choose a different item from get_menu().",
+                    context={"item_id": item_id},
+                )
+            if item.get("restaurant_id") != restaurant_id:
+                raise UberEatsError(
+                    "ITEM_NOT_FROM_RESTAURANT",
+                    f"Item '{item_id}' does not belong to restaurant '{restaurant_id}'.",
+                    suggested_action="Only order items from the group order's restaurant.",
+                    context={"item_id": item_id, "restaurant_id": restaurant_id},
+                )
+            qty = max(1, int(entry.get("quantity", 1)))
+            participant["items"].append(
+                {
+                    "item_id": item_id,
+                    "name": item.get("name"),
+                    "price": float(item.get("price", 0.0)),
+                    "quantity": qty,
+                    "selected_options": entry.get("selected_options", []),
+                    "special_instructions": entry.get("special_instructions", ""),
+                }
+            )
+        return deepcopy(go)
+
+    def finalize_group_order(
+        self,
+        group_order_id: str,
+        delivery_address_id: str,
+        payment_method_id: str,
+        tip: float = 0.0,
+    ) -> str:
+        """
+        Finalize a group order and place it as a single delivery order.
+
+        Args:
+            group_order_id (str): The group order to finalize.
+            delivery_address_id (str): Address ID from your profile to deliver to.
+            payment_method_id (str): Payment method ID from your profile to charge.
+            tip (float): Courier tip in dollars. Defaults to 0.0.
+
+        Returns:
+            str: The new order_id for the finalized group order.
+        """
+        go = self.group_orders.get(group_order_id)
+        if not go:
+            raise UberEatsError(
+                "GROUP_ORDER_NOT_FOUND",
+                f"Group order '{group_order_id}' not found.",
+                suggested_action="Check the group order ID and try again.",
+                context={"group_order_id": group_order_id},
+            )
+        if go.get("status") != "open":
+            raise UberEatsError(
+                "GROUP_ORDER_ALREADY_FINALIZED",
+                f"Group order '{group_order_id}' has already been finalized.",
+                suggested_action="This group order cannot be finalized again.",
+                context={"group_order_id": group_order_id, "status": go.get("status")},
+            )
+
+        restaurant_id = go["restaurant_id"]
+        restaurant = self._require_restaurant(restaurant_id)
+        if not restaurant.get("is_open", False):
+            raise UberEatsError(
+                "RESTAURANT_CLOSED",
+                "Restaurant is currently closed.",
+                suggested_action="Choose another restaurant or try again during open hours.",
+                context={"restaurant_id": restaurant_id},
+            )
+
+        # Collect all items from all participants
+        all_items = []
+        for p in go.get("participants", []):
+            all_items.extend(p.get("items", []))
+        if not all_items:
+            raise UberEatsError(
+                "EMPTY_ORDER",
+                "Cannot finalize a group order with no items.",
+                suggested_action="Participants must add items before finalizing.",
+                context={"group_order_id": group_order_id},
+            )
+
+        address = self._require_address(delivery_address_id)
+        self._require_payment_method(payment_method_id)
+
+        subtotal = sum(
+            float(i.get("price", 0.0)) * int(i.get("quantity", 1)) for i in all_items
+        )
+        delivery_fee = round(float(restaurant.get("delivery_fee", 2.99)), 2)
+        service_fee = round(subtotal * 0.10, 2)
+        tax = round(subtotal * 0.095, 2)
+        tip_amount = round(max(0.0, float(tip)), 2)
+        total = round(
+            max(0.0, subtotal + delivery_fee + service_fee + tax + tip_amount), 2
+        )
+
+        order_id = self._new_id("order")
+        now = _utc_now_iso()
+
+        self.orders[order_id] = {
+            "order_id": order_id,
+            "restaurant_id": restaurant_id,
+            "restaurant_name": restaurant.get("name"),
+            "items": deepcopy(all_items),
+            "fees": {
+                "delivery_fee": delivery_fee,
+                "service_fee": service_fee,
+                "tax": tax,
+                "tip": tip_amount,
+            },
+            "total": total,
+            "status": "preparing",
+            "created_at": now,
+            "applied_promo": None,
+            "delivery_address": {
+                "street": address.get("street"),
+                "city": address.get("city"),
+                "state": address.get("state"),
+                "zip": address.get("zip"),
+            },
+            "eta_min": 30,
+            "group_order_id": group_order_id,
+        }
+
+        self.delivery_tracking[order_id] = {
+            "order_id": order_id,
+            "courier_name": "Pending assignment",
+            "status": "preparing",
+            "eta_min": 30,
+            "current_stage": "restaurant_preparing",
+        }
+
+        go["status"] = "finalized"
+        go["order_id"] = order_id
+
+        return order_id

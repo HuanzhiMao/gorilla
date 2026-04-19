@@ -76,6 +76,11 @@ DEFAULT_STATE = {
     "watchlist": {},
     "recurring_investments": {},
     "dividends": {},
+    "price_alerts": {},
+    "options_chain": {},
+    "options_positions": {},
+    "options_orders": {},
+    "collections": {},
 }
 
 
@@ -98,7 +103,7 @@ class RobinhoodAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = { "order": 0, "recurring": 0, "dividend": 0, }
+        self._id_counters = { "order": 0, "recurring": 0, "dividend": 0, "alert": 0, "options_order": 0, }
         self.profile: Dict[str, Any]
         self.portfolio: Dict[str, Dict[str, Any]]
         self.positions: Dict[str, Dict[str, Any]]
@@ -106,6 +111,11 @@ class RobinhoodAPI(PatchableMixin):
         self.watchlist: List[str]
         self.recurring_investments: Dict[str, Dict[str, Any]]
         self.dividends: Dict[str, Dict[str, Any]]
+        self.price_alerts: Dict[str, Dict[str, Any]]
+        self.options_chain: Dict[str, Dict[str, Any]]
+        self.options_positions: Dict[str, Dict[str, Any]]
+        self.options_orders: Dict[str, Dict[str, Any]]
+        self.collections: Dict[str, Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Robinhood trading API, which provides "
             "commission-free stock and crypto trading, fractional shares, "
@@ -139,6 +149,11 @@ class RobinhoodAPI(PatchableMixin):
         self.watchlist = scenario.get("watchlist", DEFAULT_STATE_COPY["watchlist"])
         self.recurring_investments = scenario.get("recurring_investments", DEFAULT_STATE_COPY["recurring_investments"])
         self.dividends = scenario.get("dividends", DEFAULT_STATE_COPY["dividends"])
+        self.price_alerts = scenario.get("price_alerts", DEFAULT_STATE_COPY["price_alerts"])
+        self.options_chain = scenario.get("options_chain", DEFAULT_STATE_COPY["options_chain"])
+        self.options_positions = scenario.get("options_positions", DEFAULT_STATE_COPY["options_positions"])
+        self.options_orders = scenario.get("options_orders", DEFAULT_STATE_COPY["options_orders"])
+        self.collections = scenario.get("collections", DEFAULT_STATE_COPY["collections"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -811,3 +826,305 @@ class RobinhoodAPI(PatchableMixin):
         self.profile["cash_balance"] = self.profile.get("cash_balance", 0) - amount
         arrival = (datetime.now(timezone.utc) + timedelta(days=3)).isoformat()
         return {"amount": amount, "status": "processing", "estimated_arrival": arrival}
+
+    # -----------------------------------------------------------------------
+    # Price Alerts
+    # -----------------------------------------------------------------------
+
+    def set_price_alert(
+        self, symbol: str, target_price: float, direction: str,
+    ) -> Dict[str, Any]:
+        """
+        Set a price alert for a stock.
+
+        Args:
+            symbol (str): Stock ticker symbol.
+            target_price (float): The target price to trigger the alert.
+            direction (str): "above" or "below".
+
+        Returns:
+            Dict[str, Any]: alert_id (str), symbol (str), target_price (float),
+                direction (str), status (str "active").
+        """
+        self._require_stock(symbol)
+        sym = symbol.upper()
+        if direction not in ("above", "below"):
+            raise RobinhoodError("INVALID_DIRECTION", "Direction must be 'above' or 'below'.")
+        if target_price <= 0:
+            raise RobinhoodError("INVALID_PRICE", "Target price must be positive.")
+
+        alert_id = self._new_id("alert")
+        self.price_alerts[alert_id] = {
+            "alert_id": alert_id,
+            "symbol": sym,
+            "target_price": target_price,
+            "direction": direction,
+            "status": "active",
+            "created_at": _utc_now_iso(),
+        }
+        return {
+            "alert_id": alert_id,
+            "symbol": sym,
+            "target_price": target_price,
+            "direction": direction,
+            "status": "active",
+        }
+
+    def list_price_alerts(self) -> List[Dict[str, Any]]:
+        """
+        List all active price alerts with current prices.
+
+        Returns:
+            List[Dict[str, Any]]: Active alerts with alert_id, symbol,
+                target_price, direction, current_price, status.
+        """
+        results = []
+        for alert in self.price_alerts.values():
+            if alert.get("status") != "active":
+                continue
+            sym = alert.get("symbol", "")
+            stock = self.portfolio.get(sym, {})
+            entry = deepcopy(alert)
+            entry["current_price"] = stock.get("current_price", 0)
+            results.append(entry)
+        return results
+
+    def remove_price_alert(self, alert_id: str) -> Dict[str, Any]:
+        """
+        Remove a price alert.
+
+        Args:
+            alert_id (str): The alert to remove.
+
+        Returns:
+            Dict[str, Any]: alert_id (str), status (str "removed").
+        """
+        alert = self.price_alerts.get(alert_id)
+        if not alert:
+            raise RobinhoodError(
+                "ALERT_NOT_FOUND", f"Price alert '{alert_id}' not found.",
+                suggested_action="Use list_price_alerts() to find valid alert IDs.",
+            )
+        alert["status"] = "removed"
+        return {"alert_id": alert_id, "status": "removed"}
+
+    # -----------------------------------------------------------------------
+    # Options Trading
+    # -----------------------------------------------------------------------
+
+    def get_options_chain(
+        self,
+        symbol: str,
+        expiration_date: Optional[str] = None,
+        option_type: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Get options chain for a symbol.
+
+        Args:
+            symbol (str): Stock ticker symbol.
+            expiration_date (str, optional): Filter by expiration date (YYYY-MM-DD).
+            option_type (str, optional): Filter by "call" or "put".
+
+        Returns:
+            List[Dict[str, Any]]: Options contracts with symbol, option_type,
+                strike_price, expiration_date, premium, bid, ask, volume,
+                open_interest, delta, gamma, theta.
+        """
+        self._require_stock(symbol)
+        sym = symbol.upper()
+        chain = self.options_chain.get(sym, [])
+        results = []
+        for contract in chain:
+            if expiration_date and contract.get("expiration_date") != expiration_date:
+                continue
+            if option_type and contract.get("option_type") != option_type:
+                continue
+            results.append(deepcopy(contract))
+        return results
+
+    def place_options_order(
+        self,
+        symbol: str,
+        option_type: str,
+        strike_price: float,
+        expiration_date: str,
+        quantity: int,
+        order_type: str,
+        limit_price: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """
+        Place an options trade order.
+
+        Args:
+            symbol (str): Stock ticker symbol.
+            option_type (str): "call" or "put".
+            strike_price (float): Strike price of the option.
+            expiration_date (str): Expiration date (YYYY-MM-DD).
+            quantity (int): Number of contracts.
+            order_type (str): "market" or "limit".
+            limit_price (float, optional): Required for limit orders.
+
+        Returns:
+            Dict[str, Any]: order_id (str), symbol (str), option_type (str),
+                strike_price (float), expiration_date (str), quantity (int),
+                order_type (str), status (str), premium (float | None).
+        """
+        self._require_stock(symbol)
+        sym = symbol.upper()
+
+        if option_type not in ("call", "put"):
+            raise RobinhoodError("INVALID_OPTION_TYPE", "Option type must be 'call' or 'put'.")
+        if order_type not in ("market", "limit"):
+            raise RobinhoodError("INVALID_ORDER_TYPE", f"Invalid order type '{order_type}'.")
+        if quantity <= 0:
+            raise RobinhoodError("INVALID_QUANTITY", "Quantity must be greater than zero.")
+        if order_type == "limit" and limit_price is None:
+            raise RobinhoodError("LIMIT_PRICE_REQUIRED", "limit_price is required for limit orders.")
+
+        # Find matching contract in options chain
+        chain = self.options_chain.get(sym, [])
+        matching = None
+        for contract in chain:
+            if (contract.get("option_type") == option_type
+                    and contract.get("strike_price") == strike_price
+                    and contract.get("expiration_date") == expiration_date):
+                matching = contract
+                break
+
+        premium = matching.get("premium", 0) if matching else 0
+        now = _utc_now_iso()
+
+        if order_type == "market" and matching:
+            status = "filled"
+            cost = premium * quantity * 100  # Each contract = 100 shares
+            if cost > self.profile.get("buying_power", 0):
+                raise RobinhoodError(
+                    "INSUFFICIENT_BUYING_POWER",
+                    f"Need ${cost:.2f} but only have ${self.profile.get('buying_power', 0):.2f}.",
+                )
+            self.profile["buying_power"] = self.profile.get("buying_power", 0) - cost
+            self.profile["cash_balance"] = self.profile.get("cash_balance", 0) - cost
+
+            # Add to options positions
+            pos_key = f"{sym}_{option_type}_{strike_price}_{expiration_date}"
+            pos = self.options_positions.setdefault(pos_key, {
+                "symbol": sym, "option_type": option_type,
+                "strike_price": strike_price, "expiration_date": expiration_date,
+                "quantity": 0, "average_premium": 0,
+            })
+            old_q = pos["quantity"]
+            new_q = old_q + quantity
+            pos["average_premium"] = round(
+                ((pos["average_premium"] * old_q) + (premium * quantity)) / new_q, 4
+            ) if new_q else 0
+            pos["quantity"] = new_q
+        else:
+            status = "pending"
+
+        order_id = self._new_id("options_order")
+        self.options_orders[order_id] = {
+            "order_id": order_id,
+            "symbol": sym,
+            "option_type": option_type,
+            "strike_price": strike_price,
+            "expiration_date": expiration_date,
+            "quantity": quantity,
+            "order_type": order_type,
+            "limit_price": limit_price,
+            "status": status,
+            "premium": premium if status == "filled" else None,
+            "placed_at": now,
+            "filled_at": now if status == "filled" else None,
+        }
+        return {
+            "order_id": order_id,
+            "symbol": sym,
+            "option_type": option_type,
+            "strike_price": strike_price,
+            "expiration_date": expiration_date,
+            "quantity": quantity,
+            "order_type": order_type,
+            "status": status,
+            "premium": premium if status == "filled" else None,
+        }
+
+    def get_options_positions(self) -> List[Dict[str, Any]]:
+        """
+        Get current options holdings.
+
+        Returns:
+            List[Dict[str, Any]]: Options positions with symbol, option_type,
+                strike_price, expiration_date, quantity, average_premium,
+                current_value.
+        """
+        results = []
+        for pos in self.options_positions.values():
+            entry = deepcopy(pos)
+            sym = pos.get("symbol", "")
+            chain = self.options_chain.get(sym, [])
+            current_premium = 0
+            for contract in chain:
+                if (contract.get("option_type") == pos.get("option_type")
+                        and contract.get("strike_price") == pos.get("strike_price")
+                        and contract.get("expiration_date") == pos.get("expiration_date")):
+                    current_premium = contract.get("premium", 0)
+                    break
+            entry["current_value"] = round(current_premium * pos.get("quantity", 0) * 100, 2)
+            results.append(entry)
+        return results
+
+    # -----------------------------------------------------------------------
+    # Collections
+    # -----------------------------------------------------------------------
+
+    def list_collections(self) -> List[Dict[str, Any]]:
+        """
+        List themed stock collections (e.g. "100 Most Popular", "Tech Stocks").
+
+        Returns:
+            List[Dict[str, Any]]: Collections with name, description,
+                stock_count.
+        """
+        results = []
+        for name, col in self.collections.items():
+            results.append({
+                "name": name,
+                "description": col.get("description", ""),
+                "stock_count": len(col.get("stocks", [])),
+            })
+        return results
+
+    def get_themed_collection(self, collection_name: str) -> Dict[str, Any]:
+        """
+        Get stocks in a themed collection with current prices.
+
+        Args:
+            collection_name (str): Name of the collection.
+
+        Returns:
+            Dict[str, Any]: name (str), description (str),
+                stocks (List[Dict]) each with symbol, name, current_price,
+                day_change_percent.
+        """
+        col = self.collections.get(collection_name)
+        if not col:
+            raise RobinhoodError(
+                "COLLECTION_NOT_FOUND",
+                f"Collection '{collection_name}' not found.",
+                suggested_action="Use list_collections() to find valid collection names.",
+            )
+        stocks = []
+        for sym in col.get("stocks", []):
+            market = self.portfolio.get(sym, {})
+            stocks.append({
+                "symbol": sym,
+                "name": market.get("name", ""),
+                "current_price": market.get("current_price", 0),
+                "day_change_percent": market.get("day_change_percent", 0),
+            })
+        return {
+            "name": collection_name,
+            "description": col.get("description", ""),
+            "stocks": stocks,
+        }

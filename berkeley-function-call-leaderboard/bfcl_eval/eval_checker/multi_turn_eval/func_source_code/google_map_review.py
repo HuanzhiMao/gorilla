@@ -61,6 +61,10 @@ DEFAULT_STATE = {
     "businesses": {},
     "reviews": {},
     "saved_places": {},
+    "lists": {},
+    "local_guide": {},
+    "photo_contributions": [],
+    "place_questions": {},
 }
 
 
@@ -88,6 +92,10 @@ class GoogleMapReviewAPI(PatchableMixin):
         self.businesses: Dict[str, Dict[str, Any]] = {}
         self.reviews: Dict[str, Dict[str, Any]] = {}
         self.saved_places: Dict[str, Dict[str, Any]] = {}
+        self.lists: Dict[str, Dict[str, Any]] = {}
+        self.local_guide: Dict[str, Any] = {}
+        self.photo_contributions: List[Dict[str, Any]] = []
+        self.place_questions: Dict[str, Dict[str, Any]] = {}
         self._api_description = (
             "This tool belongs to the Google Maps Review API, which provides "
             "functionality for searching places, reading and writing reviews, "
@@ -118,6 +126,10 @@ class GoogleMapReviewAPI(PatchableMixin):
         self.businesses = scenario.get("businesses", DEFAULT_STATE_COPY["businesses"])
         self.reviews = scenario.get("reviews", DEFAULT_STATE_COPY["reviews"])
         self.saved_places = scenario.get("saved_places", DEFAULT_STATE_COPY["saved_places"])
+        self.lists = scenario.get("lists", DEFAULT_STATE_COPY["lists"])
+        self.local_guide = scenario.get("local_guide", DEFAULT_STATE_COPY["local_guide"])
+        self.photo_contributions = scenario.get("photo_contributions", DEFAULT_STATE_COPY["photo_contributions"])
+        self.place_questions = scenario.get("place_questions", DEFAULT_STATE_COPY["place_questions"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -572,3 +584,394 @@ class GoogleMapReviewAPI(PatchableMixin):
             List[Dict[str, Any]]: Saved place objects with business_id and name.
         """
         return [deepcopy(s) for s in self.saved_places.values()]
+
+    # -----------------------------------------------------------------------
+    # Custom Lists
+    # -----------------------------------------------------------------------
+
+    def create_list(self, name: str, description: str = "") -> Dict[str, Any]:
+        """
+        Create a custom place list.
+
+        Args:
+            name (str): The name of the list.
+            description (str, optional): A description for the list.
+                Defaults to "".
+
+        Returns:
+            Dict[str, Any]:
+                list_id (str), name (str), description (str), status (str).
+        """
+        list_id = self._new_id("list")
+        self.lists[list_id] = {
+            "list_id": list_id,
+            "name": name,
+            "description": description,
+            "places": [],
+            "created_at": _utc_now_iso(),
+        }
+        return {
+            "list_id": list_id,
+            "name": name,
+            "description": description,
+            "status": "created",
+        }
+
+    def add_to_list(
+        self, list_id: str, business_id: str, note: str = ""
+    ) -> Dict[str, Any]:
+        """
+        Add a place to a custom list with an optional note.
+
+        Args:
+            list_id (str): The list to add the place to.
+            business_id (str): The place to add.
+            note (str, optional): A note about this place. Defaults to "".
+
+        Returns:
+            Dict[str, Any]:
+                list_id (str), business_id (str), status (str).
+        """
+        lst = self.lists.get(list_id)
+        if not lst:
+            raise GoogleMapReviewError(
+                "LIST_NOT_FOUND",
+                f"List '{list_id}' not found.",
+                suggested_action="Use get_all_lists() to find valid list IDs.",
+                context={"list_id": list_id},
+            )
+        place = self._require_place(business_id)
+        for entry in lst["places"]:
+            if entry["business_id"] == business_id:
+                raise GoogleMapReviewError(
+                    "ALREADY_IN_LIST",
+                    f"Place '{business_id}' is already in this list.",
+                    suggested_action="Use remove_from_list() first if you want to re-add.",
+                    context={"list_id": list_id, "business_id": business_id},
+                )
+        lst["places"].append({
+            "business_id": business_id,
+            "business_name": place.get("name", ""),
+            "note": note,
+            "added_at": _utc_now_iso(),
+        })
+        return {
+            "list_id": list_id,
+            "business_id": business_id,
+            "status": "added",
+        }
+
+    def remove_from_list(
+        self, list_id: str, business_id: str
+    ) -> Dict[str, Any]:
+        """
+        Remove a place from a custom list.
+
+        Args:
+            list_id (str): The list to remove the place from.
+            business_id (str): The place to remove.
+
+        Returns:
+            Dict[str, Any]:
+                list_id (str), business_id (str), status (str).
+        """
+        lst = self.lists.get(list_id)
+        if not lst:
+            raise GoogleMapReviewError(
+                "LIST_NOT_FOUND",
+                f"List '{list_id}' not found.",
+                suggested_action="Use get_all_lists() to find valid list IDs.",
+                context={"list_id": list_id},
+            )
+        for i, entry in enumerate(lst["places"]):
+            if entry["business_id"] == business_id:
+                lst["places"].pop(i)
+                return {
+                    "list_id": list_id,
+                    "business_id": business_id,
+                    "status": "removed",
+                }
+        raise GoogleMapReviewError(
+            "NOT_IN_LIST",
+            f"Place '{business_id}' is not in this list.",
+            suggested_action="Use get_list() to see which places are in the list.",
+            context={"list_id": list_id, "business_id": business_id},
+        )
+
+    def get_list(self, list_id: str) -> Dict[str, Any]:
+        """
+        View a custom list with all places.
+
+        Args:
+            list_id (str): The list to view.
+
+        Returns:
+            Dict[str, Any]: List object with list_id, name, description,
+                places list, and created_at.
+        """
+        lst = self.lists.get(list_id)
+        if not lst:
+            raise GoogleMapReviewError(
+                "LIST_NOT_FOUND",
+                f"List '{list_id}' not found.",
+                suggested_action="Use get_all_lists() to find valid list IDs.",
+                context={"list_id": list_id},
+            )
+        return deepcopy(lst)
+
+    def get_all_lists(self) -> List[Dict[str, Any]]:
+        """
+        List all user-created custom lists.
+
+        Returns:
+            List[Dict[str, Any]]: List summary objects with list_id, name,
+                description, place_count, and created_at.
+        """
+        results = []
+        for lst in self.lists.values():
+            results.append({
+                "list_id": lst["list_id"],
+                "name": lst["name"],
+                "description": lst["description"],
+                "place_count": len(lst["places"]),
+                "created_at": lst["created_at"],
+            })
+        return results
+
+    # -----------------------------------------------------------------------
+    # Local Guide Contributions & Levels
+    # -----------------------------------------------------------------------
+
+    def get_local_guide_status(self) -> Dict[str, Any]:
+        """
+        Get the current user's Local Guide status including level, points,
+        contribution counts, and points needed for next level.
+
+        Returns:
+            Dict[str, Any]:
+                level (int), points (int), contributions (dict with reviews,
+                photos, answers counts), points_to_next_level (int).
+        """
+        guide = self.local_guide
+        level = guide.get("level", 1)
+        points = guide.get("points", 0)
+        contributions = guide.get("contributions", {
+            "reviews": 0,
+            "photos": 0,
+            "answers": 0,
+        })
+        # Level thresholds: level 1=0, 2=15, 3=75, 4=200, 5=500, 6=1500,
+        # 7=5000, 8=15000, 9=50000, 10=100000
+        thresholds = [0, 15, 75, 200, 500, 1500, 5000, 15000, 50000, 100000]
+        if level < 10:
+            points_to_next = thresholds[level] - points
+            if points_to_next < 0:
+                points_to_next = 0
+        else:
+            points_to_next = 0
+        return {
+            "level": level,
+            "points": points,
+            "contributions": deepcopy(contributions),
+            "points_to_next_level": points_to_next,
+        }
+
+    def get_contribution_history(
+        self, type: Optional[str] = None, limit: int = 10
+    ) -> List[Dict[str, Any]]:
+        """
+        Get past contributions (reviews, photos, answers) optionally filtered
+        by type.
+
+        Args:
+            type (str, optional): Filter by contribution type. One of
+                "reviews", "photos", "answers". None returns all types.
+                Defaults to None.
+            limit (int): Maximum contributions to return. Defaults to 10.
+
+        Returns:
+            List[Dict[str, Any]]: Contribution objects sorted newest first.
+        """
+        contributions = []
+        if type is None or type == "reviews":
+            for r in self.reviews.values():
+                if r.get("author", {}).get("is_current_user"):
+                    contributions.append({
+                        "type": "reviews",
+                        "business_id": r["business_id"],
+                        "detail": r.get("text", ""),
+                        "created_at": r.get("created_at", ""),
+                    })
+        if type is None or type == "photos":
+            for p in self.photo_contributions:
+                contributions.append({
+                    "type": "photos",
+                    "business_id": p["business_id"],
+                    "detail": p.get("caption", ""),
+                    "created_at": p.get("created_at", ""),
+                })
+        if type is None or type == "answers":
+            for q in self.place_questions.values():
+                for ans in q.get("answers", []):
+                    if ans.get("author") == self.profile.get("name", ""):
+                        contributions.append({
+                            "type": "answers",
+                            "business_id": q["business_id"],
+                            "detail": ans.get("answer_text", ""),
+                            "created_at": ans.get("created_at", ""),
+                        })
+        contributions.sort(
+            key=lambda x: x.get("created_at", ""), reverse=True
+        )
+        return contributions[:limit]
+
+    def add_photo(
+        self, business_id: str, photo_url: str, caption: str = ""
+    ) -> Dict[str, Any]:
+        """
+        Add a photo to a place. Awards Local Guide points.
+
+        Args:
+            business_id (str): The place to add a photo to.
+            photo_url (str): The URL of the photo.
+            caption (str, optional): A caption for the photo. Defaults to "".
+
+        Returns:
+            Dict[str, Any]:
+                business_id (str), photo_url (str), caption (str),
+                points_awarded (int), status (str).
+        """
+        self._require_place(business_id)
+        self.photo_contributions.append({
+            "business_id": business_id,
+            "photo_url": photo_url,
+            "caption": caption,
+            "created_at": _utc_now_iso(),
+        })
+        points_awarded = 5
+        if not self.local_guide:
+            self.local_guide = {
+                "level": 1,
+                "points": 0,
+                "contributions": {"reviews": 0, "photos": 0, "answers": 0},
+            }
+        self.local_guide["points"] = (
+            self.local_guide.get("points", 0) + points_awarded
+        )
+        contributions = self.local_guide.get(
+            "contributions", {"reviews": 0, "photos": 0, "answers": 0}
+        )
+        contributions["photos"] = contributions.get("photos", 0) + 1
+        self.local_guide["contributions"] = contributions
+        return {
+            "business_id": business_id,
+            "photo_url": photo_url,
+            "caption": caption,
+            "points_awarded": points_awarded,
+            "status": "added",
+        }
+
+    # -----------------------------------------------------------------------
+    # Place Q&A
+    # -----------------------------------------------------------------------
+
+    def ask_place_question(
+        self, business_id: str, question_text: str
+    ) -> Dict[str, Any]:
+        """
+        Ask a question about a place.
+
+        Args:
+            business_id (str): The place to ask about.
+            question_text (str): The question text.
+
+        Returns:
+            Dict[str, Any]:
+                question_id (str), business_id (str), question_text (str),
+                status (str).
+        """
+        self._require_place(business_id)
+        question_id = self._new_id("question")
+        self.place_questions[question_id] = {
+            "question_id": question_id,
+            "business_id": business_id,
+            "question_text": question_text,
+            "author": self.profile.get("name", ""),
+            "answers": [],
+            "created_at": _utc_now_iso(),
+        }
+        return {
+            "question_id": question_id,
+            "business_id": business_id,
+            "question_text": question_text,
+            "status": "posted",
+        }
+
+    def answer_place_question(
+        self, question_id: str, answer_text: str
+    ) -> Dict[str, Any]:
+        """
+        Answer an existing question about a place.
+
+        Args:
+            question_id (str): The question to answer.
+            answer_text (str): The answer text.
+
+        Returns:
+            Dict[str, Any]:
+                question_id (str), answer_text (str), status (str).
+        """
+        question = self.place_questions.get(question_id)
+        if not question:
+            raise GoogleMapReviewError(
+                "QUESTION_NOT_FOUND",
+                f"Question '{question_id}' not found.",
+                suggested_action="Use get_place_questions() to find valid question IDs.",
+                context={"question_id": question_id},
+            )
+        question["answers"].append({
+            "answer_text": answer_text,
+            "author": self.profile.get("name", ""),
+            "created_at": _utc_now_iso(),
+        })
+        # Award Local Guide points for answering
+        if not self.local_guide:
+            self.local_guide = {
+                "level": 1,
+                "points": 0,
+                "contributions": {"reviews": 0, "photos": 0, "answers": 0},
+            }
+        self.local_guide["points"] = self.local_guide.get("points", 0) + 3
+        contributions = self.local_guide.get(
+            "contributions", {"reviews": 0, "photos": 0, "answers": 0}
+        )
+        contributions["answers"] = contributions.get("answers", 0) + 1
+        self.local_guide["contributions"] = contributions
+        return {
+            "question_id": question_id,
+            "answer_text": answer_text,
+            "status": "answered",
+        }
+
+    def get_place_questions(
+        self, business_id: str, limit: int = 10
+    ) -> List[Dict[str, Any]]:
+        """
+        Get all questions and answers for a place.
+
+        Args:
+            business_id (str): The place to get questions for.
+            limit (int): Maximum number of questions to return. Defaults to 10.
+
+        Returns:
+            List[Dict[str, Any]]: Question objects with question_id,
+                business_id, question_text, author, answers list, and
+                created_at, sorted newest first.
+        """
+        self._require_place(business_id)
+        results = [
+            deepcopy(q) for q in self.place_questions.values()
+            if q.get("business_id") == business_id
+        ]
+        results.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        return results[:limit]

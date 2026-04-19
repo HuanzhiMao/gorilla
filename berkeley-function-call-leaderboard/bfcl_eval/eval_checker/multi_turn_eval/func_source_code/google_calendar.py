@@ -66,6 +66,9 @@ DEFAULT_STATE = {
     "calendars": {},
     "events": {},
     "calendar_acls": {},
+    "appointment_slots": {},
+    "working_hours": {},
+    "out_of_office": {},
 }
 
 
@@ -92,11 +95,14 @@ class GoogleCalendarAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = {"calendar": 0, "event": 0}
+        self._id_counters = {"calendar": 0, "event": 0, "slot": 0}
         self.profile: Dict[str, Any]
         self.calendars: Dict[str, Dict[str, Any]]
         self.events: Dict[str, Dict[str, Any]]
         self.calendar_acls: Dict[str, List[Dict[str, Any]]]
+        self.appointment_slots: Dict[str, Dict[str, Any]]
+        self.working_hours: Dict[str, Any]
+        self.out_of_office: Dict[str, Any]
         self._api_description = (
             "This tool belongs to the Google Calendar API, which provides "
             "event scheduling, calendar management, attendee coordination, "
@@ -128,6 +134,9 @@ class GoogleCalendarAPI(PatchableMixin):
         self.calendars = scenario.get("calendars", DEFAULT_STATE_COPY["calendars"])
         self.events = scenario.get("events", DEFAULT_STATE_COPY["events"])
         self.calendar_acls = scenario.get("calendar_acls", DEFAULT_STATE_COPY["calendar_acls"])
+        self.appointment_slots = scenario.get("appointment_slots", DEFAULT_STATE_COPY["appointment_slots"])
+        self.working_hours = scenario.get("working_hours", DEFAULT_STATE_COPY["working_hours"])
+        self.out_of_office = scenario.get("out_of_office", DEFAULT_STATE_COPY["out_of_office"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -657,3 +666,236 @@ class GoogleCalendarAPI(PatchableMixin):
         ev["calendar_id"] = new_calendar_id
         ev["updated_at"] = _utc_now_iso()
         return {"event_id": event_id, "calendar_id": new_calendar_id, "status": "moved"}
+
+    # -----------------------------------------------------------------------
+    # Appointment Slots / Booking Pages (Google-exclusive)
+    # -----------------------------------------------------------------------
+
+    def create_appointment_slots(
+        self,
+        calendar_id: str,
+        title: str,
+        start_time: str,
+        end_time: str,
+        slot_duration_minutes: int,
+        description: Optional[str] = None,
+        location: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Create a block of bookable appointment slots.  Generates individual
+        slot entries between start_time and end_time with the given duration.
+
+        Args:
+            calendar_id (str): The calendar to host the appointment slots.
+            title (str): Title for the appointment block.
+            start_time (str): Start of the appointment block (ISO-8601).
+            end_time (str): End of the appointment block (ISO-8601).
+            slot_duration_minutes (int): Duration of each slot in minutes.
+            description (str, optional): Description for the appointment slots.
+            location (str, optional): Location for the appointments.
+
+        Returns:
+            List[Dict[str, Any]]: List of created slot objects, each with
+                slot_id, calendar_id, title, start_time, end_time, status,
+                description, location.
+        """
+        self._require_calendar(calendar_id)
+
+        if not title:
+            raise GoogleCalendarError("EMPTY_TITLE", "Appointment title cannot be empty.")
+        if slot_duration_minutes <= 0:
+            raise GoogleCalendarError("INVALID_DURATION", "Slot duration must be positive.")
+
+        try:
+            t_start = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
+        except (ValueError, AttributeError):
+            raise GoogleCalendarError("INVALID_TIME", "Invalid start_time format.")
+        try:
+            t_end = datetime.fromisoformat(end_time.replace("Z", "+00:00"))
+        except (ValueError, AttributeError):
+            raise GoogleCalendarError("INVALID_TIME", "Invalid end_time format.")
+
+        if t_end <= t_start:
+            raise GoogleCalendarError("INVALID_TIME_RANGE",
+                                       "end_time must be after start_time.")
+
+        created_slots = []
+        current = t_start
+        while current + timedelta(minutes=slot_duration_minutes) <= t_end:
+            slot_end = current + timedelta(minutes=slot_duration_minutes)
+            slot_id = self._new_id("slot")
+            slot = {
+                "slot_id": slot_id,
+                "calendar_id": calendar_id,
+                "title": title,
+                "start_time": current.isoformat(),
+                "end_time": slot_end.isoformat(),
+                "status": "available",
+                "description": description or "",
+                "location": location,
+                "booked_by": None,
+                "created_at": _utc_now_iso(),
+            }
+            self.appointment_slots[slot_id] = slot
+            created_slots.append(deepcopy(slot))
+            current = slot_end
+
+        return created_slots
+
+    def list_appointment_slots(
+        self,
+        calendar_id: str,
+        time_min: Optional[str] = None,
+        time_max: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        List available (unbooked) appointment slots for a calendar.
+
+        Args:
+            calendar_id (str): The calendar to list slots for.
+            time_min (str, optional): Only slots starting after this time.
+            time_max (str, optional): Only slots starting before this time.
+
+        Returns:
+            List[Dict[str, Any]]: Available slot objects sorted by start time.
+        """
+        self._require_calendar(calendar_id)
+        results = []
+        for slot in self.appointment_slots.values():
+            if slot.get("calendar_id") != calendar_id:
+                continue
+            if slot.get("status") != "available":
+                continue
+            if time_min and slot.get("start_time", "") < time_min:
+                continue
+            if time_max and slot.get("start_time", "") > time_max:
+                continue
+            results.append(deepcopy(slot))
+        results.sort(key=lambda x: x.get("start_time", ""))
+        return results
+
+    def book_appointment_slot(
+        self,
+        slot_id: str,
+        attendee_email: str,
+        attendee_name: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Book a specific appointment slot.  Marks the slot as booked and
+        creates a corresponding calendar event.
+
+        Args:
+            slot_id (str): The slot to book.
+            attendee_email (str): Email of the person booking.
+            attendee_name (str, optional): Name of the person booking.
+
+        Returns:
+            Dict[str, Any]: Created event object for the booked appointment.
+        """
+        slot = self.appointment_slots.get(slot_id)
+        if not slot:
+            raise GoogleCalendarError("SLOT_NOT_FOUND",
+                                       f"Appointment slot '{slot_id}' not found.",
+                                       suggested_action="Use list_appointment_slots().")
+        if slot.get("status") != "available":
+            raise GoogleCalendarError("SLOT_ALREADY_BOOKED",
+                                       f"Slot '{slot_id}' is already booked.")
+
+        slot["status"] = "booked"
+        slot["booked_by"] = {"email": attendee_email, "name": attendee_name or ""}
+
+        event = self.create_event(
+            calendar_id=slot["calendar_id"],
+            title=slot["title"],
+            start_time=slot["start_time"],
+            end_time=slot["end_time"],
+            description=slot.get("description", ""),
+            location=slot.get("location"),
+            attendees=[{"email": attendee_email, "name": attendee_name or ""}],
+        )
+        slot["event_id"] = event["event_id"]
+        return event
+
+    # -----------------------------------------------------------------------
+    # Working Hours & Out of Office (Google-exclusive)
+    # -----------------------------------------------------------------------
+
+    def set_working_hours(
+        self,
+        days_of_week: List[str],
+        start_time: str,
+        end_time: str,
+    ) -> Dict[str, Any]:
+        """
+        Set recurring working hours for the current user.
+
+        Args:
+            days_of_week (List[str]): Working days (e.g.,
+                ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]).
+            start_time (str): Daily start time (e.g., "09:00").
+            end_time (str): Daily end time (e.g., "17:00").
+
+        Returns:
+            Dict[str, Any]: Updated working hours with days_of_week,
+                start_time, end_time.
+        """
+        valid_days = {"Monday", "Tuesday", "Wednesday", "Thursday",
+                      "Friday", "Saturday", "Sunday"}
+        for day in days_of_week:
+            if day not in valid_days:
+                raise GoogleCalendarError("INVALID_DAY",
+                                           f"Invalid day '{day}'. Must be one of {sorted(valid_days)}.")
+        self.working_hours = {
+            "days_of_week": days_of_week,
+            "start_time": start_time,
+            "end_time": end_time,
+        }
+        return deepcopy(self.working_hours)
+
+    def get_working_hours(self) -> Dict[str, Any]:
+        """
+        Get the current working hours configuration.
+
+        Returns:
+            Dict[str, Any]: Working hours with days_of_week, start_time,
+                end_time.  Empty dict if not configured.
+        """
+        return deepcopy(self.working_hours)
+
+    def set_out_of_office(
+        self,
+        start_date: str,
+        end_date: str,
+        decline_message: str = "",
+    ) -> Dict[str, Any]:
+        """
+        Set an out-of-office period.  During this period the user's status
+        is shown as out-of-office.
+
+        Args:
+            start_date (str): Start date of OOO (ISO-8601 date or datetime).
+            end_date (str): End date of OOO (ISO-8601 date or datetime).
+            decline_message (str): Optional auto-decline message.
+                Defaults to "".
+
+        Returns:
+            Dict[str, Any]: Out-of-office configuration with start_date,
+                end_date, decline_message, enabled.
+        """
+        self.out_of_office = {
+            "start_date": start_date,
+            "end_date": end_date,
+            "decline_message": decline_message,
+            "enabled": True,
+        }
+        return deepcopy(self.out_of_office)
+
+    def get_out_of_office(self) -> Dict[str, Any]:
+        """
+        Get the current out-of-office status.
+
+        Returns:
+            Dict[str, Any]: Out-of-office configuration.  Empty dict if
+                not configured.
+        """
+        return deepcopy(self.out_of_office)

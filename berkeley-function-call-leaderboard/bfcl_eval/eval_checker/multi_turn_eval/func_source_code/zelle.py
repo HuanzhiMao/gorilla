@@ -68,6 +68,7 @@ DEFAULT_STATE = {
     "transactions": {},
     "requests": {},
     "funding_sources": {},
+    "scheduled_payments": {},
 }
 
 
@@ -96,12 +97,13 @@ class ZelleAPI(PatchableMixin):
     _MONTHLY_LIMIT = 20000.0
 
     def __init__(self):
-        self._id_counters = { "contact": 0, "transaction": 0, "request": 0, "funding_source": 0, }
+        self._id_counters = { "contact": 0, "transaction": 0, "request": 0, "funding_source": 0, "scheduled_payment": 0, }
         self.profile: Dict[str, Any] = {}
         self.contacts: Dict[str, Dict[str, Any]] = {}
         self.transactions: Dict[str, Dict[str, Any]] = {}
         self.requests: Dict[str, Dict[str, Any]] = {}
         self.funding_sources: Dict[str, Dict[str, Any]] = {}
+        self.scheduled_payments: Dict[str, Dict[str, Any]] = {}
         self._api_description = (
             "This tool belongs to the Zelle payment API, which provides "
             "bank-to-bank money transfers, payment requests, and contact "
@@ -133,6 +135,7 @@ class ZelleAPI(PatchableMixin):
         self.transactions = scenario.get("transactions", DEFAULT_STATE_COPY["transactions"])
         self.requests = scenario.get("requests", DEFAULT_STATE_COPY["requests"])
         self.funding_sources = scenario.get("funding_sources", DEFAULT_STATE_COPY["funding_sources"])
+        self.scheduled_payments = scenario.get("scheduled_payments", DEFAULT_STATE_COPY["scheduled_payments"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -849,4 +852,326 @@ class ZelleAPI(PatchableMixin):
             "monthly_limit": self._MONTHLY_LIMIT,
             "monthly_spent": spent,
             "monthly_remaining": max(0, self._MONTHLY_LIMIT - spent),
+        }
+
+    # -----------------------------------------------------------------------
+    # Scheduled payments
+    # -----------------------------------------------------------------------
+
+    _VALID_CATEGORIES = (
+        "rent", "utilities", "food", "entertainment", "travel",
+        "healthcare", "other",
+    )
+
+    def schedule_payment(
+        self,
+        contact_id: str,
+        amount: float,
+        scheduled_date: str,
+        note: Optional[str] = None,
+        funding_source_id: Optional[str] = None,
+        recurring: bool = False,
+    ) -> Dict[str, Any]:
+        """
+        Schedule a future payment to a contact, optionally recurring monthly.
+        Validates contact exists, amount > 0, date is in the future, and
+        the payment is within daily/monthly limits.
+
+        Args:
+            contact_id (str): The recipient contact.
+            amount (float): Amount to send (must be > 0).
+            scheduled_date (str): Date to send the payment in YYYY-MM-DD
+                format. Must be in the future.
+            note (str, optional): Optional memo for the payment.
+            funding_source_id (str, optional): Bank account to send from.
+                Defaults to the first active linked bank account.
+            recurring (bool): If True, the payment recurs monthly.
+                Defaults to False.
+
+        Returns:
+            Dict[str, Any]:
+                scheduled_payment_id (str), contact_id (str), amount (float),
+                scheduled_date (str), recurring (bool), status (str).
+        """
+        contact = self._require_contact(contact_id)
+        if amount <= 0:
+            raise ZelleError(
+                "INVALID_AMOUNT",
+                "Amount must be greater than zero.",
+                suggested_action="Provide a positive amount.",
+                context={"amount": amount},
+            )
+
+        # Validate date format and that it is in the future
+        try:
+            sched_dt = datetime.strptime(scheduled_date, "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            )
+        except ValueError:
+            raise ZelleError(
+                "INVALID_DATE_FORMAT",
+                f"Invalid date format '{scheduled_date}'. Use YYYY-MM-DD.",
+                suggested_action="Provide a date in YYYY-MM-DD format.",
+                context={"scheduled_date": scheduled_date},
+            )
+
+        today = datetime.now(timezone.utc).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        if sched_dt <= today:
+            raise ZelleError(
+                "DATE_NOT_IN_FUTURE",
+                "Scheduled date must be in the future.",
+                suggested_action="Provide a future date.",
+                context={"scheduled_date": scheduled_date},
+            )
+
+        # Resolve funding source
+        if funding_source_id:
+            src = self._require_funding_source(funding_source_id)
+            if src.get("type") != "bank_account":
+                raise ZelleError(
+                    "INVALID_SOURCE_TYPE",
+                    "Zelle only supports bank account transfers.",
+                    suggested_action="Use a bank account funding source.",
+                    context={"source_id": funding_source_id, "type": src.get("type")},
+                )
+            if not src.get("active", True):
+                raise ZelleError(
+                    "SOURCE_INACTIVE",
+                    "This funding source is not active.",
+                    suggested_action="Activate the funding source or use a different one.",
+                    context={"source_id": funding_source_id},
+                )
+        else:
+            src = self._get_default_bank_account()
+            if not src:
+                raise ZelleError(
+                    "NO_BANK_ACCOUNT",
+                    "No active bank account found.",
+                    suggested_action="Add a bank account with add_funding_source().",
+                )
+
+        # Check limits
+        daily_spent = self._calculate_daily_spent()
+        if daily_spent + amount > self._DAILY_LIMIT:
+            raise ZelleError(
+                "DAILY_LIMIT_EXCEEDED",
+                f"This payment would exceed the daily limit of ${self._DAILY_LIMIT:.2f}.",
+                suggested_action="Reduce the amount or try again tomorrow.",
+                context={"daily_limit": self._DAILY_LIMIT, "daily_spent": daily_spent, "amount": amount},
+            )
+        monthly_spent = self._calculate_monthly_spent()
+        if monthly_spent + amount > self._MONTHLY_LIMIT:
+            raise ZelleError(
+                "MONTHLY_LIMIT_EXCEEDED",
+                f"This payment would exceed the monthly limit of ${self._MONTHLY_LIMIT:.2f}.",
+                suggested_action="Reduce the amount or wait until next month.",
+                context={"monthly_limit": self._MONTHLY_LIMIT, "monthly_spent": monthly_spent, "amount": amount},
+            )
+
+        now = _utc_now_iso()
+        sp_id = self._new_id("scheduled_payment")
+        self.scheduled_payments[sp_id] = {
+            "scheduled_payment_id": sp_id,
+            "contact_id": contact_id,
+            "counterparty": self._make_counterparty(contact),
+            "amount": amount,
+            "scheduled_date": scheduled_date,
+            "note": note or "",
+            "funding_source": src["source_id"],
+            "recurring": recurring,
+            "status": "pending",
+            "created_at": now,
+        }
+
+        return {
+            "scheduled_payment_id": sp_id,
+            "contact_id": contact_id,
+            "amount": amount,
+            "scheduled_date": scheduled_date,
+            "recurring": recurring,
+            "status": "pending",
+        }
+
+    def list_scheduled_payments(self) -> List[Dict[str, Any]]:
+        """
+        List all pending scheduled payments.
+
+        Returns:
+            List[Dict[str, Any]]: Scheduled payment objects sorted by
+                scheduled_date ascending.
+        """
+        results = []
+        for sp in self.scheduled_payments.values():
+            if sp.get("status") == "pending":
+                results.append(deepcopy(sp))
+        results.sort(key=lambda x: x.get("scheduled_date", ""))
+        return results
+
+    def cancel_scheduled_payment(
+        self, scheduled_payment_id: str,
+    ) -> Dict[str, Any]:
+        """
+        Cancel a scheduled payment. Only pending scheduled payments can
+        be cancelled.
+
+        Args:
+            scheduled_payment_id (str): The scheduled payment to cancel.
+
+        Returns:
+            Dict[str, Any]:
+                scheduled_payment_id (str), status (str).
+        """
+        sp = self.scheduled_payments.get(scheduled_payment_id)
+        if not sp:
+            raise ZelleError(
+                "SCHEDULED_PAYMENT_NOT_FOUND",
+                f"Scheduled payment '{scheduled_payment_id}' not found.",
+                suggested_action="Use list_scheduled_payments() to find valid IDs.",
+                context={"scheduled_payment_id": scheduled_payment_id},
+            )
+        if sp.get("status") != "pending":
+            raise ZelleError(
+                "CANNOT_CANCEL",
+                f"Cannot cancel a scheduled payment with status '{sp.get('status')}'.",
+                suggested_action="Only pending scheduled payments can be cancelled.",
+                context={"status": sp.get("status")},
+            )
+        sp["status"] = "cancelled"
+        return {
+            "scheduled_payment_id": scheduled_payment_id,
+            "status": "cancelled",
+        }
+
+    # -----------------------------------------------------------------------
+    # Transaction search & categories
+    # -----------------------------------------------------------------------
+
+    def search_transactions(
+        self,
+        query: Optional[str] = None,
+        category: Optional[str] = None,
+        date_from: Optional[str] = None,
+        date_to: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Search transactions by memo text, category, or date range.
+
+        Args:
+            query (str, optional): Text to search for in transaction notes/
+                memos. Case-insensitive substring match.
+            category (str, optional): Filter by category (rent, utilities,
+                food, entertainment, travel, healthcare, other).
+            date_from (str, optional): Start date in YYYY-MM-DD format
+                (inclusive).
+            date_to (str, optional): End date in YYYY-MM-DD format
+                (inclusive).
+
+        Returns:
+            List[Dict[str, Any]]: Matching transactions sorted newest first.
+        """
+        if category and category not in self._VALID_CATEGORIES:
+            raise ZelleError(
+                "INVALID_CATEGORY",
+                f"Invalid category '{category}'.",
+                suggested_action=f"Use one of: {', '.join(self._VALID_CATEGORIES)}.",
+                context={"category": category},
+            )
+
+        results = []
+        for txn in self.transactions.values():
+            if query:
+                note = txn.get("note", "") or txn.get("memo", "")
+                if query.lower() not in note.lower():
+                    continue
+            if category:
+                if txn.get("category") != category:
+                    continue
+            created = txn.get("created_at", "")[:10]
+            if date_from and created < date_from:
+                continue
+            if date_to and created > date_to:
+                continue
+            results.append(deepcopy(txn))
+        results.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        return results
+
+    def categorize_transaction(
+        self,
+        transaction_id: str,
+        category: str,
+    ) -> Dict[str, Any]:
+        """
+        Assign a category to a transaction for spending tracking.
+
+        Args:
+            transaction_id (str): The transaction to categorize.
+            category (str): Category to assign — one of rent, utilities,
+                food, entertainment, travel, healthcare, other.
+
+        Returns:
+            Dict[str, Any]:
+                transaction_id (str), category (str), status (str).
+        """
+        txn = self._require_transaction(transaction_id)
+        if category not in self._VALID_CATEGORIES:
+            raise ZelleError(
+                "INVALID_CATEGORY",
+                f"Invalid category '{category}'.",
+                suggested_action=f"Use one of: {', '.join(self._VALID_CATEGORIES)}.",
+                context={"category": category},
+            )
+        txn["category"] = category
+        return {
+            "transaction_id": transaction_id,
+            "category": category,
+            "status": "categorized",
+        }
+
+    def get_spending_summary(
+        self,
+        date_from: Optional[str] = None,
+        date_to: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get a spending breakdown by category for the given date range.
+
+        Args:
+            date_from (str, optional): Start date in YYYY-MM-DD format
+                (inclusive).
+            date_to (str, optional): End date in YYYY-MM-DD format
+                (inclusive).
+
+        Returns:
+            Dict[str, Any]:
+                summary (Dict[str, float]): Spending totals by category.
+                total (float): Total spending across all categories.
+                uncategorized (float): Spending not assigned a category.
+        """
+        summary: Dict[str, float] = {cat: 0.0 for cat in self._VALID_CATEGORIES}
+        uncategorized = 0.0
+
+        for txn in self.transactions.values():
+            if txn.get("type") != "send":
+                continue
+            if txn.get("status") not in ("completed", "pending"):
+                continue
+            created = txn.get("created_at", "")[:10]
+            if date_from and created < date_from:
+                continue
+            if date_to and created > date_to:
+                continue
+            cat = txn.get("category")
+            amount = txn.get("amount", 0)
+            if cat and cat in summary:
+                summary[cat] += amount
+            else:
+                uncategorized += amount
+
+        total = sum(summary.values()) + uncategorized
+        return {
+            "summary": summary,
+            "total": total,
+            "uncategorized": uncategorized,
         }

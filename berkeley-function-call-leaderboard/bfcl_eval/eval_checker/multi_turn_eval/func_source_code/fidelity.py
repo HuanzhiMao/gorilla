@@ -69,6 +69,9 @@ DEFAULT_STATE = {
     "orders": {},
     "watchlist": {},
     "tax_lots": {},
+    "baskets": {},
+    "stock_alerts": {},
+    "research_reports": {},
 }
 
 
@@ -82,13 +85,16 @@ class FidelityAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = {"order": 0, "tax_lot": 0}
+        self._id_counters = {"order": 0, "tax_lot": 0, "basket": 0, "stock_alert": 0}
         self.profile: Dict[str, Any]
         self.portfolio: Dict[str, Dict[str, Any]]
         self.positions: Dict[str, Dict[str, Any]]
         self.orders: Dict[str, Dict[str, Any]]
         self.watchlist: List[str]
         self.tax_lots: Dict[str, Dict[str, Any]]
+        self.baskets: Dict[str, Dict[str, Any]]
+        self.stock_alerts: Dict[str, Dict[str, Any]]
+        self.research_reports: Dict[str, Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Fidelity brokerage API, which provides "
             "investment management, stock/ETF/mutual fund trading, "
@@ -121,6 +127,9 @@ class FidelityAPI(PatchableMixin):
         self.orders = scenario.get("orders", DEFAULT_STATE_COPY["orders"])
         self.watchlist = scenario.get("watchlist", DEFAULT_STATE_COPY["watchlist"])
         self.tax_lots = scenario.get("tax_lots", DEFAULT_STATE_COPY["tax_lots"])
+        self.baskets = scenario.get("baskets", DEFAULT_STATE_COPY["baskets"])
+        self.stock_alerts = scenario.get("stock_alerts", DEFAULT_STATE_COPY["stock_alerts"])
+        self.research_reports = scenario.get("research_reports", DEFAULT_STATE_COPY["research_reports"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -597,3 +606,267 @@ class FidelityAPI(PatchableMixin):
                 results.append(lot_copy)
         results.sort(key=lambda x: x.get("acquired_date", ""))
         return results
+
+    # -----------------------------------------------------------------------
+    # Basket Trading
+    # -----------------------------------------------------------------------
+
+    def create_basket(
+        self, name: str, securities: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        """
+        Create a basket of securities with specified weights.
+
+        Args:
+            name (str): Name for the basket.
+            securities (List[Dict[str, Any]]): List of dicts each with
+                symbol (str) and weight_percent (float). Weights must sum to 100.
+
+        Returns:
+            Dict[str, Any]: basket_id (str), name (str), securities (list),
+                status (str "active").
+        """
+        if not securities:
+            raise FidelityError("EMPTY_BASKET", "Securities list cannot be empty.")
+
+        total_weight = sum(s.get("weight_percent", 0) for s in securities)
+        if abs(total_weight - 100) > 0.01:
+            raise FidelityError(
+                "INVALID_WEIGHTS",
+                f"Weights must sum to 100, got {total_weight}.",
+                context={"total_weight": total_weight},
+            )
+
+        for s in securities:
+            self._require_stock(s.get("symbol", ""))
+
+        basket_id = self._new_id("basket")
+        self.baskets[basket_id] = {
+            "basket_id": basket_id,
+            "name": name,
+            "securities": deepcopy(securities),
+            "status": "active",
+            "created_at": _utc_now_iso(),
+        }
+        return {
+            "basket_id": basket_id,
+            "name": name,
+            "securities": deepcopy(securities),
+            "status": "active",
+        }
+
+    def get_basket(self, basket_id: str) -> Dict[str, Any]:
+        """
+        View a basket with current values.
+
+        Args:
+            basket_id (str): The basket identifier.
+
+        Returns:
+            Dict[str, Any]: basket_id (str), name (str), securities (list)
+                each with symbol, weight_percent, current_price, name.
+        """
+        basket = self.baskets.get(basket_id)
+        if not basket:
+            raise FidelityError(
+                "BASKET_NOT_FOUND", f"Basket '{basket_id}' not found.",
+                suggested_action="Use list_baskets() to find valid basket IDs.",
+            )
+        enriched = []
+        for s in basket.get("securities", []):
+            sym = s.get("symbol", "").upper()
+            sec = self.portfolio.get(sym, {})
+            enriched.append({
+                "symbol": sym,
+                "weight_percent": s.get("weight_percent", 0),
+                "current_price": sec.get("current_price", 0),
+                "name": sec.get("name", ""),
+            })
+        return {
+            "basket_id": basket_id,
+            "name": basket.get("name", ""),
+            "securities": enriched,
+            "status": basket.get("status", "active"),
+        }
+
+    def trade_basket(
+        self, basket_id: str, total_amount: float, side: str,
+    ) -> Dict[str, Any]:
+        """
+        Buy or sell a basket proportionally.
+
+        Args:
+            basket_id (str): The basket to trade.
+            total_amount (float): Total dollar amount to invest/sell.
+            side (str): "buy" or "sell".
+
+        Returns:
+            Dict[str, Any]: basket_id (str), side (str), total_amount (float),
+                order_ids (List[str]).
+        """
+        basket = self.baskets.get(basket_id)
+        if not basket:
+            raise FidelityError("BASKET_NOT_FOUND", f"Basket '{basket_id}' not found.")
+        if basket.get("status") != "active":
+            raise FidelityError("BASKET_INACTIVE", "Basket is not active.")
+        if side not in ("buy", "sell"):
+            raise FidelityError("INVALID_SIDE", "Side must be 'buy' or 'sell'.")
+        if total_amount <= 0:
+            raise FidelityError("INVALID_AMOUNT", "Amount must be positive.")
+
+        order_ids = []
+        for s in basket.get("securities", []):
+            sym = s.get("symbol", "").upper()
+            weight = s.get("weight_percent", 0) / 100.0
+            alloc = total_amount * weight
+            sec = self.portfolio.get(sym, {})
+            price = sec.get("current_price", 1)
+            qty = round(alloc / price, 6)
+            if qty > 0:
+                result = self.place_order(sym, side, qty, order_type="market")
+                order_ids.append(result["order_id"])
+
+        return {
+            "basket_id": basket_id,
+            "side": side,
+            "total_amount": total_amount,
+            "order_ids": order_ids,
+        }
+
+    def list_baskets(self) -> List[Dict[str, Any]]:
+        """
+        List all baskets.
+
+        Returns:
+            List[Dict[str, Any]]: Baskets with basket_id, name, status,
+                security_count.
+        """
+        results = []
+        for b in self.baskets.values():
+            results.append({
+                "basket_id": b.get("basket_id"),
+                "name": b.get("name", ""),
+                "status": b.get("status", "active"),
+                "security_count": len(b.get("securities", [])),
+            })
+        return results
+
+    def delete_basket(self, basket_id: str) -> Dict[str, Any]:
+        """
+        Remove a basket.
+
+        Args:
+            basket_id (str): The basket to delete.
+
+        Returns:
+            Dict[str, Any]: basket_id (str), status (str "deleted").
+        """
+        basket = self.baskets.get(basket_id)
+        if not basket:
+            raise FidelityError("BASKET_NOT_FOUND", f"Basket '{basket_id}' not found.")
+        basket["status"] = "deleted"
+        return {"basket_id": basket_id, "status": "deleted"}
+
+    # -----------------------------------------------------------------------
+    # Research & Alerts
+    # -----------------------------------------------------------------------
+
+    def set_stock_alert(
+        self, symbol: str, condition: str, threshold: float,
+    ) -> Dict[str, Any]:
+        """
+        Set a stock alert based on a condition.
+
+        Args:
+            symbol (str): Ticker symbol.
+            condition (str): "price_above", "price_below", "volume_above",
+                or "pe_below".
+            threshold (float): The threshold value for the condition.
+
+        Returns:
+            Dict[str, Any]: alert_id (str), symbol (str), condition (str),
+                threshold (float), status (str "active").
+        """
+        self._require_stock(symbol)
+        sym = symbol.upper()
+        valid_conditions = ("price_above", "price_below", "volume_above", "pe_below")
+        if condition not in valid_conditions:
+            raise FidelityError(
+                "INVALID_CONDITION",
+                f"Condition must be one of {valid_conditions}.",
+            )
+        if threshold <= 0:
+            raise FidelityError("INVALID_THRESHOLD", "Threshold must be positive.")
+
+        alert_id = self._new_id("stock_alert")
+        self.stock_alerts[alert_id] = {
+            "alert_id": alert_id,
+            "symbol": sym,
+            "condition": condition,
+            "threshold": threshold,
+            "status": "active",
+            "created_at": _utc_now_iso(),
+        }
+        return {
+            "alert_id": alert_id,
+            "symbol": sym,
+            "condition": condition,
+            "threshold": threshold,
+            "status": "active",
+        }
+
+    def list_stock_alerts(self) -> List[Dict[str, Any]]:
+        """
+        List all active stock alerts.
+
+        Returns:
+            List[Dict[str, Any]]: Active alerts with alert_id, symbol,
+                condition, threshold, current_price, status.
+        """
+        results = []
+        for alert in self.stock_alerts.values():
+            if alert.get("status") != "active":
+                continue
+            sym = alert.get("symbol", "")
+            sec = self.portfolio.get(sym, {})
+            entry = deepcopy(alert)
+            entry["current_price"] = sec.get("current_price", 0)
+            results.append(entry)
+        return results
+
+    def get_research_report(self, symbol: str) -> Dict[str, Any]:
+        """
+        Get a detailed research report for a security.
+
+        Args:
+            symbol (str): Ticker symbol.
+
+        Returns:
+            Dict[str, Any]: symbol (str), summary (str),
+                recommendation (str), target_price (float), pe_ratio (float),
+                eps (float), revenue_growth (float), sector_rank (int),
+                risk_score (int 1-10).
+        """
+        self._require_stock(symbol)
+        sym = symbol.upper()
+
+        report = self.research_reports.get(sym)
+        if report:
+            return deepcopy(report)
+
+        # Generate a default report from portfolio data
+        sec = self.portfolio.get(sym, {})
+        price = sec.get("current_price", 100)
+        rating = sec.get("analyst_rating", "hold")
+        target_mult = {"buy": 1.15, "hold": 1.02, "sell": 0.85}.get(rating, 1.0)
+        return {
+            "symbol": sym,
+            "summary": f"Research report for {sec.get('name', sym)}.",
+            "recommendation": rating,
+            "target_price": round(price * target_mult, 2),
+            "pe_ratio": round(self._random.uniform(10, 40), 2),
+            "eps": round(self._random.uniform(1, 15), 2),
+            "revenue_growth": round(self._random.uniform(-5, 25), 2),
+            "sector_rank": self._random.randint(1, 50),
+            "risk_score": self._random.randint(1, 10),
+        }

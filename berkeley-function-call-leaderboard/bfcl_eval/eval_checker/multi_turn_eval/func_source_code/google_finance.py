@@ -65,6 +65,8 @@ DEFAULT_STATE = {
     "company_news": {},
     "analyst_views": {},
     "watchlists": {},
+    "portfolios": {},
+    "sector_performance": {},
 }
 
 
@@ -79,6 +81,8 @@ class GoogleFinanceAPI(PatchableMixin):
     - company_news: Dict[symbol, List[news articles]]
     - analyst_views: Dict[symbol, analyst summary]
     - watchlists: Dict[name, {name, symbols, created_at}]
+    - portfolios: Dict[portfolio_id, {portfolio_id, name, holdings, created_at}]
+    - sector_performance: Dict[sector, {day_change, week_change, month_change, ytd_change}]
     """
 
     def __init__(self):
@@ -89,6 +93,8 @@ class GoogleFinanceAPI(PatchableMixin):
         self.company_news: Dict[str, List[Dict[str, Any]]]
         self.analyst_views: Dict[str, Dict[str, Any]]
         self.watchlists: Dict[str, Dict[str, Any]]
+        self.portfolios: Dict[str, Dict[str, Any]]
+        self.sector_performance: Dict[str, Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Google Finance market-data API, which "
             "provides stock screening, live quote snapshots, price charts, "
@@ -118,6 +124,10 @@ class GoogleFinanceAPI(PatchableMixin):
             "analyst_views", default_state["analyst_views"]
         )
         self.watchlists = scenario.get("watchlists", default_state["watchlists"])
+        self.portfolios = scenario.get("portfolios", default_state["portfolios"])
+        self.sector_performance = scenario.get(
+            "sector_performance", default_state["sector_performance"]
+        )
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -405,3 +415,240 @@ class GoogleFinanceAPI(PatchableMixin):
             List[Dict[str, Any]]: Saved watchlist records.
         """
         return [deepcopy(watchlist) for watchlist in self.watchlists.values()]
+
+    # ── Portfolio Tracking ──────────────────────────────────────────────
+
+    def create_google_portfolio(self, name: str) -> Dict[str, Any]:
+        """
+        Create a new Google Finance portfolio.
+
+        Args:
+            name (str): Portfolio name.
+
+        Returns:
+            Dict[str, Any]: Portfolio metadata including the assigned portfolio_id.
+        """
+        portfolio_id = f"gport_{self._rng.randint(100000, 999999)}"
+        self.portfolios[portfolio_id] = {
+            "portfolio_id": portfolio_id,
+            "name": name,
+            "holdings": {},
+            "created_at": _utc_now_iso(),
+        }
+        return deepcopy(self.portfolios[portfolio_id])
+
+    def add_to_google_portfolio(
+        self,
+        portfolio_id: str,
+        symbol: str,
+        shares: float,
+        purchase_price: float,
+    ) -> Dict[str, Any]:
+        """
+        Add a holding to a Google Finance portfolio.
+
+        Args:
+            portfolio_id (str): Portfolio identifier.
+            symbol (str): Ticker symbol to add.
+            shares (float): Number of shares.
+            purchase_price (float): Price per share at purchase.
+
+        Returns:
+            Dict[str, Any]: Updated holding record.
+        """
+        if portfolio_id not in self.portfolios:
+            raise GoogleFinanceError(
+                "PORTFOLIO_NOT_FOUND",
+                f"Portfolio '{portfolio_id}' does not exist.",
+                suggested_action="Use create_google_portfolio() first.",
+                context={"portfolio_id": portfolio_id},
+            )
+        self._require_quote(symbol)
+        norm_symbol = symbol.upper()
+        holding = {
+            "symbol": norm_symbol,
+            "shares": shares,
+            "purchase_price": purchase_price,
+            "added_at": _utc_now_iso(),
+        }
+        self.portfolios[portfolio_id]["holdings"][norm_symbol] = holding
+        return deepcopy(holding)
+
+    def get_google_portfolio(self, portfolio_id: str) -> Dict[str, Any]:
+        """
+        View a Google Finance portfolio with current values and gain/loss.
+
+        Args:
+            portfolio_id (str): Portfolio identifier.
+
+        Returns:
+            Dict[str, Any]: Portfolio with holdings, current values, gain/loss per holding and total.
+        """
+        if portfolio_id not in self.portfolios:
+            raise GoogleFinanceError(
+                "PORTFOLIO_NOT_FOUND",
+                f"Portfolio '{portfolio_id}' does not exist.",
+                suggested_action="Use create_google_portfolio() first.",
+                context={"portfolio_id": portfolio_id},
+            )
+        portfolio = self.portfolios[portfolio_id]
+        holdings_detail = []
+        total_value = 0.0
+        total_cost = 0.0
+        for sym, holding in portfolio["holdings"].items():
+            quote = self.quotes.get(sym, {})
+            current_price = quote.get("current_price", 0.0)
+            current_value = round(holding["shares"] * current_price, 2)
+            cost_basis = round(holding["shares"] * holding["purchase_price"], 2)
+            gain_loss = round(current_value - cost_basis, 2)
+            gain_loss_percent = (
+                round((gain_loss / cost_basis) * 100, 2) if cost_basis else 0.0
+            )
+            total_value += current_value
+            total_cost += cost_basis
+            holdings_detail.append(
+                {
+                    "symbol": sym,
+                    "shares": holding["shares"],
+                    "purchase_price": holding["purchase_price"],
+                    "current_price": current_price,
+                    "current_value": current_value,
+                    "cost_basis": cost_basis,
+                    "gain_loss": gain_loss,
+                    "gain_loss_percent": gain_loss_percent,
+                }
+            )
+        total_gain_loss = round(total_value - total_cost, 2)
+        total_gain_loss_percent = (
+            round((total_gain_loss / total_cost) * 100, 2) if total_cost else 0.0
+        )
+        return {
+            "portfolio_id": portfolio_id,
+            "name": portfolio["name"],
+            "holdings": holdings_detail,
+            "total_value": round(total_value, 2),
+            "total_cost": round(total_cost, 2),
+            "total_gain_loss": total_gain_loss,
+            "total_gain_loss_percent": total_gain_loss_percent,
+            "created_at": portfolio["created_at"],
+        }
+
+    def remove_from_google_portfolio(
+        self, portfolio_id: str, symbol: str
+    ) -> Dict[str, Any]:
+        """
+        Remove a holding from a Google Finance portfolio.
+
+        Args:
+            portfolio_id (str): Portfolio identifier.
+            symbol (str): Ticker symbol to remove.
+
+        Returns:
+            Dict[str, Any]: Confirmation with removed symbol.
+        """
+        if portfolio_id not in self.portfolios:
+            raise GoogleFinanceError(
+                "PORTFOLIO_NOT_FOUND",
+                f"Portfolio '{portfolio_id}' does not exist.",
+                suggested_action="Use create_google_portfolio() first.",
+                context={"portfolio_id": portfolio_id},
+            )
+        norm_symbol = symbol.upper()
+        if norm_symbol not in self.portfolios[portfolio_id]["holdings"]:
+            raise GoogleFinanceError(
+                "HOLDING_NOT_FOUND",
+                f"Symbol '{symbol}' is not in portfolio '{portfolio_id}'.",
+                suggested_action="Use get_google_portfolio() to see current holdings.",
+                context={"portfolio_id": portfolio_id, "symbol": symbol},
+            )
+        del self.portfolios[portfolio_id]["holdings"][norm_symbol]
+        return {"portfolio_id": portfolio_id, "removed_symbol": norm_symbol}
+
+    def list_google_portfolios(self) -> List[Dict[str, Any]]:
+        """
+        List all Google Finance portfolios.
+
+        Returns:
+            List[Dict[str, Any]]: Portfolio summary records.
+        """
+        results = []
+        for portfolio in self.portfolios.values():
+            results.append(
+                {
+                    "portfolio_id": portfolio["portfolio_id"],
+                    "name": portfolio["name"],
+                    "num_holdings": len(portfolio["holdings"]),
+                    "created_at": portfolio["created_at"],
+                }
+            )
+        return results
+
+    # ── Stock Comparison ────────────────────────────────────────────────
+
+    def compare_google_stocks(
+        self,
+        symbols: List[str],
+        metrics: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Compare stocks side-by-side on key metrics.
+
+        Args:
+            symbols (List[str]): Ticker symbols to compare.
+            metrics (List[str], optional): Metrics to include. Defaults to price,
+                pe, market_cap, 52wk range, dividend_yield.
+
+        Returns:
+            Dict[str, Any]: Comparison table with one row per symbol.
+        """
+        normalized = self._normalize_symbols(symbols)
+        default_metrics = [
+            "price",
+            "pe",
+            "market_cap",
+            "52wk_range",
+            "dividend_yield",
+        ]
+        selected_metrics = metrics if metrics else default_metrics
+        comparison = []
+        for sym in normalized:
+            quote = self.quotes[sym]
+            row: Dict[str, Any] = {"symbol": sym, "name": quote["name"]}
+            for metric in selected_metrics:
+                if metric == "price":
+                    row["price"] = quote["current_price"]
+                elif metric == "pe":
+                    row["pe_ratio"] = quote["pe_ratio"]
+                elif metric == "market_cap":
+                    row["market_cap"] = quote["market_cap"]
+                elif metric == "52wk_range":
+                    row["week_52_low"] = quote["week_52_low"]
+                    row["week_52_high"] = quote["week_52_high"]
+                elif metric == "dividend_yield":
+                    row["dividend_yield"] = quote["dividend_yield"]
+            comparison.append(row)
+        return {"symbols": normalized, "metrics": selected_metrics, "comparison": comparison}
+
+    def get_google_sector_performance(
+        self, sector: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Get sector performance data with day, week, month, and YTD changes.
+
+        Args:
+            sector (str, optional): Specific sector to retrieve. If None returns all sectors.
+
+        Returns:
+            Dict[str, Any]: Sector performance data.
+        """
+        if sector:
+            perf = self.sector_performance.get(sector)
+            if not perf:
+                raise GoogleFinanceError(
+                    "SECTOR_NOT_FOUND",
+                    f"Sector '{sector}' is not available.",
+                    suggested_action="Call get_google_sector_performance() without a sector to list all.",
+                    context={"sector": sector},
+                )
+            return {"sector": sector, **deepcopy(perf)}
+        return {"sectors": deepcopy(self.sector_performance)}

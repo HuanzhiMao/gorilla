@@ -59,6 +59,9 @@ DEFAULT_STATE = {
     "alerts": {},
     "historical_weather": {},
     "location_index": {},
+    "moon_data": {},
+    "golden_hour_data": {},
+    "historical_averages": {},
 }
 
 
@@ -104,6 +107,9 @@ class YahooWeatherAPI(PatchableMixin):
         self.alerts: Dict[str, Dict[str, Any]]
         self.historical_weather: Dict[str, Dict[str, Dict[str, Any]]]
         self.location_index: Dict[str, Dict[str, Any]]
+        self.moon_data: Dict[str, Dict[str, Any]]
+        self.golden_hour_data: Dict[str, Dict[str, Any]]
+        self.historical_averages: Dict[str, Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Yahoo Weather API, which provides "
             "current observations, 12-hour hourly and 5-day forecasts, "
@@ -141,6 +147,15 @@ class YahooWeatherAPI(PatchableMixin):
         )
         self.location_index = scenario.get(
             "location_index", DEFAULT_STATE_COPY["location_index"]
+        )
+        self.moon_data = scenario.get(
+            "moon_data", DEFAULT_STATE_COPY["moon_data"]
+        )
+        self.golden_hour_data = scenario.get(
+            "golden_hour_data", DEFAULT_STATE_COPY["golden_hour_data"]
+        )
+        self.historical_averages = scenario.get(
+            "historical_averages", DEFAULT_STATE_COPY["historical_averages"]
         )
         self.long_context = long_context
 
@@ -593,4 +608,236 @@ class YahooWeatherAPI(PatchableMixin):
             "from_unit": from_unit.upper(),
             "converted": converted,
             "to_unit": to_unit,
+        }
+
+    # ---- Enhanced Astronomy ----
+
+    def get_moon_phase(
+        self, location: str, date: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Get moon phase details for a location on a given date.
+
+        Args:
+            location (str): Location name or identifier.
+            date (str, optional): Date in ISO format (YYYY-MM-DD).
+                Defaults to today.
+
+        Returns:
+            Dict[str, Any]: location, date, phase, illumination_percent,
+                moonrise, moonset, next_full_moon, next_new_moon.
+        """
+        moon = self.moon_data.get(location)
+        if not moon:
+            raise YahooWeatherError(
+                "LOCATION_NOT_FOUND",
+                f"No moon data for location '{location}'.",
+                suggested_action="Check the location name.",
+            )
+        result = deepcopy(moon)
+        if date is not None:
+            result["date"] = date
+        return result
+
+    def get_golden_hour(
+        self, location: str, date: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Get golden hour and blue hour times for photography and
+        outdoor activities.
+
+        Args:
+            location (str): Location name or identifier.
+            date (str, optional): Date in ISO format (YYYY-MM-DD).
+                Defaults to today.
+
+        Returns:
+            Dict[str, Any]: location, date, golden_hour_morning{start, end},
+                golden_hour_evening{start, end}, blue_hour_morning{start, end},
+                blue_hour_evening{start, end}.
+        """
+        gh = self.golden_hour_data.get(location)
+        if not gh:
+            raise YahooWeatherError(
+                "LOCATION_NOT_FOUND",
+                f"No golden hour data for location '{location}'.",
+                suggested_action="Check the location name.",
+            )
+        result = deepcopy(gh)
+        if date is not None:
+            result["date"] = date
+        return result
+
+    def get_astronomy_forecast(
+        self, location: str, days: int = 7
+    ) -> Dict[str, Any]:
+        """
+        Get multi-day astronomy forecast including best stargazing nights
+        based on moon phase and cloud cover.
+
+        Args:
+            location (str): Location name or identifier.
+            days (int): Number of days (1-14). Defaults to 7.
+
+        Returns:
+            Dict[str, Any]: location, days (list of daily astronomy data,
+                each with date, moon_phase, illumination_percent,
+                cloud_cover_pct, stargazing_score (1-10),
+                stargazing_rating).
+        """
+        if days < 1 or days > 14:
+            raise YahooWeatherError(
+                "INVALID_DAYS", "Days must be between 1 and 14."
+            )
+        moon = self.moon_data.get(location)
+        if not moon:
+            raise YahooWeatherError(
+                "LOCATION_NOT_FOUND",
+                f"No astronomy data for location '{location}'.",
+                suggested_action="Check the location name.",
+            )
+        forecast = self.daily_forecast.get(location)
+        forecast_days = forecast.get("days", []) if forecast else []
+
+        illumination = moon.get("illumination_percent", 50)
+        phase = moon.get("phase", "Waxing Gibbous")
+        result_days = []
+        for i in range(days):
+            day_data = forecast_days[i] if i < len(forecast_days) else {}
+            condition = day_data.get("condition_night", day_data.get("condition_day", "Clear")).lower()
+
+            if "clear" in condition:
+                cloud_pct = self._rng.randint(0, 15)
+            elif "partly" in condition:
+                cloud_pct = self._rng.randint(25, 50)
+            elif "mostly cloudy" in condition or "overcast" in condition:
+                cloud_pct = self._rng.randint(70, 95)
+            elif "cloudy" in condition:
+                cloud_pct = self._rng.randint(50, 75)
+            else:
+                cloud_pct = self._rng.randint(30, 60)
+
+            # Stargazing score: lower illumination + lower cloud = better
+            illum_score = max(0, 5 - (illumination / 20))
+            cloud_score = max(0, 5 - (cloud_pct / 20))
+            sg_score = max(1, min(10, round(illum_score + cloud_score)))
+
+            if sg_score >= 8:
+                rating = "Excellent"
+            elif sg_score >= 6:
+                rating = "Good"
+            elif sg_score >= 4:
+                rating = "Fair"
+            else:
+                rating = "Poor"
+
+            day_date = day_data.get("date", f"day_{i + 1}")
+            result_days.append({
+                "date": day_date,
+                "moon_phase": phase,
+                "illumination_percent": illumination,
+                "cloud_cover_pct": cloud_pct,
+                "stargazing_score": sg_score,
+                "stargazing_rating": rating,
+            })
+
+        return {
+            "location": location,
+            "days": result_days,
+        }
+
+    # ---- Historical Weather Comparison ----
+
+    def get_historical_average(
+        self, location: str, month: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Get historical average weather data for a location.
+
+        Args:
+            location (str): Location name or identifier.
+            month (str, optional): Month name (e.g. "January", "March").
+                Defaults to current month data if available.
+
+        Returns:
+            Dict[str, Any]: location, month, avg_temp_high, avg_temp_low,
+                avg_precipitation, avg_humidity, typical_conditions.
+        """
+        hist = self.historical_averages.get(location)
+        if not hist:
+            raise YahooWeatherError(
+                "LOCATION_NOT_FOUND",
+                f"No historical averages for location '{location}'.",
+                suggested_action="Check the location name.",
+            )
+        result = deepcopy(hist)
+        if month is not None:
+            result["month"] = month
+        return result
+
+    def compare_to_historical(self, location: str) -> Dict[str, Any]:
+        """
+        Compare current weather conditions to historical averages and
+        return deviation percentages.
+
+        Args:
+            location (str): Location name or identifier.
+
+        Returns:
+            Dict[str, Any]: location, current{temperature, humidity,
+                precipitation}, historical{avg_temp_high, avg_temp_low,
+                avg_precipitation, avg_humidity}, deviation{temperature_pct,
+                humidity_pct, precipitation_pct}, summary.
+        """
+        cw = self._require_current_weather(location)
+        hist = self.historical_averages.get(location)
+        if not hist:
+            raise YahooWeatherError(
+                "LOCATION_NOT_FOUND",
+                f"No historical averages for location '{location}'.",
+                suggested_action="Check the location name.",
+            )
+        avg_high = hist.get("avg_temp_high", 70)
+        avg_low = hist.get("avg_temp_low", 50)
+        avg_mid = (avg_high + avg_low) / 2
+        avg_humidity = hist.get("avg_humidity", 50)
+        avg_precip = hist.get("avg_precipitation", 0.1)
+
+        cur_temp = cw.get("temperature", avg_mid)
+        cur_humidity = cw.get("humidity", avg_humidity)
+        cur_precip = cw.get("precipitation", 0)
+
+        temp_dev = round(((cur_temp - avg_mid) / avg_mid) * 100, 1) if avg_mid != 0 else 0.0
+        hum_dev = round(((cur_humidity - avg_humidity) / avg_humidity) * 100, 1) if avg_humidity != 0 else 0.0
+        precip_dev = round(((cur_precip - avg_precip) / avg_precip) * 100, 1) if avg_precip != 0 else 0.0
+
+        parts = []
+        if abs(temp_dev) > 10:
+            parts.append(f"Temperature is {'above' if temp_dev > 0 else 'below'} average by {abs(temp_dev)}%.")
+        else:
+            parts.append("Temperature is near average.")
+        if abs(hum_dev) > 15:
+            parts.append(f"Humidity is {'above' if hum_dev > 0 else 'below'} average by {abs(hum_dev)}%.")
+        else:
+            parts.append("Humidity is near average.")
+
+        return {
+            "location": location,
+            "current": {
+                "temperature": cur_temp,
+                "humidity": cur_humidity,
+                "precipitation": cur_precip,
+            },
+            "historical": {
+                "avg_temp_high": avg_high,
+                "avg_temp_low": avg_low,
+                "avg_precipitation": avg_precip,
+                "avg_humidity": avg_humidity,
+            },
+            "deviation": {
+                "temperature_pct": temp_dev,
+                "humidity_pct": hum_dev,
+                "precipitation_pct": precip_dev,
+            },
+            "summary": " ".join(parts),
         }

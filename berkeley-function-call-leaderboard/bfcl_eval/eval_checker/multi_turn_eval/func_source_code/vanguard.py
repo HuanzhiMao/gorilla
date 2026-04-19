@@ -77,6 +77,8 @@ DEFAULT_STATE = {
     "auto_investments": {},
     "dividends": {},
     "contributions": {},
+    "target_allocation": {},
+    "rmd_info": {},
 }
 
 
@@ -93,7 +95,7 @@ class VanguardAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = { "order": 0, "auto_invest": 0, "dividend": 0, "contribution": 0, }
+        self._id_counters = { "order": 0, "auto_invest": 0, "dividend": 0, "contribution": 0, "rmd_schedule": 0, }
         self.profile: Dict[str, Any]
         self.portfolio: Dict[str, Dict[str, Any]]
         self.positions: Dict[str, Dict[str, Any]]
@@ -102,6 +104,8 @@ class VanguardAPI(PatchableMixin):
         self.auto_investments: Dict[str, Dict[str, Any]]
         self.dividends: Dict[str, Dict[str, Any]]
         self.contributions: Dict[str, Dict[str, Any]]
+        self.target_allocation: Dict[str, Any]
+        self.rmd_info: Dict[str, Any]
         self._api_description = (
             "This tool belongs to the Vanguard investment API, which provides "
             "low-cost index fund and ETF investing, target-date retirement funds, "
@@ -136,6 +140,8 @@ class VanguardAPI(PatchableMixin):
         self.auto_investments = scenario.get("auto_investments", DEFAULT_STATE_COPY["auto_investments"])
         self.dividends = scenario.get("dividends", DEFAULT_STATE_COPY["dividends"])
         self.contributions = scenario.get("contributions", DEFAULT_STATE_COPY["contributions"])
+        self.target_allocation = scenario.get("target_allocation", DEFAULT_STATE_COPY["target_allocation"])
+        self.rmd_info = scenario.get("rmd_info", DEFAULT_STATE_COPY["rmd_info"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -699,3 +705,320 @@ class VanguardAPI(PatchableMixin):
         self.profile["buying_power"] = self.profile.get("buying_power", 0) - amount
         arrival = (datetime.now(timezone.utc) + timedelta(days=3)).isoformat()
         return {"amount": amount, "status": "processing", "estimated_arrival": arrival}
+
+    # -----------------------------------------------------------------------
+    # Portfolio Rebalancing
+    # -----------------------------------------------------------------------
+
+    def get_target_allocation(self) -> Dict[str, Any]:
+        """
+        Get the target asset allocation percentages.
+
+        Returns:
+            Dict[str, Any]: stocks_percent (float), bonds_percent (float),
+                cash_percent (float).
+        """
+        if not self.target_allocation:
+            return {
+                "stocks_percent": 0,
+                "bonds_percent": 0,
+                "cash_percent": 0,
+                "status": "not_set",
+            }
+        return deepcopy(self.target_allocation)
+
+    def set_target_allocation(
+        self, stocks_percent: float, bonds_percent: float, cash_percent: float,
+    ) -> Dict[str, Any]:
+        """
+        Set the target asset allocation. Percentages must sum to 100.
+
+        Args:
+            stocks_percent (float): Target percentage for stocks.
+            bonds_percent (float): Target percentage for bonds.
+            cash_percent (float): Target percentage for cash.
+
+        Returns:
+            Dict[str, Any]: stocks_percent (float), bonds_percent (float),
+                cash_percent (float), status (str "set").
+        """
+        total = stocks_percent + bonds_percent + cash_percent
+        if abs(total - 100) > 0.01:
+            raise VanguardError(
+                "INVALID_ALLOCATION",
+                f"Allocation must sum to 100, got {total}.",
+                context={"total": total},
+            )
+        for val, name in [(stocks_percent, "stocks"), (bonds_percent, "bonds"), (cash_percent, "cash")]:
+            if val < 0:
+                raise VanguardError("NEGATIVE_ALLOCATION", f"{name}_percent cannot be negative.")
+
+        self.target_allocation = {
+            "stocks_percent": stocks_percent,
+            "bonds_percent": bonds_percent,
+            "cash_percent": cash_percent,
+            "status": "set",
+        }
+        return deepcopy(self.target_allocation)
+
+    def get_rebalance_preview(self) -> Dict[str, Any]:
+        """
+        Preview trades needed to reach the target allocation.
+
+        Returns:
+            Dict[str, Any]: current_allocation (dict), target_allocation (dict),
+                suggested_trades (List[Dict]) each with action (buy/sell),
+                asset_class, amount.
+        """
+        if not self.target_allocation or self.target_allocation.get("status") == "not_set":
+            raise VanguardError("NO_TARGET_SET", "Set a target allocation first.",
+                                suggested_action="Use set_target_allocation() first.")
+
+        positions_data = self.get_positions()
+        total_value = positions_data.get("total_value", 0)
+        cash = self.profile.get("cash_balance", 0)
+        grand_total = total_value + cash
+
+        if grand_total <= 0:
+            raise VanguardError("NO_PORTFOLIO_VALUE", "Portfolio has no value to rebalance.")
+
+        # Classify positions into stocks/bonds
+        stock_value = 0.0
+        bond_value = 0.0
+        for fid, pos in positions_data.get("positions", {}).items():
+            fund = self.portfolio.get(fid, {})
+            sector = fund.get("sector", "").lower()
+            if "bond" in sector or "fixed income" in sector:
+                bond_value += pos.get("current_value", 0)
+            else:
+                stock_value += pos.get("current_value", 0)
+
+        current = {
+            "stocks_percent": round(stock_value / grand_total * 100, 2) if grand_total else 0,
+            "bonds_percent": round(bond_value / grand_total * 100, 2) if grand_total else 0,
+            "cash_percent": round(cash / grand_total * 100, 2) if grand_total else 0,
+        }
+
+        target = self.target_allocation
+        trades = []
+        for asset_class, current_key, target_key in [
+            ("stocks", "stocks_percent", "stocks_percent"),
+            ("bonds", "bonds_percent", "bonds_percent"),
+            ("cash", "cash_percent", "cash_percent"),
+        ]:
+            diff = target.get(target_key, 0) - current.get(current_key, 0)
+            amount = round(abs(diff) / 100 * grand_total, 2)
+            if abs(diff) > 0.5:
+                trades.append({
+                    "action": "buy" if diff > 0 else "sell",
+                    "asset_class": asset_class,
+                    "amount": amount,
+                    "current_percent": current.get(current_key, 0),
+                    "target_percent": target.get(target_key, 0),
+                })
+
+        return {
+            "current_allocation": current,
+            "target_allocation": {
+                "stocks_percent": target.get("stocks_percent", 0),
+                "bonds_percent": target.get("bonds_percent", 0),
+                "cash_percent": target.get("cash_percent", 0),
+            },
+            "grand_total": grand_total,
+            "suggested_trades": trades,
+        }
+
+    def execute_rebalance(self) -> Dict[str, Any]:
+        """
+        Execute rebalancing trades to reach the target allocation.
+
+        Returns:
+            Dict[str, Any]: status (str), orders_placed (List[Dict]) each
+                with order_id, fund_id, side, amount.
+        """
+        preview = self.get_rebalance_preview()
+        orders_placed = []
+
+        for trade in preview.get("suggested_trades", []):
+            asset_class = trade.get("asset_class")
+            action = trade.get("action")
+            amount = trade.get("amount", 0)
+
+            if asset_class == "cash":
+                continue
+
+            # Pick a representative fund for the asset class
+            target_fund = None
+            for fid, fund in self.portfolio.items():
+                sector = fund.get("sector", "").lower()
+                if asset_class == "bonds" and ("bond" in sector or "fixed income" in sector):
+                    target_fund = fid
+                    break
+                elif asset_class == "stocks" and "bond" not in sector and "fixed income" not in sector:
+                    if fid in self.positions:
+                        target_fund = fid
+                        break
+
+            if not target_fund:
+                for fid, fund in self.portfolio.items():
+                    sector = fund.get("sector", "").lower()
+                    if asset_class == "stocks" and "bond" not in sector and "fixed income" not in sector:
+                        target_fund = fid
+                        break
+
+            if target_fund and amount > 0:
+                if action == "buy":
+                    result = self.buy_fund(target_fund, amount)
+                    orders_placed.append({
+                        "order_id": result["order_id"],
+                        "fund_id": target_fund,
+                        "side": "buy",
+                        "amount": amount,
+                    })
+                elif action == "sell":
+                    result = self.sell_fund(target_fund, amount=amount)
+                    orders_placed.append({
+                        "order_id": result["order_id"],
+                        "fund_id": target_fund,
+                        "side": "sell",
+                        "amount": result.get("proceeds", amount),
+                    })
+
+        return {"status": "completed", "orders_placed": orders_placed}
+
+    # -----------------------------------------------------------------------
+    # RMD Calculator
+    # -----------------------------------------------------------------------
+
+    def calculate_rmd(
+        self,
+        account_id: Optional[str] = None,
+        birth_date: Optional[str] = None,
+        account_balance: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """
+        Calculate Required Minimum Distribution using IRS life expectancy
+        tables.
+
+        Args:
+            account_id (str, optional): Account identifier. Defaults to
+                current account.
+            birth_date (str, optional): Date of birth (YYYY-MM-DD). Uses
+                stored value if not provided.
+            account_balance (float, optional): Account balance for calculation.
+                Uses current portfolio value if not provided.
+
+        Returns:
+            Dict[str, Any]: age (int), life_expectancy_factor (float),
+                account_balance (float), rmd_amount (float),
+                deadline (str).
+        """
+        # Use stored birth_date if available
+        bd = birth_date or self.rmd_info.get("birth_date")
+        if not bd:
+            raise VanguardError("BIRTH_DATE_REQUIRED",
+                                "Birth date is required for RMD calculation.",
+                                suggested_action="Provide birth_date parameter.")
+
+        # Calculate age
+        birth = datetime.strptime(bd, "%Y-%m-%d")
+        today = datetime.now(timezone.utc)
+        age = today.year - birth.year
+        if (today.month, today.day) < (birth.month, birth.day):
+            age -= 1
+
+        if age < 73:
+            return {
+                "age": age,
+                "rmd_required": False,
+                "message": f"RMD not required until age 73. You are currently {age}.",
+            }
+
+        # Simplified IRS Uniform Lifetime Table
+        life_table = {
+            73: 26.5, 74: 25.5, 75: 24.6, 76: 23.7, 77: 22.9,
+            78: 22.0, 79: 21.1, 80: 20.2, 81: 19.4, 82: 18.5,
+            83: 17.7, 84: 16.8, 85: 16.0, 86: 15.2, 87: 14.4,
+            88: 13.7, 89: 12.9, 90: 12.2, 91: 11.5, 92: 10.8,
+            93: 10.1, 94: 9.5, 95: 8.9, 96: 8.4, 97: 7.8,
+            98: 7.3, 99: 6.8, 100: 6.4,
+        }
+        factor = life_table.get(age, life_table.get(100, 6.4))
+
+        # Get balance
+        if account_balance is not None:
+            balance = account_balance
+        else:
+            positions_data = self.get_positions()
+            balance = positions_data.get("total_value", 0) + self.profile.get("cash_balance", 0)
+
+        rmd_amount = round(balance / factor, 2)
+        deadline = f"{today.year}-12-31"
+
+        # Store in rmd_info
+        self.rmd_info["birth_date"] = bd
+        self.rmd_info["last_calculated_rmd"] = rmd_amount
+        self.rmd_info["last_calculated_at"] = _utc_now_iso()
+
+        return {
+            "age": age,
+            "life_expectancy_factor": factor,
+            "account_balance": balance,
+            "rmd_amount": rmd_amount,
+            "deadline": deadline,
+            "rmd_required": True,
+        }
+
+    def schedule_rmd_withdrawal(
+        self, amount: float, frequency: str, start_date: str,
+    ) -> Dict[str, Any]:
+        """
+        Schedule automatic RMD withdrawals.
+
+        Args:
+            amount (float): Amount per withdrawal.
+            frequency (str): "monthly", "quarterly", or "annually".
+            start_date (str): Start date (YYYY-MM-DD).
+
+        Returns:
+            Dict[str, Any]: schedule_id (str), amount (float),
+                frequency (str), start_date (str), status (str "scheduled").
+        """
+        if amount <= 0:
+            raise VanguardError("INVALID_AMOUNT", "Amount must be positive.")
+        valid_freq = ("monthly", "quarterly", "annually")
+        if frequency not in valid_freq:
+            raise VanguardError("INVALID_FREQUENCY", f"Frequency must be one of {valid_freq}.")
+
+        schedule_id = self._new_id("rmd_schedule")
+        self.rmd_info["withdrawal_schedule"] = {
+            "schedule_id": schedule_id,
+            "amount": amount,
+            "frequency": frequency,
+            "start_date": start_date,
+            "status": "scheduled",
+            "created_at": _utc_now_iso(),
+        }
+        return {
+            "schedule_id": schedule_id,
+            "amount": amount,
+            "frequency": frequency,
+            "start_date": start_date,
+            "status": "scheduled",
+        }
+
+    def get_rmd_status(self) -> Dict[str, Any]:
+        """
+        Check current RMD requirements and withdrawal schedule.
+
+        Returns:
+            Dict[str, Any]: birth_date (str | None),
+                last_calculated_rmd (float | None),
+                withdrawal_schedule (dict | None).
+        """
+        return {
+            "birth_date": self.rmd_info.get("birth_date"),
+            "last_calculated_rmd": self.rmd_info.get("last_calculated_rmd"),
+            "last_calculated_at": self.rmd_info.get("last_calculated_at"),
+            "withdrawal_schedule": deepcopy(self.rmd_info.get("withdrawal_schedule")),
+        }

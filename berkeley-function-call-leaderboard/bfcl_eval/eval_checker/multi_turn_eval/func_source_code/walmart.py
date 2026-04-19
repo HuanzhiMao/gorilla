@@ -98,6 +98,9 @@ DEFAULT_STATE = {
     "stores": {},
     "store_inventory": {},
     "pickup_slots": {},
+    "competitor_prices": {},
+    "price_match_requests": {},
+    "auto_reorders": {},
 }
 
 
@@ -111,7 +114,7 @@ class WalmartAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = { "cart": 0, "order": 0, "return": 0, "review": 0, "address": 0, "payment": 0, }
+        self._id_counters = { "cart": 0, "order": 0, "return": 0, "review": 0, "address": 0, "payment": 0, "price_match": 0, "reorder": 0, }
         self.profile: Dict[str, Any]
         self.cart: Dict[str, Any]
         self.orders: Dict[str, Dict[str, Any]]
@@ -123,6 +126,9 @@ class WalmartAPI(PatchableMixin):
         self.stores: Dict[str, Dict[str, Any]]
         self.store_inventory: Dict[str, Dict[str, Any]]
         self.pickup_slots: Dict[str, List[Dict[str, Any]]]
+        self.competitor_prices: Dict[str, Dict[str, Any]]
+        self.price_match_requests: Dict[str, Dict[str, Any]]
+        self.auto_reorders: Dict[str, Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Walmart shopping system, which allows users to "
             "search products, manage a shopping cart with multiple fulfillment options "
@@ -161,6 +167,9 @@ class WalmartAPI(PatchableMixin):
         self.stores = scenario.get("stores", DEFAULT_STATE_COPY["stores"])
         self.store_inventory = scenario.get("store_inventory", DEFAULT_STATE_COPY["store_inventory"])
         self.pickup_slots = scenario.get("pickup_slots", DEFAULT_STATE_COPY["pickup_slots"])
+        self.competitor_prices = scenario.get("competitor_prices", DEFAULT_STATE_COPY["competitor_prices"])
+        self.price_match_requests = scenario.get("price_match_requests", DEFAULT_STATE_COPY["price_match_requests"])
+        self.auto_reorders = scenario.get("auto_reorders", DEFAULT_STATE_COPY["auto_reorders"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -1476,3 +1485,381 @@ class WalmartAPI(PatchableMixin):
         self.profile["payment_methods"][payment_id] = pm
 
         return deepcopy(pm)
+
+    # -----------------------------------------------------------------------
+    # Price Match
+    # -----------------------------------------------------------------------
+
+    def check_price_match(self, product_id: str) -> Dict[str, Any]:
+        """
+        Compare a product's Walmart price against known competitor prices and
+        calculate potential savings.
+
+        Args:
+            product_id (str): The product to check for price match opportunities.
+
+        Returns:
+            Dict[str, Any]:
+                product_id (str), walmart_price (int, cents),
+                competitors (List[Dict] — each with competitor_name (str),
+                    price (int, cents), savings (int, cents — negative means
+                    Walmart is cheaper)),
+                best_competitor (Dict | None — the lowest competitor price).
+        """
+        product = self._require_product(product_id)
+        walmart_price = self._get_effective_price(product)
+
+        comp_data = self.competitor_prices.get(product_id, {})
+        competitors = []
+        best = None
+        for comp_name, comp_price in comp_data.items():
+            cp = int(comp_price)
+            savings = walmart_price - cp
+            entry = {
+                "competitor_name": comp_name,
+                "price": cp,
+                "savings": savings,
+            }
+            competitors.append(entry)
+            if best is None or cp < best["price"]:
+                best = entry
+
+        return {
+            "product_id": product_id,
+            "walmart_price": walmart_price,
+            "competitors": competitors,
+            "best_competitor": deepcopy(best),
+        }
+
+    def request_price_match(
+        self,
+        order_id: str,
+        product_id: str,
+        competitor_price: int,
+        competitor_name: str,
+    ) -> str:
+        """
+        Submit a price match request for a product in an existing order. If
+        approved, the difference is refunded.
+
+        Args:
+            order_id (str): The order containing the product.
+            product_id (str): The product to price match.
+            competitor_price (int): The competitor's price in cents.
+            competitor_name (str): Name of the competitor (e.g. "Target",
+                "Amazon", "Costco").
+
+        Returns:
+            str: The new request_id for tracking the price match request.
+        """
+        user_id = self.user_id
+        order = self._require_order(order_id)
+        if order.get("user_id") != user_id:
+            raise WalmartError(
+                "ORDER_ACCESS_DENIED",
+                "You do not own this order.",
+                suggested_action="Use get_order_details() with a valid order_id.",
+                context={"order_id": order_id},
+            )
+
+        # Verify product is in the order
+        found = False
+        for item in order.get("items", []):
+            if item.get("product_id") == product_id:
+                found = True
+                break
+        if not found:
+            raise WalmartError(
+                "PRODUCT_NOT_IN_ORDER",
+                f"Product '{product_id}' is not in order '{order_id}'.",
+                suggested_action="Verify the product_id against get_order_details().",
+                context={"order_id": order_id, "product_id": product_id},
+            )
+
+        cp = int(competitor_price)
+        if cp < 0:
+            raise WalmartError(
+                "INVALID_PRICE",
+                "Competitor price must be >= 0.",
+                suggested_action="Provide a non-negative price in cents.",
+                context={"competitor_price": competitor_price},
+            )
+
+        product = self._require_product(product_id)
+        walmart_price = self._get_effective_price(product)
+        savings = walmart_price - cp
+
+        request_id = self._new_id("price_match")
+        now = _utc_now_iso()
+        self.price_match_requests[request_id] = {
+            "request_id": request_id,
+            "order_id": order_id,
+            "product_id": product_id,
+            "user_id": user_id,
+            "competitor_name": competitor_name,
+            "competitor_price": cp,
+            "walmart_price": walmart_price,
+            "savings": max(0, savings),
+            "status": "pending",
+            "created_at": now,
+        }
+        return request_id
+
+    def get_price_match_status(self, request_id: str) -> Dict[str, Any]:
+        """
+        Check the status of a price match request.
+
+        Args:
+            request_id (str): The price match request to check.
+
+        Returns:
+            Dict[str, Any]:
+                request_id (str), order_id (str), product_id (str),
+                competitor_name (str), competitor_price (int, cents),
+                walmart_price (int, cents), savings (int, cents),
+                status (str — "pending", "approved", "denied"),
+                created_at (str).
+        """
+        user_id = self.user_id
+        req = self.price_match_requests.get(request_id)
+        if not req:
+            raise WalmartError(
+                "PRICE_MATCH_NOT_FOUND",
+                f"Price match request '{request_id}' not found.",
+                suggested_action="Verify the request_id.",
+                context={"request_id": request_id},
+            )
+        if req.get("user_id") != user_id:
+            raise WalmartError(
+                "PRICE_MATCH_ACCESS_DENIED",
+                "You do not own this price match request.",
+                suggested_action="Use a valid request_id.",
+                context={"request_id": request_id},
+            )
+        return deepcopy(req)
+
+    # -----------------------------------------------------------------------
+    # Auto-Reorder
+    # -----------------------------------------------------------------------
+
+    def setup_auto_reorder(
+        self,
+        product_id: str,
+        frequency_days: int,
+        quantity: int = 1,
+        address_id: Optional[str] = None,
+        payment_method_id: Optional[str] = None,
+    ) -> str:
+        """
+        Set up automatic recurring reorder for a product.
+
+        Args:
+            product_id (str): The product to auto-reorder.
+            frequency_days (int): Number of days between reorders (e.g. 7, 14,
+                30, 60, 90).
+            quantity (int): Number of units per reorder; must be >= 1.
+                Defaults to 1.
+            address_id (str, optional): Shipping address for deliveries.
+                Defaults to the user's default address.
+            payment_method_id (str, optional): Payment method to charge.
+                Defaults to the user's default payment method.
+
+        Returns:
+            str: The new reorder_id.
+        """
+        user_id = self.user_id
+        self._require_product(product_id)
+
+        freq = int(frequency_days)
+        if freq < 1:
+            raise WalmartError(
+                "INVALID_FREQUENCY",
+                "Frequency must be >= 1 day.",
+                suggested_action="Provide a positive number of days.",
+                context={"frequency_days": frequency_days},
+            )
+
+        qty = int(quantity)
+        if qty < 1:
+            raise WalmartError(
+                "INVALID_QUANTITY",
+                "Quantity must be >= 1.",
+                suggested_action="Provide a quantity of at least 1.",
+                context={"quantity": quantity},
+            )
+
+        # Resolve address
+        if not address_id:
+            for addr in self.profile.get("addresses", {}).values():
+                if addr.get("is_default"):
+                    address_id = addr["address_id"]
+                    break
+        if address_id and address_id not in self.profile.get("addresses", {}):
+            raise WalmartError(
+                "ADDRESS_NOT_FOUND",
+                f"Address '{address_id}' not found.",
+                suggested_action="Call list_shipping_addresses() to get valid address IDs.",
+                context={"address_id": address_id},
+            )
+
+        # Resolve payment method
+        if not payment_method_id:
+            for pm in self.profile.get("payment_methods", {}).values():
+                if pm.get("is_default"):
+                    payment_method_id = pm.get("method_id", pm.get("payment_method_id"))
+                    break
+        if payment_method_id and payment_method_id not in self.profile.get("payment_methods", {}):
+            raise WalmartError(
+                "PAYMENT_METHOD_NOT_FOUND",
+                f"Payment method '{payment_method_id}' not found.",
+                suggested_action="Call list_wallet_payments() to get valid method IDs.",
+                context={"payment_method_id": payment_method_id},
+            )
+
+        reorder_id = self._new_id("reorder")
+        now = _utc_now_iso()
+        self.auto_reorders[reorder_id] = {
+            "reorder_id": reorder_id,
+            "product_id": product_id,
+            "user_id": user_id,
+            "frequency_days": freq,
+            "quantity": qty,
+            "address_id": address_id,
+            "payment_method_id": payment_method_id,
+            "status": "active",
+            "paused": False,
+            "created_at": now,
+            "next_reorder_at": now,
+        }
+        return reorder_id
+
+    def list_auto_reorders(self) -> List[Dict[str, Any]]:
+        """
+        List all auto-reorder subscriptions for the current user.
+
+        Returns:
+            List[Dict[str, Any]]: Auto-reorders, each with:
+                reorder_id (str), product_id (str), frequency_days (int),
+                quantity (int), status (str), paused (bool),
+                next_reorder_at (str).
+        """
+        user_id = self.user_id
+        results = []
+        for reorder in self.auto_reorders.values():
+            if reorder.get("user_id") == user_id:
+                results.append(deepcopy(reorder))
+        return results
+
+    def update_auto_reorder(
+        self,
+        reorder_id: str,
+        frequency_days: Optional[int] = None,
+        quantity: Optional[int] = None,
+        paused: Optional[bool] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update an existing auto-reorder subscription. You can change the
+        frequency, quantity, or pause/unpause it.
+
+        Args:
+            reorder_id (str): The auto-reorder to update.
+            frequency_days (int, optional): New number of days between reorders.
+            quantity (int, optional): New quantity per reorder; must be >= 1.
+            paused (bool, optional): If True, pause the auto-reorder. If False,
+                resume it.
+
+        Returns:
+            Dict[str, Any]: The updated auto-reorder object.
+        """
+        user_id = self.user_id
+        reorder = self.auto_reorders.get(reorder_id)
+        if not reorder:
+            raise WalmartError(
+                "REORDER_NOT_FOUND",
+                f"Auto-reorder '{reorder_id}' not found.",
+                suggested_action="Use list_auto_reorders() to find valid reorder IDs.",
+                context={"reorder_id": reorder_id},
+            )
+        if reorder.get("user_id") != user_id:
+            raise WalmartError(
+                "REORDER_ACCESS_DENIED",
+                "You do not own this auto-reorder.",
+                suggested_action="Use list_auto_reorders() to see your auto-reorders.",
+                context={"reorder_id": reorder_id},
+            )
+        if reorder.get("status") == "canceled":
+            raise WalmartError(
+                "REORDER_CANCELED",
+                "Cannot update a canceled auto-reorder.",
+                suggested_action="Set up a new auto-reorder with setup_auto_reorder().",
+                context={"reorder_id": reorder_id},
+            )
+
+        if frequency_days is not None:
+            freq = int(frequency_days)
+            if freq < 1:
+                raise WalmartError(
+                    "INVALID_FREQUENCY",
+                    "Frequency must be >= 1 day.",
+                    suggested_action="Provide a positive number of days.",
+                    context={"frequency_days": frequency_days},
+                )
+            reorder["frequency_days"] = freq
+
+        if quantity is not None:
+            qty = int(quantity)
+            if qty < 1:
+                raise WalmartError(
+                    "INVALID_QUANTITY",
+                    "Quantity must be >= 1.",
+                    suggested_action="Provide a quantity of at least 1.",
+                    context={"quantity": quantity},
+                )
+            reorder["quantity"] = qty
+
+        if paused is not None:
+            reorder["paused"] = bool(paused)
+
+        reorder["updated_at"] = _utc_now_iso()
+        return deepcopy(reorder)
+
+    def cancel_auto_reorder(self, reorder_id: str) -> Dict[str, Any]:
+        """
+        Cancel an auto-reorder subscription.
+
+        Args:
+            reorder_id (str): The auto-reorder to cancel.
+
+        Returns:
+            Dict[str, Any]:
+                reorder_id (str), canceled (bool), status (str).
+        """
+        user_id = self.user_id
+        reorder = self.auto_reorders.get(reorder_id)
+        if not reorder:
+            raise WalmartError(
+                "REORDER_NOT_FOUND",
+                f"Auto-reorder '{reorder_id}' not found.",
+                suggested_action="Use list_auto_reorders() to find valid reorder IDs.",
+                context={"reorder_id": reorder_id},
+            )
+        if reorder.get("user_id") != user_id:
+            raise WalmartError(
+                "REORDER_ACCESS_DENIED",
+                "You do not own this auto-reorder.",
+                suggested_action="Use list_auto_reorders() to see your auto-reorders.",
+                context={"reorder_id": reorder_id},
+            )
+        if reorder.get("status") == "canceled":
+            return {
+                "reorder_id": reorder_id,
+                "canceled": False,
+                "status": "canceled",
+            }
+        reorder["status"] = "canceled"
+        reorder["canceled_at"] = _utc_now_iso()
+        return {
+            "reorder_id": reorder_id,
+            "canceled": True,
+            "status": "canceled",
+        }

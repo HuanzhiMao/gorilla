@@ -56,6 +56,8 @@ DEFAULT_STATE = {
     "company_news": {},
     "analyst_views": {},
     "watchlists": {},
+    "technical_indicators": {},
+    "economic_indicators": {},
 }
 
 
@@ -70,6 +72,8 @@ class AlphaVantageAPI(PatchableMixin):
     - company_news: Dict[symbol, List[news articles]]
     - analyst_views: Dict[symbol, rating snapshots]
     - watchlists: Dict[name, {name, symbols, created_at}]
+    - technical_indicators: Dict[symbol, Dict[indicator, Dict[interval, List[data points]]]]
+    - economic_indicators: Dict[indicator, {name, description, data}]
     """
 
     def __init__(self):
@@ -80,6 +84,8 @@ class AlphaVantageAPI(PatchableMixin):
         self.company_news: Dict[str, List[Dict[str, Any]]]
         self.analyst_views: Dict[str, Dict[str, Any]]
         self.watchlists: Dict[str, Dict[str, Any]]
+        self.technical_indicators: Dict[str, Dict[str, Any]]
+        self.economic_indicators: Dict[str, Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Alpha Vantage market-data API, which "
             "provides symbol search, global quote snapshots, time series "
@@ -109,6 +115,12 @@ class AlphaVantageAPI(PatchableMixin):
             "analyst_views", default_state["analyst_views"]
         )
         self.watchlists = scenario.get("watchlists", default_state["watchlists"])
+        self.technical_indicators = scenario.get(
+            "technical_indicators", default_state["technical_indicators"]
+        )
+        self.economic_indicators = scenario.get(
+            "economic_indicators", default_state["economic_indicators"]
+        )
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -413,3 +425,130 @@ class AlphaVantageAPI(PatchableMixin):
             List[Dict[str, Any]]: Saved watchlist records.
         """
         return [deepcopy(watchlist) for watchlist in self.watchlists.values()]
+
+    # ── Technical Indicators ────────────────────────────────────────────
+
+    _SUPPORTED_INDICATORS = {
+        "RSI": "Relative Strength Index - momentum oscillator measuring speed and change of price movements",
+        "MACD": "Moving Average Convergence Divergence - trend-following momentum indicator",
+        "SMA": "Simple Moving Average - arithmetic mean of prices over a period",
+        "EMA": "Exponential Moving Average - weighted moving average giving more weight to recent prices",
+        "BBANDS": "Bollinger Bands - volatility bands placed above and below a moving average",
+        "STOCH": "Stochastic Oscillator - momentum indicator comparing closing price to price range",
+        "ADX": "Average Directional Index - measures trend strength regardless of direction",
+    }
+
+    def get_alpha_technical_indicator(
+        self,
+        symbol: str,
+        indicator: str,
+        interval: str = "daily",
+        time_period: int = 14,
+    ) -> Dict[str, Any]:
+        """
+        Get a technical indicator for a symbol.
+
+        Args:
+            symbol (str): Ticker symbol.
+            indicator (str): Indicator name. One of RSI, MACD, SMA, EMA, BBANDS, STOCH, ADX.
+            interval (str): Data interval. One of daily, weekly, monthly.
+            time_period (int): Number of data points used to calculate the indicator.
+
+        Returns:
+            Dict[str, Any]: Indicator values with dates.
+        """
+        self._require_quote(symbol)
+        norm_symbol = symbol.upper()
+        indicator_upper = indicator.upper()
+        if indicator_upper not in self._SUPPORTED_INDICATORS:
+            raise AlphaVantageError(
+                "INVALID_INDICATOR",
+                f"Indicator '{indicator}' is not supported.",
+                suggested_action="Use get_alpha_indicator_list() to see available indicators.",
+                context={"indicator": indicator},
+            )
+        if interval.lower() not in {"daily", "weekly", "monthly"}:
+            raise AlphaVantageError(
+                "INVALID_INTERVAL",
+                f"Interval '{interval}' is not supported for technical indicators.",
+                suggested_action="Use one of: daily, weekly, monthly.",
+                context={"interval": interval},
+            )
+        symbol_indicators = self.technical_indicators.get(norm_symbol, {})
+        indicator_data = symbol_indicators.get(indicator_upper, {})
+        series = indicator_data.get(interval.lower(), [])
+        return {
+            "symbol": norm_symbol,
+            "indicator": indicator_upper,
+            "interval": interval.lower(),
+            "time_period": time_period,
+            "data": deepcopy(series),
+        }
+
+    def get_alpha_indicator_list(self) -> List[Dict[str, Any]]:
+        """
+        Get the list of available technical indicators with descriptions.
+
+        Returns:
+            List[Dict[str, Any]]: Available indicators with name and description.
+        """
+        return [
+            {"indicator": name, "description": desc}
+            for name, desc in self._SUPPORTED_INDICATORS.items()
+        ]
+
+    # ── Economic Indicators ─────────────────────────────────────────────
+
+    _SUPPORTED_ECONOMIC_INDICATORS = {
+        "GDP": "Gross Domestic Product - total value of goods and services produced",
+        "CPI": "Consumer Price Index - measures changes in the price level of consumer goods",
+        "UNEMPLOYMENT": "Unemployment Rate - percentage of the labor force that is unemployed",
+        "FEDERAL_FUNDS_RATE": "Federal Funds Rate - interest rate at which banks lend to each other overnight",
+        "INFLATION": "Inflation Rate - rate at which the general level of prices is rising",
+        "RETAIL_SALES": "Retail Sales - total receipts of retail stores",
+    }
+
+    def get_alpha_economic_indicator(self, indicator: str) -> Dict[str, Any]:
+        """
+        Get economic indicator data.
+
+        Args:
+            indicator (str): Indicator name. One of GDP, CPI, UNEMPLOYMENT,
+                FEDERAL_FUNDS_RATE, INFLATION, RETAIL_SALES.
+
+        Returns:
+            Dict[str, Any]: Economic indicator data points with dates.
+        """
+        indicator_upper = indicator.upper()
+        if indicator_upper not in self._SUPPORTED_ECONOMIC_INDICATORS:
+            raise AlphaVantageError(
+                "INVALID_ECONOMIC_INDICATOR",
+                f"Economic indicator '{indicator}' is not supported.",
+                suggested_action="Use list_alpha_economic_indicators() to see available indicators.",
+                context={"indicator": indicator},
+            )
+        econ_data = self.economic_indicators.get(indicator_upper)
+        if not econ_data:
+            return {
+                "indicator": indicator_upper,
+                "name": self._SUPPORTED_ECONOMIC_INDICATORS[indicator_upper],
+                "data": [],
+            }
+        return {
+            "indicator": indicator_upper,
+            "name": econ_data.get("name", self._SUPPORTED_ECONOMIC_INDICATORS[indicator_upper]),
+            "description": econ_data.get("description", ""),
+            "data": deepcopy(econ_data.get("data", [])),
+        }
+
+    def list_alpha_economic_indicators(self) -> List[Dict[str, Any]]:
+        """
+        Get the list of available economic indicators with descriptions.
+
+        Returns:
+            List[Dict[str, Any]]: Available economic indicators with name and description.
+        """
+        return [
+            {"indicator": name, "description": desc}
+            for name, desc in self._SUPPORTED_ECONOMIC_INDICATORS.items()
+        ]

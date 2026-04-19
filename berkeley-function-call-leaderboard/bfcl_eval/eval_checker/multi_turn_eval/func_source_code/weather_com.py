@@ -60,6 +60,9 @@ DEFAULT_STATE = {
     "air_quality": {},
     "historical_weather": {},
     "location_index": {},
+    "air_quality_forecast": {},
+    "activity_forecasts": {},
+    "pollen_data": {},
 }
 
 
@@ -113,6 +116,9 @@ class WeatherComAPI(PatchableMixin):
         self.air_quality: Dict[str, Dict[str, Any]]
         self.historical_weather: Dict[str, Dict[str, Dict[str, Any]]]
         self.location_index: Dict[str, Dict[str, Any]]
+        self.air_quality_forecast: Dict[str, Dict[str, Any]]
+        self.activity_forecasts: Dict[str, Dict[str, Any]]
+        self.pollen_data: Dict[str, Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Weather.com API, which provides "
             "current conditions, hourly (48h) and 10-day forecasts, "
@@ -154,6 +160,15 @@ class WeatherComAPI(PatchableMixin):
         )
         self.location_index = scenario.get(
             "location_index", DEFAULT_STATE_COPY["location_index"]
+        )
+        self.air_quality_forecast = scenario.get(
+            "air_quality_forecast", DEFAULT_STATE_COPY["air_quality_forecast"]
+        )
+        self.activity_forecasts = scenario.get(
+            "activity_forecasts", DEFAULT_STATE_COPY["activity_forecasts"]
+        )
+        self.pollen_data = scenario.get(
+            "pollen_data", DEFAULT_STATE_COPY["pollen_data"]
         )
         self.long_context = long_context
 
@@ -597,3 +612,193 @@ class WeatherComAPI(PatchableMixin):
                 }
             )
         return results
+
+    # ---- Air Quality Forecast ----
+
+    def get_air_quality_forecast(
+        self, location: str, hours: int = 24
+    ) -> Dict[str, Any]:
+        """
+        Get hourly Air Quality Index forecast.
+
+        Args:
+            location (str): Location name or identifier.
+            hours (int): Number of forecast hours (1-72). Defaults to 24.
+
+        Returns:
+            Dict[str, Any]: location, hours (list of hourly AQI forecasts,
+                each with time, aqi, category, primary_pollutant).
+        """
+        if hours < 1 or hours > 72:
+            raise WeatherComError(
+                "INVALID_HOURS", "Hours must be between 1 and 72."
+            )
+        forecast = self.air_quality_forecast.get(location)
+        if not forecast:
+            raise WeatherComError(
+                "LOCATION_NOT_FOUND",
+                f"No air quality forecast for location '{location}'.",
+                suggested_action="Check the location name.",
+            )
+        result = deepcopy(forecast)
+        result["hours"] = result.get("hours", [])[:hours]
+        return result
+
+    # ---- Outdoor Activity / Lifestyle Index ----
+
+    def get_activity_forecast(
+        self, location: str, activity: str
+    ) -> Dict[str, Any]:
+        """
+        Get suitability score and conditions for an outdoor activity based
+        on current weather data.
+
+        Args:
+            location (str): Location name or identifier.
+            activity (str): Activity type — one of "running", "cycling",
+                "golf", "bbq", "fishing", "skiing", "hiking", "stargazing".
+
+        Returns:
+            Dict[str, Any]: location, activity, score (1-10),
+                description, conditions{temperature, wind_speed,
+                precipitation_chance, humidity, uv_index}.
+        """
+        valid_activities = [
+            "running", "cycling", "golf", "bbq",
+            "fishing", "skiing", "hiking", "stargazing",
+        ]
+        if activity not in valid_activities:
+            raise WeatherComError(
+                "INVALID_ACTIVITY",
+                f"Activity '{activity}' is not supported. "
+                f"Choose from: {', '.join(valid_activities)}.",
+                suggested_action="Use one of the supported activity types.",
+            )
+        cw = self._require_current_weather(location)
+        temp = cw.get("temperature", 70)
+        wind_speed = cw.get("wind", {}).get("speed", 0)
+        humidity = cw.get("humidity", 50)
+        uv = cw.get("uv_index", 0)
+        precip = cw.get("precipitation", 0)
+        condition = cw.get("condition", "").lower()
+
+        # Base score starts at 7 and is adjusted per activity
+        score = 7.0
+
+        if activity == "running":
+            if temp < 30 or temp > 95:
+                score -= 3
+            elif temp < 45 or temp > 85:
+                score -= 1
+            if wind_speed > 20:
+                score -= 2
+            if precip > 0:
+                score -= 2
+            if humidity > 80:
+                score -= 1
+        elif activity == "cycling":
+            if wind_speed > 25:
+                score -= 3
+            elif wind_speed > 15:
+                score -= 1
+            if precip > 0:
+                score -= 3
+            if temp < 35 or temp > 95:
+                score -= 2
+        elif activity == "golf":
+            if precip > 0:
+                score -= 3
+            if wind_speed > 20:
+                score -= 2
+            if temp < 45 or temp > 95:
+                score -= 2
+        elif activity == "bbq":
+            if "rain" in condition or "storm" in condition:
+                score -= 4
+            if precip > 0:
+                score -= 2
+            if temp < 50:
+                score -= 1
+        elif activity == "fishing":
+            if "storm" in condition or "thunder" in condition:
+                score -= 4
+            if wind_speed > 25:
+                score -= 2
+            if precip > 0.5:
+                score -= 1
+        elif activity == "skiing":
+            if temp > 40:
+                score -= 3
+            elif temp > 32:
+                score -= 1
+            if "snow" in condition:
+                score += 2
+            if wind_speed > 30:
+                score -= 2
+        elif activity == "hiking":
+            if precip > 0:
+                score -= 2
+            if temp < 30 or temp > 95:
+                score -= 2
+            if uv > 8:
+                score -= 1
+            if wind_speed > 25:
+                score -= 1
+        elif activity == "stargazing":
+            if "cloud" in condition or "overcast" in condition:
+                score -= 3
+            if "rain" in condition or "storm" in condition:
+                score -= 4
+            if humidity > 80:
+                score -= 1
+            if wind_speed < 10:
+                score += 1
+
+        score = max(1, min(10, round(score)))
+
+        descriptions = {
+            10: "Perfect conditions.",
+            9: "Excellent conditions.",
+            8: "Very good conditions.",
+            7: "Good conditions.",
+            6: "Fair conditions.",
+            5: "Marginal conditions.",
+            4: "Below average conditions.",
+            3: "Poor conditions.",
+            2: "Very poor conditions.",
+            1: "Not recommended.",
+        }
+
+        return {
+            "location": location,
+            "activity": activity,
+            "score": score,
+            "description": descriptions.get(score, "Unknown conditions."),
+            "conditions": {
+                "temperature": temp,
+                "wind_speed": wind_speed,
+                "precipitation_chance": cw.get("precipitation", 0),
+                "humidity": humidity,
+                "uv_index": uv,
+            },
+        }
+
+    def get_pollen_count(self, location: str) -> Dict[str, Any]:
+        """
+        Get pollen counts by type and overall allergy risk level.
+
+        Args:
+            location (str): Location name or identifier.
+
+        Returns:
+            Dict[str, Any]: location, tree_pollen, grass_pollen,
+                ragweed_pollen, overall_risk.
+        """
+        pollen = self.pollen_data.get(location)
+        if not pollen:
+            raise WeatherComError(
+                "LOCATION_NOT_FOUND",
+                f"No pollen data for location '{location}'.",
+                suggested_action="Check the location name.",
+            )
+        return deepcopy(pollen)

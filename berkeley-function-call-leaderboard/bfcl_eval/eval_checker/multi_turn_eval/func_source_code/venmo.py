@@ -68,6 +68,9 @@ DEFAULT_STATE = {
     "transactions": {},
     "requests": {},
     "funding_sources": {},
+    "group_payments": {},
+    "debit_card": {},
+    "debit_card_transactions": [],
 }
 
 
@@ -95,12 +98,15 @@ class VenmoAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = { "contact": 0, "transaction": 0, "request": 0, "funding_source": 0, }
+        self._id_counters = { "contact": 0, "transaction": 0, "request": 0, "funding_source": 0, "group_payment": 0, }
         self.profile: Dict[str, Any] = {}
         self.contacts: Dict[str, Dict[str, Any]] = {}
         self.transactions: Dict[str, Dict[str, Any]] = {}
         self.requests: Dict[str, Dict[str, Any]] = {}
         self.funding_sources: Dict[str, Dict[str, Any]] = {}
+        self.group_payments: Dict[str, Dict[str, Any]] = {}
+        self.debit_card: Dict[str, Any] = {}
+        self.debit_card_transactions: List[Dict[str, Any]] = []
         self._api_description = (
             "This tool belongs to the Venmo social payment API, which provides "
             "peer-to-peer payments with configurable privacy, balance management, "
@@ -132,6 +138,9 @@ class VenmoAPI(PatchableMixin):
         self.transactions = scenario.get("transactions", DEFAULT_STATE_COPY["transactions"])
         self.requests = scenario.get("requests", DEFAULT_STATE_COPY["requests"])
         self.funding_sources = scenario.get("funding_sources", DEFAULT_STATE_COPY["funding_sources"])
+        self.group_payments = scenario.get("group_payments", DEFAULT_STATE_COPY["group_payments"])
+        self.debit_card = scenario.get("debit_card", DEFAULT_STATE_COPY["debit_card"])
+        self.debit_card_transactions = scenario.get("debit_card_transactions", DEFAULT_STATE_COPY["debit_card_transactions"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -938,4 +947,290 @@ class VenmoAPI(PatchableMixin):
             "fee": fee,
             "transfer_type": transfer_type,
             "status": "processing",
+        }
+
+    # -----------------------------------------------------------------------
+    # Group payments (split bill)
+    # -----------------------------------------------------------------------
+
+    def _require_group_payment(self, group_payment_id: str) -> Dict[str, Any]:
+        gp = self.group_payments.get(group_payment_id)
+        if not gp:
+            raise VenmoError(
+                "GROUP_PAYMENT_NOT_FOUND",
+                f"Group payment '{group_payment_id}' not found.",
+                suggested_action="Use get_group_payment() with a valid ID.",
+                context={"group_payment_id": group_payment_id},
+            )
+        return gp
+
+    def create_group_payment(
+        self,
+        description: str,
+        total_amount: float,
+        participants: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        """
+        Create a group payment to split a bill among participants. If
+        individual amounts are not specified for each participant, the
+        total is split evenly. All participant contacts must exist.
+
+        Args:
+            description (str): Description of what the payment is for.
+            total_amount (float): Total bill amount (must be > 0).
+            participants (list): List of participant dicts. Each dict must
+                have "contact_id" (str) and optionally "amount" (float).
+                If amounts are omitted, the total is split evenly.
+
+        Returns:
+            Dict[str, Any]:
+                group_payment_id (str), description (str),
+                total_amount (float), participants (list), status (str).
+        """
+        if total_amount <= 0:
+            raise VenmoError(
+                "INVALID_AMOUNT",
+                "Total amount must be greater than zero.",
+                suggested_action="Provide a positive total amount.",
+                context={"total_amount": total_amount},
+            )
+        if not participants or len(participants) == 0:
+            raise VenmoError(
+                "NO_PARTICIPANTS",
+                "At least one participant is required.",
+                suggested_action="Provide a list of participants with contact IDs.",
+            )
+
+        # Validate all contacts exist
+        for p in participants:
+            self._require_contact(p["contact_id"])
+
+        # Determine amounts
+        has_amounts = any("amount" in p for p in participants)
+        if has_amounts:
+            # Validate that amounts sum to total
+            specified_sum = sum(p.get("amount", 0) for p in participants)
+            if abs(specified_sum - total_amount) > 0.01:
+                raise VenmoError(
+                    "AMOUNT_MISMATCH",
+                    f"Participant amounts ({specified_sum:.2f}) do not sum to total ({total_amount:.2f}).",
+                    suggested_action="Ensure participant amounts sum to the total amount.",
+                    context={"specified_sum": specified_sum, "total_amount": total_amount},
+                )
+            resolved = []
+            for p in participants:
+                contact = self.contacts[p["contact_id"]]
+                resolved.append({
+                    "contact_id": p["contact_id"],
+                    "name": contact.get("name", ""),
+                    "amount": p.get("amount", 0),
+                    "status": "unpaid",
+                })
+        else:
+            # Split evenly
+            per_person = round(total_amount / len(participants), 2)
+            resolved = []
+            for p in participants:
+                contact = self.contacts[p["contact_id"]]
+                resolved.append({
+                    "contact_id": p["contact_id"],
+                    "name": contact.get("name", ""),
+                    "amount": per_person,
+                    "status": "unpaid",
+                })
+
+        now = _utc_now_iso()
+        gp_id = self._new_id("group_payment")
+        self.group_payments[gp_id] = {
+            "group_payment_id": gp_id,
+            "description": description,
+            "total_amount": total_amount,
+            "participants": resolved,
+            "status": "active",
+            "created_at": now,
+        }
+
+        return {
+            "group_payment_id": gp_id,
+            "description": description,
+            "total_amount": total_amount,
+            "participants": deepcopy(resolved),
+            "status": "active",
+        }
+
+    def get_group_payment(
+        self, group_payment_id: str,
+    ) -> Dict[str, Any]:
+        """
+        View the status of a group payment including who has paid and
+        who has not.
+
+        Args:
+            group_payment_id (str): The group payment's unique identifier.
+
+        Returns:
+            Dict[str, Any]: Full group payment object with participant
+                statuses.
+        """
+        gp = self._require_group_payment(group_payment_id)
+        return deepcopy(gp)
+
+    def remind_group_payment(
+        self, group_payment_id: str,
+    ) -> Dict[str, Any]:
+        """
+        Send a reminder to all unpaid participants in a group payment.
+
+        Args:
+            group_payment_id (str): The group payment to send reminders for.
+
+        Returns:
+            Dict[str, Any]:
+                group_payment_id (str), reminded (list of str contact_ids).
+        """
+        gp = self._require_group_payment(group_payment_id)
+        if gp.get("status") != "active":
+            raise VenmoError(
+                "GROUP_NOT_ACTIVE",
+                f"Group payment is '{gp.get('status')}', not active.",
+                suggested_action="Only active group payments can be reminded.",
+                context={"status": gp.get("status")},
+            )
+
+        reminded = []
+        for p in gp.get("participants", []):
+            if p.get("status") == "unpaid":
+                reminded.append(p["contact_id"])
+
+        return {
+            "group_payment_id": group_payment_id,
+            "reminded": reminded,
+        }
+
+    def settle_group_payment(
+        self, group_payment_id: str,
+    ) -> Dict[str, Any]:
+        """
+        Mark a group payment as settled.
+
+        Args:
+            group_payment_id (str): The group payment to settle.
+
+        Returns:
+            Dict[str, Any]:
+                group_payment_id (str), status (str).
+        """
+        gp = self._require_group_payment(group_payment_id)
+        if gp.get("status") != "active":
+            raise VenmoError(
+                "GROUP_NOT_ACTIVE",
+                f"Group payment is '{gp.get('status')}', not active.",
+                suggested_action="Only active group payments can be settled.",
+                context={"status": gp.get("status")},
+            )
+        gp["status"] = "settled"
+        for p in gp.get("participants", []):
+            if p.get("status") == "unpaid":
+                p["status"] = "settled"
+        return {
+            "group_payment_id": group_payment_id,
+            "status": "settled",
+        }
+
+    # -----------------------------------------------------------------------
+    # Venmo debit card management
+    # -----------------------------------------------------------------------
+
+    def get_debit_card_info(self) -> Dict[str, Any]:
+        """
+        Get the current user's Venmo debit card details.
+
+        Returns:
+            Dict[str, Any]:
+                last4 (str), status (str), daily_limit (float),
+                current_daily_spent (float), reward_category (str),
+                enabled (bool).
+        """
+        if not self.debit_card:
+            raise VenmoError(
+                "NO_DEBIT_CARD",
+                "No Venmo debit card found on this account.",
+                suggested_action="Apply for a Venmo debit card first.",
+            )
+        return deepcopy(self.debit_card)
+
+    def set_debit_card_spending_limit(
+        self, daily_limit: float,
+    ) -> Dict[str, Any]:
+        """
+        Set a daily spending limit on the Venmo debit card.
+
+        Args:
+            daily_limit (float): Daily spending limit in dollars.
+                Must be between 0 and 3000 (inclusive).
+
+        Returns:
+            Dict[str, Any]:
+                daily_limit (float), status (str).
+        """
+        if not self.debit_card:
+            raise VenmoError(
+                "NO_DEBIT_CARD",
+                "No Venmo debit card found on this account.",
+                suggested_action="Apply for a Venmo debit card first.",
+            )
+        if daily_limit < 0 or daily_limit > 3000:
+            raise VenmoError(
+                "INVALID_LIMIT",
+                f"Daily limit must be between 0 and 3000. Got {daily_limit}.",
+                suggested_action="Provide a limit between 0 and 3000.",
+                context={"daily_limit": daily_limit},
+            )
+        self.debit_card["daily_limit"] = daily_limit
+        return {"daily_limit": daily_limit, "status": "updated"}
+
+    def get_debit_card_transactions(
+        self, limit: int = 10,
+    ) -> List[Dict[str, Any]]:
+        """
+        List recent debit card purchases.
+
+        Args:
+            limit (int): Maximum number of results. Defaults to 10.
+
+        Returns:
+            List[Dict[str, Any]]: Debit card transactions sorted newest
+                first.
+        """
+        if not self.debit_card:
+            raise VenmoError(
+                "NO_DEBIT_CARD",
+                "No Venmo debit card found on this account.",
+                suggested_action="Apply for a Venmo debit card first.",
+            )
+        results = [deepcopy(t) for t in self.debit_card_transactions]
+        results.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        return results[:limit]
+
+    def toggle_debit_card(self, enabled: bool) -> Dict[str, Any]:
+        """
+        Enable or disable the Venmo debit card.
+
+        Args:
+            enabled (bool): True to enable, False to disable.
+
+        Returns:
+            Dict[str, Any]:
+                enabled (bool), status (str).
+        """
+        if not self.debit_card:
+            raise VenmoError(
+                "NO_DEBIT_CARD",
+                "No Venmo debit card found on this account.",
+                suggested_action="Apply for a Venmo debit card first.",
+            )
+        self.debit_card["enabled"] = enabled
+        return {
+            "enabled": enabled,
+            "status": "enabled" if enabled else "disabled",
         }

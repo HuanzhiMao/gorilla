@@ -56,6 +56,9 @@ DEFAULT_STATE = {
     "company_news": {},
     "analyst_views": {},
     "watchlists": {},
+    "options_data": {},
+    "conversations": {},
+    "trending_tickers": [],
 }
 
 
@@ -70,6 +73,9 @@ class YahooFinanceAPI(PatchableMixin):
     - company_news: Dict[symbol, List[news articles]]
     - analyst_views: Dict[symbol, recommendation summaries]
     - watchlists: Dict[name, {name, symbols, created_at}]
+    - options_data: Dict[symbol, {expirations, chains}]
+    - conversations: Dict[symbol, List[{post_id, text, timestamp}]]
+    - trending_tickers: List[{symbol, mentions, sentiment}]
     """
 
     def __init__(self):
@@ -80,6 +86,9 @@ class YahooFinanceAPI(PatchableMixin):
         self.company_news: Dict[str, List[Dict[str, Any]]]
         self.analyst_views: Dict[str, Dict[str, Any]]
         self.watchlists: Dict[str, Dict[str, Any]]
+        self.options_data: Dict[str, Dict[str, Any]]
+        self.conversations: Dict[str, List[Dict[str, Any]]]
+        self.trending_tickers: List[Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Yahoo Finance API, which provides "
             "ticker lookup, live quote data, historical price ranges, "
@@ -109,6 +118,13 @@ class YahooFinanceAPI(PatchableMixin):
             "analyst_views", default_state["analyst_views"]
         )
         self.watchlists = scenario.get("watchlists", default_state["watchlists"])
+        self.options_data = scenario.get("options_data", default_state["options_data"])
+        self.conversations = scenario.get(
+            "conversations", default_state["conversations"]
+        )
+        self.trending_tickers = scenario.get(
+            "trending_tickers", default_state["trending_tickers"]
+        )
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -399,3 +415,138 @@ class YahooFinanceAPI(PatchableMixin):
             List[Dict[str, Any]]: Saved watchlist records.
         """
         return [deepcopy(watchlist) for watchlist in self.watchlists.values()]
+
+    # ── Options Chain Data ──────────────────────────────────────────────
+
+    def get_yahoo_options_chain(
+        self, symbol: str, expiration_date: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Get options chain data for a symbol.
+
+        Args:
+            symbol (str): Ticker symbol.
+            expiration_date (str, optional): Expiration date to filter. If None returns the nearest expiration.
+
+        Returns:
+            Dict[str, Any]: Options chain with calls and puts including strike, premium,
+                bid, ask, volume, open_interest, and implied_volatility.
+        """
+        self._require_quote(symbol)
+        norm_symbol = symbol.upper()
+        options = self.options_data.get(norm_symbol)
+        if not options:
+            raise YahooFinanceError(
+                "OPTIONS_UNAVAILABLE",
+                f"No options data is available for '{symbol}'.",
+                suggested_action="Try a symbol with listed options.",
+                context={"ticker": symbol},
+            )
+        expirations = options.get("expirations", [])
+        chains = options.get("chains", {})
+        if expiration_date:
+            if expiration_date not in chains:
+                raise YahooFinanceError(
+                    "EXPIRATION_NOT_FOUND",
+                    f"Expiration date '{expiration_date}' is not available for '{symbol}'.",
+                    suggested_action="Use get_yahoo_options_expirations() to see available dates.",
+                    context={"ticker": symbol, "expiration_date": expiration_date},
+                )
+            chain = chains[expiration_date]
+        else:
+            if not expirations:
+                raise YahooFinanceError(
+                    "OPTIONS_UNAVAILABLE",
+                    f"No expiration dates available for '{symbol}'.",
+                    suggested_action="Try a symbol with listed options.",
+                    context={"ticker": symbol},
+                )
+            chain = chains.get(expirations[0], {"calls": [], "puts": []})
+            expiration_date = expirations[0]
+        return {
+            "symbol": norm_symbol,
+            "expiration_date": expiration_date,
+            "calls": deepcopy(chain.get("calls", [])),
+            "puts": deepcopy(chain.get("puts", [])),
+        }
+
+    def get_yahoo_options_expirations(self, symbol: str) -> Dict[str, Any]:
+        """
+        Get available options expiration dates for a symbol.
+
+        Args:
+            symbol (str): Ticker symbol.
+
+        Returns:
+            Dict[str, Any]: Symbol and list of available expiration dates.
+        """
+        self._require_quote(symbol)
+        norm_symbol = symbol.upper()
+        options = self.options_data.get(norm_symbol)
+        if not options:
+            raise YahooFinanceError(
+                "OPTIONS_UNAVAILABLE",
+                f"No options data is available for '{symbol}'.",
+                suggested_action="Try a symbol with listed options.",
+                context={"ticker": symbol},
+            )
+        return {
+            "symbol": norm_symbol,
+            "expirations": deepcopy(options.get("expirations", [])),
+        }
+
+    # ── Community Discussion ────────────────────────────────────────────
+
+    def get_yahoo_conversations(
+        self, symbol: str, limit: int = 10
+    ) -> List[Dict[str, Any]]:
+        """
+        Get recent community discussion posts for a symbol.
+
+        Args:
+            symbol (str): Ticker symbol.
+            limit (int): Maximum number of posts to return.
+
+        Returns:
+            List[Dict[str, Any]]: Recent discussion posts.
+        """
+        self._require_quote(symbol)
+        posts = self.conversations.get(symbol.upper(), [])
+        return deepcopy(posts[:limit])
+
+    def post_yahoo_comment(self, symbol: str, text: str) -> Dict[str, Any]:
+        """
+        Post a comment in the Yahoo Finance community discussion for a symbol.
+
+        Args:
+            symbol (str): Ticker symbol.
+            text (str): Comment text.
+
+        Returns:
+            Dict[str, Any]: Posted comment with assigned post_id.
+        """
+        self._require_quote(symbol)
+        norm_symbol = symbol.upper()
+        post_id = f"ypost_{self._rng.randint(100000, 999999)}"
+        comment = {
+            "post_id": post_id,
+            "symbol": norm_symbol,
+            "text": text,
+            "timestamp": _utc_now_iso(),
+        }
+        if norm_symbol not in self.conversations:
+            self.conversations[norm_symbol] = []
+        self.conversations[norm_symbol].insert(0, comment)
+        return deepcopy(comment)
+
+    def get_yahoo_trending_tickers(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """
+        Get tickers trending in Yahoo Finance community discussions.
+
+        Args:
+            limit (int): Maximum number of trending tickers to return.
+
+        Returns:
+            List[Dict[str, Any]]: Trending tickers with mention counts and sentiment.
+        """
+        return deepcopy(self.trending_tickers[:limit])

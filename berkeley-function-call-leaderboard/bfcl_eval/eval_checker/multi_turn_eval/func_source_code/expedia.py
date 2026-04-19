@@ -45,6 +45,8 @@ DEFAULT_STATE = {
     "properties": {},
     "room_types": {},
     "bookings": {},
+    "trip_boards": {},
+    "insurance_options": {},
 }
 
 
@@ -75,11 +77,13 @@ class ExpediaAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = {"booking": 0}
+        self._id_counters = {"booking": 0, "board": 0, "board_item": 0}
         self.profile: Dict[str, Any]
         self.properties: Dict[str, Dict[str, Any]]
         self.room_types: Dict[str, Dict[str, Any]]
         self.bookings: Dict[str, Dict[str, Any]]
+        self.trip_boards: Dict[str, Dict[str, Any]]
+        self.insurance_options: Dict[str, Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Expedia API, which provides "
             "accommodation search and booking, property details, room "
@@ -110,6 +114,8 @@ class ExpediaAPI(PatchableMixin):
         self.properties = scenario.get("properties", DEFAULT_STATE_COPY["properties"])
         self.room_types = scenario.get("room_types", DEFAULT_STATE_COPY["room_types"])
         self.bookings = scenario.get("bookings", DEFAULT_STATE_COPY["bookings"])
+        self.trip_boards = scenario.get("trip_boards", DEFAULT_STATE_COPY["trip_boards"])
+        self.insurance_options = scenario.get("insurance_options", DEFAULT_STATE_COPY["insurance_options"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -466,3 +472,233 @@ class ExpediaAPI(PatchableMixin):
             b["special_requests"] = special_requests
         b["updated_at"] = _utc_now_iso()
         return deepcopy(b)
+
+    # ---- Trip Boards ----
+
+    def create_trip_board(
+        self, name: str, destination: str,
+        travel_dates: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create a trip board to organize travel ideas.
+
+        Args:
+            name (str): Board name.
+            destination (str): Trip destination.
+            travel_dates (str, optional): Travel date range description.
+
+        Returns:
+            Dict[str, Any]: board_id, name, destination, travel_dates,
+                items, created_at.
+        """
+        board_id = self._new_id("board")
+        now = _utc_now_iso()
+        self.trip_boards[board_id] = {
+            "board_id": board_id,
+            "name": name,
+            "destination": destination,
+            "travel_dates": travel_dates,
+            "items": [],
+            "shared_with": [],
+            "created_at": now,
+            "updated_at": now,
+        }
+        return deepcopy(self.trip_boards[board_id])
+
+    def add_to_trip_board(
+        self, board_id: str, item_type: str, item_id: str,
+        notes: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Add a property or activity to a trip board.
+
+        Args:
+            board_id (str): The trip board.
+            item_type (str): Type of item ("property" or "activity").
+            item_id (str): ID of the property or activity.
+            notes (str, optional): Notes about the item.
+
+        Returns:
+            Dict[str, Any]: board_item_id, board_id, item_type, item_id,
+                notes, status "added".
+        """
+        board = self.trip_boards.get(board_id)
+        if not board:
+            raise ExpediaError("BOARD_NOT_FOUND", f"Trip board '{board_id}' not found.")
+        if item_type not in ("property", "activity"):
+            raise ExpediaError("INVALID_ITEM_TYPE",
+                               "item_type must be 'property' or 'activity'.")
+        board_item_id = self._new_id("board_item")
+        item = {
+            "board_item_id": board_item_id,
+            "item_type": item_type,
+            "item_id": item_id,
+            "notes": notes,
+            "added_at": _utc_now_iso(),
+        }
+        board["items"].append(item)
+        board["updated_at"] = _utc_now_iso()
+        return {
+            "board_item_id": board_item_id,
+            "board_id": board_id,
+            "item_type": item_type,
+            "item_id": item_id,
+            "notes": notes,
+            "status": "added",
+        }
+
+    def get_trip_board(self, board_id: str) -> Dict[str, Any]:
+        """
+        View a trip board with all items.
+
+        Args:
+            board_id (str): The trip board.
+
+        Returns:
+            Dict[str, Any]: Full board object with items.
+        """
+        board = self.trip_boards.get(board_id)
+        if not board:
+            raise ExpediaError("BOARD_NOT_FOUND", f"Trip board '{board_id}' not found.")
+        return deepcopy(board)
+
+    def share_trip_board(
+        self, board_id: str, emails: List[str],
+    ) -> Dict[str, Any]:
+        """
+        Share a trip board with travel companions.
+
+        Args:
+            board_id (str): The trip board to share.
+            emails (List[str]): Email addresses to share with.
+
+        Returns:
+            Dict[str, Any]: board_id, shared_with, status "shared".
+        """
+        board = self.trip_boards.get(board_id)
+        if not board:
+            raise ExpediaError("BOARD_NOT_FOUND", f"Trip board '{board_id}' not found.")
+        existing = set(board.get("shared_with", []))
+        for email in emails:
+            existing.add(email)
+        board["shared_with"] = sorted(existing)
+        board["updated_at"] = _utc_now_iso()
+        return {
+            "board_id": board_id,
+            "shared_with": board["shared_with"],
+            "status": "shared",
+        }
+
+    def remove_from_trip_board(
+        self, board_id: str, item_id: str,
+    ) -> Dict[str, Any]:
+        """
+        Remove an item from a trip board.
+
+        Args:
+            board_id (str): The trip board.
+            item_id (str): The board_item_id to remove.
+
+        Returns:
+            Dict[str, Any]: board_id, item_id, status "removed".
+        """
+        board = self.trip_boards.get(board_id)
+        if not board:
+            raise ExpediaError("BOARD_NOT_FOUND", f"Trip board '{board_id}' not found.")
+        new_items = [i for i in board["items"]
+                     if i.get("board_item_id") != item_id]
+        if len(new_items) == len(board["items"]):
+            raise ExpediaError("ITEM_NOT_FOUND",
+                               f"Item '{item_id}' not found on board '{board_id}'.")
+        board["items"] = new_items
+        board["updated_at"] = _utc_now_iso()
+        return {"board_id": board_id, "item_id": item_id, "status": "removed"}
+
+    # ---- Travel Insurance ----
+
+    def get_insurance_options(self, booking_id: str) -> List[Dict[str, Any]]:
+        """
+        Get available travel insurance plans for a booking.
+
+        Args:
+            booking_id (str): The booking to insure.
+
+        Returns:
+            List[Dict[str, Any]]: Insurance plan objects with plan_id,
+                name, coverage, price.
+        """
+        b = self._require_booking(booking_id)
+        total = b.get("total_price", 0)
+        plans = []
+        for opt in self.insurance_options.values():
+            plan = deepcopy(opt)
+            plan["booking_id"] = booking_id
+            # Price is a percentage of booking total
+            pct = plan.get("price_percent", 5)
+            plan["price"] = round(total * pct / 100, 2)
+            plans.append(plan)
+        return plans
+
+    def add_insurance(
+        self, booking_id: str, plan_id: str,
+    ) -> Dict[str, Any]:
+        """
+        Add travel insurance to a booking.
+
+        Args:
+            booking_id (str): The booking to insure.
+            plan_id (str): The insurance plan to add.
+
+        Returns:
+            Dict[str, Any]: booking_id, plan_id, plan_name, price,
+                status "added".
+        """
+        b = self._require_booking(booking_id)
+        if b.get("booking_status") != "confirmed":
+            raise ExpediaError("CANNOT_INSURE",
+                               "Can only add insurance to confirmed bookings.")
+        if b.get("insurance"):
+            raise ExpediaError("INSURANCE_EXISTS",
+                               "Insurance already added to this booking.")
+        plan = self.insurance_options.get(plan_id)
+        if not plan:
+            raise ExpediaError("PLAN_NOT_FOUND",
+                               f"Insurance plan '{plan_id}' not found.")
+        total = b.get("total_price", 0)
+        pct = plan.get("price_percent", 5)
+        price = round(total * pct / 100, 2)
+        b["insurance"] = {
+            "plan_id": plan_id,
+            "plan_name": plan.get("name", ""),
+            "coverage": plan.get("coverage", []),
+            "price": price,
+            "added_at": _utc_now_iso(),
+        }
+        b["updated_at"] = _utc_now_iso()
+        return {
+            "booking_id": booking_id,
+            "plan_id": plan_id,
+            "plan_name": plan.get("name", ""),
+            "price": price,
+            "status": "added",
+        }
+
+    def get_insurance_details(self, booking_id: str) -> Dict[str, Any]:
+        """
+        View insurance coverage details for a booking.
+
+        Args:
+            booking_id (str): The booking.
+
+        Returns:
+            Dict[str, Any]: Insurance details including plan_name,
+                coverage, price.
+        """
+        b = self._require_booking(booking_id)
+        insurance = b.get("insurance")
+        if not insurance:
+            raise ExpediaError("NO_INSURANCE",
+                               "No insurance found for this booking.")
+        result = deepcopy(insurance)
+        result["booking_id"] = booking_id
+        return result

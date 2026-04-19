@@ -82,6 +82,9 @@ DEFAULT_STATE = {
     "shows": {},
     "episodes": {},
     "followed_users": {},
+    "blends": {},
+    "jam_sessions": {},
+    "listening_stats": {},
 }
 
 
@@ -94,7 +97,7 @@ class SpotifyAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = { "playlist": 0, "device": 0, }
+        self._id_counters = { "playlist": 0, "device": 0, "blend": 0, "jam": 0, }
         self.profile: Dict[str, Any]
         self.player: Dict[str, Any]
         self.playlists: Dict[str, Dict[str, Any]]
@@ -104,6 +107,9 @@ class SpotifyAPI(PatchableMixin):
         self.shows: Dict[str, Dict[str, Any]]
         self.episodes: Dict[str, Dict[str, Any]]
         self.followed_users: Dict[str, List[str]]
+        self.blends: Dict[str, Dict[str, Any]]
+        self.jam_sessions: Dict[str, Dict[str, Any]]
+        self.listening_stats: Dict[str, Dict[str, Any]]
         self._api_description = (
             "This tool belongs to the Spotify music streaming system, which allows "
             "users to search for music, manage playlists, control playback across "
@@ -130,6 +136,10 @@ class SpotifyAPI(PatchableMixin):
         self._random = random.Random(
             scenario.get("random_seed", DEFAULT_STATE_COPY["random_seed"])
         )
+        # self.user_id is referenced throughout public methods (ownership checks,
+        # blends, jam sessions, error contexts). Scenario files don't always
+        # include it explicitly, so fall back to a safe default.
+        self.user_id = scenario.get("user_id", "user_1")
         self.profile = scenario.get("profile", DEFAULT_STATE_COPY["profile"])
         self.player = scenario.get("player", DEFAULT_STATE_COPY["player"])
         self.playlists = scenario.get("playlists", DEFAULT_STATE_COPY["playlists"])
@@ -139,6 +149,9 @@ class SpotifyAPI(PatchableMixin):
         self.shows = scenario.get("shows", DEFAULT_STATE_COPY["shows"])
         self.episodes = scenario.get("episodes", DEFAULT_STATE_COPY["episodes"])
         self.followed_users = scenario.get("followed_users", DEFAULT_STATE_COPY["followed_users"])
+        self.blends = scenario.get("blends", DEFAULT_STATE_COPY["blends"])
+        self.jam_sessions = scenario.get("jam_sessions", DEFAULT_STATE_COPY["jam_sessions"])
+        self.listening_stats = scenario.get("listening_stats", DEFAULT_STATE_COPY["listening_stats"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -1540,3 +1553,419 @@ class SpotifyAPI(PatchableMixin):
             "display_name": user_id,
             "username": user_id,
         }
+
+    # -----------------------------------------------------------------------
+    # Blend (Shared Taste Playlists)
+    # -----------------------------------------------------------------------
+
+    def create_blend(self, target_user_id: str) -> Dict[str, Any]:
+        """
+        Invite another user to a Blend. Creates a shared taste playlist
+        combining both users' listening preferences.
+
+        Args:
+            target_user_id (str): The user to create a Blend with.
+
+        Returns:
+            Dict[str, Any]: Result with fields:
+                blend_id (str), playlist_id (str), users (List[str]),
+                taste_match_percent (int), tracks (List[Dict]).
+        """
+        if target_user_id == self.user_id:
+            raise SpotifyError(
+                "CANNOT_BLEND_SELF",
+                "Cannot create a Blend with yourself.",
+                suggested_action="Provide a different target_user_id.",
+                context={"user_id": self.user_id},
+            )
+
+        blend_id = self._new_id("blend")
+        playlist_id = self._new_id("playlist")
+
+        # Gather saved tracks for taste matching
+        saved_tracks = [
+            sid for sid, s in self.songs.items() if s.get("saved")
+        ]
+        # Pick up to 10 tracks for the blend playlist
+        blend_tracks = []
+        for tid in saved_tracks[:10]:
+            song = self.songs.get(tid, {})
+            blend_tracks.append({
+                "song_id": tid,
+                "name": song.get("name", ""),
+                "contributed_by": self.user_id,
+            })
+
+        taste_match = min(100, max(10, len(saved_tracks) * 8))
+
+        # Create the blend playlist
+        self.playlists[playlist_id] = {
+            "playlist_id": playlist_id,
+            "name": f"Blend - {self.user_id} & {target_user_id}",
+            "owner_id": self.user_id,
+            "songs": [
+                {
+                    "song_id": t["song_id"],
+                    "name": t["name"],
+                    "genre": self.songs.get(t["song_id"], {}).get("genre", []),
+                    "play_count": self.songs.get(t["song_id"], {}).get("play_count", 0),
+                }
+                for t in blend_tracks
+            ],
+            "collaborative": True,
+            "public": False,
+            "description": f"Blend playlist for {self.user_id} and {target_user_id}",
+            "created_at": _utc_now_iso(),
+        }
+
+        blend = {
+            "blend_id": blend_id,
+            "playlist_id": playlist_id,
+            "users": [self.user_id, target_user_id],
+            "taste_match_percent": taste_match,
+            "tracks": blend_tracks,
+            "created_at": _utc_now_iso(),
+        }
+        self.blends[blend_id] = blend
+
+        return {
+            "blend_id": blend_id,
+            "playlist_id": playlist_id,
+            "users": [self.user_id, target_user_id],
+            "taste_match_percent": taste_match,
+            "tracks": deepcopy(blend_tracks),
+        }
+
+    def get_blend(self, blend_id: str) -> Dict[str, Any]:
+        """
+        Get details for a Blend, including the shared playlist, taste match
+        percentage, and per-track attribution.
+
+        Args:
+            blend_id (str): The unique Blend identifier.
+
+        Returns:
+            Dict[str, Any]: Blend object with fields:
+                blend_id (str), playlist_id (str), users (List[str]),
+                taste_match_percent (int), tracks (List[Dict]).
+        """
+        blend = self.blends.get(blend_id)
+        if not blend:
+            raise SpotifyError(
+                "BLEND_NOT_FOUND",
+                f"Blend '{blend_id}' not found.",
+                suggested_action="Use create_blend() to create a new Blend.",
+                context={"blend_id": blend_id},
+            )
+        return deepcopy(blend)
+
+    def update_blend(self, blend_id: str) -> Dict[str, Any]:
+        """
+        Refresh a Blend with the latest listening data. Updates the taste
+        match percentage and track list.
+
+        Args:
+            blend_id (str): The unique Blend identifier.
+
+        Returns:
+            Dict[str, Any]: Updated Blend object with fields:
+                blend_id (str), playlist_id (str), users (List[str]),
+                taste_match_percent (int), tracks (List[Dict]).
+        """
+        blend = self.blends.get(blend_id)
+        if not blend:
+            raise SpotifyError(
+                "BLEND_NOT_FOUND",
+                f"Blend '{blend_id}' not found.",
+                suggested_action="Use create_blend() to create a new Blend.",
+                context={"blend_id": blend_id},
+            )
+
+        # Refresh tracks from saved songs
+        saved_tracks = [
+            sid for sid, s in self.songs.items() if s.get("saved")
+        ]
+        blend_tracks = []
+        for tid in saved_tracks[:10]:
+            song = self.songs.get(tid, {})
+            blend_tracks.append({
+                "song_id": tid,
+                "name": song.get("name", ""),
+                "contributed_by": self.user_id,
+            })
+
+        taste_match = min(100, max(10, len(saved_tracks) * 8))
+        blend["taste_match_percent"] = taste_match
+        blend["tracks"] = blend_tracks
+
+        # Update the associated playlist
+        playlist = self.playlists.get(blend["playlist_id"])
+        if playlist:
+            playlist["songs"] = [
+                {
+                    "song_id": t["song_id"],
+                    "name": t["name"],
+                    "genre": self.songs.get(t["song_id"], {}).get("genre", []),
+                    "play_count": self.songs.get(t["song_id"], {}).get("play_count", 0),
+                }
+                for t in blend_tracks
+            ]
+
+        return deepcopy(blend)
+
+    # -----------------------------------------------------------------------
+    # Group Session (Jam)
+    # -----------------------------------------------------------------------
+
+    def start_jam_session(self) -> Dict[str, Any]:
+        """
+        Start a group listening session (Jam). The current user becomes the
+        host. Other users can join using the session ID.
+
+        Returns:
+            Dict[str, Any]: Result with fields:
+                session_id (str), join_code (str), host_user_id (str),
+                participants (List[str]), current_track (str | None),
+                queue (List[str]).
+        """
+        session_id = self._new_id("jam")
+        join_code = f"JAM-{session_id.upper().replace('_', '')}"
+
+        session = {
+            "session_id": session_id,
+            "join_code": join_code,
+            "host_user_id": self.user_id,
+            "participants": [self.user_id],
+            "current_track": self.player.get("current_song_id"),
+            "queue": [],
+            "created_at": _utc_now_iso(),
+        }
+        self.jam_sessions[session_id] = session
+
+        return {
+            "session_id": session_id,
+            "join_code": join_code,
+            "host_user_id": self.user_id,
+            "participants": [self.user_id],
+            "current_track": self.player.get("current_song_id"),
+            "queue": [],
+        }
+
+    def join_jam_session(self, session_id: str) -> Dict[str, Any]:
+        """
+        Join an existing group listening session (Jam).
+
+        Args:
+            session_id (str): The session to join.
+
+        Returns:
+            Dict[str, Any]: Result with fields:
+                session_id (str), participants (List[str]),
+                current_track (str | None), queue (List[str]).
+        """
+        session = self.jam_sessions.get(session_id)
+        if not session:
+            raise SpotifyError(
+                "JAM_SESSION_NOT_FOUND",
+                f"Jam session '{session_id}' not found.",
+                suggested_action="Use start_jam_session() to create a new session.",
+                context={"session_id": session_id},
+            )
+        if self.user_id not in session["participants"]:
+            session["participants"].append(self.user_id)
+
+        return {
+            "session_id": session_id,
+            "participants": list(session["participants"]),
+            "current_track": session.get("current_track"),
+            "queue": list(session.get("queue", [])),
+        }
+
+    def add_to_jam_queue(
+        self,
+        session_id: str,
+        track_id: str,
+    ) -> Dict[str, Any]:
+        """
+        Add a track to the shared queue of a Jam session.
+
+        Args:
+            session_id (str): The Jam session.
+            track_id (str): The track to add to the shared queue.
+
+        Returns:
+            Dict[str, Any]: Result with fields:
+                session_id (str), track_id (str), queue_length (int),
+                added_by (str).
+        """
+        session = self.jam_sessions.get(session_id)
+        if not session:
+            raise SpotifyError(
+                "JAM_SESSION_NOT_FOUND",
+                f"Jam session '{session_id}' not found.",
+                suggested_action="Use start_jam_session() to create a new session.",
+                context={"session_id": session_id},
+            )
+        self._require_song(track_id)
+        session.setdefault("queue", []).append(track_id)
+
+        return {
+            "session_id": session_id,
+            "track_id": track_id,
+            "queue_length": len(session["queue"]),
+            "added_by": self.user_id,
+        }
+
+    def get_jam_session(self, session_id: str) -> Dict[str, Any]:
+        """
+        Get details for a Jam session, including participants, current track,
+        and the shared queue.
+
+        Args:
+            session_id (str): The Jam session.
+
+        Returns:
+            Dict[str, Any]: Session object with fields:
+                session_id (str), host_user_id (str),
+                participants (List[str]), current_track (str | None),
+                queue (List[str]).
+        """
+        session = self.jam_sessions.get(session_id)
+        if not session:
+            raise SpotifyError(
+                "JAM_SESSION_NOT_FOUND",
+                f"Jam session '{session_id}' not found.",
+                suggested_action="Use start_jam_session() to create a new session.",
+                context={"session_id": session_id},
+            )
+        return {
+            "session_id": session_id,
+            "host_user_id": session.get("host_user_id"),
+            "participants": list(session.get("participants", [])),
+            "current_track": session.get("current_track"),
+            "queue": list(session.get("queue", [])),
+        }
+
+    # -----------------------------------------------------------------------
+    # Listening Stats
+    # -----------------------------------------------------------------------
+
+    def get_listening_stats(
+        self,
+        time_range: str = "medium_term",
+    ) -> Dict[str, Any]:
+        """
+        Get the current user's listening statistics for a given time range.
+
+        Args:
+            time_range (str): One of "short_term" (last 4 weeks),
+                "medium_term" (last 6 months), or "long_term" (all time).
+                Defaults to "medium_term".
+
+        Returns:
+            Dict[str, Any]: Stats with fields:
+                time_range (str), top_artists (List[Dict]),
+                top_tracks (List[Dict]), top_genres (List[str]),
+                total_minutes (int).
+        """
+        if time_range not in ("short_term", "medium_term", "long_term"):
+            raise SpotifyError(
+                "INVALID_TIME_RANGE",
+                f"Invalid time range '{time_range}'. Must be 'short_term', 'medium_term', or 'long_term'.",
+                suggested_action="Use one of: 'short_term', 'medium_term', 'long_term'.",
+                context={"time_range": time_range},
+            )
+
+        # If pre-seeded stats exist for this time range, return them
+        if time_range in self.listening_stats:
+            return deepcopy(self.listening_stats[time_range])
+
+        # Otherwise, derive stats from current state
+        saved_tracks = [
+            deepcopy(s) for s in self.songs.values() if s.get("saved")
+        ]
+        saved_tracks.sort(key=lambda t: t.get("play_count", 0), reverse=True)
+
+        # Top tracks
+        top_tracks = [
+            {"song_id": t.get("song_id"), "name": t.get("name", ""), "play_count": t.get("play_count", 0)}
+            for t in saved_tracks[:10]
+        ]
+
+        # Top genres
+        genre_counts: Dict[str, int] = {}
+        for t in saved_tracks:
+            for g in t.get("genre", []):
+                genre_counts[g] = genre_counts.get(g, 0) + 1
+        top_genres = sorted(genre_counts.keys(), key=lambda g: genre_counts[g], reverse=True)[:5]
+
+        # Top artists (from saved tracks)
+        artist_counts: Dict[str, int] = {}
+        for t in saved_tracks:
+            for aid in (t.get("artist_id") if isinstance(t.get("artist_id"), list) else [t.get("artist_id", "")]):
+                if aid:
+                    artist_counts[aid] = artist_counts.get(aid, 0) + 1
+        top_artist_ids = sorted(artist_counts.keys(), key=lambda a: artist_counts[a], reverse=True)[:5]
+        top_artists = []
+        for aid in top_artist_ids:
+            artist = self.artists.get(aid)
+            if artist:
+                top_artists.append({"artist_id": aid, "name": artist.get("name", "")})
+
+        # Estimate total minutes from saved tracks' play counts and durations
+        total_ms = sum(
+            s.get("duration_ms", 0) * max(1, s.get("play_count", 1))
+            for s in saved_tracks
+        )
+        total_minutes = total_ms // 60000
+
+        result = {
+            "time_range": time_range,
+            "top_artists": top_artists,
+            "top_tracks": top_tracks,
+            "top_genres": top_genres,
+            "total_minutes": total_minutes,
+        }
+        return result
+
+    def get_top_items(
+        self,
+        item_type: str,
+        time_range: str = "medium_term",
+        limit: int = 10,
+    ) -> List[Dict[str, Any]]:
+        """
+        Get the current user's top tracks or artists for a time range.
+
+        Args:
+            item_type (str): One of "tracks" or "artists".
+            time_range (str): One of "short_term", "medium_term", or
+                "long_term". Defaults to "medium_term".
+            limit (int): Maximum number of items to return. Defaults to 10.
+
+        Returns:
+            List[Dict[str, Any]]: Top items. For tracks: song_id, name,
+                play_count. For artists: artist_id, name.
+        """
+        if item_type not in ("tracks", "artists"):
+            raise SpotifyError(
+                "INVALID_ITEM_TYPE",
+                f"Invalid item type '{item_type}'. Must be 'tracks' or 'artists'.",
+                suggested_action="Use one of: 'tracks', 'artists'.",
+                context={"item_type": item_type},
+            )
+        if time_range not in ("short_term", "medium_term", "long_term"):
+            raise SpotifyError(
+                "INVALID_TIME_RANGE",
+                f"Invalid time range '{time_range}'. Must be 'short_term', 'medium_term', or 'long_term'.",
+                suggested_action="Use one of: 'short_term', 'medium_term', 'long_term'.",
+                context={"time_range": time_range},
+            )
+
+        stats = self.get_listening_stats(time_range)
+        lim = max(1, int(limit))
+
+        if item_type == "tracks":
+            return stats.get("top_tracks", [])[:lim]
+        else:
+            return stats.get("top_artists", [])[:lim]

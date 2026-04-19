@@ -80,6 +80,9 @@ DEFAULT_STATE = {
     "drafts": {},
     "contacts": {},
     "folders": {},
+    "snoozed_emails": {},
+    "scheduled_emails": {},
+    "templates": {},
 }
 
 
@@ -108,6 +111,9 @@ class GmailAPI(PatchableMixin):
         self.drafts: Dict[str, Dict[str, Any]] = {}
         self.contacts: Dict[str, Dict[str, Any]] = {}
         self.folders: Dict[str, List[str]] = {}
+        self.snoozed_emails: Dict[str, str] = {}
+        self.scheduled_emails: Dict[str, Dict[str, Any]] = {}
+        self.templates: Dict[str, Dict[str, Any]] = {}
         self._api_description = (
             "This tool belongs to the Gmail API, which provides functionality for "
             "sending, receiving, and organizing emails using a label-based system "
@@ -139,6 +145,9 @@ class GmailAPI(PatchableMixin):
         self.drafts = scenario.get("drafts", DEFAULT_STATE_COPY["drafts"])
         self.contacts = scenario.get("contacts", DEFAULT_STATE_COPY["contacts"])
         self.folders = scenario.get("folders", DEFAULT_STATE_COPY["folders"])
+        self.snoozed_emails = scenario.get("snoozed_emails", DEFAULT_STATE_COPY["snoozed_emails"])
+        self.scheduled_emails = scenario.get("scheduled_emails", DEFAULT_STATE_COPY["scheduled_emails"])
+        self.templates = scenario.get("templates", DEFAULT_STATE_COPY["templates"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -884,3 +893,293 @@ class GmailAPI(PatchableMixin):
             "email_address": email_address,
         }
         return {"name": name, "email_address": email_address}
+
+    # -----------------------------------------------------------------------
+    # Snooze
+    # -----------------------------------------------------------------------
+
+    def snooze_email(self, email_id: str, snooze_until: str) -> Dict[str, Any]:
+        """
+        Snooze an email until a specified datetime. The email is moved to the
+        snoozed folder and will reappear in the inbox after the snooze time.
+
+        Args:
+            email_id (str): The email to snooze.
+            snooze_until (str): ISO 8601 datetime string for when the snooze
+                should end (e.g. "2025-03-01T09:00:00Z").
+
+        Returns:
+            Dict[str, Any]:
+                email_id (str), snooze_until (str), status (str).
+        """
+        em = self._require_email(email_id)
+        try:
+            datetime.fromisoformat(snooze_until.replace("Z", "+00:00"))
+        except (ValueError, AttributeError):
+            raise GmailError(
+                "INVALID_DATETIME",
+                f"'{snooze_until}' is not a valid ISO 8601 datetime.",
+                suggested_action="Provide a valid ISO datetime string (e.g. '2025-03-01T09:00:00Z').",
+                context={"snooze_until": snooze_until},
+            )
+        self._remove_from_folder("inbox", email_id)
+        self._add_to_folder("snoozed", email_id)
+        self.snoozed_emails[email_id] = snooze_until
+        return {
+            "email_id": email_id,
+            "snooze_until": snooze_until,
+            "status": "snoozed",
+        }
+
+    def list_snoozed_emails(self) -> List[Dict[str, Any]]:
+        """
+        List all currently snoozed emails with their snooze-until times.
+
+        Returns:
+            List[Dict[str, Any]]: Snoozed email objects, each including a
+                snooze_until field.
+        """
+        self._require_user(self.user_id)
+        results = []
+        for email_id, snooze_until in self.snoozed_emails.items():
+            em = self.emails.get(email_id)
+            if em:
+                entry = deepcopy(em)
+                entry["snooze_until"] = snooze_until
+                results.append(entry)
+        return results
+
+    def unsnooze_email(self, email_id: str) -> Dict[str, Any]:
+        """
+        Cancel the snooze on an email and return it to the inbox.
+
+        Args:
+            email_id (str): The email to unsnooze.
+
+        Returns:
+            Dict[str, Any]:
+                email_id (str), status (str).
+        """
+        em = self._require_email(email_id)
+        if email_id not in self.snoozed_emails:
+            raise GmailError(
+                "NOT_SNOOZED",
+                f"Email '{email_id}' is not currently snoozed.",
+                suggested_action="Use list_snoozed_emails() to find snoozed email IDs.",
+                context={"email_id": email_id},
+            )
+        del self.snoozed_emails[email_id]
+        self._remove_from_folder("snoozed", email_id)
+        self._add_to_folder("inbox", email_id)
+        return {"email_id": email_id, "status": "unsnoozed"}
+
+    # -----------------------------------------------------------------------
+    # Schedule send
+    # -----------------------------------------------------------------------
+
+    def schedule_send(
+        self,
+        to: List[str],
+        subject: str,
+        body: str,
+        send_at: str,
+        cc: Optional[List[str]] = None,
+        bcc: Optional[List[str]] = None,
+        attachments: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Compose and schedule an email for future delivery.
+
+        Args:
+            to (List[str]): Recipient email addresses.
+            subject (str): Subject line.
+            body (str): Body text.
+            send_at (str): ISO 8601 datetime string for scheduled send time.
+            cc (List[str], optional): Carbon copy recipients.
+            bcc (List[str], optional): Blind carbon copy recipients.
+            attachments (List[str], optional): Attachment filenames or IDs.
+
+        Returns:
+            Dict[str, Any]:
+                scheduled_id (str), send_at (str), status (str).
+        """
+        self._require_user(self.user_id)
+        if not to:
+            raise GmailError(
+                "NO_RECIPIENTS",
+                "At least one recipient is required.",
+                suggested_action="Provide at least one email address in the 'to' field.",
+                context={"user_id": self.user_id},
+            )
+        try:
+            datetime.fromisoformat(send_at.replace("Z", "+00:00"))
+        except (ValueError, AttributeError):
+            raise GmailError(
+                "INVALID_DATETIME",
+                f"'{send_at}' is not a valid ISO 8601 datetime.",
+                suggested_action="Provide a valid ISO datetime string (e.g. '2025-03-01T09:00:00Z').",
+                context={"send_at": send_at},
+            )
+        scheduled_id = self._new_id("scheduled")
+        self.scheduled_emails[scheduled_id] = {
+            "scheduled_id": scheduled_id,
+            "to": to or [],
+            "cc": cc or [],
+            "bcc": bcc or [],
+            "subject": subject,
+            "body": body,
+            "attachments": attachments or [],
+            "send_at": send_at,
+            "created_at": _utc_now_iso(),
+        }
+        return {
+            "scheduled_id": scheduled_id,
+            "send_at": send_at,
+            "status": "scheduled",
+        }
+
+    def list_scheduled_emails(self) -> List[Dict[str, Any]]:
+        """
+        List all scheduled but not yet sent emails.
+
+        Returns:
+            List[Dict[str, Any]]: Scheduled email objects sorted by send_at
+                ascending.
+        """
+        self._require_user(self.user_id)
+        results = [deepcopy(s) for s in self.scheduled_emails.values()]
+        results.sort(key=lambda x: x.get("send_at", ""))
+        return results
+
+    def cancel_scheduled_email(self, scheduled_id: str) -> Dict[str, Any]:
+        """
+        Cancel a scheduled send and move the content to drafts.
+
+        Args:
+            scheduled_id (str): The scheduled email to cancel.
+
+        Returns:
+            Dict[str, Any]:
+                scheduled_id (str), draft_id (str), status (str).
+        """
+        scheduled = self.scheduled_emails.get(scheduled_id)
+        if not scheduled:
+            raise GmailError(
+                "SCHEDULED_NOT_FOUND",
+                f"Scheduled email '{scheduled_id}' not found.",
+                suggested_action="Use list_scheduled_emails() to find valid scheduled IDs.",
+                context={"scheduled_id": scheduled_id},
+            )
+        draft_result = self.create_draft(
+            to=scheduled.get("to"),
+            subject=scheduled.get("subject", ""),
+            body=scheduled.get("body", ""),
+            cc=scheduled.get("cc"),
+            bcc=scheduled.get("bcc"),
+        )
+        del self.scheduled_emails[scheduled_id]
+        return {
+            "scheduled_id": scheduled_id,
+            "draft_id": draft_result["draft_id"],
+            "status": "cancelled_to_draft",
+        }
+
+    # -----------------------------------------------------------------------
+    # Email templates
+    # -----------------------------------------------------------------------
+
+    def create_template(self, name: str, subject: str, body: str) -> Dict[str, Any]:
+        """
+        Save an email template for reuse.
+
+        Args:
+            name (str): Template display name.
+            subject (str): Template subject line.
+            body (str): Template body text.
+
+        Returns:
+            Dict[str, Any]:
+                template_id (str), name (str), status (str).
+        """
+        self._require_user(self.user_id)
+        template_id = self._new_id("template")
+        self.templates[template_id] = {
+            "template_id": template_id,
+            "name": name,
+            "subject": subject,
+            "body": body,
+            "created_at": _utc_now_iso(),
+        }
+        return {
+            "template_id": template_id,
+            "name": name,
+            "status": "created",
+        }
+
+    def list_templates(self) -> List[Dict[str, Any]]:
+        """
+        List all saved email templates.
+
+        Returns:
+            List[Dict[str, Any]]: Template objects with template_id, name,
+                subject, and body.
+        """
+        self._require_user(self.user_id)
+        return [deepcopy(t) for t in self.templates.values()]
+
+    def send_from_template(
+        self,
+        template_id: str,
+        to: List[str],
+        cc: Optional[List[str]] = None,
+        bcc: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Send an email using a saved template's subject and body.
+
+        Args:
+            template_id (str): The template to use.
+            to (List[str]): Recipient email addresses.
+            cc (List[str], optional): Carbon copy recipients.
+            bcc (List[str], optional): Blind carbon copy recipients.
+
+        Returns:
+            Dict[str, Any]:
+                email_id (str), thread_id (str), status (str).
+        """
+        template = self.templates.get(template_id)
+        if not template:
+            raise GmailError(
+                "TEMPLATE_NOT_FOUND",
+                f"Template '{template_id}' not found.",
+                suggested_action="Use list_templates() to find valid template IDs.",
+                context={"template_id": template_id},
+            )
+        return self.send_email(
+            to=to,
+            subject=template["subject"],
+            body=template["body"],
+            cc=cc,
+            bcc=bcc,
+        )
+
+    def delete_template(self, template_id: str) -> Dict[str, Any]:
+        """
+        Delete an email template.
+
+        Args:
+            template_id (str): The template to delete.
+
+        Returns:
+            Dict[str, Any]:
+                template_id (str), status (str).
+        """
+        if template_id not in self.templates:
+            raise GmailError(
+                "TEMPLATE_NOT_FOUND",
+                f"Template '{template_id}' not found.",
+                suggested_action="Use list_templates() to find valid template IDs.",
+                context={"template_id": template_id},
+            )
+        del self.templates[template_id]
+        return {"template_id": template_id, "status": "deleted"}

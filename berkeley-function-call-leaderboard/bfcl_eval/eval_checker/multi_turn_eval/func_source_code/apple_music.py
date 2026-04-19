@@ -80,6 +80,9 @@ DEFAULT_STATE = {
     "recently_played": {},
     "recently_added": {},
     "editorial_content": {},
+    "sing_catalog": {},
+    "replay": {},
+    "audio_settings": {},
 }
 
 
@@ -105,6 +108,9 @@ class AppleMusicAPI(PatchableMixin):
         self.recently_played: List[Dict[str, Any]]
         self.recently_added: List[Dict[str, Any]]
         self.editorial_content: Dict[str, Dict[str, Any]]
+        self.sing_catalog: Dict[str, Dict[str, Any]]
+        self.replay: Dict[str, Dict[str, Any]]
+        self.audio_settings: Dict[str, Any]
         self._api_description = (
             "This tool belongs to the Apple Music streaming system, which allows "
             "users to search the catalog, manage their personal library, create "
@@ -132,6 +138,10 @@ class AppleMusicAPI(PatchableMixin):
         self._random = random.Random(
             scenario.get("random_seed", DEFAULT_STATE_COPY["random_seed"])
         )
+        # self.user_id is referenced throughout public methods (playlist
+        # ownership, share_track, error contexts). Scenario files don't always
+        # include it explicitly, so fall back to a safe default.
+        self.user_id = scenario.get("user_id", "user_1")
         self.profile = scenario.get("profile", DEFAULT_STATE_COPY["profile"])
         self.player = scenario.get("player", DEFAULT_STATE_COPY["player"])
         self.playlists = scenario.get("playlists", DEFAULT_STATE_COPY["playlists"])
@@ -143,6 +153,9 @@ class AppleMusicAPI(PatchableMixin):
         self.recently_played = scenario.get("recently_played", DEFAULT_STATE_COPY["recently_played"])
         self.recently_added = scenario.get("recently_added", DEFAULT_STATE_COPY["recently_added"])
         self.editorial_content = scenario.get("editorial_content", DEFAULT_STATE_COPY["editorial_content"])
+        self.sing_catalog = scenario.get("sing_catalog", DEFAULT_STATE_COPY["sing_catalog"])
+        self.replay = scenario.get("replay", DEFAULT_STATE_COPY["replay"])
+        self.audio_settings = scenario.get("audio_settings", DEFAULT_STATE_COPY["audio_settings"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -1447,4 +1460,324 @@ class AppleMusicAPI(PatchableMixin):
             "email": self.profile.get("email"),
             "subscription_type": self.profile.get("subscription_type", "individual"),
             "country": self.profile.get("country", "US"),
+        }
+
+    # -----------------------------------------------------------------------
+    # Sing Mode (Karaoke)
+    # -----------------------------------------------------------------------
+
+    def get_sing_availability(self, track_id: str) -> Dict[str, Any]:
+        """
+        Check if a track supports Sing mode (Apple Music karaoke).
+
+        Args:
+            track_id (str): The track to check.
+
+        Returns:
+            Dict[str, Any]: Result with fields:
+                track_id (str), available (bool), has_lyrics (bool).
+        """
+        self._require_catalog_track(track_id)
+        sing_info = self.sing_catalog.get(track_id, {})
+        available = sing_info.get("available", False)
+        has_lyrics = sing_info.get("has_lyrics", False)
+        return {
+            "track_id": track_id,
+            "available": available,
+            "has_lyrics": has_lyrics,
+        }
+
+    def start_sing_mode(
+        self,
+        track_id: str,
+        vocal_level: int = 50,
+    ) -> Dict[str, Any]:
+        """
+        Start playback of a track in Sing mode with adjustable vocal level.
+        A vocal_level of 0 is fully instrumental, 100 is normal vocals.
+
+        Args:
+            track_id (str): The track to play in Sing mode.
+            vocal_level (int): Vocal level from 0 (instrumental) to 100
+                (normal vocals). Defaults to 50.
+
+        Returns:
+            Dict[str, Any]: Playback state with fields:
+                current_song_id (str), sing_mode (bool), vocal_level (int),
+                is_playing (bool), position_ms (int).
+        """
+        self._require_catalog_track(track_id)
+        sing_info = self.sing_catalog.get(track_id, {})
+        if not sing_info.get("available", False):
+            raise AppleMusicError(
+                "SING_NOT_AVAILABLE",
+                f"Sing mode is not available for track '{track_id}'.",
+                suggested_action="Use get_sing_availability() to check supported tracks.",
+                context={"track_id": track_id},
+            )
+
+        level = _clamp(int(vocal_level), 0, 100)
+
+        self.player["current_song_id"] = track_id
+        self.player["station_id"] = None
+        self.player["position_ms"] = 0
+        self.player["is_playing"] = True
+        self.player["sing_mode"] = True
+        self.player["vocal_level"] = level
+        self.player.setdefault("shuffle", False)
+        self.player.setdefault("repeat_mode", "off")
+
+        self._record_recently_played(track_id)
+        return {
+            "current_song_id": track_id,
+            "sing_mode": True,
+            "vocal_level": level,
+            "is_playing": True,
+            "position_ms": 0,
+        }
+
+    def get_lyrics(
+        self,
+        track_id: str,
+        synced: bool = False,
+    ) -> Dict[str, Any]:
+        """
+        Get lyrics for a track, optionally time-synced.
+
+        Args:
+            track_id (str): The track whose lyrics to retrieve.
+            synced (bool): If True, return time-synced lyrics with start_ms
+                and end_ms per line. Defaults to False.
+
+        Returns:
+            Dict[str, Any]: Result with fields:
+                track_id (str), lyrics (List[Dict] | List[str]),
+                synced (bool).
+        """
+        self._require_catalog_track(track_id)
+        sing_info = self.sing_catalog.get(track_id, {})
+        if not sing_info.get("has_lyrics", False):
+            raise AppleMusicError(
+                "LYRICS_NOT_AVAILABLE",
+                f"Lyrics are not available for track '{track_id}'.",
+                suggested_action="Not all tracks have lyrics available.",
+                context={"track_id": track_id},
+            )
+
+        raw_lyrics = sing_info.get("lyrics", [])
+        if synced:
+            # Return time-synced lyrics
+            lyrics = []
+            for i, line in enumerate(raw_lyrics):
+                if isinstance(line, dict):
+                    lyrics.append(deepcopy(line))
+                else:
+                    lyrics.append({
+                        "text": str(line),
+                        "start_ms": i * 5000,
+                        "end_ms": (i + 1) * 5000,
+                    })
+        else:
+            # Return plain text lyrics
+            lyrics = []
+            for line in raw_lyrics:
+                if isinstance(line, dict):
+                    lyrics.append(line.get("text", ""))
+                else:
+                    lyrics.append(str(line))
+
+        return {
+            "track_id": track_id,
+            "lyrics": lyrics,
+            "synced": synced,
+        }
+
+    # -----------------------------------------------------------------------
+    # Replay (Annual Listening Stats)
+    # -----------------------------------------------------------------------
+
+    def get_replay(self, year: Optional[int] = None) -> Dict[str, Any]:
+        """
+        Get Apple Music Replay stats for a given year.
+
+        Args:
+            year (int, optional): The year to retrieve replay stats for.
+                Defaults to the current year.
+
+        Returns:
+            Dict[str, Any]: Replay stats with fields:
+                year (int), top_artists (List[Dict]), top_albums (List[Dict]),
+                top_songs (List[Dict]), total_play_time_hours (int),
+                top_genres (List[str]).
+        """
+        if year is None:
+            year = datetime.now(timezone.utc).year
+
+        year_str = str(year)
+        if year_str in self.replay:
+            return deepcopy(self.replay[year_str])
+
+        # Derive replay from current state
+        saved_tracks = [
+            deepcopy(s) for s in self.songs.values() if s.get("saved")
+        ]
+        saved_tracks.sort(key=lambda t: t.get("play_count", 0), reverse=True)
+
+        top_songs = [
+            {"song_id": t.get("song_id"), "name": t.get("name", ""), "play_count": t.get("play_count", 0)}
+            for t in saved_tracks[:10]
+        ]
+
+        # Top genres
+        genre_counts: Dict[str, int] = {}
+        for t in saved_tracks:
+            for g in t.get("genre", []):
+                genre_counts[g] = genre_counts.get(g, 0) + 1
+        top_genres = sorted(genre_counts.keys(), key=lambda g: genre_counts[g], reverse=True)[:5]
+
+        # Top artists
+        artist_counts: Dict[str, int] = {}
+        for t in saved_tracks:
+            for aid in (t.get("artist_id") or []):
+                artist_counts[aid] = artist_counts.get(aid, 0) + 1
+        top_artist_ids = sorted(artist_counts.keys(), key=lambda a: artist_counts[a], reverse=True)[:5]
+        top_artists = []
+        for aid in top_artist_ids:
+            artist = self.artists.get(aid)
+            if artist:
+                top_artists.append({"artist_id": aid, "name": artist.get("name", "")})
+
+        # Top albums
+        album_counts: Dict[str, int] = {}
+        for t in saved_tracks:
+            alb = t.get("album_id")
+            if alb:
+                album_counts[alb] = album_counts.get(alb, 0) + 1
+        top_album_ids = sorted(album_counts.keys(), key=lambda a: album_counts[a], reverse=True)[:5]
+        top_albums = []
+        for alb_id in top_album_ids:
+            album = self.albums.get(alb_id)
+            if album:
+                top_albums.append({"album_id": alb_id, "name": album.get("name", "")})
+
+        total_ms = sum(
+            s.get("duration_ms", 0) * max(1, s.get("play_count", 1))
+            for s in saved_tracks
+        )
+        total_hours = total_ms // 3600000
+
+        return {
+            "year": year,
+            "top_artists": top_artists,
+            "top_albums": top_albums,
+            "top_songs": top_songs,
+            "total_play_time_hours": total_hours,
+            "top_genres": top_genres,
+        }
+
+    def get_replay_playlist(self, year: Optional[int] = None) -> Dict[str, Any]:
+        """
+        Get the auto-generated Replay playlist for a given year.
+
+        Args:
+            year (int, optional): The year to retrieve the replay playlist for.
+                Defaults to the current year.
+
+        Returns:
+            Dict[str, Any]: Replay playlist with fields:
+                year (int), playlist_name (str), tracks (List[Dict]).
+        """
+        if year is None:
+            year = datetime.now(timezone.utc).year
+
+        year_str = str(year)
+
+        # Check if there's a pre-seeded replay playlist
+        replay_data = self.replay.get(year_str, {})
+        if "playlist_tracks" in replay_data:
+            return {
+                "year": year,
+                "playlist_name": f"Replay {year}",
+                "tracks": deepcopy(replay_data["playlist_tracks"]),
+            }
+
+        # Otherwise derive from saved tracks
+        saved_tracks = [
+            deepcopy(s) for s in self.songs.values() if s.get("saved")
+        ]
+        saved_tracks.sort(key=lambda t: t.get("play_count", 0), reverse=True)
+        tracks = [
+            {"song_id": t.get("song_id"), "name": t.get("name", ""), "play_count": t.get("play_count", 0)}
+            for t in saved_tracks[:25]
+        ]
+
+        return {
+            "year": year,
+            "playlist_name": f"Replay {year}",
+            "tracks": tracks,
+        }
+
+    # -----------------------------------------------------------------------
+    # Spatial Audio
+    # -----------------------------------------------------------------------
+
+    def get_spatial_audio_status(self) -> Dict[str, Any]:
+        """
+        Get the current spatial audio status for the user.
+
+        Returns:
+            Dict[str, Any]: Status with fields:
+                enabled (bool), available (bool).
+        """
+        enabled = self.audio_settings.get("spatial_audio_enabled", False)
+        available = self.audio_settings.get("spatial_audio_available", True)
+        return {
+            "enabled": enabled,
+            "available": available,
+        }
+
+    def toggle_spatial_audio(self, enabled: bool) -> Dict[str, Any]:
+        """
+        Enable or disable spatial audio.
+
+        Args:
+            enabled (bool): True to enable spatial audio, False to disable.
+
+        Returns:
+            Dict[str, Any]: Updated status with fields:
+                enabled (bool), available (bool).
+        """
+        available = self.audio_settings.get("spatial_audio_available", True)
+        if not available and enabled:
+            raise AppleMusicError(
+                "SPATIAL_AUDIO_UNAVAILABLE",
+                "Spatial audio is not available on this device or account.",
+                suggested_action="Check device compatibility for spatial audio support.",
+            )
+        self.audio_settings["spatial_audio_enabled"] = bool(enabled)
+        return {
+            "enabled": bool(enabled),
+            "available": available,
+        }
+
+    def get_track_audio_quality(self, track_id: str) -> Dict[str, Any]:
+        """
+        Get the available audio formats for a track.
+
+        Args:
+            track_id (str): The track to check.
+
+        Returns:
+            Dict[str, Any]: Result with fields:
+                track_id (str), formats (List[str]). Possible formats:
+                "standard", "lossless", "hi_res", "dolby_atmos".
+        """
+        track = self._require_catalog_track(track_id)
+        # Check for per-track audio_formats, fall back to default
+        formats = track.get("audio_formats")
+        if not formats:
+            formats = ["standard"]
+        return {
+            "track_id": track_id,
+            "formats": list(formats),
         }
