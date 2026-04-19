@@ -55,12 +55,6 @@ from bfcl_eval.model_handler.local_inference.quick_testing_oss import (
 )
 from bfcl_eval.model_handler.local_inference.qwen import QwenHandler
 from bfcl_eval.model_handler.local_inference.qwen_fc import QwenFCHandler
-from bfcl_eval.model_handler.local_inference.salesforce_llama import (
-    SalesforceLlamaHandler,
-)
-from bfcl_eval.model_handler.local_inference.salesforce_qwen import (
-    SalesforceQwenHandler,
-)
 from bfcl_eval.model_handler.local_inference.think_agent import ThinkAgentHandler
 
 # -----------------------------------------------------------------------------
@@ -1193,7 +1187,7 @@ local_inference_model_map = {
         url="https://huggingface.co/Salesforce/xLAM-2-1b-fc-r",
         org="Salesforce",
         license="cc-by-nc-4.0",
-        model_handler=SalesforceQwenHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="xlam",
