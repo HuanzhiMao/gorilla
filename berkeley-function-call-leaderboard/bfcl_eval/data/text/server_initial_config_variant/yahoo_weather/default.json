@@ -1,0 +1,1 @@
+{"_meta": {"api_class": "YahooWeatherAPI", "source_file": "yahoo_weather.py"}, "profile": {"timezone": "America/Los_Angeles", "unit": {"distance": "miles", "precipitation": "inches", "temperature": "fahrenheit", "wind": "mph"}}}
