@@ -31,13 +31,11 @@ from bfcl_eval.model_handler.api_inference.qwen import (
 )
 from bfcl_eval.model_handler.api_inference.writer import WriterHandler
 from bfcl_eval.model_handler.local_inference.arch import ArchHandler
+from bfcl_eval.model_handler.local_inference.base_oss_handler import OSSHandler
 from bfcl_eval.model_handler.local_inference.bielik import BielikHandler
 from bfcl_eval.model_handler.local_inference.bitagent import BitAgentHandler
-from bfcl_eval.model_handler.local_inference.deepseek_reasoning import (
-    DeepseekReasoningHandler,
-)
+
 from bfcl_eval.model_handler.local_inference.falcon_fc import Falcon3FCHandler
-from bfcl_eval.model_handler.local_inference.functiongemma import FunctionGemmaHandler
 from bfcl_eval.model_handler.local_inference.gemma import GemmaHandler
 from bfcl_eval.model_handler.local_inference.glm import GLMHandler
 from bfcl_eval.model_handler.local_inference.granite import (
@@ -129,13 +127,17 @@ class OSSModelConfig(ModelConfig):
         vllm_tool_call_parser: The tool call parser to use for the model.
         vllm_reasoning_parser: The reasoning parser to use for the model.
         vllm_extra_serve_args: Extra serve arguments to pass to the vllm engine.
-        
+        inference_request_extra_body: Per-request fields merged into the OpenAI
+            client's ``extra_body`` at inference time (e.g.
+            ``{"chat_template_kwargs": {"thinking": True}}``).
+
     Note: input_price and output_price are not used for OSS models, as they will be set to None by default.
     """
 
     vllm_tool_call_parser: Optional[str] = None
     vllm_reasoning_parser: Optional[str] = None
     vllm_extra_serve_args: list[str] = field(default_factory=list)
+    inference_request_extra_body: dict = field(default_factory=dict)
 
 
 # Inference through API calls
@@ -1003,19 +1005,21 @@ api_inference_model_map = {
 
 # Inference through local hosting
 local_inference_model_map = {
-    # @huanzhiMao FIXME, check
-    "deepseek-ai/DeepSeek-R1": OSSModelConfig(
-        model_name="deepseek-ai/DeepSeek-R1",
-        display_name="DeepSeek-R1 (Prompt) (Local)",
-        url="https://huggingface.co/deepseek-ai/DeepSeek-R1",
+    # @huanzhiMao FIXME, check, for oss model, if is_fc_model, do we still supply system prompt?
+    "deepseek-ai/DeepSeek-V3.2-FC": OSSModelConfig(
+        model_name="deepseek-ai/DeepSeek-V3.2",
+        display_name="DeepSeek-V3.2 (FC) (Reasoning)",
+        url="https://huggingface.co/deepseek-ai/DeepSeek-V3.2",
         org="DeepSeek",
         license="MIT",
-        model_handler=DeepseekReasoningHandler,
-        is_fc_model=False,
+        model_handler=OSSHandler,
+        is_fc_model=True,
         underscore_to_dot=False,
-        # vllm_tool_call_parser="deepseek_v3",
+        vllm_tool_call_parser="deepseek_v32",
+        vllm_reasoning_parser="deepseek_v3",
+        inference_request_extra_body={"chat_template_kwargs": {"thinking": True}},
     ),
-    "google/gemma-3-1b-it": ModelConfig(
+    "google/gemma-3-1b-it": OSSModelConfig(
         model_name="google/gemma-3-1b-it",
         display_name="Gemma-3-1b-it (Prompt)",
         url="https://blog.google/technology/developers/gemma-3/",
@@ -1024,6 +1028,7 @@ local_inference_model_map = {
         model_handler=GemmaHandler,
         is_fc_model=False,
         underscore_to_dot=False,
+        vllm_tool_call_parser="pythonic"
     ),
     "google/gemma-3-4b-it": OSSModelConfig(
         model_name="google/gemma-3-4b-it",
@@ -1061,40 +1066,19 @@ local_inference_model_map = {
         url="https://ai.google.dev/gemma/docs/functiongemma",
         org="Google",
         license="gemma-terms-of-use",
-        model_handler=FunctionGemmaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="functiongemma",
     ),
-    "meta-llama/Llama-3.1-8B-Instruct-FC": OSSModelConfig(
-        model_name="meta-llama/Llama-3.1-8B-Instruct",
-        display_name="Llama-3.1-8B-Instruct (FC)",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler_3_1,
-        is_fc_model=True,
-        underscore_to_dot=False,
-        vllm_tool_call_parser="llama3_json",
-    ),
-    "meta-llama/Llama-3.1-70B-Instruct-FC": OSSModelConfig(
-        model_name="meta-llama/Llama-3.1-70B-Instruct",
-        display_name="Llama-3.1-70B-Instruct (FC)",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler_3_1,
-        is_fc_model=True,
-        underscore_to_dot=False,
-        vllm_tool_call_parser="llama3_json",
-    ),
+
     "meta-llama/Llama-3.2-1B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.2-1B-Instruct",
         display_name="Llama-3.2-1B-Instruct (FC)",
         url="https://llama.meta.com/llama3",
         org="Meta",
         license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="llama3_json",
@@ -1105,19 +1089,7 @@ local_inference_model_map = {
         url="https://llama.meta.com/llama3",
         org="Meta",
         license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-        vllm_tool_call_parser="llama3_json",
-    ),
-    # FIXME, check
-    "meta-llama/Llama-3.3-70B-Instruct-FC": OSSModelConfig(
-        model_name="meta-llama/Llama-3.3-70B-Instruct",
-        display_name="Llama-3.3-70B-Instruct (FC)",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="llama3_json",
@@ -1128,9 +1100,10 @@ local_inference_model_map = {
         url="https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
         org="Meta",
         license="Meta Llama 4 Community",
-        model_handler=LlamaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
+        supports_image_input=True,
         vllm_tool_call_parser="llama4_pythonic",
     ),
     "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC": OSSModelConfig(
@@ -1139,9 +1112,10 @@ local_inference_model_map = {
         url="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
         org="Meta",
         license="Meta Llama 4 Community",
-        model_handler=LlamaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
+        supports_image_input=True,
         vllm_tool_call_parser="llama4_pythonic",
     ),
     "Salesforce/Llama-xLAM-2-70b-fc-r": OSSModelConfig(
