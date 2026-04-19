@@ -120,6 +120,7 @@ def build_handler(model_name, temperature):
         handler.tool_call_parser = config.vllm_tool_call_parser
         handler.reasoning_parser = config.vllm_reasoning_parser
         handler.vllm_extra_serve_args = list(config.vllm_extra_serve_args)
+        handler.inference_request_extra_body = dict(config.inference_request_extra_body)
     return handler
 
 

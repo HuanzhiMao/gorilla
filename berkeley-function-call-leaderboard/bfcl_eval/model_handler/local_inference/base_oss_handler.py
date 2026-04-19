@@ -39,6 +39,8 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
         self.tool_call_parser = None
         # Extra CLI args appended to `vllm serve ...`
         self.vllm_extra_serve_args: list[str] = []
+        # Per-request fields merged into the OpenAI client's extra_body at inference time
+        self.inference_request_extra_body: dict = {}
 
         # Will be overridden in batch_inference method
         # Used to indicate where the tokenizer and config should be loaded from
@@ -63,6 +65,8 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
             extra_body["stop_token_ids"] = self.stop_token_ids
         if hasattr(self, "skip_special_tokens"):
             extra_body["skip_special_tokens"] = self.skip_special_tokens
+        if getattr(self, "inference_request_extra_body", None):
+            extra_body.update(self.inference_request_extra_body)
         return extra_body
 
     def _resolve_tool_call_parser(self) -> str | None:

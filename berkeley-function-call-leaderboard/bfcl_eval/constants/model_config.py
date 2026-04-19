@@ -31,13 +31,11 @@ from bfcl_eval.model_handler.api_inference.qwen import (
 )
 from bfcl_eval.model_handler.api_inference.writer import WriterHandler
 from bfcl_eval.model_handler.local_inference.arch import ArchHandler
+from bfcl_eval.model_handler.local_inference.base_oss_handler import OSSHandler
 from bfcl_eval.model_handler.local_inference.bielik import BielikHandler
 from bfcl_eval.model_handler.local_inference.bitagent import BitAgentHandler
-from bfcl_eval.model_handler.local_inference.deepseek_reasoning import (
-    DeepseekReasoningHandler,
-)
+
 from bfcl_eval.model_handler.local_inference.falcon_fc import Falcon3FCHandler
-from bfcl_eval.model_handler.local_inference.functiongemma import FunctionGemmaHandler
 from bfcl_eval.model_handler.local_inference.gemma import GemmaHandler
 from bfcl_eval.model_handler.local_inference.glm import GLMHandler
 from bfcl_eval.model_handler.local_inference.granite import (
@@ -46,8 +44,6 @@ from bfcl_eval.model_handler.local_inference.granite import (
 from bfcl_eval.model_handler.local_inference.granite_3 import Granite3FCHandler
 from bfcl_eval.model_handler.local_inference.granite_4 import Granite4FCHandler
 from bfcl_eval.model_handler.local_inference.hammer import HammerHandler
-from bfcl_eval.model_handler.local_inference.llama import LlamaHandler
-from bfcl_eval.model_handler.local_inference.llama_3_1 import LlamaHandler_3_1
 from bfcl_eval.model_handler.local_inference.minicpm import MiniCPMHandler
 from bfcl_eval.model_handler.local_inference.minicpm_fc import MiniCPMFCHandler
 from bfcl_eval.model_handler.local_inference.mistral_fc import MistralFCHandler
@@ -59,12 +55,6 @@ from bfcl_eval.model_handler.local_inference.quick_testing_oss import (
 )
 from bfcl_eval.model_handler.local_inference.qwen import QwenHandler
 from bfcl_eval.model_handler.local_inference.qwen_fc import QwenFCHandler
-from bfcl_eval.model_handler.local_inference.salesforce_llama import (
-    SalesforceLlamaHandler,
-)
-from bfcl_eval.model_handler.local_inference.salesforce_qwen import (
-    SalesforceQwenHandler,
-)
 from bfcl_eval.model_handler.local_inference.think_agent import ThinkAgentHandler
 
 # -----------------------------------------------------------------------------
@@ -77,6 +67,7 @@ from bfcl_eval.model_handler.local_inference.think_agent import ThinkAgentHandle
 
 @dataclass
 class ModelConfig:
+    # @HuanzhiMao FIXME: We should let the tool compilation step also take this into account, underscore_to_dot
     """
     Model configuration class for storing model metadata and settings.
 
@@ -90,9 +81,10 @@ class ModelConfig:
         input_price (Optional[float]): USD per million input tokens (None for open source models).
         output_price (Optional[float]): USD per million output tokens (None for open source models).
         is_fc_model (bool): True if this model is used in Function-Calling mode, otherwise False for Prompt-based mode.
-        underscore_to_dot (bool): True if model does not support '.' in function names, in which case we will replace '.' with '_'. Currently this only matters for checker.  TODO: We should let the tool compilation step also take this into account.
+        underscore_to_dot (bool): True if model does not support '.' in function names, in which case we will replace '.' with '_'. Currently this only matters for checker.
         supports_audio_input (bool): True if the model supports native audio input. Required for true audio tasks.
         supports_image_input (bool): True if the model supports vision/image input. Required for vision tasks.
+        is_reasoning_model (bool): True if the model is a reasoning model and we are using its reasoning mode.
 
     """
 
@@ -120,6 +112,9 @@ class ModelConfig:
     # True if the model supports vision/image input. Required for vision tasks.
     supports_image_input: bool = False
 
+    # True if the model is a reasoning model and we are using its reasoning mode.
+    is_reasoning_model: bool = False
+
 
 @dataclass
 class OSSModelConfig(ModelConfig):
@@ -129,13 +124,17 @@ class OSSModelConfig(ModelConfig):
         vllm_tool_call_parser: The tool call parser to use for the model.
         vllm_reasoning_parser: The reasoning parser to use for the model.
         vllm_extra_serve_args: Extra serve arguments to pass to the vllm engine.
-        
+        inference_request_extra_body: Per-request fields merged into the OpenAI
+            client's ``extra_body`` at inference time (e.g.
+            ``{"chat_template_kwargs": {"thinking": True}}``).
+
     Note: input_price and output_price are not used for OSS models, as they will be set to None by default.
     """
 
     vllm_tool_call_parser: Optional[str] = None
     vllm_reasoning_parser: Optional[str] = None
     vllm_extra_serve_args: list[str] = field(default_factory=list)
+    inference_request_extra_body: dict = field(default_factory=dict)
 
 
 # Inference through API calls
@@ -1003,90 +1002,94 @@ api_inference_model_map = {
 
 # Inference through local hosting
 local_inference_model_map = {
-    # @huanzhiMao FIXME, check
-    "deepseek-ai/DeepSeek-R1": OSSModelConfig(
-        model_name="deepseek-ai/DeepSeek-R1",
-        display_name="DeepSeek-R1 (Prompt) (Local)",
-        url="https://huggingface.co/deepseek-ai/DeepSeek-R1",
+    # @huanzhiMao FIXME, check, for oss model, if is_fc_model, do we still supply system prompt?
+    "deepseek-ai/DeepSeek-V3.2-FC": OSSModelConfig(
+        model_name="deepseek-ai/DeepSeek-V3.2",
+        display_name="DeepSeek-V3.2 (FC)",
+        url="https://huggingface.co/deepseek-ai/DeepSeek-V3.2",
         org="DeepSeek",
         license="MIT",
-        model_handler=DeepseekReasoningHandler,
-        is_fc_model=False,
+        model_handler=OSSHandler,
+        is_fc_model=True,
+        is_reasoning_model=True,
         underscore_to_dot=False,
-        # vllm_tool_call_parser="deepseek_v3",
+        vllm_tool_call_parser="deepseek_v32",
+        vllm_reasoning_parser="deepseek_v3",
+        inference_request_extra_body={"chat_template_kwargs": {"thinking": True}},
     ),
-    "google/gemma-3-1b-it": ModelConfig(
-        model_name="google/gemma-3-1b-it",
-        display_name="Gemma-3-1b-it (Prompt)",
-        url="https://blog.google/technology/developers/gemma-3/",
+    "google/gemma-4-E2B-it-FC": OSSModelConfig(
+        model_name="google/gemma-4-E2B-it",
+        display_name="Gemma-4-E2B-it (FC)",
+        url="https://huggingface.co/google/gemma-4-E2B-it",
         org="Google",
-        license="gemma-terms-of-use",
+        license="apache-2.0",
         model_handler=GemmaHandler,
-        is_fc_model=False,
+        is_fc_model=True,
+        is_reasoning_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="gemma4",
+        vllm_reasoning_parser="gemma4",
+        inference_request_extra_body={"chat_template_kwargs": {"enable_thinking": True}},
+        supports_audio_input=True,
+        supports_image_input=True,
     ),
-    "google/gemma-3-4b-it": OSSModelConfig(
-        model_name="google/gemma-3-4b-it",
-        display_name="Gemma-3-4b-it (Prompt)",
-        url="https://blog.google/technology/developers/gemma-3/",
+    "google/gemma-4-E4B-it-FC": OSSModelConfig(
+        model_name="google/gemma-4-E4B-it",
+        display_name="Gemma-4-E4B-it (FC)",
+        url="https://huggingface.co/google/gemma-4-E4B-it",
         org="Google",
-        license="gemma-terms-of-use",
+        license="apache-2.0",
         model_handler=GemmaHandler,
-        is_fc_model=False,
+        is_fc_model=True,
+        is_reasoning_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="gemma4",
+        vllm_reasoning_parser="gemma4",
+        inference_request_extra_body={"chat_template_kwargs": {"enable_thinking": True}},
+        supports_audio_input=True,
+        supports_image_input=True,
     ),
-    "google/gemma-3-12b-it": OSSModelConfig(
-        model_name="google/gemma-3-12b-it",
-        display_name="Gemma-3-12b-it (Prompt)",
-        url="https://blog.google/technology/developers/gemma-3/",
+    "google/gemma-4-26B-A4B-it-FC": OSSModelConfig(
+        model_name="google/gemma-4-26B-A4B-it",
+        display_name="Gemma-4-26B-A4B-it (FC)",
+        url="https://huggingface.co/google/gemma-4-26B-A4B-it",
         org="Google",
-        license="gemma-terms-of-use",
+        license="apache-2.0",
         model_handler=GemmaHandler,
-        is_fc_model=False,
+        is_fc_model=True,
+        is_reasoning_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="gemma4",
+        vllm_reasoning_parser="gemma4",
+        inference_request_extra_body={"chat_template_kwargs": {"enable_thinking": True}},
+        supports_image_input=True,
     ),
-    "google/gemma-3-27b-it": OSSModelConfig(
-        model_name="google/gemma-3-27b-it",
-        display_name="Gemma-3-27b-it (Prompt)",
-        url="https://blog.google/technology/developers/gemma-3/",
+    "google/gemma-4-31B-it-FC": OSSModelConfig(
+        model_name="google/gemma-4-31B-it",
+        display_name="Gemma-4-31B-it (FC)",
+        url="https://huggingface.co/google/gemma-4-31B-it",
         org="Google",
-        license="gemma-terms-of-use",
+        license="apache-2.0",
         model_handler=GemmaHandler,
-        is_fc_model=False,
+        is_fc_model=True,
+        is_reasoning_model=True,
         underscore_to_dot=False,
+        vllm_tool_call_parser="gemma4",
+        vllm_reasoning_parser="gemma4",
+        inference_request_extra_body={"chat_template_kwargs": {"enable_thinking": True}},
+        supports_image_input=True,
     ),
+    # @HuanzhiMao FIXME: Check below for is_reasoning_model
     "google/functiongemma-270m-it-FC": OSSModelConfig(
         model_name="google/functiongemma-270m-it",
         display_name="FunctionGemma-270m-it (FC)",
         url="https://ai.google.dev/gemma/docs/functiongemma",
         org="Google",
         license="gemma-terms-of-use",
-        model_handler=FunctionGemmaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="functiongemma",
-    ),
-    "meta-llama/Llama-3.1-8B-Instruct-FC": OSSModelConfig(
-        model_name="meta-llama/Llama-3.1-8B-Instruct",
-        display_name="Llama-3.1-8B-Instruct (FC)",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler_3_1,
-        is_fc_model=True,
-        underscore_to_dot=False,
-        vllm_tool_call_parser="llama3_json",
-    ),
-    "meta-llama/Llama-3.1-70B-Instruct-FC": OSSModelConfig(
-        model_name="meta-llama/Llama-3.1-70B-Instruct",
-        display_name="Llama-3.1-70B-Instruct (FC)",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler_3_1,
-        is_fc_model=True,
-        underscore_to_dot=False,
-        vllm_tool_call_parser="llama3_json",
     ),
     "meta-llama/Llama-3.2-1B-Instruct-FC": OSSModelConfig(
         model_name="meta-llama/Llama-3.2-1B-Instruct",
@@ -1094,7 +1097,7 @@ local_inference_model_map = {
         url="https://llama.meta.com/llama3",
         org="Meta",
         license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="llama3_json",
@@ -1105,19 +1108,7 @@ local_inference_model_map = {
         url="https://llama.meta.com/llama3",
         org="Meta",
         license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-        vllm_tool_call_parser="llama3_json",
-    ),
-    # FIXME, check
-    "meta-llama/Llama-3.3-70B-Instruct-FC": OSSModelConfig(
-        model_name="meta-llama/Llama-3.3-70B-Instruct",
-        display_name="Llama-3.3-70B-Instruct (FC)",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="llama3_json",
@@ -1128,9 +1119,10 @@ local_inference_model_map = {
         url="https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
         org="Meta",
         license="Meta Llama 4 Community",
-        model_handler=LlamaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
+        supports_image_input=True,
         vllm_tool_call_parser="llama4_pythonic",
     ),
     "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC": OSSModelConfig(
@@ -1139,9 +1131,10 @@ local_inference_model_map = {
         url="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
         org="Meta",
         license="Meta Llama 4 Community",
-        model_handler=LlamaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
+        supports_image_input=True,
         vllm_tool_call_parser="llama4_pythonic",
     ),
     "Salesforce/Llama-xLAM-2-70b-fc-r": OSSModelConfig(
@@ -1150,7 +1143,7 @@ local_inference_model_map = {
         url="https://huggingface.co/Salesforce/Llama-xLAM-2-70b-fc-r",
         org="Salesforce",
         license="cc-by-nc-4.0",
-        model_handler=SalesforceLlamaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="xlam",
@@ -1161,7 +1154,7 @@ local_inference_model_map = {
         url="https://huggingface.co/Salesforce/Llama-xLAM-2-8b-fc-r",
         org="Salesforce",
         license="cc-by-nc-4.0",
-        model_handler=SalesforceLlamaHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="xlam",
@@ -1172,7 +1165,7 @@ local_inference_model_map = {
         url="https://huggingface.co/Salesforce/xLAM-2-32b-fc-r",
         org="Salesforce",
         license="cc-by-nc-4.0",
-        model_handler=SalesforceQwenHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="xlam",
@@ -1183,7 +1176,7 @@ local_inference_model_map = {
         url="https://huggingface.co/Salesforce/xLAM-2-3b-fc-r",
         org="Salesforce",
         license="cc-by-nc-4.0",
-        model_handler=SalesforceQwenHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="xlam",
@@ -1194,34 +1187,24 @@ local_inference_model_map = {
         url="https://huggingface.co/Salesforce/xLAM-2-1b-fc-r",
         org="Salesforce",
         license="cc-by-nc-4.0",
-        model_handler=SalesforceQwenHandler,
+        model_handler=OSSHandler,
         is_fc_model=True,
         underscore_to_dot=False,
         vllm_tool_call_parser="xlam",
     ),
-    # @HuanzhiMao FIXME: Double check this
-    "mistral-large-2512": OSSModelConfig(
-        model_name="mistral-large-2512",
-        display_name="mistral-large-2512 (Prompt)",
-        url="https://docs.mistral.ai/guides/model-selection/",
+    "mistralai/Mistral-Large-3-675B-Instruct-2512-FC": OSSModelConfig(
+        model_name="mistralai/Mistral-Large-3-675B-Instruct-2512",
+        display_name="Mistral-Large-3-675B-Instruct-2512 (FC)",
+        url="https://huggingface.co/mistralai/Mistral-Large-3-675B-Instruct-2512",
         org="Mistral AI",
-        license="Proprietary",
-        model_handler=MistralHandler,
-        is_fc_model=False,
+        license="apache-2.0",
+        model_handler=OSSHandler,
+        is_fc_model=True,
         underscore_to_dot=False,
         supports_image_input=True,
+        vllm_tool_call_parser="mistral",
     ),
-    "mistral-large-2512-FC": OSSModelConfig(
-        model_name="mistral-large-2512",
-        display_name="mistral-large-2512 (FC)",
-        url="https://docs.mistral.ai/guides/model-selection/",
-        org="Mistral AI",
-        license="Proprietary",
-        model_handler=MistralHandler,
-        is_fc_model=True,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
+    # @HuanzhiMao FIXME: Double check this
     "mistral-small-2506": OSSModelConfig(
         model_name="mistral-small-2506",
         display_name="Mistral-Small-2506 (Prompt)",
@@ -1607,246 +1590,236 @@ local_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    "Team-ACE/ToolACE-2-8B": OSSModelConfig(
-        model_name="Team-ACE/ToolACE-2-8B",
-        display_name="ToolACE-2-8B (FC)",
-        url="https://huggingface.co/Team-ACE/ToolACE-2-8B",
-        org="Huawei Noah & USTC",
-        license="Apache-2.0",
-        model_handler=LlamaHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "openbmb/MiniCPM3-4B": OSSModelConfig(
-        model_name="openbmb/MiniCPM3-4B",
-        display_name="MiniCPM3-4B (Prompt)",
-        url="https://huggingface.co/openbmb/MiniCPM3-4B",
-        org="openbmb",
-        license="Apache-2.0",
-        model_handler=MiniCPMHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "openbmb/MiniCPM3-4B-FC": OSSModelConfig(
-        model_name="openbmb/MiniCPM3-4B",
-        display_name="MiniCPM3-4B-FC (FC)",
-        url="https://huggingface.co/openbmb/MiniCPM3-4B",
-        org="openbmb",
-        license="Apache-2.0",
-        model_handler=MiniCPMFCHandler,
-        is_fc_model=True,
-        underscore_to_dot=True,
-    ),
-    "watt-ai/watt-tool-8B": OSSModelConfig(
-        model_name="watt-ai/watt-tool-8B",
-        display_name="watt-tool-8B (FC)",
-        url="https://huggingface.co/watt-ai/watt-tool-8B/",
-        org="Watt AI Lab",
-        license="Apache-2.0",
-        model_handler=LlamaHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "watt-ai/watt-tool-70B": OSSModelConfig(
-        model_name="watt-ai/watt-tool-70B",
-        display_name="watt-tool-70B (FC)",
-        url="https://huggingface.co/watt-ai/watt-tool-70B/",
-        org="Watt AI Lab",
-        license="Apache-2.0",
-        model_handler=LlamaHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "ZJared/Haha-7B": OSSModelConfig(
-        model_name="ZJared/Haha-7B",
-        display_name="Haha-7B",
-        url="https://huggingface.co/ZJared/Haha-7B",
-        org="TeleAI",
-        license="Apache 2.0",
-        model_handler=QwenHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "speakleash/Bielik-11B-v2.3-Instruct": OSSModelConfig(
-        model_name="speakleash/Bielik-11B-v2.3-Instruct",
-        display_name="Bielik-11B-v2.3-Instruct (Prompt)",
-        url="https://huggingface.co/speakleash/Bielik-11B-v2.3-Instruct",
-        org="SpeakLeash & ACK Cyfronet AGH",
-        license="Apache 2.0",
-        model_handler=BielikHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "NovaSky-AI/Sky-T1-32B-Preview": OSSModelConfig(
-        model_name="NovaSky-AI/Sky-T1-32B-Preview",
-        display_name="Sky-T1-32B-Preview (Prompt)",
-        url="https://huggingface.co/NovaSky-AI/Sky-T1-32B-Preview",
-        org="NovaSky-AI",
-        license="apache-2.0",
-        model_handler=QwenHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "tiiuae/Falcon3-10B-Instruct-FC": OSSModelConfig(
-        model_name="tiiuae/Falcon3-10B-Instruct",
-        display_name="Falcon3-10B-Instruct (FC)",
-        url="https://huggingface.co/tiiuae/Falcon3-10B-Instruct",
-        org="TII UAE",
-        license="falcon-llm-license",
-        model_handler=Falcon3FCHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "tiiuae/Falcon3-7B-Instruct-FC": OSSModelConfig(
-        model_name="tiiuae/Falcon3-7B-Instruct",
-        display_name="Falcon3-7B-Instruct (FC)",
-        url="https://huggingface.co/tiiuae/Falcon3-7B-Instruct",
-        org="TII UAE",
-        license="falcon-llm-license",
-        model_handler=Falcon3FCHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "tiiuae/Falcon3-3B-Instruct-FC": OSSModelConfig(
-        model_name="tiiuae/Falcon3-3B-Instruct",
-        display_name="Falcon3-3B-Instruct (FC)",
-        url="https://huggingface.co/tiiuae/Falcon3-3B-Instruct",
-        org="TII UAE",
-        license="falcon-llm-license",
-        model_handler=Falcon3FCHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "tiiuae/Falcon3-1B-Instruct-FC": OSSModelConfig(
-        model_name="tiiuae/Falcon3-1B-Instruct",
-        display_name="Falcon3-1B-Instruct (FC)",
-        url="https://huggingface.co/tiiuae/Falcon3-1B-Instruct",
-        org="TII UAE",
-        license="falcon-llm-license",
-        model_handler=Falcon3FCHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "uiuc-convai/CoALM-8B": OSSModelConfig(
-        model_name="uiuc-convai/CoALM-8B",
-        display_name="CoALM-8B",
-        url="https://huggingface.co/uiuc-convai/CoALM-8B",
-        org="UIUC + Oumi",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "uiuc-convai/CoALM-70B": OSSModelConfig(
-        model_name="uiuc-convai/CoALM-70B",
-        display_name="CoALM-70B",
-        url="https://huggingface.co/uiuc-convai/CoALM-70B",
-        org="UIUC + Oumi",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "uiuc-convai/CoALM-405B": OSSModelConfig(
-        model_name="uiuc-convai/CoALM-405B",
-        display_name="CoALM-405B",
-        url="https://huggingface.co/uiuc-convai/CoALM-405B",
-        org="UIUC + Oumi",
-        license="Meta Llama 3 Community",
-        model_handler=LlamaHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "katanemo/Arch-Agent-1.5B": OSSModelConfig(
-        model_name="katanemo/Arch-Agent-1.5B",
-        display_name="Arch-Agent-1.5B",
-        url="https://huggingface.co/katanemo/Arch-Agent-1.5B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "katanemo/Arch-Agent-3B": OSSModelConfig(
-        model_name="katanemo/Arch-Agent-3B",
-        display_name="Arch-Agent-3B",
-        url="https://huggingface.co/katanemo/Arch-Agent-3B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "katanemo/Arch-Agent-7B": OSSModelConfig(
-        model_name="katanemo/Arch-Agent-7B",
-        display_name="Arch-Agent-7B",
-        url="https://huggingface.co/katanemo/Arch-Agent-7B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "katanemo/Arch-Agent-32B": OSSModelConfig(
-        model_name="katanemo/Arch-Agent-32B",
-        display_name="Arch-Agent-32B",
-        url="https://huggingface.co/katanemo/Arch-Agent-32B",
-        org="katanemo",
-        license="katanemo-research",
-        model_handler=ArchHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "BitAgent/BitAgent-8B": OSSModelConfig(
-        model_name="BitAgent/BitAgent-8B",
-        display_name="BitAgent-8B",
-        url="https://huggingface.co/BitAgent/BitAgent-8B/",
-        org="Bittensor",
-        license="Apache-2.0",
-        model_handler=LlamaHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "BitAgent/BitAgent-Bounty-8B": OSSModelConfig(
-        model_name="BitAgent/BitAgent-Bounty-8B",
-        display_name="BitAgent-Bounty-8B",
-        url="https://huggingface.co/BitAgent/BitAgent-Bounty-8B",
-        org="Bittensor",
-        license="Apache-2.0",
-        model_handler=BitAgentHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "ThinkAgents/ThinkAgent-1B": OSSModelConfig(
-        model_name="ThinkAgents/ThinkAgent-1B",
-        display_name="ThinkAgent-1B (FC)",
-        url="https://huggingface.co/ThinkAgents/ThinkAgent-1B",
-        org="ThinkAgents",
-        license="apache-2.0",
-        model_handler=ThinkAgentHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
-    "phronetic-ai/RZN-T": OSSModelConfig(
-        model_name="phronetic-ai/RZN-T",
-        display_name="RZN-T (Prompt)",
-        url="https://huggingface.co/phronetic-ai/RZN-T",
-        org="Phronetic AI",
-        license="apache-2.0",
-        model_handler=QwenHandler,
-        is_fc_model=False,
-        underscore_to_dot=False,
-    ),
-    "Nanbeige/Nanbeige4-3B-Thinking-2511": OSSModelConfig(
-        model_name="Nanbeige/Nanbeige4-3B-Thinking-2511",
-        display_name="Nanbeige4-3B-Thinking-2511 (FC)",
-        url="https://huggingface.co/Nanbeige/Nanbeige4-3B-Thinking-2511",
-        org="Nanbeige",
-        license="apache-2.0",
-        model_handler=NanbeigeFCHandler,
-        is_fc_model=True,
-        underscore_to_dot=False,
-    ),
+    # "Team-ACE/ToolACE-2-8B": OSSModelConfig(
+    #     model_name="Team-ACE/ToolACE-2-8B",
+    #     display_name="ToolACE-2-8B (FC)",
+    #     url="https://huggingface.co/Team-ACE/ToolACE-2-8B",
+    #     org="Huawei Noah & USTC",
+    #     license="Apache-2.0",
+    #     model_handler=LlamaHandler,
+    #     is_fc_model=False,
+    #     underscore_to_dot=False,
+    # ),
+    # "openbmb/MiniCPM3-4B": OSSModelConfig(
+    #     model_name="openbmb/MiniCPM3-4B",
+    #     display_name="MiniCPM3-4B (Prompt)",
+    #     url="https://huggingface.co/openbmb/MiniCPM3-4B",
+    #     org="openbmb",
+    #     license="Apache-2.0",
+    #     model_handler=MiniCPMHandler,
+    #     is_fc_model=False,
+    #     underscore_to_dot=False,
+    # ),
+    # "openbmb/MiniCPM3-4B-FC": OSSModelConfig(
+    #     model_name="openbmb/MiniCPM3-4B",
+    #     display_name="MiniCPM3-4B-FC (FC)",
+    #     url="https://huggingface.co/openbmb/MiniCPM3-4B",
+    #     org="openbmb",
+    #     license="Apache-2.0",
+    #     model_handler=MiniCPMFCHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=True,
+    # ),
+    # "watt-ai/watt-tool-8B": OSSModelConfig(
+    #     model_name="watt-ai/watt-tool-8B",
+    #     display_name="watt-tool-8B (FC)",
+    #     url="https://huggingface.co/watt-ai/watt-tool-8B/",
+    #     org="Watt AI Lab",
+    #     license="Apache-2.0",
+    #     model_handler=LlamaHandler,
+    #     is_fc_model=False,
+    #     underscore_to_dot=False,
+    # ),
+    # "watt-ai/watt-tool-70B": OSSModelConfig(
+    #     model_name="watt-ai/watt-tool-70B",
+    #     display_name="watt-tool-70B (FC)",
+    #     url="https://huggingface.co/watt-ai/watt-tool-70B/",
+    #     org="Watt AI Lab",
+    #     license="Apache-2.0",
+    #     model_handler=LlamaHandler,
+    #     is_fc_model=False,
+    #     underscore_to_dot=False,
+    # ),
+    # "speakleash/Bielik-11B-v2.3-Instruct": OSSModelConfig(
+    #     model_name="speakleash/Bielik-11B-v2.3-Instruct",
+    #     display_name="Bielik-11B-v2.3-Instruct (Prompt)",
+    #     url="https://huggingface.co/speakleash/Bielik-11B-v2.3-Instruct",
+    #     org="SpeakLeash & ACK Cyfronet AGH",
+    #     license="Apache 2.0",
+    #     model_handler=BielikHandler,
+    #     is_fc_model=False,
+    #     underscore_to_dot=False,
+    # ),
+    # "NovaSky-AI/Sky-T1-32B-Preview": OSSModelConfig(
+    #     model_name="NovaSky-AI/Sky-T1-32B-Preview",
+    #     display_name="Sky-T1-32B-Preview (Prompt)",
+    #     url="https://huggingface.co/NovaSky-AI/Sky-T1-32B-Preview",
+    #     org="NovaSky-AI",
+    #     license="apache-2.0",
+    #     model_handler=QwenHandler,
+    #     is_fc_model=False,
+    #     underscore_to_dot=False,
+    # ),
+    # "tiiuae/Falcon3-10B-Instruct-FC": OSSModelConfig(
+    #     model_name="tiiuae/Falcon3-10B-Instruct",
+    #     display_name="Falcon3-10B-Instruct (FC)",
+    #     url="https://huggingface.co/tiiuae/Falcon3-10B-Instruct",
+    #     org="TII UAE",
+    #     license="falcon-llm-license",
+    #     model_handler=Falcon3FCHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=False,
+    # ),
+    # "tiiuae/Falcon3-7B-Instruct-FC": OSSModelConfig(
+    #     model_name="tiiuae/Falcon3-7B-Instruct",
+    #     display_name="Falcon3-7B-Instruct (FC)",
+    #     url="https://huggingface.co/tiiuae/Falcon3-7B-Instruct",
+    #     org="TII UAE",
+    #     license="falcon-llm-license",
+    #     model_handler=Falcon3FCHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=False,
+    # ),
+    # "tiiuae/Falcon3-3B-Instruct-FC": OSSModelConfig(
+    #     model_name="tiiuae/Falcon3-3B-Instruct",
+    #     display_name="Falcon3-3B-Instruct (FC)",
+    #     url="https://huggingface.co/tiiuae/Falcon3-3B-Instruct",
+    #     org="TII UAE",
+    #     license="falcon-llm-license",
+    #     model_handler=Falcon3FCHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=False,
+    # ),
+    # "tiiuae/Falcon3-1B-Instruct-FC": OSSModelConfig(
+    #     model_name="tiiuae/Falcon3-1B-Instruct",
+    #     display_name="Falcon3-1B-Instruct (FC)",
+    #     url="https://huggingface.co/tiiuae/Falcon3-1B-Instruct",
+    #     org="TII UAE",
+    #     license="falcon-llm-license",
+    #     model_handler=Falcon3FCHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=False,
+    # ),
+    # "uiuc-convai/CoALM-8B": OSSModelConfig(
+    #     model_name="uiuc-convai/CoALM-8B",
+    #     display_name="CoALM-8B",
+    #     url="https://huggingface.co/uiuc-convai/CoALM-8B",
+    #     org="UIUC + Oumi",
+    #     license="Meta Llama 3 Community",
+    #     model_handler=LlamaHandler,
+    #     is_fc_model=False,
+    #     underscore_to_dot=False,
+    # ),
+    # "uiuc-convai/CoALM-70B": OSSModelConfig(
+    #     model_name="uiuc-convai/CoALM-70B",
+    #     display_name="CoALM-70B",
+    #     url="https://huggingface.co/uiuc-convai/CoALM-70B",
+    #     org="UIUC + Oumi",
+    #     license="Meta Llama 3 Community",
+    #     model_handler=LlamaHandler,
+    #     is_fc_model=False,
+    #     underscore_to_dot=False,
+    # ),
+    # "uiuc-convai/CoALM-405B": OSSModelConfig(
+    #     model_name="uiuc-convai/CoALM-405B",
+    #     display_name="CoALM-405B",
+    #     url="https://huggingface.co/uiuc-convai/CoALM-405B",
+    #     org="UIUC + Oumi",
+    #     license="Meta Llama 3 Community",
+    #     model_handler=LlamaHandler,
+    #     is_fc_model=False,
+    #     underscore_to_dot=False,
+    # ),
+    # "katanemo/Arch-Agent-1.5B": OSSModelConfig(
+    #     model_name="katanemo/Arch-Agent-1.5B",
+    #     display_name="Arch-Agent-1.5B",
+    #     url="https://huggingface.co/katanemo/Arch-Agent-1.5B",
+    #     org="katanemo",
+    #     license="katanemo-research",
+    #     model_handler=ArchHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=False,
+    # ),
+    # "katanemo/Arch-Agent-3B": OSSModelConfig(
+    #     model_name="katanemo/Arch-Agent-3B",
+    #     display_name="Arch-Agent-3B",
+    #     url="https://huggingface.co/katanemo/Arch-Agent-3B",
+    #     org="katanemo",
+    #     license="katanemo-research",
+    #     model_handler=ArchHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=False,
+    # ),
+    # "katanemo/Arch-Agent-7B": OSSModelConfig(
+    #     model_name="katanemo/Arch-Agent-7B",
+    #     display_name="Arch-Agent-7B",
+    #     url="https://huggingface.co/katanemo/Arch-Agent-7B",
+    #     org="katanemo",
+    #     license="katanemo-research",
+    #     model_handler=ArchHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=False,
+    # ),
+    # "katanemo/Arch-Agent-32B": OSSModelConfig(
+    #     model_name="katanemo/Arch-Agent-32B",
+    #     display_name="Arch-Agent-32B",
+    #     url="https://huggingface.co/katanemo/Arch-Agent-32B",
+    #     org="katanemo",
+    #     license="katanemo-research",
+    #     model_handler=ArchHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=False,
+    # ),
+    # "BitAgent/BitAgent-8B": OSSModelConfig(
+    #     model_name="BitAgent/BitAgent-8B",
+    #     display_name="BitAgent-8B",
+    #     url="https://huggingface.co/BitAgent/BitAgent-8B/",
+    #     org="Bittensor",
+    #     license="Apache-2.0",
+    #     model_handler=LlamaHandler,
+    #     is_fc_model=False,
+    #     underscore_to_dot=False,
+    # ),
+    # "BitAgent/BitAgent-Bounty-8B": OSSModelConfig(
+    #     model_name="BitAgent/BitAgent-Bounty-8B",
+    #     display_name="BitAgent-Bounty-8B",
+    #     url="https://huggingface.co/BitAgent/BitAgent-Bounty-8B",
+    #     org="Bittensor",
+    #     license="Apache-2.0",
+    #     model_handler=BitAgentHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=False,
+    # ),
+    # "ThinkAgents/ThinkAgent-1B": OSSModelConfig(
+    #     model_name="ThinkAgents/ThinkAgent-1B",
+    #     display_name="ThinkAgent-1B (FC)",
+    #     url="https://huggingface.co/ThinkAgents/ThinkAgent-1B",
+    #     org="ThinkAgents",
+    #     license="apache-2.0",
+    #     model_handler=ThinkAgentHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=False,
+    # ),
+    # "phronetic-ai/RZN-T": OSSModelConfig(
+    #     model_name="phronetic-ai/RZN-T",
+    #     display_name="RZN-T (Prompt)",
+    #     url="https://huggingface.co/phronetic-ai/RZN-T",
+    #     org="Phronetic AI",
+    #     license="apache-2.0",
+    #     model_handler=QwenHandler,
+    #     is_fc_model=False,
+    #     underscore_to_dot=False,
+    # ),
+    # "Nanbeige/Nanbeige4-3B-Thinking-2511": OSSModelConfig(
+    #     model_name="Nanbeige/Nanbeige4-3B-Thinking-2511",
+    #     display_name="Nanbeige4-3B-Thinking-2511 (FC)",
+    #     url="https://huggingface.co/Nanbeige/Nanbeige4-3B-Thinking-2511",
+    #     org="Nanbeige",
+    #     license="apache-2.0",
+    #     model_handler=NanbeigeFCHandler,
+    #     is_fc_model=True,
+    #     underscore_to_dot=False,
+    # ),
 }
 
 # Inference through third-party inference platforms for open-source models
@@ -1953,9 +1926,8 @@ third_party_inference_model_map = {
 
 # @HuanzhiMao TODO: Add openai audio models
 # https://developers.openai.com/api/docs/models/all#realtime-audio
-# add audio support for openai completion. 
-audio_model_map = {
-}
+# add audio support for openai completion.
+audio_model_map = {}
 
 vision_model_map = {
     "glm-4.6v-FC": ModelConfig(
