@@ -328,6 +328,50 @@ class ZelleAPI(PatchableMixin):
         del self.contacts[contact_id]
         return {"contact_id": contact_id, "status": "removed"}
 
+    def check_recipient_enrolled(self, identifier: str) -> Dict[str, Any]:
+        """
+        Check whether an email, phone number, or username is enrolled as a
+        Zelle recipient. Unlike the saved-contact list, enrollment reflects
+        whether the identifier is registered on the Zelle network.
+
+        Args:
+            identifier (str): Email address, phone number, or username to
+                look up.
+
+        Returns:
+            Dict[str, Any]:
+                identifier (str), enrolled (bool), status (str),
+                name (str, present only when enrolled).
+        """
+        needle = (identifier or "").strip().lower()
+        if not needle:
+            raise ZelleError(
+                "INVALID_IDENTIFIER",
+                "Identifier must be a non-empty email, phone, or username.",
+                suggested_action="Pass an email, phone, or username.",
+                context={"identifier": identifier},
+            )
+
+        for contact in self.contacts.values():
+            candidates = [
+                contact.get("email", ""),
+                contact.get("phone", ""),
+                contact.get("username", ""),
+            ]
+            if any(needle == (c or "").strip().lower() for c in candidates):
+                return {
+                    "identifier": identifier,
+                    "enrolled": True,
+                    "status": "ACTIVE",
+                    "name": contact.get("name", ""),
+                }
+
+        return {
+            "identifier": identifier,
+            "enrolled": False,
+            "status": "NOT_ENROLLED",
+        }
+
     # -----------------------------------------------------------------------
     # Sending money
     # -----------------------------------------------------------------------
