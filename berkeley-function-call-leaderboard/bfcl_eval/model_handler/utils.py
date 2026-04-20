@@ -125,7 +125,10 @@ def convert_to_tool(functions, mapping, model_style):
             # No `optional` field in function schema.
             if "optional" in item["parameters"]:
                 del item["parameters"]["optional"]
-            for params in item["parameters"]["properties"].values():
+
+            def _fold_unsupported_fields_into_description(params):
+                if not isinstance(params, dict):
+                    return
                 if "description" not in params:
                     params["description"] = ""
                 # No `default` field in GOOGLE or Palmyra's schema.
@@ -166,14 +169,24 @@ def convert_to_tool(functions, mapping, model_style):
                 # For Palmyra, `enum` field is not supported.
                 if "enum" in params and (
                     model_style == ModelStyle.WRITER
-                    or (model_style == ModelStyle.GOOGLE and params["type"] != "string")
+                    or (model_style == ModelStyle.GOOGLE and params.get("type") != "string")
                 ):
                     params["description"] += f" Enum values: {str(params['enum'])}."
                     del params["enum"]
                 # No `format` when type is `string`
-                if "format" in params and params["type"] == "string":
+                if "format" in params and params.get("type") == "string":
                     params["description"] += f" Format: {str(params['format'])}."
                     del params["format"]
+
+                # Recurse into nested schemas: array items and object properties.
+                if "items" in params:
+                    _fold_unsupported_fields_into_description(params["items"])
+                if "properties" in params and isinstance(params["properties"], dict):
+                    for nested in params["properties"].values():
+                        _fold_unsupported_fields_into_description(nested)
+
+            for params in item["parameters"]["properties"].values():
+                _fold_unsupported_fields_into_description(params)
 
         # Process the return field
         if "response" in item:

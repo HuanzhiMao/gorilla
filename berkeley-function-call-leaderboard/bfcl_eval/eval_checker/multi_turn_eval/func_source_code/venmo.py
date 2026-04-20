@@ -978,9 +978,9 @@ class VenmoAPI(PatchableMixin):
         Args:
             description (str): Description of what the payment is for.
             total_amount (float): Total bill amount (must be > 0).
-            participants (list): List of participant dicts. Each dict must
-                have "contact_id" (str) and optionally "amount" (float).
-                If amounts are omitted, the total is split evenly.
+            participants (List[Dict]): Participants to split the bill among. If amounts are omitted, the total is split evenly.
+                - contact_id (str): Contact to charge.
+                - amount (float): [Optional] Amount to charge this participant.
 
         Returns:
             Dict[str, Any]:

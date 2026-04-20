@@ -117,6 +117,9 @@ class ClaudeHandler(BaseHandler):
         # Include system_prompt if it exists
         if "system_prompt" in inference_data:
             kwargs["system"] = inference_data["system_prompt"]
+        
+        if "opus-4-7" in self.model_name:
+            del kwargs["temperature"]
 
         # Need to set timeout to avoid auto-error when requesting large context length
         # https://github.com/anthropics/anthropic-sdk-python#long-requests

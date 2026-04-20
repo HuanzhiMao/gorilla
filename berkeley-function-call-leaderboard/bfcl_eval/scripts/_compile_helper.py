@@ -97,6 +97,16 @@ def parse_docstring(docstring: str) -> Dict[str, Union[str, dict]]:
                 if type_info["type"] == "dict":
                     param_entry["properties"] = {}
                     parent_param = param_name  # Track the parent parameter for nested dict entries
+                elif (
+                    type_info["type"] == "array"
+                    and isinstance(type_info.get("items"), dict)
+                    and type_info["items"].get("type") == "dict"
+                ):
+                    # List[Dict]: dashed nested entries describe each dict's fields
+                    param_entry["items"]["properties"] = {}
+                    parent_param = param_name
+                else:
+                    parent_param = None
                 parameters[param_name] = param_entry
             else:
                 # Handle nested parameters in dicts if they start with a dash
@@ -107,8 +117,13 @@ def parse_docstring(docstring: str) -> Dict[str, Union[str, dict]]:
                     nested_type_info = parse_type_string(nested_type_str)
                     nested_param_entry = nested_type_info
                     nested_param_entry["description"] = nested_desc
-                    # Add nested property to the parent parameter
-                    parameters[parent_param]["properties"][nested_name] = nested_param_entry
+                    # Add nested property under the parent — into items.properties
+                    # for List[Dict] parents, or properties for Dict parents.
+                    parent_entry = parameters[parent_param]
+                    if parent_entry.get("type") == "array":
+                        parent_entry["items"]["properties"][nested_name] = nested_param_entry
+                    else:
+                        parent_entry["properties"][nested_name] = nested_param_entry
                 elif parameters:
                     last_param = list(parameters.keys())[-1]
                     parameters[last_param]["description"] += " " + stripped_line
