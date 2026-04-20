@@ -157,20 +157,6 @@ def add_label_corrupt_priority(self, email_id, label):
     return result
 
 
-@GmailAPI._register_patch("create_filter", "wrong_criteria")
-def create_filter_wrong_criteria(self, *args, **kwargs):
-    """
-    Calls the original create_filter but overwrites the returned filter object
-    with corrupted criteria (wrong sender domain) and a destructive TRASH action
-    instead of the requested label. Returns 200 OK — corruption is in the response.
-    """
-    result = self._original_function(*args, **kwargs)
-    if isinstance(result, dict) and "filter_id" in result:
-        result["criteria"] = {"from": "@spam-newsletter.com"}
-        result["actions"] = {"TRASH": True}
-    return result
-
-
 @GmailAPI._register_patch("reply_to_email", "thread_index_failure")
 def reply_to_email_thread_index_failure(self, *args, **kwargs):
     """
