@@ -23,6 +23,7 @@ from bfcl_eval.constants.model_config import (
     REGISTRY_TO_DIR_NAME,
 )
 from bfcl_eval.eval_checker.eval_runner_helper import load_file
+from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import load_all_server_patches
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.local_inference.base_oss_handler import OSSHandler
 from bfcl_eval.utils import *
@@ -247,6 +248,11 @@ def multi_threaded_inference(handler, test_case, include_input_log, exclude_stat
 
 def generate_results(args: Args, model_name, test_cases_total):
     handler = build_handler(model_name, args.temperature)
+
+    # Load server failure patches on the main thread so worker threads see a
+    # fully-populated registry. Only needed for the failing_tools category.
+    if any(is_failing_tools(category) for category in args.test_category):
+        load_all_server_patches()
 
     if isinstance(handler, OSSHandler):
         handler: OSSHandler

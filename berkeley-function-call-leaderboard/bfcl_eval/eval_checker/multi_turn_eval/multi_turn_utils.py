@@ -14,21 +14,14 @@ from bfcl_eval.constants.executable_backend_config import (
 from bfcl_eval.constants.enums import ResultType
 from bfcl_eval.eval_checker.multi_turn_eval.func_source_code import ImageResult
 
-_server_patches_loaded = False
-
-
-def _load_all_server_patches():
+def load_all_server_patches():
     """
     Import all patch modules from SERVER_FAILURE_PATCH_PATH so that their
     @_register_patch decorators execute and populate the class patch registries.
 
-    This is idempotent — subsequent calls are no-ops.
+    Call this once from the main thread before dispatching worker threads —
+    registering patches mutates class state and is not thread-safe.
     """
-    global _server_patches_loaded
-    if _server_patches_loaded:
-        return
-    _server_patches_loaded = True
-
     if not SERVER_FAILURE_PATCH_PATH.is_dir():
         return
 
@@ -49,8 +42,6 @@ def _apply_failure_injections(involved_instances: dict, failure_injection: list)
         failure_injection: A list of {"method": ClassName.method_name, "patch": patch_name} dicts.
             e.g. [{"method": "WeatherComAPI.compare_locations", "patch": "FEATURE_SUSPENDED"}]
     """
-    _load_all_server_patches()
-
     for spec in failure_injection:
         class_method, patch_name = spec["method"], spec["patch"]
         class_name, method_name = class_method.rsplit(".", 1)
