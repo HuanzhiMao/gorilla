@@ -679,8 +679,8 @@ class OutlookCalendarAPI(PatchableMixin):
     # Working Hours (Outlook-exclusive)
     # -----------------------------------------------------------------------
 
-    def set_working_hours(self, days: List[str], start_time: str,
-                          end_time: str, timezone: str) -> Dict[str, Any]:
+    def configure_working_hours(self, days: List[str], start_time: str,
+                                 end_time: str, timezone: str) -> Dict[str, Any]:
         """
         Set the user's working hours.
 
@@ -722,7 +722,7 @@ class OutlookCalendarAPI(PatchableMixin):
         ev["updated_at"] = _utc_now_iso()
         return {"event_id": event_id, "category": category, "status": "tagged"}
 
-    def list_categories(self) -> List[Dict[str, Any]]:
+    def list_event_categories(self) -> List[Dict[str, Any]]:
         """
         List available event categories.
 

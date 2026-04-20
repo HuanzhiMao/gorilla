@@ -669,7 +669,7 @@ class WalmartAPI(PatchableMixin):
         cart["subtotal"] = self._compute_cart_subtotal()
         return deepcopy(cart)
 
-    def get_basket(self) -> Dict[str, Any]:
+    def view_basket(self) -> Dict[str, Any]:
         """
         Retrieve the current state of the current user's shopping cart with a freshly
         computed subtotal.

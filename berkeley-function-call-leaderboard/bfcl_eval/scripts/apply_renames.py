@@ -127,7 +127,7 @@ RENAMES = {
         "add_to_cart": "add_item_to_basket",
         "apply_promo_code": "redeem_promo_code",
         "cancel_order": "cancel_purchase",
-        "get_cart": "get_basket",
+        "get_cart": "view_basket",
         "get_order_details": "get_purchase_details",
         "get_product_details": "get_item_details",
         "get_reviews": "get_item_reviews",
@@ -270,6 +270,13 @@ RENAMES = {
     "google_calendar": {
         "get_user_profile": "get_calendar_settings",
     },
+
+    # OutlookCalendarAPI: set_working_hours conflicts with GoogleCalendarAPI,
+    #                     list_categories conflicts with OutlookAPI
+    "outlook_calendar": {
+        "set_working_hours": "configure_working_hours",
+        "list_categories": "list_event_categories",
+    },
 }
 
 # Map file stems to API class names
@@ -292,6 +299,7 @@ STEM_TO_CLASS = {
     "fidelity": "FidelityAPI",
     "weather_com": "WeatherComAPI",
     "google_calendar": "GoogleCalendarAPI",
+    "outlook_calendar": "OutlookCalendarAPI",
 }
 
 
@@ -429,6 +437,7 @@ def rename_in_failing_tools():
         "FidelityAPI": ["Fidelity"],
         "WeatherComAPI": ["Weather.com"],
         "GoogleCalendarAPI": ["Google Calendar"],
+        "OutlookCalendarAPI": ["Outlook Calendar"],
     }
 
     total_changes = 0

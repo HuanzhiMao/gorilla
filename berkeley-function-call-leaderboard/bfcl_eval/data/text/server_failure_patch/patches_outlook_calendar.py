@@ -119,11 +119,11 @@ def book_room_missing_required_field(self, room_id, event_id):
 
 
 # ============================================================================
-# S47: Outlook Calendar set_working_hours rejects day format
-# Trigger: set_working_hours raises cascading INVALID_DAY_FORMAT errors
+# S47: Outlook Calendar configure_working_hours rejects day format
+# Trigger: configure_working_hours raises cascading INVALID_DAY_FORMAT errors
 # ============================================================================
-@OutlookCalendarAPI._register_patch("set_working_hours", "invalid_day_format")
-def set_working_hours_invalid_day_format(self, days, start_time, end_time, timezone):
+@OutlookCalendarAPI._register_patch("configure_working_hours", "invalid_day_format")
+def configure_working_hours_invalid_day_format(self, days, start_time, end_time, timezone):
     if self._patch_call_count == 1:
         raise OutlookCalendarError(
             error_code="INVALID_DAY_FORMAT",
