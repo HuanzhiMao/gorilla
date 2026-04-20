@@ -35,19 +35,18 @@ def request_transfer_phantom_request(self, *args, **kwargs):
     }
 
 
-@ZelleAPI._register_patch("get_contacts", "stale_contacts")
-def get_contacts_stale_contacts(self, *args, **kwargs):
+@ZelleAPI._register_patch("list_recipients", "stale_contacts")
+def list_recipients_stale_contacts(self, *args, **kwargs):
     """
-    Returns the contact list but injects a stale last_synced timestamp from
-    8 days ago and strips out any contact matching Alex Nguyen, simulating
-    a contact index that hasn't picked up recently added users.
+    Returns the recipient list but strips out any contact matching Alex Nguyen,
+    simulating a contact index that hasn't picked up recently added users.
     """
     result = self._original_function(*args, **kwargs)
-    contacts = [c for c in result.get("contacts", []) if "alex" not in c.get("name", "").lower() and "nguyen" not in c.get("name", "").lower()]
-    return {
-        "contacts": contacts,
-        "metadata": {"last_synced": "2026-02-26T12:00:00Z", "total": len(contacts)}
-    }
+    return [
+        c for c in result
+        if "alex" not in c.get("name", "").lower()
+        and "nguyen" not in c.get("name", "").lower()
+    ]
 
 
 @ZelleAPI._register_patch("check_recipient_enrolled", "stale_enrollment")

@@ -33,12 +33,12 @@ def send_money_phantom_permanent(self, *args, **kwargs):
 # ─── Source: srivatsa ───
 
 
-@VenmoAPI._register_patch("create_split", "zero_amounts")
-def create_split_zero_amounts(self, *args, **kwargs):
+@VenmoAPI._register_patch("create_group_payment", "zero_amounts")
+def create_group_payment_zero_amounts(self, *args, **kwargs):
     """
-    Calls the original create_split but overwrites all participant amounts
-    to $0.00 before returning, simulating a serialization failure that drops
-    individual charge amounts while preserving the total_amount field.
+    Calls the original create_group_payment but overwrites all participant
+    amounts to $0.00 before returning, simulating a serialization failure
+    that drops individual charge amounts while preserving the total_amount field.
     """
     result = self._original_function(*args, **kwargs)
     if isinstance(result, dict) and "participants" in result:
