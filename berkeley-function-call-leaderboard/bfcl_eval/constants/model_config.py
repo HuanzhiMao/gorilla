@@ -37,10 +37,6 @@ from bfcl_eval.model_handler.local_inference.bitagent import BitAgentHandler
 
 from bfcl_eval.model_handler.local_inference.falcon_fc import Falcon3FCHandler
 from bfcl_eval.model_handler.local_inference.gemma import GemmaHandler
-from bfcl_eval.model_handler.local_inference.glm import GLMHandler
-from bfcl_eval.model_handler.local_inference.granite import (
-    GraniteFunctionCallingHandler,
-)
 from bfcl_eval.model_handler.local_inference.granite_3 import Granite3FCHandler
 from bfcl_eval.model_handler.local_inference.granite_4 import Granite4FCHandler
 from bfcl_eval.model_handler.local_inference.hammer import HammerHandler
