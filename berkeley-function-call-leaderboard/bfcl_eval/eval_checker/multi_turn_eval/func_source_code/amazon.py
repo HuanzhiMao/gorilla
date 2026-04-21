@@ -445,7 +445,6 @@ class AmazonAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: Updated cart object including all items and computed subtotal.
         """
-        user_id = self.user_id
         product = self._require_product(product_id)
 
         qty = int(quantity)
@@ -565,13 +564,12 @@ class AmazonAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: Updated cart object.
         """
-        user_id = self.user_id
         if not self.cart.get("items"):
             raise AmazonError(
                 "CART_EMPTY",
                 "Cart is empty.",
                 suggested_action="Add items with add_to_cart() first.",
-                context={"user_id": user_id},
+                context={},
             )
         found = None
         for item in self.cart["items"]:
@@ -627,13 +625,12 @@ class AmazonAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: Updated cart object.
         """
-        user_id = self.user_id
         if not self.cart.get("items"):
             raise AmazonError(
                 "CART_EMPTY",
                 "Cart is empty.",
                 suggested_action="Nothing to remove.",
-                context={"user_id": user_id},
+                context={},
             )
         before = len(self.cart["items"])
         self.cart["items"] = [
@@ -667,7 +664,6 @@ class AmazonAPI(PatchableMixin):
             Dict[str, Any]: Cart object including items (List), subtotal (int, cents),
                 item_count (int).
         """
-        user_id = self.user_id
         self.cart["subtotal"] = self._compute_cart_subtotal()
         self.cart["item_count"] = sum(
             i.get("quantity", 1) for i in self.cart.get("items", [])
@@ -698,20 +694,18 @@ class AmazonAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: Updated wish list object.
         """
-        user_id = self.user_id
         self._require_product(product_id)
 
         # Find or create default wishlist
         if not wishlist_id:
             for wid, wl in self.wishlists.items():
-                if wl.get("user_id") == user_id and wl.get("is_default"):
+                if wl.get("is_default"):
                     wishlist_id = wid
                     break
             if not wishlist_id:
                 wishlist_id = self._new_id("wishlist")
                 self.wishlists[wishlist_id] = {
                     "wishlist_id": wishlist_id,
-                    "user_id": user_id,
                     "name": "My Wish List",
                     "items": [],
                     "is_default": True,
@@ -726,13 +720,6 @@ class AmazonAPI(PatchableMixin):
                 f"Wish list '{wishlist_id}' not found.",
                 suggested_action="Use get_wishlist() to see valid wishlist_ids.",
                 context={"wishlist_id": wishlist_id},
-            )
-        if wl.get("user_id") != user_id:
-            raise AmazonError(
-                "WISHLIST_ACCESS_DENIED",
-                "You do not own this wish list.",
-                suggested_action="Use your own wishlist_id.",
-                context={"wishlist_id": wishlist_id, "user_id": user_id},
             )
 
         # Check for duplicates
@@ -772,7 +759,6 @@ class AmazonAPI(PatchableMixin):
                 wishlist_id (str), name (str), items (List[Dict]), is_default (bool),
                 is_public (bool).
         """
-        user_id = self.user_id
         if wishlist_id:
             wl = self.wishlists.get(wishlist_id)
             if not wl:
@@ -782,22 +768,14 @@ class AmazonAPI(PatchableMixin):
                     suggested_action="Verify the wishlist_id.",
                     context={"wishlist_id": wishlist_id},
                 )
-            if wl.get("user_id") != user_id and not wl.get("is_public", False):
-                raise AmazonError(
-                    "WISHLIST_ACCESS_DENIED",
-                    "This wish list is private.",
-                    suggested_action="Request access from the wish list owner.",
-                    context={"wishlist_id": wishlist_id},
-                )
             return deepcopy(wl)
         # Default wishlist
         for wl in self.wishlists.values():
-            if wl.get("user_id") == user_id and wl.get("is_default"):
+            if wl.get("is_default"):
                 return deepcopy(wl)
         # No default exists yet
         return {
             "wishlist_id": None,
-            "user_id": user_id,
             "name": "My Wish List",
             "items": [],
             "is_default": True,
@@ -821,10 +799,9 @@ class AmazonAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: Updated wish list object.
         """
-        user_id = self.user_id
         if not wishlist_id:
             for wid, wl in self.wishlists.items():
-                if wl.get("user_id") == user_id and wl.get("is_default"):
+                if wl.get("is_default"):
                     wishlist_id = wid
                     break
         if not wishlist_id:
@@ -832,15 +809,15 @@ class AmazonAPI(PatchableMixin):
                 "WISHLIST_NOT_FOUND",
                 "No default wish list found.",
                 suggested_action="Create a wish list first by adding an item with add_to_wishlist().",
-                context={"user_id": user_id},
+                context={},
             )
         wl = self.wishlists.get(wishlist_id)
-        if not wl or wl.get("user_id") != user_id:
+        if not wl:
             raise AmazonError(
                 "WISHLIST_NOT_FOUND",
                 f"Wish list '{wishlist_id}' not found or not owned by user.",
                 suggested_action="Use get_wishlist() to verify.",
-                context={"wishlist_id": wishlist_id, "user_id": user_id},
+                context={"wishlist_id": wishlist_id},
             )
         before = len(wl["items"])
         wl["items"] = [
@@ -883,7 +860,6 @@ class AmazonAPI(PatchableMixin):
                 cost (int, cents): Shipping cost for this option.
                 eta_days (List[int]): Estimated delivery range in days [min, max].
         """
-        user_id = self.user_id
         option = self.shipping_options.get(shipping_option)
         if not option:
             raise AmazonError(
@@ -926,7 +902,6 @@ class AmazonAPI(PatchableMixin):
                     COUPON_EXPIRED, MIN_ORDER_NOT_MET, PRODUCT_NOT_ELIGIBLE.
                 discount_preview (int): Estimated discount in cents (0 if not applied).
         """
-        user_id = self.user_id
         subtotal = self._compute_cart_subtotal()
         promos = self.profile.get("promos", {})
         coupon = promos.get(coupon_code)
@@ -1008,13 +983,12 @@ class AmazonAPI(PatchableMixin):
         Returns:
             str: The new order_id. The order begins in "processing" status.
         """
-        user_id = self.user_id
         if not self.cart.get("items"):
             raise AmazonError(
                 "CART_EMPTY",
                 "Cannot place an order with an empty cart.",
                 suggested_action="Add items to the cart before calling place_order().",
-                context={"user_id": user_id},
+                context={},
             )
 
         # Validate address
@@ -1024,7 +998,7 @@ class AmazonAPI(PatchableMixin):
                 "ADDRESS_NOT_FOUND",
                 f"Address '{address_id}' not found for this user.",
                 suggested_action="Call list_addresses() to get valid address IDs.",
-                context={"address_id": address_id, "user_id": user_id},
+                context={"address_id": address_id},
             )
 
         # Validate payment method
@@ -1034,7 +1008,7 @@ class AmazonAPI(PatchableMixin):
                 "PAYMENT_METHOD_NOT_FOUND",
                 f"Payment method '{payment_method_id}' not found for this user.",
                 suggested_action="Call list_payment_methods() to get valid method IDs.",
-                context={"payment_method_id": payment_method_id, "user_id": user_id},
+                context={"payment_method_id": payment_method_id},
             )
 
         subtotal = self._compute_cart_subtotal()
@@ -1077,7 +1051,6 @@ class AmazonAPI(PatchableMixin):
 
         self.orders[order_id] = {
             "order_id": order_id,
-            "user_id": user_id,
             "items": deepcopy(self.cart["items"]),
             "status": "processing",
             "shipping_option": shipping_key,
@@ -1113,15 +1086,13 @@ class AmazonAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]:
-                order_id (str), user_id (str), items (List[Dict]), status (str —
+                order_id (str), items (List[Dict]), status (str —
                     one of: processing, shipped, out_for_delivery, delivered, canceled,
                     returned), shipping_option (str), tracking_number (str | None),
                 address_id (str), pricing (Dict), placed_at (str),
                 estimated_delivery_days (List[int]).
         """
         order = self._require_order(order_id)
-        if order.get("user_id") != self.user_id:
-            raise PermissionError("You do not have permission to access this resource.")
         return deepcopy(order)
 
     def cancel_order(self, order_id: str, reason: str) -> Dict[str, Any]:
@@ -1139,8 +1110,6 @@ class AmazonAPI(PatchableMixin):
                 order_id (str), canceled (bool), reason (str — "OK" or "NOT_CANCELABLE").
         """
         order = self._require_order(order_id)
-        if order.get("user_id") != self.user_id:
-            raise PermissionError("You do not have permission to access this resource.")
         status = order.get("status")
         if status != "processing":
             return {
@@ -1178,8 +1147,6 @@ class AmazonAPI(PatchableMixin):
             str: The new return_id for tracking the return.
         """
         order = self._require_order(order_id)
-        if order.get("user_id") != self.user_id:
-            raise PermissionError("You do not have permission to access this resource.")
         if order.get("status") not in {"delivered", "shipped", "out_for_delivery"}:
             raise AmazonError(
                 "RETURN_NOT_ALLOWED",
@@ -1247,8 +1214,6 @@ class AmazonAPI(PatchableMixin):
                 events (List[Dict] — shipping event history).
         """
         order = self._require_order(order_id)
-        if order.get("user_id") != self.user_id:
-            raise PermissionError("You do not have permission to access this resource.")
         status = order.get("status")
         tracking = order.get("tracking_number")
         if status == "processing":
@@ -1309,7 +1274,6 @@ class AmazonAPI(PatchableMixin):
         Returns:
             str: The new review_id.
         """
-        user_id = self.user_id
         self._require_product(product_id)
         r = int(rating)
         if r < 1 or r > 5:
@@ -1321,18 +1285,18 @@ class AmazonAPI(PatchableMixin):
             )
         # Check for existing review by this user for this product
         for rev in self.reviews.values():
-            if rev.get("user_id") == user_id and rev.get("product_id") == product_id:
+            if rev.get("product_id") == product_id:
                 raise AmazonError(
                     "DUPLICATE_REVIEW",
                     "You have already reviewed this product.",
                     suggested_action="You can only submit one review per product.",
-                    context={"user_id": user_id, "product_id": product_id},
+                    context={"product_id": product_id},
                 )
 
         # Check if user has purchased this product (verified purchase)
         verified = False
         for order in self.orders.values():
-            if order.get("user_id") == user_id and order.get("status") in {
+            if order.get("status") in {
                 "delivered",
                 "shipped",
                 "out_for_delivery",
@@ -1348,7 +1312,6 @@ class AmazonAPI(PatchableMixin):
         self.reviews[review_id] = {
             "review_id": review_id,
             "product_id": product_id,
-            "user_id": user_id,
             "rating": r,
             "title": title,
             "body": body,
@@ -1385,7 +1348,7 @@ class AmazonAPI(PatchableMixin):
         Returns:
             List[Dict[str, Any]]: Reviews, each with:
                 review_id (str), rating (int), title (str), body (str),
-                user_id (str), verified_purchase (bool), created_at (str).
+                verified_purchase (bool), created_at (str).
         """
         self._require_product(product_id)
         results = []
@@ -1413,7 +1376,6 @@ class AmazonAPI(PatchableMixin):
                 address_id (str), name (str), street (str), city (str),
                 state (str), zip (str), country (str), is_default (bool).
         """
-        user_id = self.user_id
         results = []
         for addr in self.profile.get("addresses", {}).values():
             results.append(deepcopy(addr))
@@ -1444,7 +1406,6 @@ class AmazonAPI(PatchableMixin):
         Returns:
             str: The new address_id.
         """
-        user_id = self.user_id
         addresses = self.profile.setdefault("addresses", {})
         address_id = self._new_id("address")
         # If setting as default, un-default all others
@@ -1479,7 +1440,6 @@ class AmazonAPI(PatchableMixin):
                 payment_method_id (str), type (str), last_four (str),
                 is_default (bool).
         """
-        user_id = self.user_id
         results = []
         for pm in self.profile.get("payment_methods", {}).values():
             results.append(
@@ -1511,7 +1471,6 @@ class AmazonAPI(PatchableMixin):
         Returns:
             str: The new payment_method_id.
         """
-        user_id = self.user_id
         payment_methods = self.profile.setdefault("payment_methods", {})
         last_four = str(card_number).replace(" ", "")[-4:]
         pm_id = self._new_id("payment")
@@ -1594,7 +1553,6 @@ class AmazonAPI(PatchableMixin):
         Returns:
             str: The new subscription_id.
         """
-        user_id = self.user_id
         product = self._require_product(product_id)
 
         if not product.get("subscribe_save", False):
@@ -1663,7 +1621,6 @@ class AmazonAPI(PatchableMixin):
         self.subscriptions[subscription_id] = {
             "subscription_id": subscription_id,
             "product_id": product_id,
-            "user_id": user_id,
             "frequency": frequency,
             "quantity": qty,
             "address_id": address_id,
@@ -1688,11 +1645,9 @@ class AmazonAPI(PatchableMixin):
                 discounted_price (int, cents), discount_percent (float),
                 next_delivery_at (str).
         """
-        user_id = self.user_id
         results = []
         for sub in self.subscriptions.values():
-            if sub.get("user_id") == user_id:
-                results.append(deepcopy(sub))
+            results.append(deepcopy(sub))
         return results
 
     def cancel_subscription(self, subscription_id: str) -> Dict[str, Any]:
@@ -1706,20 +1661,12 @@ class AmazonAPI(PatchableMixin):
             Dict[str, Any]:
                 subscription_id (str), canceled (bool), status (str).
         """
-        user_id = self.user_id
         sub = self.subscriptions.get(subscription_id)
         if not sub:
             raise AmazonError(
                 "SUBSCRIPTION_NOT_FOUND",
                 f"Subscription '{subscription_id}' not found.",
                 suggested_action="Use list_subscriptions() to find valid subscription IDs.",
-                context={"subscription_id": subscription_id},
-            )
-        if sub.get("user_id") != user_id:
-            raise AmazonError(
-                "SUBSCRIPTION_ACCESS_DENIED",
-                "You do not own this subscription.",
-                suggested_action="Use list_subscriptions() to see your subscriptions.",
                 context={"subscription_id": subscription_id},
             )
         if sub.get("status") == "canceled":
@@ -1757,7 +1704,6 @@ class AmazonAPI(PatchableMixin):
         Returns:
             str: The new alert_id.
         """
-        user_id = self.user_id
         self._require_product(product_id)
         tp = int(target_price)
         if tp < 0:
@@ -1775,7 +1721,6 @@ class AmazonAPI(PatchableMixin):
         self.price_alerts[alert_id] = {
             "alert_id": alert_id,
             "product_id": product_id,
-            "user_id": user_id,
             "target_price": tp,
             "current_price": current_price,
             "triggered": current_price is not None and current_price <= tp,
@@ -1794,16 +1739,14 @@ class AmazonAPI(PatchableMixin):
                 current_price (int | None, cents), triggered (bool),
                 created_at (str).
         """
-        user_id = self.user_id
         results = []
         for alert in self.price_alerts.values():
-            if alert.get("user_id") == user_id:
-                # Refresh current price
-                bb = self._get_buy_box_offer(alert["product_id"])
-                current_price = int(bb["price"]) if bb else None
-                alert["current_price"] = current_price
-                alert["triggered"] = current_price is not None and current_price <= alert["target_price"]
-                results.append(deepcopy(alert))
+            # Refresh current price
+            bb = self._get_buy_box_offer(alert["product_id"])
+            current_price = int(bb["price"]) if bb else None
+            alert["current_price"] = current_price
+            alert["triggered"] = current_price is not None and current_price <= alert["target_price"]
+            results.append(deepcopy(alert))
         return results
 
     def remove_price_alert(self, alert_id: str) -> Dict[str, Any]:
@@ -1817,20 +1760,12 @@ class AmazonAPI(PatchableMixin):
             Dict[str, Any]:
                 alert_id (str), removed (bool).
         """
-        user_id = self.user_id
         alert = self.price_alerts.get(alert_id)
         if not alert:
             raise AmazonError(
                 "ALERT_NOT_FOUND",
                 f"Price alert '{alert_id}' not found.",
                 suggested_action="Use list_price_alerts() to find valid alert IDs.",
-                context={"alert_id": alert_id},
-            )
-        if alert.get("user_id") != user_id:
-            raise AmazonError(
-                "ALERT_ACCESS_DENIED",
-                "You do not own this price alert.",
-                suggested_action="Use list_price_alerts() to see your alerts.",
                 context={"alert_id": alert_id},
             )
         del self.price_alerts[alert_id]

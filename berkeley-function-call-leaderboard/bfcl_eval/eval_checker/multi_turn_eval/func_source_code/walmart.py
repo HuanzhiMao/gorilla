@@ -420,13 +420,11 @@ class WalmartAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]:
-                user_id (str), home_store_id (str), store_name (str).
+                home_store_id (str), store_name (str).
         """
-        user_id = self.user_id
         store = self._require_store(store_id)
         self.profile["home_store_id"] = store_id
         return {
-            "user_id": user_id,
             "home_store_id": store_id,
             "store_name": store.get("name", ""),
         }
@@ -437,14 +435,12 @@ class WalmartAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]:
-                user_id (str), home_store_id (str | None),
+                home_store_id (str | None),
                 store (Dict | None -- full store details if a home store is set).
         """
-        user_id = self.user_id
         store_id = self.profile.get("home_store_id")
         store = self.stores.get(store_id) if store_id else None
         return {
-            "user_id": user_id,
             "home_store_id": store_id,
             "store": deepcopy(store) if store else None,
         }
@@ -477,10 +473,9 @@ class WalmartAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]: Updated cart with fields:
-                user_id (str), items (List[Dict]), subtotal (int, cents),
+                items (List[Dict]), subtotal (int, cents),
                 updated_at (str, ISO-8601).
         """
-        user_id = self.user_id
         product = self._require_product(product_id)
         qty = int(quantity)
         if qty < 1:
@@ -586,7 +581,6 @@ class WalmartAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: Updated cart object.
         """
-        user_id = self.user_id
         cart = self._get_user_cart()
         item = next(
             (i for i in cart["items"] if i.get("line_item_id") == line_item_id), None
@@ -596,7 +590,7 @@ class WalmartAPI(PatchableMixin):
                 "LINE_ITEM_NOT_FOUND",
                 f"Line item '{line_item_id}' not found in cart.",
                 suggested_action="Call get_cart() to list valid line_item_id values.",
-                context={"user_id": user_id, "line_item_id": line_item_id},
+                context={"line_item_id": line_item_id},
             )
 
         if quantity is not None:
@@ -652,7 +646,6 @@ class WalmartAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: Updated cart object.
         """
-        user_id = self.user_id
         cart = self._get_user_cart()
         before = len(cart["items"])
         cart["items"] = [
@@ -663,7 +656,7 @@ class WalmartAPI(PatchableMixin):
                 "LINE_ITEM_NOT_FOUND",
                 f"Line item '{line_item_id}' not found in cart.",
                 suggested_action="Call get_cart() to list valid line_item_id values.",
-                context={"user_id": user_id, "line_item_id": line_item_id},
+                context={"line_item_id": line_item_id},
             )
         cart["updated_at"] = _utc_now_iso()
         cart["subtotal"] = self._compute_cart_subtotal()
@@ -676,11 +669,10 @@ class WalmartAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]: Cart object including:
-                user_id (str), items (List[Dict] -- each with line_item_id, product_id,
+                items (List[Dict] -- each with line_item_id, product_id,
                 quantity, fulfillment_type, store_id, substitution_pref),
                 subtotal (int, cents), updated_at (str, ISO-8601).
         """
-        user_id = self.user_id
         cart = self._get_user_cart()
         cart["subtotal"] = self._compute_cart_subtotal()
         return deepcopy(cart)
@@ -705,7 +697,6 @@ class WalmartAPI(PatchableMixin):
                 fulfillment type. Items that do not support the chosen type are
                 flagged in a warnings list.
         """
-        user_id = self.user_id
         if fulfillment_type not in ("shipping", "pickup", "delivery"):
             raise WalmartError(
                 "INVALID_FULFILLMENT_TYPE",
@@ -774,7 +765,6 @@ class WalmartAPI(PatchableMixin):
                 reserved (bool), slot_id (str), store_id (str),
                 date (str), start_time (str), end_time (str).
         """
-        user_id = self.user_id
         self._require_store(store_id)
         slots = self.pickup_slots.get(store_id, [])
         slot = next((s for s in slots if s.get("slot_id") == slot_id), None)
@@ -793,7 +783,6 @@ class WalmartAPI(PatchableMixin):
                 context={"slot_id": slot_id},
             )
         slot["available"] = False
-        slot["reserved_by"] = user_id
         return {
             "reserved": True,
             "slot_id": slot_id,
@@ -822,7 +811,6 @@ class WalmartAPI(PatchableMixin):
                 DEPARTMENT_NOT_ELIGIBLE), discount_preview (int, cents -- estimated
                 discount amount, 0 if invalid).
         """
-        user_id = self.user_id
         cart = self._get_user_cart()
         subtotal = self._compute_cart_subtotal()
 
@@ -916,7 +904,6 @@ class WalmartAPI(PatchableMixin):
                 total (int, cents), fulfillment_type (str),
                 estimated_delivery (str | None), placed_at (str, ISO-8601).
         """
-        user_id = self.user_id
         cart = self._get_user_cart()
 
         if not cart.get("items"):
@@ -924,7 +911,7 @@ class WalmartAPI(PatchableMixin):
                 "EMPTY_CART",
                 "Cannot place an order with an empty cart.",
                 suggested_action="Add items to your cart before placing an order.",
-                context={"user_id": user_id},
+                context={},
             )
 
         # Validate payment method
@@ -934,7 +921,7 @@ class WalmartAPI(PatchableMixin):
                 "PAYMENT_METHOD_NOT_FOUND",
                 f"Payment method '{payment_method_id}' not found for user.",
                 suggested_action="Call list_payment_methods() to get valid method IDs.",
-                context={"user_id": user_id, "payment_method_id": payment_method_id},
+                context={"payment_method_id": payment_method_id},
             )
 
         # Determine primary fulfillment type from cart items
@@ -948,7 +935,7 @@ class WalmartAPI(PatchableMixin):
                     "ADDRESS_REQUIRED",
                     "A delivery address is required for shipping or delivery orders.",
                     suggested_action="Provide an address_id from list_addresses().",
-                    context={"user_id": user_id},
+                    context={},
                 )
             addr = self.profile["addresses"].get(address_id)
             if not addr:
@@ -956,7 +943,7 @@ class WalmartAPI(PatchableMixin):
                     "ADDRESS_NOT_FOUND",
                     f"Address '{address_id}' not found for user.",
                     suggested_action="Call list_addresses() to get valid address IDs.",
-                    context={"user_id": user_id, "address_id": address_id},
+                    context={"address_id": address_id},
                 )
 
         subtotal = self._compute_cart_subtotal()
@@ -1023,7 +1010,6 @@ class WalmartAPI(PatchableMixin):
 
         self.orders[order_id] = {
             "order_id": order_id,
-            "user_id": user_id,
             "items": deepcopy(cart["items"]),
             "status": "confirmed",
             "fulfillment_type": primary_ft,
@@ -1087,7 +1073,7 @@ class WalmartAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]: Order details including:
-                order_id (str), user_id (str), items (List), status (str -- one of
+                order_id (str), items (List), status (str -- one of
                 "confirmed", "processing", "shipped", "ready_for_pickup",
                 "picked_up", "delivered", "canceled", "returned"),
                 fulfillment_type (str), store_id (str | None), tracking (str | None),
@@ -1096,8 +1082,6 @@ class WalmartAPI(PatchableMixin):
                 placed_at (str), updated_at (str).
         """
         order = self._require_order(order_id)
-        if order.get("user_id") != self.user_id:
-            raise PermissionError("You do not have permission to access this resource.")
         return deepcopy(order)
 
     def cancel_purchase(self, order_id: str, reason: str) -> Dict[str, Any]:
@@ -1115,8 +1099,6 @@ class WalmartAPI(PatchableMixin):
                 refund_amount (int, cents -- full refund amount if canceled).
         """
         order = self._require_order(order_id)
-        if order.get("user_id") != self.user_id:
-            raise PermissionError("You do not have permission to access this resource.")
         status = order.get("status")
         if status not in ("confirmed", "processing"):
             return {
@@ -1177,8 +1159,6 @@ class WalmartAPI(PatchableMixin):
                 refund_amount (int, cents).
         """
         order = self._require_order(order_id)
-        if order.get("user_id") != self.user_id:
-            raise PermissionError("You do not have permission to access this resource.")
         if order.get("status") not in ("delivered", "picked_up", "shipped"):
             raise WalmartError(
                 "ORDER_NOT_ELIGIBLE_FOR_RETURN",
@@ -1219,7 +1199,6 @@ class WalmartAPI(PatchableMixin):
             "return_id": return_id,
             "order_id": order_id,
             "product_id": product_id,
-            "user_id": order.get("user_id"),
             "reason": reason,
             "method": method,
             "status": "initiated",
@@ -1259,7 +1238,7 @@ class WalmartAPI(PatchableMixin):
 
         Returns:
             List[Dict[str, Any]]: Reviews, each with:
-                review_id (str), product_id (str), user_id (str), rating (int),
+                review_id (str), product_id (str), rating (int),
                 title (str), body (str), verified (bool), created_at (str).
         """
         self._require_product(product_id)
@@ -1296,10 +1275,9 @@ class WalmartAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]: The created review with:
-                review_id (str), product_id (str), user_id (str), rating (int),
+                review_id (str), product_id (str), rating (int),
                 title (str), body (str), verified (bool), created_at (str).
         """
-        user_id = self.user_id
         self._require_product(product_id)
         r = int(rating)
         if r < 1 or r > 5:
@@ -1320,7 +1298,7 @@ class WalmartAPI(PatchableMixin):
         # Check if user purchased this product (for verified badge)
         verified = False
         for order in self.orders.values():
-            if order.get("user_id") == user_id and order.get("status") in (
+            if order.get("status") in (
                 "delivered",
                 "picked_up",
             ):
@@ -1335,7 +1313,6 @@ class WalmartAPI(PatchableMixin):
         review = {
             "review_id": review_id,
             "product_id": product_id,
-            "user_id": user_id,
             "rating": r,
             "title": title.strip(),
             "body": body.strip(),
@@ -1365,7 +1342,7 @@ class WalmartAPI(PatchableMixin):
 
         Returns:
             List[Dict[str, Any]]: Addresses, each with:
-                address_id (str), user_id (str), name (str), street (str),
+                address_id (str), name (str), street (str),
                 city (str), state (str), zip (str), is_default (bool).
         """
         results: List[Dict[str, Any]] = []
@@ -1397,7 +1374,6 @@ class WalmartAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: The created address with address_id.
         """
-        user_id = self.user_id
         if not street or not city or not state or not zip_code:
             raise WalmartError(
                 "INVALID_ADDRESS",
@@ -1431,7 +1407,7 @@ class WalmartAPI(PatchableMixin):
 
         Returns:
             List[Dict[str, Any]]: Payment methods, each with:
-                method_id (str), user_id (str), type (str -- "credit", "debit"),
+                method_id (str), type (str -- "credit", "debit"),
                 last_four (str), is_default (bool).
         """
         results: List[Dict[str, Any]] = []
@@ -1459,7 +1435,6 @@ class WalmartAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: The created payment method with method_id.
         """
-        user_id = self.user_id
         if card_type not in ("credit", "debit"):
             raise WalmartError(
                 "INVALID_CARD_TYPE",
@@ -1552,15 +1527,7 @@ class WalmartAPI(PatchableMixin):
         Returns:
             str: The new request_id for tracking the price match request.
         """
-        user_id = self.user_id
         order = self._require_order(order_id)
-        if order.get("user_id") != user_id:
-            raise WalmartError(
-                "ORDER_ACCESS_DENIED",
-                "You do not own this order.",
-                suggested_action="Use get_order_details() with a valid order_id.",
-                context={"order_id": order_id},
-            )
 
         # Verify product is in the order
         found = False
@@ -1595,7 +1562,6 @@ class WalmartAPI(PatchableMixin):
             "request_id": request_id,
             "order_id": order_id,
             "product_id": product_id,
-            "user_id": user_id,
             "competitor_name": competitor_name,
             "competitor_price": cp,
             "walmart_price": walmart_price,
@@ -1620,20 +1586,12 @@ class WalmartAPI(PatchableMixin):
                 status (str — "pending", "approved", "denied"),
                 created_at (str).
         """
-        user_id = self.user_id
         req = self.price_match_requests.get(request_id)
         if not req:
             raise WalmartError(
                 "PRICE_MATCH_NOT_FOUND",
                 f"Price match request '{request_id}' not found.",
                 suggested_action="Verify the request_id.",
-                context={"request_id": request_id},
-            )
-        if req.get("user_id") != user_id:
-            raise WalmartError(
-                "PRICE_MATCH_ACCESS_DENIED",
-                "You do not own this price match request.",
-                suggested_action="Use a valid request_id.",
                 context={"request_id": request_id},
             )
         return deepcopy(req)
@@ -1667,7 +1625,6 @@ class WalmartAPI(PatchableMixin):
         Returns:
             str: The new reorder_id.
         """
-        user_id = self.user_id
         self._require_product(product_id)
 
         freq = int(frequency_days)
@@ -1721,7 +1678,6 @@ class WalmartAPI(PatchableMixin):
         self.auto_reorders[reorder_id] = {
             "reorder_id": reorder_id,
             "product_id": product_id,
-            "user_id": user_id,
             "frequency_days": freq,
             "quantity": qty,
             "address_id": address_id,
@@ -1743,11 +1699,9 @@ class WalmartAPI(PatchableMixin):
                 quantity (int), status (str), paused (bool),
                 next_reorder_at (str).
         """
-        user_id = self.user_id
         results = []
         for reorder in self.auto_reorders.values():
-            if reorder.get("user_id") == user_id:
-                results.append(deepcopy(reorder))
+            results.append(deepcopy(reorder))
         return results
 
     def update_auto_reorder(
@@ -1771,20 +1725,12 @@ class WalmartAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: The updated auto-reorder object.
         """
-        user_id = self.user_id
         reorder = self.auto_reorders.get(reorder_id)
         if not reorder:
             raise WalmartError(
                 "REORDER_NOT_FOUND",
                 f"Auto-reorder '{reorder_id}' not found.",
                 suggested_action="Use list_auto_reorders() to find valid reorder IDs.",
-                context={"reorder_id": reorder_id},
-            )
-        if reorder.get("user_id") != user_id:
-            raise WalmartError(
-                "REORDER_ACCESS_DENIED",
-                "You do not own this auto-reorder.",
-                suggested_action="Use list_auto_reorders() to see your auto-reorders.",
                 context={"reorder_id": reorder_id},
             )
         if reorder.get("status") == "canceled":
@@ -1834,20 +1780,12 @@ class WalmartAPI(PatchableMixin):
             Dict[str, Any]:
                 reorder_id (str), canceled (bool), status (str).
         """
-        user_id = self.user_id
         reorder = self.auto_reorders.get(reorder_id)
         if not reorder:
             raise WalmartError(
                 "REORDER_NOT_FOUND",
                 f"Auto-reorder '{reorder_id}' not found.",
                 suggested_action="Use list_auto_reorders() to find valid reorder IDs.",
-                context={"reorder_id": reorder_id},
-            )
-        if reorder.get("user_id") != user_id:
-            raise WalmartError(
-                "REORDER_ACCESS_DENIED",
-                "You do not own this auto-reorder.",
-                suggested_action="Use list_auto_reorders() to see your auto-reorders.",
                 context={"reorder_id": reorder_id},
             )
         if reorder.get("status") == "canceled":

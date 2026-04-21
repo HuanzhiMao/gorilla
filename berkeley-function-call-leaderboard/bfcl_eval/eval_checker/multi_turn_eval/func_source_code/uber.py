@@ -118,6 +118,9 @@ class UberAPI(PatchableMixin):
         self.reservations = scenario.get("reservations", DEFAULT_STATE_COPY["reservations"])
         self.deliveries = scenario.get("deliveries", DEFAULT_STATE_COPY["deliveries"])
         self.long_context = long_context
+        # Method bodies reference self._rng; _load_scenario initializes
+        # self._random. Alias the two so either name resolves.
+        self._rng = self._random
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, UberAPI):

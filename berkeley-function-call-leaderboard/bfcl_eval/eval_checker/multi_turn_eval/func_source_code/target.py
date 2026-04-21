@@ -476,13 +476,11 @@ class TargetAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]:
-                user_id (str), preferred_store_id (str), store_name (str).
+                preferred_store_id (str), store_name (str).
         """
-        user_id = self.user_id
         store = self._require_store(store_id)
         self.profile["preferred_store_id"] = store_id
         return {
-            "user_id": user_id,
             "preferred_store_id": store_id,
             "store_name": store.get("name", ""),
         }
@@ -493,14 +491,12 @@ class TargetAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]:
-                user_id (str), preferred_store_id (str | None),
+                preferred_store_id (str | None),
                 store (Dict | None -- full store details if a preferred store is set).
         """
-        user_id = self.user_id
         store_id = self.profile.get("preferred_store_id")
         store = self.stores.get(store_id) if store_id else None
         return {
-            "user_id": user_id,
             "preferred_store_id": store_id,
             "store": deepcopy(store) if store else None,
         }
@@ -532,7 +528,6 @@ class TargetAPI(PatchableMixin):
                 items (List[Dict]), circle_offers_applied (List[str]),
                 subtotal (int, cents), updated_at (str, ISO-8601).
         """
-        user_id = self.user_id
         product = self._require_product(product_id)
         qty = int(quantity)
         if qty < 1:
@@ -637,7 +632,6 @@ class TargetAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: Updated cart object.
         """
-        user_id = self.user_id
         cart = self._get_user_cart()
         item = next(
             (i for i in cart["items"] if i.get("line_item_id") == line_item_id), None
@@ -647,7 +641,7 @@ class TargetAPI(PatchableMixin):
                 "LINE_ITEM_NOT_FOUND",
                 f"Line item '{line_item_id}' not found in cart.",
                 suggested_action="Call get_cart() to list valid line_item_id values.",
-                context={"user_id": user_id, "line_item_id": line_item_id},
+                context={"line_item_id": line_item_id},
             )
 
         if quantity is not None:
@@ -689,7 +683,6 @@ class TargetAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: Updated cart object.
         """
-        user_id = self.user_id
         cart = self._get_user_cart()
         before = len(cart["items"])
         cart["items"] = [
@@ -700,7 +693,7 @@ class TargetAPI(PatchableMixin):
                 "LINE_ITEM_NOT_FOUND",
                 f"Line item '{line_item_id}' not found in cart.",
                 suggested_action="Call get_cart() to list valid line_item_id values.",
-                context={"user_id": user_id, "line_item_id": line_item_id},
+                context={"line_item_id": line_item_id},
             )
         cart["subtotal"] = self._compute_cart_subtotal()
         return deepcopy(cart)
@@ -717,7 +710,6 @@ class TargetAPI(PatchableMixin):
                 subtotal (int, cents), applied_promo (str | None),
                 shipping_option (str | None).
         """
-        user_id = self.user_id
         cart = self._get_user_cart()
         cart["subtotal"] = self._compute_cart_subtotal()
         return deepcopy(cart)
@@ -744,7 +736,6 @@ class TargetAPI(PatchableMixin):
                 fulfillment type. Items that do not support the chosen type are
                 flagged in a warnings list.
         """
-        user_id = self.user_id
         valid_types = ("shipping", "order_pickup", "drive_up", "same_day_delivery")
         if fulfillment_type not in valid_types:
             raise TargetError(
@@ -838,18 +829,17 @@ class TargetAPI(PatchableMixin):
                 department (str | None), expiry (str), clipped (bool -- whether
                 this user has clipped/saved the offer).
         """
-        user_id = self.user_id
         if not self.profile.get("membership", {}).get("circle_member", False):
             raise TargetError(
                 "NOT_CIRCLE_MEMBER",
                 "User is not a Target Circle member.",
                 suggested_action="Target Circle membership is required to view offers.",
-                context={"user_id": user_id},
+                context={},
             )
 
         results: List[Dict[str, Any]] = []
         for offer_id, offer in self.offers.items():
-            clipped = user_id in offer.get("clipped_by", [])
+            clipped = bool(offer.get("clipped_by"))
             results.append(
                 {
                     "offer_id": offer_id,
@@ -878,13 +868,12 @@ class TargetAPI(PatchableMixin):
                 reason (str -- "OK", "OFFER_NOT_FOUND", "OFFER_EXPIRED",
                 "NOT_APPLICABLE", "ALREADY_APPLIED").
         """
-        user_id = self.user_id
         if not self.profile.get("membership", {}).get("circle_member", False):
             raise TargetError(
                 "NOT_CIRCLE_MEMBER",
                 "User is not a Target Circle member.",
                 suggested_action="Target Circle membership is required.",
-                context={"user_id": user_id},
+                context={},
             )
 
         offer = self.offers.get(offer_id)
@@ -954,8 +943,8 @@ class TargetAPI(PatchableMixin):
             }
 
         # Clip the offer
-        if user_id not in offer.get("clipped_by", []):
-            offer.setdefault("clipped_by", []).append(user_id)
+        if not offer.get("clipped_by"):
+            offer.setdefault("clipped_by", []).append("user")
 
         # Apply to cart
         cart.setdefault("circle_offers_applied", []).append(offer_id)
@@ -974,15 +963,13 @@ class TargetAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]:
-                user_id (str), circle_member (bool), points_balance (int),
+                circle_member (bool), points_balance (int),
                 lifetime_earnings (int), next_reward_threshold (int -- points
                 needed for next $1 reward).
         """
-        user_id = self.user_id
         membership = self.profile.get("membership", {})
         if not membership.get("circle_member", False):
             return {
-                "user_id": user_id,
                 "circle_member": False,
                 "points_balance": 0,
                 "lifetime_earnings": 0,
@@ -993,7 +980,6 @@ class TargetAPI(PatchableMixin):
         # Target Circle: 1% earnings, $1 reward per 5000 points (simplified)
         next_threshold = 5000 - (points % 5000) if points % 5000 != 0 else 0
         return {
-            "user_id": user_id,
             "circle_member": True,
             "points_balance": points,
             "lifetime_earnings": membership.get("lifetime_circle_earnings", points),
@@ -1017,7 +1003,6 @@ class TargetAPI(PatchableMixin):
                 PROMO_NOT_FOUND, MIN_ORDER_NOT_MET, PROMO_EXPIRED),
                 discount_preview (int, cents).
         """
-        user_id = self.user_id
         cart = self._get_user_cart()
         subtotal = self._compute_cart_subtotal()
 
@@ -1102,7 +1087,6 @@ class TargetAPI(PatchableMixin):
                 circle_points_earned (int), fulfillment_type (str),
                 placed_at (str, ISO-8601).
         """
-        user_id = self.user_id
         cart = self._get_user_cart()
 
         if not cart.get("items"):
@@ -1110,7 +1094,7 @@ class TargetAPI(PatchableMixin):
                 "EMPTY_CART",
                 "Cannot place an order with an empty cart.",
                 suggested_action="Add items to your cart before placing an order.",
-                context={"user_id": user_id},
+                context={},
             )
 
         # Validate payment method
@@ -1120,7 +1104,7 @@ class TargetAPI(PatchableMixin):
                 "PAYMENT_METHOD_NOT_FOUND",
                 f"Payment method '{payment_method_id}' not found for user.",
                 suggested_action="Call list_payment_methods() to get valid method IDs.",
-                context={"user_id": user_id, "payment_method_id": payment_method_id},
+                context={"payment_method_id": payment_method_id},
             )
 
         # Check gift card balance if paying with gift card
@@ -1148,7 +1132,7 @@ class TargetAPI(PatchableMixin):
                     "ADDRESS_REQUIRED",
                     "A delivery address is required for shipping or same-day delivery.",
                     suggested_action="Provide an address_id from list_addresses().",
-                    context={"user_id": user_id},
+                    context={},
                 )
             addr = self.profile.get("addresses", {}).get(address_id)
             if not addr:
@@ -1156,7 +1140,7 @@ class TargetAPI(PatchableMixin):
                     "ADDRESS_NOT_FOUND",
                     f"Address '{address_id}' not found for user.",
                     suggested_action="Call list_addresses() to get valid address IDs.",
-                    context={"user_id": user_id, "address_id": address_id},
+                    context={"address_id": address_id},
                 )
 
         subtotal = self._compute_cart_subtotal()
@@ -1250,7 +1234,6 @@ class TargetAPI(PatchableMixin):
 
         self.orders[order_id] = {
             "order_id": order_id,
-            "user_id": user_id,
             "items": deepcopy(cart["items"]),
             "status": "confirmed",
             "fulfillment_type": primary_ft,
@@ -1322,7 +1305,7 @@ class TargetAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]: Order details including:
-                order_id (str), user_id (str), items (List), status (str -- one of
+                order_id (str), items (List), status (str -- one of
                 "confirmed", "processing", "shipped", "ready_for_pickup",
                 "ready_for_drive_up", "picked_up", "delivered", "canceled",
                 "returned"), fulfillment_type (str), store_id (str | None),
@@ -1332,8 +1315,6 @@ class TargetAPI(PatchableMixin):
                 placed_at (str), updated_at (str).
         """
         order = self._require_order(order_id)
-        if order.get("user_id") != self.user_id:
-            raise PermissionError("You do not have permission to access this resource.")
         return deepcopy(order)
 
     def void_order(self, order_id: str, reason: str) -> Dict[str, Any]:
@@ -1351,8 +1332,6 @@ class TargetAPI(PatchableMixin):
                 refund_amount (int, cents), circle_points_reversed (int).
         """
         order = self._require_order(order_id)
-        if order.get("user_id") != self.user_id:
-            raise PermissionError("You do not have permission to access this resource.")
         status = order.get("status")
         if status not in ("confirmed", "processing"):
             return {
@@ -1430,8 +1409,6 @@ class TargetAPI(PatchableMixin):
                 refund_amount (int, cents).
         """
         order = self._require_order(order_id)
-        if order.get("user_id") != self.user_id:
-            raise PermissionError("You do not have permission to access this resource.")
         if order.get("status") not in ("delivered", "picked_up", "shipped"):
             raise TargetError(
                 "ORDER_NOT_ELIGIBLE_FOR_RETURN",
@@ -1473,7 +1450,6 @@ class TargetAPI(PatchableMixin):
             "return_id": return_id,
             "order_id": order_id,
             "product_id": product_id,
-            "user_id": order.get("user_id"),
             "reason": reason,
             "method": method,
             "status": "initiated",
@@ -1513,7 +1489,7 @@ class TargetAPI(PatchableMixin):
 
         Returns:
             List[Dict[str, Any]]: Reviews, each with:
-                review_id (str), product_id (str), user_id (str), rating (int),
+                review_id (str), product_id (str), rating (int),
                 title (str), body (str), verified (bool), created_at (str).
         """
         self._require_product(product_id)
@@ -1550,10 +1526,9 @@ class TargetAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]: The created review with:
-                review_id (str), product_id (str), user_id (str), rating (int),
+                review_id (str), product_id (str), rating (int),
                 title (str), body (str), verified (bool), created_at (str).
         """
-        user_id = self.user_id
         self._require_product(product_id)
         r = int(rating)
         if r < 1 or r > 5:
@@ -1573,7 +1548,7 @@ class TargetAPI(PatchableMixin):
 
         verified = False
         for order in self.orders.values():
-            if order.get("user_id") == user_id and order.get("status") in (
+            if order.get("status") in (
                 "delivered",
                 "picked_up",
             ):
@@ -1588,7 +1563,6 @@ class TargetAPI(PatchableMixin):
         review = {
             "review_id": review_id,
             "product_id": product_id,
-            "user_id": user_id,
             "rating": r,
             "title": title.strip(),
             "body": body.strip(),
@@ -1620,7 +1594,6 @@ class TargetAPI(PatchableMixin):
                 address_id (str), name (str), street (str),
                 city (str), state (str), zip (str), is_default (bool).
         """
-        user_id = self.user_id
         results: List[Dict[str, Any]] = []
         for addr in self.profile.get("addresses", {}).values():
             results.append(deepcopy(addr))
@@ -1650,7 +1623,6 @@ class TargetAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: The created address with address_id.
         """
-        user_id = self.user_id
         if not street or not city or not state or not zip_code:
             raise TargetError(
                 "INVALID_ADDRESS",
@@ -1688,7 +1660,6 @@ class TargetAPI(PatchableMixin):
                 "red_card", "gift_card"), last_four (str), is_default (bool),
                 gift_card_balance (int | None, cents -- only for gift cards).
         """
-        user_id = self.user_id
         results: List[Dict[str, Any]] = []
         for pm in self.profile.get("payment_methods", {}).values():
             result = deepcopy(pm)
@@ -1723,7 +1694,6 @@ class TargetAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: The created payment method with method_id.
         """
-        user_id = self.user_id
         valid_types = ("credit", "debit", "red_card", "gift_card")
         if card_type not in valid_types:
             raise TargetError(
@@ -1793,7 +1763,6 @@ class TargetAPI(PatchableMixin):
         Returns:
             str: The new registry_id.
         """
-        user_id = self.user_id
         valid_types = ("wedding", "baby", "birthday", "housewarming")
         if type not in valid_types:
             raise TargetError(
@@ -1807,7 +1776,6 @@ class TargetAPI(PatchableMixin):
         now = _utc_now_iso()
         self.registries[registry_id] = {
             "registry_id": registry_id,
-            "user_id": user_id,
             "name": name,
             "type": type,
             "event_date": event_date,
@@ -1835,20 +1803,12 @@ class TargetAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: Updated registry object.
         """
-        user_id = self.user_id
         registry = self.registries.get(registry_id)
         if not registry:
             raise TargetError(
                 "REGISTRY_NOT_FOUND",
                 f"Registry '{registry_id}' not found.",
                 suggested_action="Use create_gift_registry() to create a registry first.",
-                context={"registry_id": registry_id},
-            )
-        if registry.get("user_id") != user_id:
-            raise TargetError(
-                "REGISTRY_ACCESS_DENIED",
-                "You do not own this registry.",
-                suggested_action="Use your own registry_id.",
                 context={"registry_id": registry_id},
             )
 
@@ -1917,20 +1877,12 @@ class TargetAPI(PatchableMixin):
         Returns:
             Dict[str, Any]: Updated registry object.
         """
-        user_id = self.user_id
         registry = self.registries.get(registry_id)
         if not registry:
             raise TargetError(
                 "REGISTRY_NOT_FOUND",
                 f"Registry '{registry_id}' not found.",
                 suggested_action="Verify the registry_id.",
-                context={"registry_id": registry_id},
-            )
-        if registry.get("user_id") != user_id:
-            raise TargetError(
-                "REGISTRY_ACCESS_DENIED",
-                "You do not own this registry.",
-                suggested_action="Use your own registry_id.",
                 context={"registry_id": registry_id},
             )
 
@@ -1959,20 +1911,12 @@ class TargetAPI(PatchableMixin):
             Dict[str, Any]:
                 registry_id (str), share_link (str).
         """
-        user_id = self.user_id
         registry = self.registries.get(registry_id)
         if not registry:
             raise TargetError(
                 "REGISTRY_NOT_FOUND",
                 f"Registry '{registry_id}' not found.",
                 suggested_action="Verify the registry_id.",
-                context={"registry_id": registry_id},
-            )
-        if registry.get("user_id") != user_id:
-            raise TargetError(
-                "REGISTRY_ACCESS_DENIED",
-                "You do not own this registry.",
-                suggested_action="Use your own registry_id.",
                 context={"registry_id": registry_id},
             )
 
@@ -2000,10 +1944,8 @@ class TargetAPI(PatchableMixin):
                 date (str), description (str), points (int — positive for earned,
                 negative for redeemed), order_id (str | None).
         """
-        user_id = self.user_id
         results = [
             deepcopy(e) for e in self.circle_earnings
-            if e.get("user_id") == user_id
         ]
         results.sort(key=lambda x: x.get("date", ""), reverse=True)
         lim = max(1, int(limit))
@@ -2020,9 +1962,8 @@ class TargetAPI(PatchableMixin):
                 valid_from (str | None), valid_until (str | None),
                 redeemed (bool).
         """
-        user_id = self.user_id
         offer = self.birthday_offer
-        if not offer or offer.get("user_id") != user_id:
+        if not offer:
             return {
                 "available": False,
                 "discount_type": None,
@@ -2059,15 +2000,7 @@ class TargetAPI(PatchableMixin):
                 dollar_value (int, cents — equivalent dollar amount),
                 remaining_points (int).
         """
-        user_id = self.user_id
         order = self._require_order(order_id)
-        if order.get("user_id") != user_id:
-            raise TargetError(
-                "ORDER_ACCESS_DENIED",
-                "You do not own this order.",
-                suggested_action="Use get_order_details() with a valid order_id.",
-                context={"order_id": order_id},
-            )
 
         pts = int(points)
         if pts < 1:
@@ -2095,7 +2028,6 @@ class TargetAPI(PatchableMixin):
         # Record the earnings entry
         now = _utc_now_iso()
         self.circle_earnings.append({
-            "user_id": user_id,
             "date": now,
             "description": f"Redeemed {pts} points on order {order_id}",
             "points": -pts,

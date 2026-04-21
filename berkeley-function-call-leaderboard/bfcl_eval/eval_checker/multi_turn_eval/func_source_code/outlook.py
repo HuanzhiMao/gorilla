@@ -150,6 +150,13 @@ class OutlookAPI(PatchableMixin):
         self.categories = scenario.get("categories", DEFAULT_STATE_COPY["categories"])
         self.pinned_emails = scenario.get("pinned_emails", DEFAULT_STATE_COPY["pinned_emails"])
         self.long_context = long_context
+        # Auto-activate the sole user when the profile is single-user so that
+        # self.user_id is set before any method that calls _require_user runs.
+        # Multi-user profiles still require the agent to call switch_user().
+        if len(self.profile) == 1:
+            self.user_id = next(iter(self.profile))
+        else:
+            self.user_id = None
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, OutlookAPI):

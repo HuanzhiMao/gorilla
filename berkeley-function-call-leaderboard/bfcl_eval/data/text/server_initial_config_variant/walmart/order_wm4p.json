@@ -1,1 +1,240 @@
-{"_meta": {"api_class": "WalmartAPI", "source_file": "walmart.py", "description": "Sarah Chen Walmart order WMT-ORD-wm4p household/cleaning supplies pickup order, total $94.00"}, "random_seed": 9001, "profile": {"name": "Sarah Chen", "email": "sarah.chen@company.com", "membership": {"walmart_plus": false}, "home_store_id": "WMT-STR-001", "addresses": {"WMT-ADDR-001": {"address_id": "WMT-ADDR-001", "name": "Sarah Chen", "street": "123 Main St", "city": "San Francisco", "state": "CA", "zip": "94102", "is_default": true}}, "payment_methods": {"WMT-PM-001": {"method_id": "WMT-PM-001", "type": "credit_card", "last_four": "1234", "expiry": "2027-12", "is_default": true}}, "promos": {}}, "cart": {"items": [], "subtotal": 0, "applied_promo": null, "shipping_option": null}, "orders": {"WMT-ORD-wm4p": {"order_id": "WMT-ORD-wm4p", "user_id": "wmt_user_sc1", "items": [{"product_id": "WMT-PROD-0001", "quantity": 1, "price": 9.47}, {"product_id": "WMT-PROD-0002", "quantity": 1, "price": 14.97}, {"product_id": "WMT-PROD-0003", "quantity": 1, "price": 13.97}, {"product_id": "WMT-PROD-0004", "quantity": 1, "price": 12.97}, {"product_id": "WMT-PROD-0005", "quantity": 1, "price": 8.97}, {"product_id": "WMT-PROD-0006", "quantity": 1, "price": 4.97}, {"product_id": "WMT-PROD-0007", "quantity": 1, "price": 9.97}, {"product_id": "WMT-PROD-0008", "quantity": 2, "price": 3.97}], "status": "delivered", "fulfillment_type": "pickup", "store_id": "WMT-STR-001", "tracking": null, "subtotal": 83.23, "tax": 7.49, "shipping_fee": 0.0, "discount": 0, "total": 94.0, "estimated_delivery": null, "ready_at": "2026-03-08T18:00:00Z", "placed_at": "2026-03-08T14:00:00Z", "updated_at": "2026-03-08T18:00:00Z"}}, "returns": {}, "reviews": {}, "products": {"WMT-PROD-0001": {"product_id": "WMT-PROD-0001", "name": "Dawn Dish Soap (38 oz, 2 pack)", "price": 9.47, "options": ["pickup"]}, "WMT-PROD-0002": {"product_id": "WMT-PROD-0002", "name": "Bounty Paper Towels (8 rolls)", "price": 14.97, "options": ["pickup"]}, "WMT-PROD-0003": {"product_id": "WMT-PROD-0003", "name": "Tide Laundry Detergent (64 loads)", "price": 13.97, "options": ["pickup"]}, "WMT-PROD-0004": {"product_id": "WMT-PROD-0004", "name": "Lysol Disinfecting Wipes (4 pack)", "price": 12.97, "options": ["pickup"]}, "WMT-PROD-0005": {"product_id": "WMT-PROD-0005", "name": "Ziploc Bags Variety Pack", "price": 8.97, "options": ["pickup"]}, "WMT-PROD-0006": {"product_id": "WMT-PROD-0006", "name": "Sponges (6 pack)", "price": 4.97, "options": ["pickup"]}, "WMT-PROD-0007": {"product_id": "WMT-PROD-0007", "name": "Trash Bags 13 Gallon (45 count)", "price": 9.97, "options": ["pickup"]}, "WMT-PROD-0008": {"product_id": "WMT-PROD-0008", "name": "All-Purpose Cleaner Spray", "price": 3.97, "options": ["pickup"]}}, "offers": {}, "shipping_options": {}, "stores": {"WMT-STR-001": {"store_id": "WMT-STR-001", "name": "Walmart San Francisco", "address": "1985 Market St", "city": "San Francisco", "state": "CA", "zip": "94103", "lat": 37.7694, "lng": -122.4193, "phone": "+14155550100"}}, "store_inventory": {"WMT-STR-001": {"WMT-PROD-0001": {"in_stock": true, "quantity": 50}, "WMT-PROD-0002": {"in_stock": true, "quantity": 30}, "WMT-PROD-0003": {"in_stock": true, "quantity": 25}, "WMT-PROD-0004": {"in_stock": true, "quantity": 40}, "WMT-PROD-0005": {"in_stock": true, "quantity": 35}, "WMT-PROD-0006": {"in_stock": true, "quantity": 60}, "WMT-PROD-0007": {"in_stock": true, "quantity": 45}, "WMT-PROD-0008": {"in_stock": true, "quantity": 55}}}, "pickup_slots": {"WMT-STR-001": [{"slot_id": "WMT-SLOT-001A", "date": "2026-03-09", "start_time": "09:00", "end_time": "10:00", "available": true}, {"slot_id": "WMT-SLOT-001B", "date": "2026-03-09", "start_time": "10:00", "end_time": "11:00", "available": true}]}}
+{
+    "_meta": {
+      "api_class": "WalmartAPI",
+      "source_file": "walmart.py",
+      "description": "Sarah Chen Walmart order WMT-ORD-wm4p household/cleaning supplies pickup order, total $94.00"
+    },
+    "random_seed": 9001,
+    "profile": {
+      "name": "Sarah Chen",
+      "email": "sarah.chen@company.com",
+      "membership": {
+        "walmart_plus": false
+      },
+      "home_store_id": "WMT-STR-001",
+      "addresses": {
+        "WMT-ADDR-001": {
+          "address_id": "WMT-ADDR-001",
+          "name": "Sarah Chen",
+          "street": "123 Main St",
+          "city": "San Francisco",
+          "state": "CA",
+          "zip": "94102",
+          "is_default": true
+        }
+      },
+      "payment_methods": {
+        "WMT-PM-001": {
+          "method_id": "WMT-PM-001",
+          "type": "credit_card",
+          "last_four": "1234",
+          "expiry": "2027-12",
+          "is_default": true
+        }
+      },
+      "promos": {}
+    },
+    "cart": {
+      "items": [],
+      "subtotal": 0,
+      "applied_promo": null,
+      "shipping_option": null
+    },
+    "orders": {
+      "WMT-ORD-wm4p": {
+        "order_id": "WMT-ORD-wm4p",
+        "items": [
+          {
+            "product_id": "WMT-PROD-0001",
+            "quantity": 1,
+            "price": 9.47
+          },
+          {
+            "product_id": "WMT-PROD-0002",
+            "quantity": 1,
+            "price": 14.97
+          },
+          {
+            "product_id": "WMT-PROD-0003",
+            "quantity": 1,
+            "price": 13.97
+          },
+          {
+            "product_id": "WMT-PROD-0004",
+            "quantity": 1,
+            "price": 12.97
+          },
+          {
+            "product_id": "WMT-PROD-0005",
+            "quantity": 1,
+            "price": 8.97
+          },
+          {
+            "product_id": "WMT-PROD-0006",
+            "quantity": 1,
+            "price": 4.97
+          },
+          {
+            "product_id": "WMT-PROD-0007",
+            "quantity": 1,
+            "price": 9.97
+          },
+          {
+            "product_id": "WMT-PROD-0008",
+            "quantity": 2,
+            "price": 3.97
+          }
+        ],
+        "status": "delivered",
+        "fulfillment_type": "pickup",
+        "store_id": "WMT-STR-001",
+        "tracking": null,
+        "subtotal": 83.23,
+        "tax": 7.49,
+        "shipping_fee": 0.0,
+        "discount": 0,
+        "total": 94.0,
+        "estimated_delivery": null,
+        "ready_at": "2026-03-08T18:00:00Z",
+        "placed_at": "2026-03-08T14:00:00Z",
+        "updated_at": "2026-03-08T18:00:00Z"
+      }
+    },
+    "returns": {},
+    "reviews": {},
+    "products": {
+      "WMT-PROD-0001": {
+        "product_id": "WMT-PROD-0001",
+        "name": "Dawn Dish Soap (38 oz, 2 pack)",
+        "price": 9.47,
+        "options": [
+          "pickup"
+        ]
+      },
+      "WMT-PROD-0002": {
+        "product_id": "WMT-PROD-0002",
+        "name": "Bounty Paper Towels (8 rolls)",
+        "price": 14.97,
+        "options": [
+          "pickup"
+        ]
+      },
+      "WMT-PROD-0003": {
+        "product_id": "WMT-PROD-0003",
+        "name": "Tide Laundry Detergent (64 loads)",
+        "price": 13.97,
+        "options": [
+          "pickup"
+        ]
+      },
+      "WMT-PROD-0004": {
+        "product_id": "WMT-PROD-0004",
+        "name": "Lysol Disinfecting Wipes (4 pack)",
+        "price": 12.97,
+        "options": [
+          "pickup"
+        ]
+      },
+      "WMT-PROD-0005": {
+        "product_id": "WMT-PROD-0005",
+        "name": "Ziploc Bags Variety Pack",
+        "price": 8.97,
+        "options": [
+          "pickup"
+        ]
+      },
+      "WMT-PROD-0006": {
+        "product_id": "WMT-PROD-0006",
+        "name": "Sponges (6 pack)",
+        "price": 4.97,
+        "options": [
+          "pickup"
+        ]
+      },
+      "WMT-PROD-0007": {
+        "product_id": "WMT-PROD-0007",
+        "name": "Trash Bags 13 Gallon (45 count)",
+        "price": 9.97,
+        "options": [
+          "pickup"
+        ]
+      },
+      "WMT-PROD-0008": {
+        "product_id": "WMT-PROD-0008",
+        "name": "All-Purpose Cleaner Spray",
+        "price": 3.97,
+        "options": [
+          "pickup"
+        ]
+      }
+    },
+    "offers": {},
+    "shipping_options": {},
+    "stores": {
+      "WMT-STR-001": {
+        "store_id": "WMT-STR-001",
+        "name": "Walmart San Francisco",
+        "address": "1985 Market St",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94103",
+        "lat": 37.7694,
+        "lng": -122.4193,
+        "phone": "+14155550100"
+      }
+    },
+    "store_inventory": {
+      "WMT-STR-001": {
+        "WMT-PROD-0001": {
+          "in_stock": true,
+          "quantity": 50
+        },
+        "WMT-PROD-0002": {
+          "in_stock": true,
+          "quantity": 30
+        },
+        "WMT-PROD-0003": {
+          "in_stock": true,
+          "quantity": 25
+        },
+        "WMT-PROD-0004": {
+          "in_stock": true,
+          "quantity": 40
+        },
+        "WMT-PROD-0005": {
+          "in_stock": true,
+          "quantity": 35
+        },
+        "WMT-PROD-0006": {
+          "in_stock": true,
+          "quantity": 60
+        },
+        "WMT-PROD-0007": {
+          "in_stock": true,
+          "quantity": 45
+        },
+        "WMT-PROD-0008": {
+          "in_stock": true,
+          "quantity": 55
+        }
+      }
+    },
+    "pickup_slots": {
+      "WMT-STR-001": [
+        {
+          "slot_id": "WMT-SLOT-001A",
+          "date": "2026-03-09",
+          "start_time": "09:00",
+          "end_time": "10:00",
+          "available": true
+        },
+        {
+          "slot_id": "WMT-SLOT-001B",
+          "date": "2026-03-09",
+          "start_time": "10:00",
+          "end_time": "11:00",
+          "available": true
+        }
+      ]
+    }
+  }

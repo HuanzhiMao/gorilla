@@ -1,1 +1,128 @@
-{"_meta": {"api_class": "WalmartAPI", "source_file": "walmart.py", "description": "Derek Nguyen in Houston with existing grocery pickup order WMT-ORD-3001 and store pickup slots for scenario 025"}, "random_seed": 2001, "profile": {"name": "Derek Nguyen", "email": "derek@example.com", "membership": {"walmart_plus": false}, "home_store_id": "WMT-STR-001", "addresses": {"WMT-ADDR-001": {"address_id": "WMT-ADDR-001", "name": "Derek Nguyen", "street": "4321 Example Blvd", "city": "Houston", "state": "TX", "zip": "77027", "is_default": true}}, "payment_methods": {"WMT-PM-001": {"method_id": "WMT-PM-001", "type": "debit", "last_four": "9214", "expiry": "2026-05", "is_default": true}}, "promos": {}}, "cart": {"items": [], "subtotal": 0, "applied_promo": null, "shipping_option": null}, "orders": {"WMT-ORD-3001": {"order_id": "WMT-ORD-3001", "user_id": "wmt_user_1", "items": [{"product_id": "WMT-PROD-3001", "quantity": 1, "price": 2593}], "status": "processing", "fulfillment_type": "pickup", "store_id": "WMT-STR-001", "tracking": null, "subtotal": 2593, "tax": 0, "shipping_fee": 0, "discount": 0, "total": 2593, "estimated_delivery": null, "ready_at": "2026-04-15T14:00:00-05:00", "placed_at": "2026-04-15T08:00:00-05:00", "updated_at": "2026-04-15T08:00:00-05:00"}}, "returns": {}, "reviews": {}, "products": {"WMT-PROD-3001": {"product_id": "WMT-PROD-3001", "name": "Groceries Bundle", "price": 2593, "options": ["pickup"]}}, "offers": {}, "shipping_options": {}, "stores": {"WMT-STR-001": {"store_id": "WMT-STR-001", "name": "Walmart Test Store", "address": "5100 Main St", "city": "Houston", "state": "TX", "zip": "77022", "lat": 29.8168, "lng": -95.359, "phone": "+17135551200"}}, "store_inventory": {"WMT-STR-001": {"WMT-PROD-3001": {"in_stock": true, "quantity": 20}}}, "pickup_slots": {"WMT-STR-001": [{"slot_id": "WMT-SLOT-001A", "date": "2026-04-15", "start_time": "09:00", "end_time": "10:00", "available": true}, {"slot_id": "WMT-SLOT-001B", "date": "2026-04-15", "start_time": "10:00", "end_time": "11:00", "available": true}, {"slot_id": "WMT-SLOT-001C", "date": "2026-04-15", "start_time": "11:00", "end_time": "12:00", "available": true}]}}
+{
+    "_meta": {
+      "api_class": "WalmartAPI",
+      "source_file": "walmart.py",
+      "description": "Derek Nguyen in Houston with existing grocery pickup order WMT-ORD-3001 and store pickup slots for scenario 025"
+    },
+    "random_seed": 2001,
+    "profile": {
+      "name": "Derek Nguyen",
+      "email": "derek@example.com",
+      "membership": {
+        "walmart_plus": false
+      },
+      "home_store_id": "WMT-STR-001",
+      "addresses": {
+        "WMT-ADDR-001": {
+          "address_id": "WMT-ADDR-001",
+          "name": "Derek Nguyen",
+          "street": "4321 Example Blvd",
+          "city": "Houston",
+          "state": "TX",
+          "zip": "77027",
+          "is_default": true
+        }
+      },
+      "payment_methods": {
+        "WMT-PM-001": {
+          "method_id": "WMT-PM-001",
+          "type": "debit",
+          "last_four": "9214",
+          "expiry": "2026-05",
+          "is_default": true
+        }
+      },
+      "promos": {}
+    },
+    "cart": {
+      "items": [],
+      "subtotal": 0,
+      "applied_promo": null,
+      "shipping_option": null
+    },
+    "orders": {
+      "WMT-ORD-3001": {
+        "order_id": "WMT-ORD-3001",
+        "items": [
+          {
+            "product_id": "WMT-PROD-3001",
+            "quantity": 1,
+            "price": 2593
+          }
+        ],
+        "status": "processing",
+        "fulfillment_type": "pickup",
+        "store_id": "WMT-STR-001",
+        "tracking": null,
+        "subtotal": 2593,
+        "tax": 0,
+        "shipping_fee": 0,
+        "discount": 0,
+        "total": 2593,
+        "estimated_delivery": null,
+        "ready_at": "2026-04-15T14:00:00-05:00",
+        "placed_at": "2026-04-15T08:00:00-05:00",
+        "updated_at": "2026-04-15T08:00:00-05:00"
+      }
+    },
+    "returns": {},
+    "reviews": {},
+    "products": {
+      "WMT-PROD-3001": {
+        "product_id": "WMT-PROD-3001",
+        "name": "Groceries Bundle",
+        "price": 2593,
+        "options": [
+          "pickup"
+        ]
+      }
+    },
+    "offers": {},
+    "shipping_options": {},
+    "stores": {
+      "WMT-STR-001": {
+        "store_id": "WMT-STR-001",
+        "name": "Walmart Test Store",
+        "address": "5100 Main St",
+        "city": "Houston",
+        "state": "TX",
+        "zip": "77022",
+        "lat": 29.8168,
+        "lng": -95.359,
+        "phone": "+17135551200"
+      }
+    },
+    "store_inventory": {
+      "WMT-STR-001": {
+        "WMT-PROD-3001": {
+          "in_stock": true,
+          "quantity": 20
+        }
+      }
+    },
+    "pickup_slots": {
+      "WMT-STR-001": [
+        {
+          "slot_id": "WMT-SLOT-001A",
+          "date": "2026-04-15",
+          "start_time": "09:00",
+          "end_time": "10:00",
+          "available": true
+        },
+        {
+          "slot_id": "WMT-SLOT-001B",
+          "date": "2026-04-15",
+          "start_time": "10:00",
+          "end_time": "11:00",
+          "available": true
+        },
+        {
+          "slot_id": "WMT-SLOT-001C",
+          "date": "2026-04-15",
+          "start_time": "11:00",
+          "end_time": "12:00",
+          "available": true
+        }
+      ]
+    }
+  }

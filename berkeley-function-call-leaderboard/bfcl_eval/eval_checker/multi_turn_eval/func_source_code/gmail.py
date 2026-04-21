@@ -149,6 +149,13 @@ class GmailAPI(PatchableMixin):
         self.scheduled_emails = scenario.get("scheduled_emails", DEFAULT_STATE_COPY["scheduled_emails"])
         self.templates = scenario.get("templates", DEFAULT_STATE_COPY["templates"])
         self.long_context = long_context
+        # Auto-activate the sole user when the profile is single-user so that
+        # self.user_id is set before any method that calls _require_user runs.
+        # Multi-user profiles still require the agent to call switch_user().
+        if len(self.profile) == 1:
+            self.user_id = next(iter(self.profile))
+        else:
+            self.user_id = None
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, GmailAPI):

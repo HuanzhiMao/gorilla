@@ -593,7 +593,7 @@ class InstacartAPI(PatchableMixin):
 
         Returns:
             Dict[str, Any]: Cart object including items (List), subtotal (int, cents),
-                applied_coupon (str | None), store_id (str), user_id (str).
+                applied_coupon (str | None), store_id (str).
         """
         cart = self._require_cart(cart_id)
         cart["subtotal"] = self._compute_cart_subtotal(cart)
@@ -877,7 +877,6 @@ class InstacartAPI(PatchableMixin):
 
         order = {
             "order_id": order_id,
-            "user_id": self.user_id,
             "store_id": cart["store_id"],
             "items": deepcopy(cart["items"]),
             "status": "pending",
@@ -1098,7 +1097,6 @@ class InstacartAPI(PatchableMixin):
         self.issues[issue_id] = {
             "issue_id": issue_id,
             "order_id": order_id,
-            "user_id": order["user_id"],
             "type": issue_type,
             "description": description,
             "status": "open",
@@ -1424,12 +1422,9 @@ class InstacartAPI(PatchableMixin):
                 purchase_count (int), last_purchased_at (str),
                 store_id (str).
         """
-        user_id = self.user_id
         # Aggregate purchase counts from purchase_history
         item_counts: Dict[str, Dict[str, Any]] = {}
         for entry in self.purchase_history:
-            if entry.get("user_id") != user_id:
-                continue
             if store_id and entry.get("store_id") != store_id:
                 continue
             pid = entry.get("product_id")

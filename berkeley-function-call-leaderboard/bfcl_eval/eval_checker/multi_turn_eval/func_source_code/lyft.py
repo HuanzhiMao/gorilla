@@ -127,6 +127,9 @@ class LyftAPI(PatchableMixin):
         self.ride_challenges = scenario.get("ride_challenges", deepcopy(DEFAULT_STATE_COPY["ride_challenges"]))
         self.ride_streak = scenario.get("ride_streak", deepcopy(DEFAULT_STATE_COPY["ride_streak"]))
         self.long_context = long_context
+        # Method bodies reference self._rng; _load_scenario initializes
+        # self._random. Alias the two so either name resolves.
+        self._rng = self._random
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, LyftAPI):

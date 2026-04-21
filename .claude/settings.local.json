@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(env)",
+      "Bash(bfcl --help)",
+      "Bash(py --version)",
+      "Bash(py -c \"import bfcl_eval; print\\(bfcl_eval.__file__\\)\")",
+      "Bash(py -m bfcl --help)",
+      "Bash(py -3.10 -c \"import bfcl_eval; print\\(bfcl_eval.__file__\\)\")",
+      "Bash(py -3.10 -m bfcl --help)",
+      "Bash(conda env *)",
+      "Bash(where conda *)",
+      "Bash(py -m pip show bfcl-eval)",
+      "Read(//c/Users/Jason Huang/AppData/Local/Programs/**)",
+      "Read(//c/Users/Jason Huang/**)",
+      "Bash(py -m pip index versions tree_sitter)",
+      "Bash(py -m pip download tree_sitter==0.21.3 --only-binary=:all: --no-deps -d /tmp/tspkg)",
+      "Bash(py -m pip list)",
+      "Bash(py -m bfcl_eval --help)",
+      "Bash(PYTHONUTF8=1 py -m bfcl_eval --help)",
+      "Bash(where uv *)",
+      "Bash(uv python *)",
+      "Bash(python -c \"import json, sys; data=[json.loads\\(l\\) for l in sys.stdin if l.strip\\(\\)]; print\\('count:', len\\(data\\)\\); print\\('ids:', sorted\\([d['id'] for d in data]\\)\\)\")",
+      "Bash(git show *)",
+      "Bash(cat berkeley-function-call-leaderboard/bfcl_eval/data/text/failing_tools.json)",
+      "Read(//tmp/**)",
+      "Bash(sort -t_ -k3 -n)"
+    ]
+  }
+}
