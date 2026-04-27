@@ -114,7 +114,7 @@ class LyftAPI(PatchableMixin):
             scenario (Dict[str, Any]): The scenario to load
         """
         DEFAULT_STATE_COPY = deepcopy(DEFAULT_STATE)
-        self._random = random.Random(
+        self._rng = random.Random(
             scenario.get("random_seed", DEFAULT_STATE_COPY["random_seed"])
         )
         self.profile = scenario.get("profile", DEFAULT_STATE_COPY["profile"])
@@ -127,9 +127,6 @@ class LyftAPI(PatchableMixin):
         self.ride_challenges = scenario.get("ride_challenges", deepcopy(DEFAULT_STATE_COPY["ride_challenges"]))
         self.ride_streak = scenario.get("ride_streak", deepcopy(DEFAULT_STATE_COPY["ride_streak"]))
         self.long_context = long_context
-        # Method bodies reference self._rng; _load_scenario initializes
-        # self._random. Alias the two so either name resolves.
-        self._rng = self._random
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, LyftAPI):

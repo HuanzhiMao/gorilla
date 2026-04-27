@@ -125,3 +125,43 @@ def skip_to_next_s79_no_active_playback(self):
         suggested_action="Start playback first with play_track(), play_album(), or play_station().",
         context={"user_id": self.user_id},
     )
+
+
+# Alternate-path FEATURE_DISABLED patches (per Yash #3).
+# S67/116: force play_playlist (intended) by disabling individual-track and album shortcuts.
+@AppleMusicAPI._register_patch("play_track", "s67_alt_play_track_disabled")
+def play_track_s67_alt_disabled(self, *args, **kwargs):
+    raise AppleMusicError(
+        error_code="FEATURE_DISABLED",
+        message="Single-track playback is disabled for this account.",
+        suggested_action="Use play_playlist or play_album to start playback.",
+        context={},
+    )
+
+
+@AppleMusicAPI._register_patch("play_album", "s67_alt_play_album_disabled")
+def play_album_s67_alt_disabled(self, *args, **kwargs):
+    raise AppleMusicError(
+        error_code="FEATURE_DISABLED",
+        message="Album playback is disabled for this account.",
+        suggested_action="Use play_playlist to start playback.",
+        context={},
+    )
+
+
+# ---------- get_library_playlists ----------
+
+
+# ft_extra_49 -- data_staleness/temporary. The first call returns a
+# truncated page (only the first three playlists) without indicating
+# that more pages exist -- a pagination bug surfaced by the gateway's
+# default page size dropping from 25 to 3 during a brief misconfig.
+# Second call falls through to the real (full) implementation.
+@AppleMusicAPI._register_patch("get_library_playlists", "pagination_truncation_temporary")
+def get_library_playlists_pagination_truncation_temporary(self, *args, **kwargs):
+    """Temporary. First call returns at most 3 playlists (silently
+    truncated, no continuation marker). Second call falls through."""
+    if self._patch_call_count <= 1:
+        full = self._original_function(*args, **kwargs)
+        return full[:3]
+    return self._original_function(*args, **kwargs)

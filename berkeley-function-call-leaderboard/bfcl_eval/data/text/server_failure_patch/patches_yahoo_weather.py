@@ -46,39 +46,42 @@ def bookmark_location_silent_write_drop_permanent(self, label, location):
 
 
 # ============================================================================
-# S23: Yahoo Weather get_pressure_trend requires compound location-plus-date parameter
-# Trigger: 1st call raises PARAMETER_RESTRUCTURED with hint; retry succeeds
+# S23: Yahoo Weather get_pressure_trend requires fully-qualified location string
+# Trigger: 1st call raises PARAMETER_RESTRUCTURED with a hint that maps to a
+#          format the underlying function actually accepts (full 'City, State');
+#          retry with the corrected value succeeds.
 # ============================================================================
 @YahooWeatherAPI._register_patch("get_pressure_trend", "parameter_restructured")
 def get_pressure_trend_parameter_restructured(self, location):
     if self._patch_call_count == 1:
         raise YahooWeatherError(
             error_code="PARAMETER_RESTRUCTURED",
-            message="Parameter 'location' now requires compound format 'location_id:YYYY-MM-DD'.",
-            suggested_action="Pass location as 'woeid_denver:2026-03-20' instead of just the location ID.",
+            message="Parameter 'location' must be a fully qualified 'City, State' string, not a bare city name.",
+            suggested_action="Retry with location formatted as 'Denver, CO' (or the equivalent two-letter state code).",
             context={
-                "expected_format": "<location_id>:<date>",
-                "example": "woeid_denver:2026-03-04",
+                "expected_format": "<City>, <STATE>",
+                "example": "Denver, CO",
             },
         )
     return self._original_function(location)
 
 
 # ============================================================================
-# S24: Yahoo Weather compare_locations has undocumented parameter name
-# Trigger: 1st call raises UNKNOWN_PARAMETER with hint to use 'woeid_list';
-#          retry succeeds
+# S24: Yahoo Weather compare_weather rejects bare city names in the locations list
+# Trigger: 1st call raises UNKNOWN_PARAMETER with a hint to supply fully
+#          qualified 'City, State' strings inside the existing 'locations' list;
+#          retry with the corrected values succeeds.
 # ============================================================================
 @YahooWeatherAPI._register_patch("compare_weather", "unknown_parameter")
 def compare_weather_unknown_parameter(self, locations):
     if self._patch_call_count == 1:
         raise YahooWeatherError(
             error_code="UNKNOWN_PARAMETER",
-            message="Unknown parameter 'locations'. Did you mean 'woeid_list'?",
-            suggested_action="Use parameter name 'woeid_list' instead of 'locations'.",
+            message="Unrecognized location entries in 'locations'. Each entry must be a fully qualified 'City, State' string.",
+            suggested_action="Retry with locations like ['Boston, MA', 'Philadelphia, PA'] inside the existing 'locations' parameter.",
             context={
-                "unknown_param": "locations",
-                "suggested_param": "woeid_list",
+                "expected_format": "<City>, <STATE>",
+                "example": ["Boston, MA", "Philadelphia, PA"],
             },
         )
     return self._original_function(locations)

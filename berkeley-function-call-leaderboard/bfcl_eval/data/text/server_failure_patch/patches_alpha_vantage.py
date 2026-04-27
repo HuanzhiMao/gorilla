@@ -114,3 +114,68 @@ def list_alpha_watchlists_corrupted_watchlist_index(self):
         {"name": "macro_watch", "symbols": ["MSFT", "SPY", "NULL"], "created_at": "2026-03-20T20:05:00Z"},
         {"name": "macro_watch", "symbols": ["JPM"], "created_at": "2026-03-20T20:06:00Z"},
     ]
+
+
+# ---------- get_alpha_news_sentiment (upstream_timeout_empty_temporary) ----------
+
+
+# ft_extra_45 -- availability_denial/temporary. First call returns an
+# empty news-sentiment payload with a 'upstream_timeout' marker (the
+# upstream news provider briefly stopped responding). Second call falls
+# through to the live data.
+@AlphaVantageAPI._register_patch("get_alpha_news_sentiment", "upstream_timeout_empty_temporary")
+def get_alpha_news_sentiment_upstream_timeout_empty_temporary(self, *args, **kwargs):
+    """Temporary. First call returns an empty articles list and a
+    soft 'upstream_timeout' marker. Second call falls through unchanged."""
+    if self._patch_call_count <= 1:
+        return {
+            "articles": [],
+            "overall_sentiment_score": 0.0,
+            "overall_sentiment_label": "Neutral",
+            "upstream_timeout": True,
+        }
+    return self._original_function(*args, **kwargs)
+
+
+# ---------- get_alpha_news_sentiment ----------
+
+
+# ft_extra_91 -- get_alpha_news_sentiment returns a corrupted overall
+# sentiment score whose sign is flipped. Individual feed articles
+# preserve their per-article sentiment; only the aggregate is wrong.
+# Permanent: aggregator service has a known polarity inversion bug.
+@AlphaVantageAPI._register_patch("get_alpha_news_sentiment", "sentiment_score_inverted_permanent")
+def get_alpha_news_sentiment_sentiment_score_inverted_permanent(self, symbol, limit=5, *args, **kwargs):
+    """Permanent corrupted_state. The overall_sentiment_score returned by
+    the aggregator has its sign inverted. The per-article sentiment_score
+    values inside the feed are correct, so an agent that re-aggregates
+    can detect the mismatch. Recovery: recompute the average from the
+    feed and notice the sign disagrees with overall_sentiment_score."""
+    real = self._original_function(symbol, limit)
+    score = real.get("overall_sentiment_score", 0.0) or 0.0
+    real["overall_sentiment_score"] = -1 * score
+    real["_polarity_warning"] = "aggregator may invert sign"
+    return real
+
+
+# ---------- get_alpha_technical_indicator ----------
+
+
+# ft_extra_92 -- get_alpha_technical_indicator returns a stale snapshot
+# on the first call (last point is dated several days behind real time).
+# Second call falls through to the real implementation. Recovery: retry
+# and notice the timestamp moved forward.
+@AlphaVantageAPI._register_patch("get_alpha_technical_indicator", "stale_indicator_snapshot_temporary")
+def get_alpha_technical_indicator_stale_indicator_snapshot_temporary(self, symbol, indicator, interval="daily", *args, **kwargs):
+    """Temporary data_staleness. First call rewrites the most recent point
+    to a 6-day-old date and tags the response cache_status=stale. Second
+    call falls through. Recovery: notice cache_status or the unusually
+    old date on the trailing point and retry."""
+    if self._patch_call_count <= 1:
+        real = self._original_function(symbol, indicator, interval, *args, **kwargs)
+        if isinstance(real, dict) and real.get("series"):
+            real["series"][-1]["date"] = "2026-04-20"
+            real["cache_status"] = "stale"
+        return real
+    return self._original_function(symbol, indicator, interval, *args, **kwargs)
+

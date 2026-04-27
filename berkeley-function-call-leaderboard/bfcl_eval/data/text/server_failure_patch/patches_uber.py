@@ -114,3 +114,24 @@ def estimate_ride_blocked(self, *args, **kwargs):
         "FEATURE_DISABLED",
         "Individual ride estimates are not available. Use get_price_estimates instead.",
     )
+
+
+# ---------- reserve_ride ----------
+
+
+# ft_extra_36 -- availability_denial/temporary. First call rejects with
+# RESERVE_WINDOW_CLOSED for the requested scheduled_time -- the Uber
+# Reserve booking horizon briefly closed for that pickup zone (e.g.
+# during a region-wide schedule refresh). Second call falls through.
+@UberAPI._register_patch("reserve_ride", "reserve_window_closed_temporary")
+def reserve_ride_reserve_window_closed_temporary(self, *args, **kwargs):
+    """Temporary. First call raises RESERVE_WINDOW_CLOSED with a clear
+    retryable hint; second call falls through."""
+    if self._patch_call_count <= 1:
+        raise UberError(
+            "RESERVE_WINDOW_CLOSED",
+            "Uber Reserve booking horizon is briefly closed for this pickup "
+            "zone. The window typically reopens within seconds.",
+            "Retry the same request once -- the closure is short.",
+        )
+    return self._original_function(*args, **kwargs)

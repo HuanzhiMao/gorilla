@@ -164,7 +164,7 @@ class YelpAPI(PatchableMixin):
             raise YelpError(
                 "REVIEW_NOT_FOUND",
                 f"Review '{review_id}' not found.",
-                suggested_action="Use get_reviews_for_business() to find valid review IDs.",
+                suggested_action="Use get_review_details_for_business() to find valid review IDs.",
                 context={"review_id": review_id},
             )
         return review
@@ -295,7 +295,7 @@ class YelpAPI(PatchableMixin):
     # Reviews — reading
     # -----------------------------------------------------------------------
 
-    def get_reviews_for_business(
+    def get_review_details_for_business(
         self,
         business_id: str,
         max_results: int = 20,

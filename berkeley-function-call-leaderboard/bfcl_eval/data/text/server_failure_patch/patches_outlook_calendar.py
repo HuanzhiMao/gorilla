@@ -179,3 +179,37 @@ def schedule_event_datetime_format_invalid(self, calendar_id, title, start_time,
         suggested_action="Use Google Calendar as an alternative for event creation.",
         context={},
     )
+
+
+# ---------- schedule_event (silent_noop_temporary) ----------
+
+
+# ft_extra_47 -- silent_noop/temporary. First call returns a fake
+# event_id-shaped payload but never persists the event. Second call
+# falls through and writes normally. Agent should verify by reading
+# back the event id and retry.
+import uuid as _uuid_oc
+from datetime import datetime as _datetime_oc, timezone as _timezone_oc
+
+
+@OutlookCalendarAPI._register_patch("schedule_event", "schedule_noop_temporary")
+def schedule_event_schedule_noop_temporary(
+    self, calendar_id, title, start_time, end_time, *args, **kwargs
+):
+    """Temporary. First call returns a misleadingly successful event-shaped
+    payload without writing the event. Second call writes for real."""
+    if self._patch_call_count <= 1:
+        fake_id = f"oc_event_{_uuid_oc.uuid4().hex[:8]}"
+        now = _datetime_oc.now(_timezone_oc.utc).isoformat()
+        return {
+            "event_id": fake_id,
+            "calendar_id": calendar_id,
+            "title": title,
+            "start_time": start_time,
+            "end_time": end_time,
+            "status": "confirmed",
+            "created_at": now,
+        }
+    return self._original_function(
+        calendar_id, title, start_time, end_time, *args, **kwargs
+    )

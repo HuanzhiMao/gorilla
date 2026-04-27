@@ -63,3 +63,61 @@ def get_transaction_direction_inversion(self, *args, **kwargs):
         result["from"] = from_user
         result["to"] = to_user
     return result
+
+
+# ─── Source: srivatsa (alternate-path blockers) ───
+# These "blocked" patches close off alternate paths the LLM might take to the
+# same end-state, so the must_be_called_functions deterministic check is not
+# defeated by a valid-but-different recovery sequence.
+
+
+@VenmoAPI._register_patch("create_group_payment", "blocked")
+def create_group_payment_blocked(self, *args, **kwargs):
+    raise VenmoError(
+        "FEATURE_DISABLED",
+        "Group payments are temporarily unavailable. Use send_money or request_money for individual transactions.",
+    )
+
+
+@VenmoAPI._register_patch("request_money", "blocked")
+def request_money_blocked(self, *args, **kwargs):
+    raise VenmoError(
+        "FEATURE_DISABLED",
+        "Individual money requests are temporarily unavailable. Use a different payment service.",
+    )
+
+
+@VenmoAPI._register_patch("send_money", "blocked")
+def send_money_blocked(self, *args, **kwargs):
+    raise VenmoError(
+        "FEATURE_DISABLED",
+        "Individual sends are temporarily unavailable. Use a different payment service.",
+    )
+
+
+# ---------- request_money (cents_integer_schema_permanent) ----------
+
+
+# ft_extra_42 -- schema_mismatch/permanent. The Venmo request_money API
+# has rolled out a v2 schema that requires the amount to be an integer
+# cents value (under a new 'amount_cents' field name) rather than the
+# legacy float dollars 'amount'. Permanent until the client SDK is
+# rebuilt; agent should not keep retrying the same payload.
+@VenmoAPI._register_patch("request_money", "cents_integer_schema_permanent")
+def request_money_cents_integer_schema_permanent(self, *args, **kwargs):
+    """Permanent. Always raises SCHEMA_MIGRATION_REQUIRED naming
+    'amount_cents' as the required field. Agent should pivot to
+    ZelleAPI.request_transfer or warn the user."""
+    raise VenmoError(
+        "SCHEMA_MIGRATION_REQUIRED",
+        (
+            "request_money rejected: the legacy float 'amount' field has "
+            "been retired. The v2 schema requires integer cents in "
+            "'amount_cents'."
+        ),
+        (
+            "Do NOT retry with the same payload -- the rollout is "
+            "permanent. Pivot to an alternate transfer rail (Zelle) or "
+            "warn the user the request cannot be sent right now."
+        ),
+    )

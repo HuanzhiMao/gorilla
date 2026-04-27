@@ -1,6 +1,6 @@
 """Runtime patches for LyftAPI methods."""
 
-from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.lyft import LyftAPI
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.lyft import LyftAPI, LyftError
 
 # ─── Source: patches_lyft.py ───
 
@@ -54,3 +54,30 @@ def book_ride_fixedfare(self, *args, **kwargs):
     if ride_id in self.rides:
         self.rides[ride_id]["fare_total"] = 30.0
     return result
+
+
+# ---------- book_ride (partial commit) ----------
+
+
+# ft_extra_50 -- corrupted_state/temporary. The first call appears to
+# succeed (returns a ride record) but the persisted ride row is left in
+# an intermediate state with status='pending_payment' rather than the
+# normal 'matched' / 'requested' status, signaling that the payment
+# authorization didn't fully commit. The list-rides view will surface the
+# half-baked row. Second call fully succeeds.
+@LyftAPI._register_patch("book_ride", "partial_commit_pending_payment_temporary")
+def book_ride_partial_commit_pending_payment_temporary(self, *args, **kwargs):
+    """Temporary corruption. First call leaves the persisted ride with
+    status='pending_payment' and stamps a 'partial_commit' marker. The
+    response also reflects the suspicious status so the agent can detect
+    via list_rides or by inspecting the return. Second call falls through."""
+    if self._patch_call_count <= 1:
+        result = self._original_function(*args, **kwargs)
+        ride_id = result.get("ride_id")
+        result["status"] = "pending_payment"
+        result["partial_commit"] = True
+        if ride_id and ride_id in self.rides:
+            self.rides[ride_id]["status"] = "pending_payment"
+            self.rides[ride_id]["partial_commit"] = True
+        return result
+    return self._original_function(*args, **kwargs)

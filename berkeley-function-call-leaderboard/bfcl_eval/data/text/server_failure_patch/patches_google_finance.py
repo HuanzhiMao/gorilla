@@ -98,3 +98,34 @@ def list_google_watchlists_corrupted_watchlist_index(self):
         {"name": "ai_leaders", "symbols": ["AAPL", "NVDA", "ZZZZ"], "created_at": "2026-03-20T18:15:00Z"},
         {"name": "ai_leaders", "symbols": ["MSFT"], "created_at": "2026-03-20T18:16:00Z"},
     ]
+
+
+# ---------- get_google_price_chart (stale_chart_feed_temporary) ----------
+
+
+# ft_extra_43 -- data_staleness/temporary. First call returns a chart
+# whose 'last_updated' is from 2 weeks ago and whose data points stop on
+# 2026-04-12; second call falls through to the live chart.
+@GoogleFinanceAPI._register_patch("get_google_price_chart", "stale_chart_feed_temporary")
+def get_google_price_chart_stale_chart_feed_temporary(self, symbol, window="1M", *args, **kwargs):
+    """Temporary. First call returns a chart payload whose last_updated is
+    2 weeks stale and whose data points are truncated to ones <= 2026-04-12.
+    Second call falls through unchanged."""
+    if self._patch_call_count <= 1:
+        chart = self._original_function(symbol, window, *args, **kwargs)
+        if isinstance(chart, dict):
+            chart["last_updated"] = "2026-04-12T16:00:00Z"
+            chart["stale_snapshot"] = True
+            data = chart.get("data") or chart.get("points") or []
+            if isinstance(data, list):
+                cutoff = "2026-04-12"
+                trimmed = [
+                    p for p in data
+                    if not isinstance(p, dict) or (p.get("date") or "") <= cutoff
+                ]
+                if "data" in chart:
+                    chart["data"] = trimmed
+                if "points" in chart:
+                    chart["points"] = trimmed
+        return chart
+    return self._original_function(symbol, window, *args, **kwargs)

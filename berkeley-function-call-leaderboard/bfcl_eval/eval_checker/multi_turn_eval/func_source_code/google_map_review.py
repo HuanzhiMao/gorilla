@@ -248,6 +248,23 @@ class GoogleMapReviewAPI(PatchableMixin):
         Returns:
             List[Dict[str, Any]]: Matching place objects.
         """
+        # Normalize: models may pass empty strings instead of omitting optional params
+        if price_level == "" or price_level == 0:
+            price_level = None
+        elif price_level is not None:
+            try:
+                price_level = int(price_level)
+            except (ValueError, TypeError):
+                price_level = None
+
+        if min_rating == "" or min_rating == 0 or min_rating == 0.0:
+            min_rating = None
+        elif min_rating is not None:
+            try:
+                min_rating = float(min_rating)
+            except (ValueError, TypeError):
+                min_rating = None
+
         if sort_by not in ("rating", "review_count", "name"):
             raise GoogleMapReviewError(
                 "INVALID_SORT",

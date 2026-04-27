@@ -199,3 +199,54 @@ def get_property_blocked(self, *args, **kwargs):
         "FEATURE_DISABLED",
         "Property details are temporarily not available. Please try a different approach.",
     )
+
+
+# ---------- modify_booking (regional date format) ----------
+
+
+# ft_extra_37 -- schema_mismatch/permanent. The modify_booking endpoint
+# rejects ISO YYYY-MM-DD dates with INVALID_DATE_FORMAT and demands the
+# regional DD/MM/YYYY format for this property's locale (an undocumented
+# rollout for EU-region inventory). Permanent in this scenario; agent
+# should pivot to cancel_booking + create_booking on the alternate
+# platform (Expedia) rather than spinning on the rejection.
+@BookingAPI._register_patch("modify_booking", "regional_date_format_permanent")
+def modify_booking_regional_date_format_permanent(self, booking_id, *args, **kwargs):
+    """Permanent. Always raises INVALID_DATE_FORMAT naming the regional
+    DD/MM/YYYY format; the error is explicitly NOT retryable until the
+    rollout completes."""
+    raise BookingError(
+        "INVALID_DATE_FORMAT",
+        (
+            "Date format rejected: this property's locale requires "
+            "DD/MM/YYYY for modify_booking. The ISO YYYY-MM-DD format is "
+            "not accepted in the new EU schema."
+        ),
+        "Do NOT retry with the same dates. Cancel and rebook on an alternate "
+        "platform if the modification is essential.",
+    )
+
+
+# ---------- cancel_booking ----------
+
+
+# ft_extra_98 -- cancel_booking returns an inflated refund_amount that
+# does not match the original total_price. The underlying booking is
+# correctly marked cancelled, but the refund figure is wrong (a stale
+# fee table caused the refund engine to over-credit). Permanent: the fee
+# table is upstream and only fixes itself on the next platform deploy.
+@BookingAPI._register_patch("cancel_booking", "refund_inflated_permanent")
+def cancel_booking_refund_inflated_permanent(self, booking_id, *args, **kwargs):
+    """Permanent corrupted_state. The booking is correctly cancelled but
+    the returned refund_amount is the original total_price * 1.4 -- an
+    inflated number that does not reconcile with the booking total.
+    Recovery: cross-check by reading get_booking(booking_id) and notice
+    the refund_amount > total_price, then warn the user before relying
+    on the inflated refund."""
+    real = self._original_function(booking_id, *args, **kwargs)
+    refund = real.get("refund_amount", 0)
+    if refund:
+        real["refund_amount"] = round(refund * 1.4, 2)
+        real["_refund_table_warning"] = "refund total may not match booking total_price"
+    return real
+

@@ -104,3 +104,51 @@ def add_to_cart_unavailable(self, *args, **kwargs):
         "SERVICE_UNAVAILABLE",
         "Amazon add_to_cart is unavailable for this product.",
     )
+
+
+# ---------- cancel_subscription ----------
+
+
+# ft_extra_34 -- silent_noop/permanent. cancel_subscription returns a
+# canonical canceled=true response payload, but the underlying Subscribe
+# & Save record is never updated -- status stays "active" and the next
+# delivery still fires. Agent must verify via list_subscriptions() and
+# flag the failed cancellation to the user.
+@AmazonAPI._register_patch("cancel_subscription", "cancel_noop_permanent")
+def cancel_subscription_cancel_noop_permanent(self, subscription_id, *args, **kwargs):
+    """Permanent silent no-op. Returns a misleading canceled=true payload
+    without mutating self.subscriptions[subscription_id]. The next delivery
+    still ships."""
+    sub = self.subscriptions.get(subscription_id)
+    if not sub:
+        raise AmazonError(
+            "SUBSCRIPTION_NOT_FOUND",
+            f"Subscription '{subscription_id}' not found.",
+            suggested_action="Use list_subscriptions() to find valid subscription IDs.",
+            context={"subscription_id": subscription_id},
+        )
+    # Deliberately do NOT mutate sub['status']; return a misleading success.
+    return {
+        "subscription_id": subscription_id,
+        "canceled": True,
+        "status": "canceled",
+    }
+
+
+# ---------- list_subscriptions ----------
+
+
+# ft_extra_58 -- data_staleness/temporary. The first call returns a
+# filtered view that drops any subscription whose next_delivery_at is on
+# or after 2026-02-10 (a stale filter cutoff that should have been
+# refreshed when the rolling 90-day window advanced). Second call returns
+# the live result. Agent must retry or treat the partial list as suspect.
+@AmazonAPI._register_patch("list_subscriptions", "stale_subscription_filter_temporary")
+def list_subscriptions_stale_subscription_filter_temporary(self, *args, **kwargs):
+    """Temporary. First call applies a stale next_delivery_at < 2026-02-10
+    filter (so newer subscriptions are missing). Second call falls through."""
+    if self._patch_call_count <= 1:
+        full = self._original_function(*args, **kwargs)
+        cutoff = "2026-02-10T00:00:00Z"
+        return [s for s in full if (s.get("next_delivery_at") or "") < cutoff]
+    return self._original_function(*args, **kwargs)

@@ -73,7 +73,7 @@ DEFAULT_STATE = {
 }
 
 
-class UberEatsOrderAPI(PatchableMixin):
+class UberEatsAPI(PatchableMixin):
     """
     In-memory dummy implementation of a UberEats-like food delivery service.
     Single-user perspective: profile represents the current user.
@@ -135,7 +135,7 @@ class UberEatsOrderAPI(PatchableMixin):
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
-        if not isinstance(value, UberEatsOrderAPI):
+        if not isinstance(value, UberEatsAPI):
             return False
 
         for attr_name in vars(self):

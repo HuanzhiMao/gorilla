@@ -1,6 +1,6 @@
-"""Runtime patches for UberEatsOrderAPI methods."""
+"""Runtime patches for UberEatsAPI methods."""
 
-from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.uber_eats import UberEatsError, UberEatsOrderAPI
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.uber_eats import UberEatsError, UberEatsAPI
 from datetime import datetime, timezone, timedelta
 import uuid
 
@@ -13,14 +13,14 @@ def _arg(args, kwargs, idx, name, default=None):
 # ─── Source: socrates ───
 
 
-@UberEatsOrderAPI._register_patch("submit_food_order", "phantom_permanent")
+@UberEatsAPI._register_patch("submit_food_order", "phantom_permanent")
 def submit_food_order_phantom_permanent(self, *args, **kwargs):
     """Permanent silent no-op. Returns fake order_id without ever placing the order.
     The order never exists in the system, so get_order / cancel_order will correctly fail."""
     return f"order_{uuid.uuid4().hex[:8]}"
 
 
-@UberEatsOrderAPI._register_patch("search_restaurants", "stale_permanent")
+@UberEatsAPI._register_patch("search_restaurants", "stale_permanent")
 def search_restaurants_stale_permanent(self, *args, **kwargs):
     """Permanent. Calls original, modifies results to mark all restaurants as open
     and sets last_updated to 4 months ago. Some restaurants may actually be closed."""
@@ -32,7 +32,7 @@ def search_restaurants_stale_permanent(self, *args, **kwargs):
     return results
 
 
-@UberEatsOrderAPI._register_patch("submit_food_order", "unavailable_permanent")
+@UberEatsAPI._register_patch("submit_food_order", "unavailable_permanent")
 def submit_food_order_unavailable_permanent(self, *args, **kwargs):
     """Permanent. Always raises SERVICE_UNAVAILABLE."""
     raise UberEatsError(
@@ -46,7 +46,7 @@ def submit_food_order_unavailable_permanent(self, *args, **kwargs):
 
 
 # ft_022 -- doubled total
-@UberEatsOrderAPI._register_patch("submit_food_order", "doubledtotal")
+@UberEatsAPI._register_patch("submit_food_order", "doubledtotal")
 def submit_food_order_doubledtotal(self, *args, **kwargs):
     order_id = self._original_function(*args, **kwargs)
     if order_id in self.orders:
@@ -58,7 +58,7 @@ def submit_food_order_doubledtotal(self, *args, **kwargs):
 
 
 # S51: Late night pizza — Night Owl closed on UE
-@UberEatsOrderAPI._register_patch("submit_food_order", "s51_restaurant_closed")
+@UberEatsAPI._register_patch("submit_food_order", "s51_restaurant_closed")
 def submit_food_order_s51_restaurant_closed(self, *args, **kwargs):
     restaurant_id = _arg(args, kwargs, 0, "restaurant_id")
     if restaurant_id == "night_owl_01":
@@ -72,7 +72,7 @@ def submit_food_order_s51_restaurant_closed(self, *args, **kwargs):
 
 
 # S52: Poker night — nachos out of stock on UE
-@UberEatsOrderAPI._register_patch("submit_food_order", "s52_nachos_out_of_stock")
+@UberEatsAPI._register_patch("submit_food_order", "s52_nachos_out_of_stock")
 def submit_food_order_s52_nachos_out_of_stock(self, *args, **kwargs):
     items = _arg(args, kwargs, 1, "items", [])
     if any((it or {}).get("item_id") == "pb_nachos" for it in (items or [])):
@@ -86,7 +86,7 @@ def submit_food_order_s52_nachos_out_of_stock(self, *args, **kwargs):
 
 
 # S53: Post-gym — out of delivery zone on UE
-@UberEatsOrderAPI._register_patch("submit_food_order", "s53_out_of_zone")
+@UberEatsAPI._register_patch("submit_food_order", "s53_out_of_zone")
 def submit_food_order_s53_out_of_zone(self, *args, **kwargs):
     raise UberEatsError(
         error_code="OUT_OF_DELIVERY_ZONE",
@@ -97,7 +97,7 @@ def submit_food_order_s53_out_of_zone(self, *args, **kwargs):
 
 
 # S54: Anniversary dinner — payments outage
-@UberEatsOrderAPI._register_patch("submit_food_order", "s54_payments_outage_temporary")
+@UberEatsAPI._register_patch("submit_food_order", "s54_payments_outage_temporary")
 def submit_food_order_s54_payments_outage_temporary(self, *args, **kwargs):
     if self._patch_call_count <= 2:
         raise UberEatsError(
@@ -110,7 +110,7 @@ def submit_food_order_s54_payments_outage_temporary(self, *args, **kwargs):
 
 
 # S55: Thai food — promo SPICY15 not eligible at bangkok_st on UE
-@UberEatsOrderAPI._register_patch("submit_food_order", "s55_promo_not_eligible")
+@UberEatsAPI._register_patch("submit_food_order", "s55_promo_not_eligible")
 def submit_food_order_s55_promo_not_eligible(self, *args, **kwargs):
     restaurant_id = _arg(args, kwargs, 0, "restaurant_id")
     offer_id = _arg(args, kwargs, 5, "offer_id")
@@ -128,7 +128,7 @@ def submit_food_order_s55_promo_not_eligible(self, *args, **kwargs):
 
 
 # S57: Wrong order report + restaurant closed on reorder
-@UberEatsOrderAPI._register_patch("submit_food_order", "s57_sakura_closed")
+@UberEatsAPI._register_patch("submit_food_order", "s57_sakura_closed")
 def submit_food_order_s57_sakura_closed(self, *args, **kwargs):
     restaurant_id = _arg(args, kwargs, 0, "restaurant_id")
     if restaurant_id == "sakura_01":
@@ -142,7 +142,7 @@ def submit_food_order_s57_sakura_closed(self, *args, **kwargs):
 
 
 # S60: Seoul Crunchy empty menu on UE
-@UberEatsOrderAPI._register_patch("get_menu", "s60_empty_menu")
+@UberEatsAPI._register_patch("get_menu", "s60_empty_menu")
 def get_menu_s60_empty_menu(self, restaurant_id):
     if restaurant_id == "seoul_crunchy":
         return []
@@ -150,7 +150,7 @@ def get_menu_s60_empty_menu(self, restaurant_id):
 
 
 # S61: Group order — no default payment method
-@UberEatsOrderAPI._register_patch("submit_food_order", "s61_no_default_payment")
+@UberEatsAPI._register_patch("submit_food_order", "s61_no_default_payment")
 def submit_food_order_s61_no_default_payment(self, *args, **kwargs):
     raise UberEatsError(
         error_code="NO_DEFAULT_PAYMENT_METHOD",
@@ -161,7 +161,7 @@ def submit_food_order_s61_no_default_payment(self, *args, **kwargs):
 
 
 # S63: Split order — guac out of stock on UE
-@UberEatsOrderAPI._register_patch("submit_food_order", "s63_guac_out_of_stock")
+@UberEatsAPI._register_patch("submit_food_order", "s63_guac_out_of_stock")
 def submit_food_order_s63_guac_out_of_stock(self, *args, **kwargs):
     items = _arg(args, kwargs, 1, "items", [])
     if any((it or {}).get("item_id") == "guac_dip" for it in (items or [])):
@@ -175,9 +175,83 @@ def submit_food_order_s63_guac_out_of_stock(self, *args, **kwargs):
 
 
 # S64: Promo applied but $0 discount in order details (silent corruption)
-@UberEatsOrderAPI._register_patch("get_order", "s64_promo_discount_zero")
+@UberEatsAPI._register_patch("get_order", "s64_promo_discount_zero")
 def get_order_s64_promo_discount_zero(self, order_id):
     result = self._original_function(order_id)
     if isinstance(result.get("applied_promo"), dict):
         result["applied_promo"]["discount"] = 0.0
     return result
+
+
+# Alternate-path FEATURE_DISABLED patches (per Yash #3).
+# These force the model down the intended must_be_called path by disabling
+# semantically equivalent shortcuts that would bypass the real failure injection.
+
+# S61/110: force submit_food_order (intended) by disabling finalize_group_order
+@UberEatsAPI._register_patch("finalize_group_order", "s61_alt_finalize_disabled")
+def finalize_group_order_s61_alt_disabled(self, *args, **kwargs):
+    raise UberEatsError(
+        error_code="FEATURE_DISABLED",
+        message="Group order finalization is disabled for this account.",
+        suggested_action="Use submit_food_order to place a single order for the group.",
+        context={},
+    )
+
+
+# S61/110: force submit_food_order (intended) by disabling schedule_order
+@UberEatsAPI._register_patch("schedule_order", "s61_alt_schedule_disabled")
+def schedule_order_s61_alt_disabled(self, *args, **kwargs):
+    raise UberEatsError(
+        error_code="FEATURE_DISABLED",
+        message="Scheduled orders are disabled for this account.",
+        suggested_action="Use submit_food_order to place an immediate order.",
+        context={},
+    )
+
+
+# ---------- schedule_order (silent_noop_permanent) ----------
+
+
+# ft_extra_52 -- silent_noop/permanent. schedule_order returns a fake
+# scheduled_order_id and a 'scheduled' status payload, but no row is
+# persisted to self.scheduled_orders. The order will never actually fire.
+# Agent must verify by listing scheduled orders or fetching the returned
+# id and flag the failure.
+import uuid as _uuid
+from datetime import datetime as _datetime, timezone as _timezone
+
+
+@UberEatsAPI._register_patch("schedule_order", "scheduled_order_noop_permanent")
+def schedule_order_scheduled_order_noop_permanent(self, *args, **kwargs):
+    """Permanent silent no-op. Returns a scheduled_order_id-shaped payload
+    without persisting anything. A follow-up read for the id will fail."""
+    fake_id = f"sched_order_{_uuid.uuid4().hex[:8]}"
+    now = _datetime.now(_timezone.utc).isoformat()
+    return {
+        "scheduled_order_id": fake_id,
+        "status": "scheduled",
+        "created_at": now,
+    }
+
+
+# ---------- schedule_order (temporary) ----------
+
+
+# ft_extra_97 -- schedule_order first call raises SCHEDULE_QUEUE_OVERLOAD
+# (a retryable availability_denial). Second call falls through to the real
+# implementation. Recovery: retry once.
+@UberEatsAPI._register_patch("schedule_order", "schedule_queue_overload_temporary")
+def schedule_order_schedule_queue_overload_temporary(self, *args, **kwargs):
+    """Temporary availability_denial. First invocation raises
+    SCHEDULE_QUEUE_OVERLOAD with retry_after_seconds. Second invocation
+    falls through. Recovery: retry once."""
+    if self._patch_call_count <= 1:
+        from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.uber_eats import UberEatsError
+        raise UberEatsError(
+            error_code="SCHEDULE_QUEUE_OVERLOAD",
+            message="Scheduling queue is briefly saturated; please retry shortly.",
+            suggested_action="Retry after the retry_after_seconds window.",
+            context={"retryable": True, "retry_after_seconds": 8},
+        )
+    return self._original_function(*args, **kwargs)
+

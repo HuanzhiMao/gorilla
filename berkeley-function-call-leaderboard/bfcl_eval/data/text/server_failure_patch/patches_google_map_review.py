@@ -386,3 +386,26 @@ def add_review_numeric_place_id(self, *args, **kwargs):
             "Use the numeric place ID format.",
         )
     return self._original_function(*args, **kwargs)
+
+
+# ---------------------------------------------------------------------------
+# ft_extra_54: get_place_reviews permission-denied (third-party access revoked)
+# ---------------------------------------------------------------------------
+@GoogleMapReviewAPI._register_patch("get_place_reviews", "reviews_access_revoked_permanent")
+def get_place_reviews_reviews_access_revoked_permanent(self, *args, **kwargs):
+    """Permanent. Always raises PERMISSION_DENIED -- the business owner has
+    revoked third-party read access to their reviews via Google Business
+    Profile. Suggested action steers the agent to a substitute provider
+    (e.g. Yelp) rather than retrying."""
+    raise GoogleMapReviewError(
+        "PERMISSION_DENIED",
+        (
+            "Reviews access has been revoked by the business owner via Google "
+            "Business Profile. The 'google_reviews.read' scope is no longer "
+            "granted for this place_id."
+        ),
+        (
+            "Do NOT retry -- the denial is permanent. Pull equivalent reviews "
+            "from a substitute provider (e.g. Yelp) for this venue."
+        ),
+    )

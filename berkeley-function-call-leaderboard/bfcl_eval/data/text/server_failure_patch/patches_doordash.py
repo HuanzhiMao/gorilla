@@ -76,3 +76,43 @@ def place_dash_s63_partial_stock_only_guac(self, *args, **kwargs):
             context={"item_id": bad_items[0]},
         )
     return self._original_function(*args, **kwargs)
+
+
+# Alternate-path FEATURE_DISABLED patch (per Yash #3).
+# S56/105: force the cancel + place_dash flow by disabling reorder shortcut.
+@DoorDashAPI._register_patch("reorder", "s56_alt_reorder_disabled")
+def reorder_s56_alt_disabled(self, *args, **kwargs):
+    raise DoorDashError(
+        error_code="FEATURE_DISABLED",
+        message="One-tap reorder is disabled for this account.",
+        suggested_action="Place a new order using place_dash.",
+        context={},
+    )
+
+
+# ---------- place_dash (tip schema migration) ----------
+
+
+# ft_extra_51 -- schema_mismatch/permanent. The DoorDash tipping API has
+# rolled out a v2 schema that requires tip be expressed as an integer
+# cents value with a 'tip_cents' parameter, instead of the legacy float
+# 'tip' (dollars). Until the client-side SDK is rebuilt this rejects with
+# SCHEMA_MIGRATION_REQUIRED. Permanent.
+@DoorDashAPI._register_patch("place_dash", "tip_schema_migration_permanent")
+def place_dash_tip_schema_migration_permanent(self, *args, **kwargs):
+    """Permanent. Always raises SCHEMA_MIGRATION_REQUIRED naming
+    'tip_cents' as the required field. Agent should NOT keep retrying;
+    pivot to UberEats or warn the user."""
+    raise DoorDashError(
+        error_code="SCHEMA_MIGRATION_REQUIRED",
+        message=(
+            "place_dash rejected: legacy float 'tip' is no longer accepted; "
+            "the v2 API requires integer cents in 'tip_cents'."
+        ),
+        suggested_action=(
+            "Do NOT retry with the same payload -- the rollout requires a "
+            "client-side schema change. Pivot to an alternate platform or "
+            "warn the user."
+        ),
+        context={"schema_version": "place_dash_v2"},
+    )

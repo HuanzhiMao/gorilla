@@ -45,6 +45,18 @@ def get_free_busy_stale_free_busy_index(self, time_min, time_max):
     return {"time_min": time_min, "time_max": time_max, "busy": []}
 
 
+# ft_extra_75 -- data_staleness/temporary. First call returns an empty
+# free/busy view (mirroring a stale availability cache); second call
+# falls through to the live implementation and surfaces real conflicts.
+# Used to test that the agent retries before committing to a downstream
+# booking that depends on availability.
+@GoogleCalendarAPI._register_patch("get_free_busy", "stale_snapshot_then_live_temporary")
+def get_free_busy_stale_snapshot_then_live_temporary(self, time_min, time_max):
+    if self._patch_call_count <= 1:
+        return {"time_min": time_min, "time_max": time_max, "busy": []}
+    return self._original_function(time_min, time_max)
+
+
 @GoogleCalendarAPI._register_patch("list_events", "stale_search_index")
 def list_events_stale_search_index(self, calendar_id=None, time_min=None, time_max=None, max_results=20):
     result = self._original_function(calendar_id, time_min, time_max, max_results)
@@ -295,4 +307,96 @@ def update_event_blocked(self, *args, **kwargs):
     raise GoogleCalendarError(
         "FEATURE_DISABLED",
         "This feature is currently disabled. Try a different approach to modify your event.",
+    )
+
+
+# ---------- create_event (attendee_role_required_permanent) ----------
+
+
+# ft_extra_46 -- schema_mismatch/permanent. The Google Calendar attendee
+# schema has been migrated to require an explicit 'role' field on every
+# attendee entry (one of "required", "optional", "resource"). Until the
+# client SDK is updated, attempts to create an event with the legacy
+# string-only attendee list permanently fail. Suggested action steers
+# the agent toward the Outlook calendar fallback rather than retrying.
+@GoogleCalendarAPI._register_patch("create_event", "attendee_role_required_permanent")
+def create_event_attendee_role_required_permanent(self, *args, **kwargs):
+    """Permanent. Always raises ATTENDEE_ROLE_REQUIRED. Agent should
+    pivot to OutlookCalendarAPI.schedule_event or warn the user."""
+    raise GoogleCalendarError(
+        "ATTENDEE_ROLE_REQUIRED",
+        (
+            "create_event rejected: the new attendee schema requires an "
+            "explicit 'role' field (required|optional|resource) on each "
+            "attendee. Legacy email-only attendee strings are no longer "
+            "accepted."
+        ),
+        (
+            "Do NOT retry with the same payload -- the rollout is "
+            "permanent. Pivot to OutlookCalendarAPI.schedule_event for "
+            "this attendee set, or warn the user."
+        ),
+    )
+
+
+# ft_246 -- silent_noop/temporary. set_event_reminder returns a fully
+# formed success payload (including the requested reminders array) on
+# the first invocation, but the underlying event's reminders dict is
+# left untouched -- a classic write-acknowledged-but-not-persisted bug.
+# Second call falls through to the original implementation and writes
+# correctly. Agent must verify by re-reading the event via get_event
+# (whose reminders field will be the *old* list) before relying on the
+# reminder for any downstream action (e.g., notifying attendees).
+@GoogleCalendarAPI._register_patch("set_event_reminder", "silent_reminder_drop_temporary")
+def set_event_reminder_silent_reminder_drop_temporary(self, event_id, reminders):
+    """Temporary silent no-op. First call echoes back a success payload
+    without persisting; subsequent calls write through normally."""
+    if self._patch_call_count <= 1:
+        # Validate the event exists so the failure surfaces as a stale
+        # write rather than an obvious not-found error.
+        self._require_event(event_id)
+        return {"event_id": event_id, "reminders": reminders, "status": "updated"}
+    return self._original_function(event_id, reminders)
+
+
+# ft_247 -- silent_noop/temporary. update_event acknowledges a location
+# change in the response payload but does not persist the new location
+# on the stored event. All other fields update normally. Second call
+# (after the agent verifies via get_event and detects the unchanged
+# location) writes through. Models that book downstream transport
+# without verifying will route to the stale address.
+@GoogleCalendarAPI._register_patch("update_event", "location_silent_drop_temporary")
+def update_event_location_silent_drop_temporary(
+    self,
+    event_id,
+    title=None,
+    start_time=None,
+    end_time=None,
+    description=None,
+    location=None,
+    attendees=None,
+    reminders=None,
+):
+    """Temporary silent no-op on the location field only. First call:
+    update lands for every field except location -- the response includes
+    the requested location but the stored event keeps its old one. Second
+    call falls through to the original function so the location actually
+    persists."""
+    if self._patch_call_count <= 1 and location is not None:
+        ev = self._require_event(event_id)
+        old_location = ev.get("location")
+        result = self._original_function(
+            event_id, title, start_time, end_time, description,
+            None,  # do NOT actually overwrite location on disk
+            attendees, reminders,
+        )
+        # Restore old location on the stored event (defensive, in case
+        # _original_function ever changes signature semantics).
+        ev["location"] = old_location
+        # But pretend in the response payload that the new location took.
+        result["location"] = location
+        return result
+    return self._original_function(
+        event_id, title, start_time, end_time, description,
+        location, attendees, reminders,
     )

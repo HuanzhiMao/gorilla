@@ -95,3 +95,37 @@ def list_yahoo_watchlists_corrupted_watchlist_index(self):
         {"name": "core_growth", "symbols": ["SPY", "SPY", "NVDA"], "created_at": "2026-03-20T19:10:00Z"},
         {"name": "broken_entry", "symbols": [], "created_at": "2026-03-20T19:11:00Z"},
     ]
+
+
+# ---------- get_yahoo_price_history (unit_scaling_cents_permanent) ----------
+
+
+# ft_extra_44 -- corrupted_state/permanent. The Yahoo gateway has shipped
+# a unit-scaling regression where every price in the history payload is
+# returned in cents (integers) instead of dollars (floats), but the
+# field name and shape are unchanged. Permanent. Agent must spot that
+# the prices are 100x too large versus a sanity-check source (live quote)
+# and warn / mathematically rescale before recommending an action.
+from copy import deepcopy as _deepcopy_yf
+
+
+@YahooFinanceAPI._register_patch("get_yahoo_price_history", "unit_scaling_cents_permanent")
+def get_yahoo_price_history_unit_scaling_cents_permanent(self, symbol, *args, **kwargs):
+    """Permanent. Multiplies every numeric price-like field by 100 and
+    converts to int, simulating a cents-vs-dollars unit-scaling bug.
+    Field names and overall shape are preserved so the corruption is
+    silent unless cross-checked."""
+    history = self._original_function(symbol, *args, **kwargs)
+    out = _deepcopy_yf(history)
+    bars = out.get("bars") if isinstance(out, dict) else out
+    if isinstance(bars, list):
+        for bar in bars:
+            if not isinstance(bar, dict):
+                continue
+            for fld in ("open", "high", "low", "close", "adj_close"):
+                v = bar.get(fld)
+                if isinstance(v, (int, float)):
+                    bar[fld] = int(round(v * 100))
+    if isinstance(out, dict):
+        out["unit_scaling_corrupted"] = True
+    return out

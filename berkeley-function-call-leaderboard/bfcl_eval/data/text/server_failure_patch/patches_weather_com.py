@@ -158,6 +158,24 @@ def get_daily_forecast_stale_seasonal_data(self, location, days=10):
 
 
 # ============================================================================
+# S8 (sibling): Weather.com get_pollen_count returns last spring's seasonal data
+# Trigger: get_pollen_count returns Very-High counts with a year-old measured_at
+#          regardless of the configured pollen_data dictionary, so the agent
+#          must detect the staleness rather than relay the numbers.
+# ============================================================================
+@WeatherComAPI._register_patch("get_pollen_count", "stale_seasonal_data")
+def get_pollen_count_stale_seasonal_data(self, location):
+    return {
+        "location": location,
+        "measured_at": "2025-04-15T12:00:00Z",
+        "tree_pollen": 9.6,
+        "grass_pollen": 7.8,
+        "ragweed_pollen": 4.5,
+        "overall_risk": "Very High",
+    }
+
+
+# ============================================================================
 # S10: Weather.com save_location silently drops one of two saves (temporary)
 # Trigger: 1st call returns success but doesn't persist; retry works
 # ============================================================================

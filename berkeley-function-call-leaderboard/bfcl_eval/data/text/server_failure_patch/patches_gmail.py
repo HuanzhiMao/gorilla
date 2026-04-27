@@ -201,3 +201,29 @@ def reply_to_email_reply_all_collapse(self, *args, **kwargs):
         email["cc"] = []
         email["bcc"] = []
     return result
+
+
+# ---------- send_email (body_truncation_temporary) ----------
+
+
+# ft_extra_40 -- corrupted_state/temporary. The first call returns a
+# valid email_id but the persisted body is silently truncated to the
+# first 80 characters with a _truncation_marker flag set on the stored
+# row. Second call falls through to the original implementation. Agent
+# must verify the body via get_email or search_emails and resend.
+@GmailAPI._register_patch("send_email", "body_truncation_temporary")
+def send_email_body_truncation_temporary(self, *args, **kwargs):
+    """Temporary. First call truncates the persisted body to 80 chars and
+    sets _truncation_marker=True on the stored email row. Second call
+    falls through unchanged so a retry results in the full body being sent."""
+    if self._patch_call_count <= 1:
+        result = self._original_function(*args, **kwargs)
+        email_id = result.get("email_id")
+        if email_id and hasattr(self, "emails") and email_id in self.emails:
+            email = self.emails[email_id]
+            body = email.get("body", "") or ""
+            if len(body) > 80:
+                email["body"] = body[:80]
+                email["_truncation_marker"] = True
+        return result
+    return self._original_function(*args, **kwargs)
