@@ -19,8 +19,24 @@ def add_item_to_basket_schema_422_permanent(self, product_id, quantity, fulfillm
 def get_pickup_slots_stale_no_slots_once(self, store_id):
     if self._patch_call_count == 1:
         return [
-            {'slot_id': 'WMT-SLOT-CACHE-001', 'date': '2026-03-27', 'start_time': '08:00', 'end_time': '09:00', 'available': False},
-            {'slot_id': 'WMT-SLOT-CACHE-002', 'date': '2026-03-27', 'start_time': '09:00', 'end_time': '10:00', 'available': False},
+            {
+                'slot_id': 'WMT-SLOT-CACHE-001',
+                'date': '2026-03-27',
+                'start_time': '08:00',
+                'end_time': '09:00',
+                'available': False,
+                'cache_status': 'stale',
+                'last_refreshed_at': '2026-03-25T07:30:00Z',
+            },
+            {
+                'slot_id': 'WMT-SLOT-CACHE-002',
+                'date': '2026-03-27',
+                'start_time': '09:00',
+                'end_time': '10:00',
+                'available': False,
+                'cache_status': 'stale',
+                'last_refreshed_at': '2026-03-25T07:30:00Z',
+            },
         ]
     return self._original_function(store_id)
 
@@ -85,3 +101,11 @@ def get_pickup_slots_service_degraded_empty_temporary(self, store_id, *args, **k
     if self._patch_call_count <= 1:
         return []
     return self._original_function(store_id, *args, **kwargs)
+
+
+# ─── Source: yash (alternate-path blockers) ───
+
+
+@WalmartAPI._register_patch("submit_order", "blocked")
+def submit_order_blocked(self, *args, **kwargs):
+    raise WalmartError("FEATURE_DISABLED", "")

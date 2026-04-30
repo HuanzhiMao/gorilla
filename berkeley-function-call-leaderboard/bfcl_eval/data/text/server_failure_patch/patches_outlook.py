@@ -11,22 +11,6 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.outlook import (
 # defeated by a valid-but-different recovery sequence.
 
 
-@OutlookAPI._register_patch("compose_draft", "blocked")
-def compose_draft_blocked(self, *args, **kwargs):
-    raise OutlookError(
-        "FEATURE_DISABLED",
-        "Draft composition is temporarily unavailable. Use send_mail_item directly.",
-    )
-
-
-@OutlookAPI._register_patch("send_composed_draft", "blocked")
-def send_composed_draft_blocked(self, *args, **kwargs):
-    raise OutlookError(
-        "FEATURE_DISABLED",
-        "Sending composed drafts is temporarily unavailable. Use send_mail_item directly.",
-    )
-
-
 @OutlookAPI._register_patch("forward_mail_item", "blocked")
 def forward_mail_item_blocked(self, *args, **kwargs):
     raise OutlookError(
@@ -39,7 +23,7 @@ def forward_mail_item_blocked(self, *args, **kwargs):
 def reply_to_conversation_blocked(self, *args, **kwargs):
     raise OutlookError(
         "FEATURE_DISABLED",
-        "Conversation replies are temporarily unavailable. Use send_mail_item to compose a new message.",
+        "",
     )
 
 
@@ -47,7 +31,7 @@ def reply_to_conversation_blocked(self, *args, **kwargs):
 def mark_as_important_blocked(self, *args, **kwargs):
     raise OutlookError(
         "FEATURE_DISABLED",
-        "Marking as important is temporarily unavailable. Use flag_email instead.",
+        "",
     )
 
 
@@ -55,7 +39,7 @@ def mark_as_important_blocked(self, *args, **kwargs):
 def list_mail_items_blocked(self, *args, **kwargs):
     raise OutlookError(
         "FEATURE_DISABLED",
-        "Listing mail items is temporarily unavailable. Use query_mail_items instead.",
+        "",
     )
 
 
@@ -63,7 +47,7 @@ def list_mail_items_blocked(self, *args, **kwargs):
 def send_mail_item_blocked(self, *args, **kwargs):
     raise OutlookError(
         "FEATURE_DISABLED",
-        "Sending a new mail item is temporarily unavailable. Use forward_mail_item instead.",
+        "",
     )
 
 

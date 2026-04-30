@@ -70,7 +70,6 @@ DEFAULT_STATE = {
     "profile": {},
     "calendars": {},
     "events": {},
-    "room_resources": [],
     "categories": [],
     "working_hours": {},
     "scheduling_polls": {},
@@ -92,7 +91,8 @@ class OutlookCalendarAPI(PatchableMixin):
       reminders?[{method, minutes_before}],
       recurrence?{freq, interval?, by_day?, count?, until?},
       recurring_event_id?, meeting_link?, created_at, updated_at}}
-    - room_resources: List of {room_id, name, capacity, floor, equipment[]}
+    - rooms: Dict of {room_id -> {room_id, name, capacity, building?,
+      floor, equipment[]}}
     - categories: List of {name, color}
     - working_hours: Dict of {days[], start_time, end_time, timezone}
 
@@ -108,7 +108,6 @@ class OutlookCalendarAPI(PatchableMixin):
         self.profile: Dict[str, Any]
         self.calendars: Dict[str, Dict[str, Any]]
         self.events: Dict[str, Dict[str, Any]]
-        self.room_resources: List[Dict[str, Any]]
         self.categories: List[Dict[str, Any]]
         self.working_hours: Dict[str, Any]
         self.scheduling_polls: Dict[str, Dict[str, Any]]
@@ -144,7 +143,6 @@ class OutlookCalendarAPI(PatchableMixin):
         self.profile = scenario.get("profile", DEFAULT_STATE_COPY["profile"])
         self.calendars = scenario.get("calendars", DEFAULT_STATE_COPY["calendars"])
         self.events = scenario.get("events", DEFAULT_STATE_COPY["events"])
-        self.room_resources = scenario.get("room_resources", DEFAULT_STATE_COPY["room_resources"])
         self.categories = scenario.get("categories", DEFAULT_STATE_COPY["categories"])
         self.working_hours = scenario.get("working_hours", DEFAULT_STATE_COPY["working_hours"])
         self.scheduling_polls = scenario.get("scheduling_polls", DEFAULT_STATE_COPY["scheduling_polls"])
@@ -267,7 +265,10 @@ class OutlookCalendarAPI(PatchableMixin):
         generate_teams_link: bool = False,
     ) -> Dict[str, Any]:
         """
-        Schedule a new event on an Outlook calendar.
+        Schedule a NEW event on an Outlook calendar. Always allocates a
+        fresh event_id; cannot be used to modify an existing event. To
+        add attendees to an existing event, use invite_to_event (single
+        email) or modify_event(attendees=[...]) (replace whole list).
 
         Args:
             calendar_id (str): The calendar.
@@ -276,8 +277,8 @@ class OutlookCalendarAPI(PatchableMixin):
             end_time (str): End time (ISO-8601).
             description (str, optional): Event description.
             location (str, optional): Location.
-            attendees (List[Dict], optional): Each with email (str),
-                name (str, optional).
+            attendees (List[Dict], optional): Initial attendee list for the
+                new event, each with email (str), name (str, optional).
             reminders (List[Dict], optional): Each with method
                 ("popup"/"email") and minutes_before (int).
             recurrence (Dict, optional): Recurrence rule with freq
@@ -537,23 +538,6 @@ class OutlookCalendarAPI(PatchableMixin):
         ev["updated_at"] = _utc_now_iso()
         return {"event_id": event_id, "email": email, "status": "removed"}
 
-    def configure_event_reminder(self, event_id: str, reminders: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Configure reminders for an event.
-
-        Args:
-            event_id (str): The event.
-            reminders (List[Dict]): Reminders with method ("popup"/"email")
-                and minutes_before (int).
-
-        Returns:
-            Dict[str, Any]: event_id, reminders, status.
-        """
-        ev = self._require_event(event_id)
-        ev["reminders"] = reminders
-        ev["updated_at"] = _utc_now_iso()
-        return {"event_id": event_id, "reminders": reminders, "status": "updated"}
-
     # -----------------------------------------------------------------------
     # Scheduling assistant
     # -----------------------------------------------------------------------
@@ -633,47 +617,6 @@ class OutlookCalendarAPI(PatchableMixin):
             })
         schedule.sort(key=lambda x: x["start"])
         return {"schedule": schedule}
-
-    # -----------------------------------------------------------------------
-    # Room Management (Outlook-exclusive)
-    # -----------------------------------------------------------------------
-
-    def list_rooms(self) -> List[Dict[str, Any]]:
-        """
-        List available conference rooms.
-
-        Returns:
-            List[Dict[str, Any]]: Room resources with room_id, name, capacity,
-                floor, equipment.
-        """
-        return deepcopy(self.room_resources)
-
-    def book_room(self, room_id: str, event_id: str) -> Dict[str, Any]:
-        """
-        Book a conference room for an existing event.
-
-        Args:
-            room_id (str): The room resource ID.
-            event_id (str): The event to attach the room to.
-
-        Returns:
-            Dict[str, Any]: room_id, event_id, room_name, status "booked".
-        """
-        ev = self._require_event(event_id)
-        room = None
-        for r in self.room_resources:
-            if r.get("room_id") == room_id:
-                room = r
-                break
-        if not room:
-            raise OutlookCalendarError("ROOM_NOT_FOUND",
-                                       f"Room '{room_id}' not found.",
-                                       suggested_action="Use list_rooms() to see available rooms.")
-        ev["location"] = room.get("name", room_id)
-        ev["room_id"] = room_id
-        ev["updated_at"] = _utc_now_iso()
-        return {"room_id": room_id, "event_id": event_id,
-                "room_name": room.get("name"), "status": "booked"}
 
     # -----------------------------------------------------------------------
     # Working Hours (Outlook-exclusive)

@@ -116,3 +116,22 @@ def place_dash_tip_schema_migration_permanent(self, *args, **kwargs):
         ),
         context={"schema_version": "place_dash_v2"},
     )
+
+
+# ─── Source: yash (alternate-path blockers) ───
+
+@DoorDashAPI._register_patch("reorder", "blocked")
+def reorder_blocked(self, *args, **kwargs):
+    raise DoorDashError(error_code="FEATURE_DISABLED")
+
+@DoorDashAPI._register_patch("send_gift_order", "blocked")
+def send_gift_order_blocked(self, *args, **kwargs):
+    raise DoorDashError(error_code="FEATURE_DISABLED")
+
+@DoorDashAPI._register_patch("get_store_details", "blocked")
+def get_store_details_blocked(self, *args, **kwargs):
+    raise DoorDashError(error_code="FEATURE_DISABLED")
+
+@DoorDashAPI._register_patch("get_dash_history", "blocked")
+def get_dash_history_blocked(self, *args, **kwargs):
+    raise DoorDashError(error_code="FEATURE_DISABLED")

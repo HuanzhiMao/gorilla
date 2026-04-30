@@ -40,7 +40,10 @@ def search_tracks_s70_queencard_removed(self, query, limit=10):
 # ============================================================================
 @SpotifyAPI._register_patch("play_context", "s72_empty_album")
 def play_context_s72_empty_album(self, context_uri, offset=0, device_id=None):
-    if "alb_wh" in context_uri:
+    # Defer non-string / missing context_uri to the original so the clean
+    # MISSING_CONTEXT_URI error fires (play_context now requires a non-None
+    # context_uri at the contract level).
+    if isinstance(context_uri, str) and "alb_wh" in context_uri:
         raise SpotifyError(
             error_code="EMPTY_CONTEXT",
             message="The context contains no tracks.",

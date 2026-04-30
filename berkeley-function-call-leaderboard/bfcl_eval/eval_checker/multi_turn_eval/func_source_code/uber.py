@@ -296,7 +296,17 @@ class UberAPI(PatchableMixin):
         payment_method_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-        Request a ride. Supports scheduled rides and multi-stop rides.
+        Request a ride. The behaviour depends on `scheduled_time`:
+
+        - **Immediate ride** (`scheduled_time` is None): a row is written
+          to ``self.rides``, a driver is matched if one is available, and
+          surge / fare are locked in at request time. Returns
+          ride_id, status, fare_total, surge_multiplier, eta_pickup_min.
+
+        - **Scheduled ride / Uber Reserve** (`scheduled_time` is set): a
+          row is written to ``self.reservations`` (NOT ``self.rides``).
+          No driver is matched and no surge/fare lock — those are computed
+          at pickup time. Returns the full reservation record.
 
         Args:
             pickup_lat (float): Pickup latitude.
@@ -304,28 +314,51 @@ class UberAPI(PatchableMixin):
             dropoff_lat (float): Dropoff latitude.
             dropoff_lng (float): Dropoff longitude.
             ride_type_id (str): The ride type.
-            scheduled_time (str, optional): ISO-8601 time for scheduled rides.
+            scheduled_time (str, optional): ISO-8601 time for scheduled
+                rides. When provided, the ride is stored in
+                ``self.reservations`` with status "reserved".
             stops (List[Dict], optional): Intermediate stops, each with
                 lat (float), lng (float).
             payment_method_id (str, optional): Payment method from profile.
 
         Returns:
-            Dict[str, Any]: ride_id, status, fare_total, surge_multiplier,
-                driver info (if matched), eta_pickup_min.
+            Dict[str, Any]:
+                For immediate rides — ride_id, status, fare_total,
+                    surge_multiplier, eta_pickup_min, optional driver.
+                For scheduled rides — reservation_id, pickup, dropoff,
+                    stops, ride_type, scheduled_time, payment_method_id,
+                    status ("reserved"), created_at.
         """
         rt = self._require_ride_type(ride_type_id)
         if not rt.get("available", True):
             raise UberError("RIDE_TYPE_UNAVAILABLE", f"Ride type '{ride_type_id}' is not available.")
 
+        now = _utc_now_iso()
+
+        # ---------------- Scheduled / Uber Reserve path ----------------
+        if scheduled_time:
+            reservation_id = self._new_id("reservation")
+            self.reservations[reservation_id] = {
+                "reservation_id": reservation_id,
+                "pickup": {"lat": pickup_lat, "lng": pickup_lng},
+                "dropoff": {"lat": dropoff_lat, "lng": dropoff_lng},
+                "stops": stops or [],
+                "ride_type": ride_type_id,
+                "scheduled_time": scheduled_time,
+                "payment_method_id": payment_method_id,
+                "status": "reserved",
+                "created_at": now,
+            }
+            return deepcopy(self.reservations[reservation_id])
+
+        # ---------------- Immediate ride path ----------------
         dist = _haversine_miles(pickup_lat, pickup_lng, dropoff_lat, dropoff_lng)
         duration = max(5, dist * 3)
         surge = self._get_surge_multiplier()
         fare = self._compute_fare(dist, duration, rt, surge)
 
         driver = self._find_available_driver(ride_type_id)
-        if scheduled_time:
-            status = "scheduled"
-        elif driver:
+        if driver:
             status = "matched"
             driver["availability"] = "on_trip"
         else:
@@ -334,7 +367,6 @@ class UberAPI(PatchableMixin):
         eta_pickup = self._rng.randint(3, 12) if driver else None
         eta_dropoff = round(duration) if driver else None
 
-        now = _utc_now_iso()
         ride_id = self._new_id("ride")
         self.rides[ride_id] = {
             "ride_id": ride_id,
@@ -348,7 +380,7 @@ class UberAPI(PatchableMixin):
             "driver_id": driver["driver_id"] if driver else None,
             "eta_pickup_min": eta_pickup,
             "eta_dropoff_min": eta_dropoff,
-            "scheduled_time": scheduled_time,
+            "scheduled_time": None,
             "tip_amount": 0,
             "rating": None,
             "created_at": now,
@@ -368,14 +400,40 @@ class UberAPI(PatchableMixin):
 
     def cancel_ride(self, ride_id: str) -> Dict[str, Any]:
         """
-        Cancel a ride. May incur a cancellation fee if driver is en route.
+        Cancel a ride. Accepts EITHER an immediate-ride id (looked up in
+        ``self.rides``) OR a reservation id (looked up in
+        ``self.reservations``); the function detects which store owns
+        the id and updates the correct one in place.
+
+        - For immediate rides: may incur a cancellation fee if a driver
+          is already en route or has arrived. The matched driver, if any,
+          is freed back to the pool.
+        - For reservations: free cancellation (no driver assigned yet),
+          fee is 0.
 
         Args:
-            ride_id (str): The ride to cancel.
+            ride_id (str): The ride or reservation to cancel.
 
         Returns:
-            Dict[str, Any]: ride_id, status "cancelled", cancellation_fee.
+            Dict[str, Any]: ride_id (echoes the input id), kind
+                ("ride" or "reservation"), status "cancelled",
+                cancellation_fee (float).
         """
+        # Reservation path — id lives in self.reservations.
+        if ride_id in self.reservations:
+            r = self.reservations[ride_id]
+            if r.get("status") == "cancelled":
+                raise UberError("ALREADY_CANCELLED",
+                                "This reservation is already cancelled.")
+            r["status"] = "cancelled"
+            return {
+                "ride_id": ride_id,
+                "kind": "reservation",
+                "status": "cancelled",
+                "cancellation_fee": 0,
+            }
+
+        # Immediate-ride path — id lives in self.rides.
         ride = self._require_ride(ride_id)
         if ride.get("status") in ("completed", "cancelled"):
             raise UberError("CANNOT_CANCEL", f"Ride is already {ride.get('status')}.")
@@ -385,7 +443,12 @@ class UberAPI(PatchableMixin):
             if d:
                 d["availability"] = "available"
         ride["status"] = "cancelled"
-        return {"ride_id": ride_id, "status": "cancelled", "cancellation_fee": cancel_fee}
+        return {
+            "ride_id": ride_id,
+            "kind": "ride",
+            "status": "cancelled",
+            "cancellation_fee": cancel_fee,
+        }
 
     def get_ride(self, ride_id: str) -> Dict[str, Any]:
         """
@@ -609,41 +672,10 @@ class UberAPI(PatchableMixin):
             "dropoff": deepcopy(ride.get("dropoff")),
         }
 
-    # ---- Uber Reserve (Scheduled Rides) ----
-
-    def reserve_ride(
-        self, pickup: str, dropoff: str, ride_type: str,
-        scheduled_time: str,
-        payment_method_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """
-        Book a future ride (Uber Reserve).
-
-        Args:
-            pickup (str): Pickup address.
-            dropoff (str): Dropoff address.
-            ride_type (str): The ride type.
-            scheduled_time (str): ISO-8601 scheduled pickup time.
-            payment_method_id (str, optional): Payment method from profile.
-
-        Returns:
-            Dict[str, Any]: reservation_id, pickup, dropoff, ride_type,
-                scheduled_time, status.
-        """
-        self._require_ride_type(ride_type)
-        reservation_id = self._new_id("reservation")
-        now = _utc_now_iso()
-        self.reservations[reservation_id] = {
-            "reservation_id": reservation_id,
-            "pickup": pickup,
-            "dropoff": dropoff,
-            "ride_type": ride_type,
-            "scheduled_time": scheduled_time,
-            "payment_method_id": payment_method_id,
-            "status": "reserved",
-            "created_at": now,
-        }
-        return deepcopy(self.reservations[reservation_id])
+    # ---- Reservations (Uber Reserve / scheduled rides) ----
+    # Reservations are CREATED via request_ride(scheduled_time=...) — that
+    # path writes directly to self.reservations. The methods below are
+    # read / lifecycle access for the reservation store.
 
     def get_reservations(
         self, status: Optional[str] = None,
@@ -666,26 +698,6 @@ class UberAPI(PatchableMixin):
             results.append(deepcopy(r))
         results.sort(key=lambda x: x.get("scheduled_time", ""))
         return results
-
-    def cancel_reservation(self, reservation_id: str) -> Dict[str, Any]:
-        """
-        Cancel a reserved ride.
-
-        Args:
-            reservation_id (str): The reservation to cancel.
-
-        Returns:
-            Dict[str, Any]: reservation_id, status "cancelled".
-        """
-        r = self.reservations.get(reservation_id)
-        if not r:
-            raise UberError("RESERVATION_NOT_FOUND",
-                            f"Reservation '{reservation_id}' not found.")
-        if r.get("status") == "cancelled":
-            raise UberError("ALREADY_CANCELLED",
-                            "This reservation is already cancelled.")
-        r["status"] = "cancelled"
-        return {"reservation_id": reservation_id, "status": "cancelled"}
 
     # ---- Package Delivery ----
 

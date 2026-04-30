@@ -64,6 +64,10 @@ SYSTEM_FOLDER_NAMES = (
     "sent",
     "spam",
     "trash",
+    "junk",
+    "deleted",
+    "drafts",
+    "archive",
     "starred",
     "important",
     "unread",
@@ -77,7 +81,6 @@ DEFAULT_STATE = {
     "random_seed": 5678,
     "profile": {},
     "emails": {},
-    "drafts": {},
     "contacts": {},
     "folders": {},
     "quick_steps": {},
@@ -93,10 +96,10 @@ class OutlookAPI(PatchableMixin):
     State variables:
     - profile: Dict of {name, email}
     - emails: Dict of {email_id -> {email_id, thread_id, from, to[], cc[],
-      bcc[], subject, body, attachments[], labels[], read, starred, important,
-      created_at}}
-    - drafts: Dict of {draft_id -> {draft_id, to[], cc[], bcc[], subject, body,
-      attachments[], created_at}}
+      bcc[], subject, body, attachments[], labels[], read, starred,
+      important, status ("sent" | "draft"), created_at}}
+      (Drafts live in this same dict, distinguished by status="draft" and
+      labels=["drafts"]; saved via send_mail_item with empty `to`.)
     - contacts: Dict of {name, email}
     - folders: Dict of {folder_name -> [email_id, ...]}
 
@@ -106,10 +109,9 @@ class OutlookAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = {"email": 0, "thread": 0, "draft": 0}
+        self._id_counters = {"email": 0, "thread": 0}
         self.profile: Dict[str, Dict[str, Any]] = {}
         self.emails: Dict[str, Dict[str, Any]] = {}
-        self.drafts: Dict[str, Dict[str, Any]] = {}
         self.contacts: Dict[str, Dict[str, Any]] = {}
         self.folders: Dict[str, List[str]] = {}
         self.quick_steps: Dict[str, Dict[str, Any]] = {}
@@ -143,7 +145,6 @@ class OutlookAPI(PatchableMixin):
         )
         self.profile = scenario.get("profile", DEFAULT_STATE_COPY["profile"])
         self.emails = scenario.get("emails", DEFAULT_STATE_COPY["emails"])
-        self.drafts = scenario.get("drafts", DEFAULT_STATE_COPY["drafts"])
         self.contacts = scenario.get("contacts", DEFAULT_STATE_COPY["contacts"])
         self.folders = scenario.get("folders", DEFAULT_STATE_COPY["folders"])
         self.quick_steps = scenario.get("quick_steps", DEFAULT_STATE_COPY["quick_steps"])
@@ -198,17 +199,6 @@ class OutlookAPI(PatchableMixin):
                 context={"email_id": email_id},
             )
         return email
-
-    def _require_draft(self, draft_id: str) -> Dict[str, Any]:
-        draft = self.drafts.get(draft_id)
-        if not draft:
-            raise OutlookError(
-                "DRAFT_NOT_FOUND",
-                f"Draft '{draft_id}' not found.",
-                suggested_action="Use create_draft() to create a draft first.",
-                context={"draft_id": draft_id},
-            )
-        return draft
 
     def _add_to_folder(self, folder_name: str, email_id: str) -> None:
         """Add an email_id to a folder list and the email's labels."""
@@ -364,178 +354,91 @@ class OutlookAPI(PatchableMixin):
 
     def send_mail_item(
         self,
-        to: List[str],
-        subject: str,
-        body: str,
+        to: Optional[List[str]] = None,
+        subject: str = "",
+        body: str = "",
         cc: Optional[List[str]] = None,
         bcc: Optional[List[str]] = None,
         attachments: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
-        Compose and send an email immediately. The sent email is placed in
-        the sent folder.
+        Compose and send a mail item, or save it as a draft.
+
+        Behavior depends on the `to` argument:
+          * `to` non-empty  → the mail item is sent immediately and stored
+            in the "sent" folder with status="sent".
+          * `to` empty/None → the mail item is saved as a draft (no
+            recipient yet) and stored in the "drafts" folder with
+            status="draft". Subject, body, cc, bcc, and attachments are
+            all preserved.
+
+        This is the single entry point for both compose-and-send and
+        compose-without-sending — there is no separate compose_draft /
+        send_composed_draft pair.
 
         Args:
-            to (List[str]): Recipient email addresses.
-            subject (str): Subject line.
-            body (str): Body text.
+            to (List[str], optional): Recipient email addresses. Empty
+                or None saves the mail item as a draft.
+            subject (str): Subject line. Defaults to "".
+            body (str): Body text. Defaults to "".
             cc (List[str], optional): Carbon copy recipients.
             bcc (List[str], optional): Blind carbon copy recipients.
             attachments (List[str], optional): Attachment filenames or IDs.
 
         Returns:
             Dict[str, Any]:
-                email_id (str), thread_id (str), status (str).
+                email_id (str), thread_id (str | None),
+                status (str — "sent" or "draft").
         """
         user = self._require_user(self.user_id)
-        if not to:
-            raise OutlookError(
-                "NO_RECIPIENTS",
-                "At least one recipient is required.",
-                suggested_action="Provide at least one email address in the 'to' field.",
-                context={"user_id": self.user_id},
-            )
+        to = to or []
+        cc = cc or []
+        bcc = bcc or []
+        is_draft = not to
 
         now = _utc_now_iso()
         sender = user.get("email_address", self.user_id)
-        all_participants = list(set([sender] + (to or []) + (cc or [])))
-        thread_id = self._get_or_create_thread_id(subject, all_participants)
+
+        if is_draft:
+            thread_id = None
+            target_folder = "drafts"
+            status = "draft"
+            labels = ["drafts"]
+            self.folders.setdefault("drafts", [])
+        else:
+            all_participants = list(set([sender] + to + cc))
+            thread_id = self._get_or_create_thread_id(subject, all_participants)
+            target_folder = "sent"
+            status = "sent"
+            labels = ["sent"]
 
         email_id = self._new_id("email")
         email_obj = {
             "email_id": email_id,
             "thread_id": thread_id,
             "from": sender,
-            "to": to or [],
-            "cc": cc or [],
-            "bcc": bcc or [],
+            "to": to,
+            "cc": cc,
+            "bcc": bcc,
             "subject": subject,
             "body": body,
             "attachments": attachments or [],
-            "labels": ["sent"],
+            "labels": labels,
             "read": True,
             "starred": False,
             "important": False,
             "created_at": now,
+            "status": status,
         }
 
         self.emails[email_id] = email_obj
-        self._add_to_folder("sent", email_id)
+        self._add_to_folder(target_folder, email_id)
 
         return {
             "email_id": email_id,
             "thread_id": thread_id,
-            "status": "sent",
+            "status": status,
         }
-
-    def compose_draft(
-        self,
-        to: Optional[List[str]] = None,
-        subject: str = "",
-        body: str = "",
-        cc: Optional[List[str]] = None,
-        bcc: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Create a new email draft.
-
-        Args:
-            to (List[str], optional): Intended recipients.
-            subject (str): Subject line. Defaults to "".
-            body (str): Body text. Defaults to "".
-            cc (List[str], optional): CC recipients.
-            bcc (List[str], optional): BCC recipients.
-
-        Returns:
-            Dict[str, Any]:
-                draft_id (str), status (str).
-        """
-        self._require_user(self.user_id)
-        now = _utc_now_iso()
-        draft_id = self._new_id("draft")
-        self.drafts[draft_id] = {
-            "draft_id": draft_id,
-            "to": to or [],
-            "cc": cc or [],
-            "bcc": bcc or [],
-            "subject": subject,
-            "body": body,
-            "attachments": [],
-            "created_at": now,
-        }
-        return {"draft_id": draft_id, "status": "created"}
-
-    def update_composed_draft(
-        self,
-        draft_id: str,
-        to: Optional[List[str]] = None,
-        subject: Optional[str] = None,
-        body: Optional[str] = None,
-        cc: Optional[List[str]] = None,
-        bcc: Optional[List[str]] = None,
-        attachments: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Update an existing draft with new content.
-
-        Args:
-            draft_id (str): The draft to update.
-            to (List[str], optional): Updated recipients. None keeps current.
-            subject (str, optional): Updated subject. None keeps current.
-            body (str, optional): Updated body. None keeps current.
-            cc (List[str], optional): Updated CC. None keeps current.
-            bcc (List[str], optional): Updated BCC. None keeps current.
-            attachments (List[str], optional): Updated attachments. None keeps current.
-
-        Returns:
-            Dict[str, Any]: The updated draft object.
-        """
-        draft = self._require_draft(draft_id)
-        if to is not None:
-            draft["to"] = to
-        if subject is not None:
-            draft["subject"] = subject
-        if body is not None:
-            draft["body"] = body
-        if cc is not None:
-            draft["cc"] = cc
-        if bcc is not None:
-            draft["bcc"] = bcc
-        if attachments is not None:
-            draft["attachments"] = attachments
-        return deepcopy(draft)
-
-    def send_composed_draft(self, draft_id: str) -> Dict[str, Any]:
-        """
-        Send a previously created draft. The draft is removed after sending.
-
-        Args:
-            draft_id (str): The draft to send.
-
-        Returns:
-            Dict[str, Any]:
-                email_id (str), thread_id (str), status (str).
-        """
-        draft = self._require_draft(draft_id)
-        if not draft.get("to"):
-            raise OutlookError(
-                "NO_RECIPIENTS",
-                "Draft has no recipients.",
-                suggested_action="Call update_draft() to add recipients first.",
-                context={"draft_id": draft_id},
-            )
-
-        result = self.send_mail_item(
-            to=draft["to"],
-            subject=draft.get("subject", ""),
-            body=draft.get("body", ""),
-            cc=draft.get("cc"),
-            bcc=draft.get("bcc"),
-            attachments=draft.get("attachments"),
-        )
-
-        del self.drafts[draft_id]
-        return result
 
     def reply_to_conversation(
         self,
@@ -629,15 +532,61 @@ class OutlookAPI(PatchableMixin):
     # Folder management
     # -----------------------------------------------------------------------
 
+    def create_folder(self, folder_name: str) -> Dict[str, Any]:
+        """
+        Create a new custom folder. Custom folders are user-defined
+        destinations for move_to_folder. System folders (inbox, sent,
+        spam, trash, junk, deleted, drafts, archive, starred, important,
+        unread, category_*) are reserved and managed by their dedicated
+        functions (delete_email, flag_email, mark_as_important,
+        set_as_unread, etc.).
+
+        Args:
+            folder_name (str): The custom folder name to create.
+
+        Returns:
+            Dict[str, Any]:
+                folder (str), status (str).
+        """
+        self._require_user(self.user_id)
+        if folder_name in SYSTEM_FOLDER_NAMES:
+            raise OutlookError(
+                "INVALID_FOLDER",
+                f"'{folder_name}' is a reserved system folder and cannot be created.",
+                suggested_action=(
+                    "Choose a different name. System folders are managed by the "
+                    "dedicated functions (delete_email, flag_email, "
+                    "mark_as_important, etc.)."
+                ),
+                context={"folder_name": folder_name},
+            )
+        if folder_name in self.folders:
+            raise OutlookError(
+                "FOLDER_EXISTS",
+                f"Folder '{folder_name}' already exists.",
+                suggested_action="Use a different name or proceed with move_to_folder().",
+                context={"folder_name": folder_name},
+            )
+        self.folders[folder_name] = []
+        return {"folder": folder_name, "status": "created"}
+
     def move_to_folder(self, email_id: str, folder: str) -> Dict[str, Any]:
         """
-        Move an email to a different folder. Removes the email from its current
-        primary folders (inbox, sent, spam, trash) and adds it to the target.
-        Flag-based folders (starred, important, unread) are not affected.
+        Move an email to a custom folder. Removes the email from its
+        current primary folders (inbox, sent, spam, trash) and adds it
+        to the target. Flag-based folders (starred, important, unread)
+        are not affected.
+
+        Only custom folders are accepted. System folders (inbox, sent,
+        spam, trash, junk, deleted, drafts, archive, starred, important,
+        unread, category_*) cannot be passed here — use the dedicated
+        functions (delete_email, flag_email, mark_as_important,
+        set_as_unread, etc.) for those. Create a custom folder first
+        with create_folder().
 
         Args:
             email_id (str): The email to move.
-            folder (str): The destination folder name.
+            folder (str): The destination custom folder name.
 
         Returns:
             Dict[str, Any]:
@@ -645,11 +594,22 @@ class OutlookAPI(PatchableMixin):
                 status (str).
         """
         em = self._require_email(email_id)
+        if folder in SYSTEM_FOLDER_NAMES:
+            raise OutlookError(
+                "INVALID_FOLDER",
+                f"'{folder}' is a system folder; move_to_folder only accepts custom folders.",
+                suggested_action=(
+                    "Use the dedicated function for this destination "
+                    "(delete_email for trash, flag_email/mark_as_important for "
+                    "starred/important, set_as_unread for unread, etc.)."
+                ),
+                context={"folder": folder},
+            )
         if folder not in self.folders:
             raise OutlookError(
                 "FOLDER_NOT_FOUND",
-                f"Folder '{folder}' not found.",
-                suggested_action=f"Use one of: {', '.join(SYSTEM_FOLDER_NAMES)}.",
+                f"Folder '{folder}' does not exist.",
+                suggested_action=f"Call create_folder('{folder}') first.",
                 context={"folder": folder},
             )
 

@@ -69,7 +69,6 @@ DEFAULT_STATE = {
     "doubledash_stores": {},
     "doubledash_catalog": {},
     "gift_orders": {},
-    "scheduled_slots": {},
 }
 
 
@@ -91,7 +90,6 @@ class DoorDashAPI(PatchableMixin):
         self.doubledash_stores: Dict[str, List[Dict[str, Any]]] = {}
         self.doubledash_catalog: Dict[str, Dict[str, Any]] = {}
         self.gift_orders: Dict[str, Dict[str, Any]] = {}
-        self.scheduled_slots: Dict[str, List[Dict[str, Any]]] = {}
         self._api_description = (
             "This tool belongs to the DoorDash food delivery system, which allows users to "
             "browse restaurants, view menus, place and track food delivery orders, manage "
@@ -132,7 +130,6 @@ class DoorDashAPI(PatchableMixin):
         self.doubledash_stores = scenario.get("doubledash_stores", DEFAULT_STATE_COPY["doubledash_stores"])
         self.doubledash_catalog = scenario.get("doubledash_catalog", DEFAULT_STATE_COPY["doubledash_catalog"])
         self.gift_orders = scenario.get("gift_orders", DEFAULT_STATE_COPY["gift_orders"])
-        self.scheduled_slots = scenario.get("scheduled_slots", DEFAULT_STATE_COPY["scheduled_slots"])
         self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
@@ -1227,217 +1224,3 @@ class DoorDashAPI(PatchableMixin):
             "claimed": gift_info.get("claimed", False),
             "created_at": o.get("created_at"),
         }
-
-    # -----------------------------------------------------------------------
-    # Scheduled delivery
-    # -----------------------------------------------------------------------
-
-    def get_scheduled_slots(
-        self,
-        restaurant_id: str,
-        date: str,
-    ) -> List[Dict[str, Any]]:
-        """
-        Get available scheduled delivery time slots for a restaurant on a specific date.
-
-        Args:
-            restaurant_id (str): The restaurant to get slots for.
-            date (str): The date to check (ISO 8601 format, e.g. "2025-03-20").
-
-        Returns:
-            List[Dict[str, Any]]: Available slots, each with:
-                slot_id (str), start_time (str — ISO 8601), end_time (str — ISO 8601),
-                available (bool).
-        """
-        self._require_restaurant(restaurant_id)
-        slots = self.scheduled_slots.get(restaurant_id, [])
-        # Filter by date
-        filtered = [
-            s for s in slots
-            if s.get("start_time", "").startswith(date)
-        ]
-        return deepcopy(filtered)
-
-    def place_scheduled_order(
-        self,
-        restaurant_id: str,
-        items: List[Dict[str, Any]],
-        delivery_address_id: str,
-        payment_method_id: str,
-        slot_id: str,
-        tip: float = 0.0,
-        offer_id: Optional[str] = None,
-    ) -> str:
-        """
-        Place a food delivery order scheduled for a specific time slot.
-
-        Args:
-            restaurant_id (str): The restaurant to order from.
-            items (List[Dict]): Items to order. Each dict requires:
-                item_id (str), quantity (int >= 1).
-                Optional: selected_options (List), special_instructions (str).
-            delivery_address_id (str): Address ID from your profile to deliver to.
-            payment_method_id (str): Payment method ID from your profile to charge.
-            slot_id (str): Time slot ID from get_scheduled_slots().
-            tip (float): Dasher tip in dollars. Defaults to 0.0.
-            offer_id (str, optional): Offer ID from your promo wallet to apply.
-
-        Returns:
-            str: The new order_id. The order begins in "scheduled" status.
-        """
-        restaurant = self._require_restaurant(restaurant_id)
-        if not items:
-            raise DoorDashError(
-                "EMPTY_ORDER",
-                "Cannot place an order with no items.",
-                suggested_action="Provide at least one item.",
-                context={},
-            )
-
-        # Validate slot
-        slots = self.scheduled_slots.get(restaurant_id, [])
-        slot = None
-        for s in slots:
-            if s.get("slot_id") == slot_id:
-                slot = s
-                break
-        if not slot:
-            raise DoorDashError(
-                "SLOT_NOT_FOUND",
-                f"Scheduled slot '{slot_id}' not found for restaurant '{restaurant_id}'.",
-                suggested_action="Use get_scheduled_slots() to find valid slot IDs.",
-                context={"slot_id": slot_id, "restaurant_id": restaurant_id},
-            )
-        if not slot.get("available", True):
-            raise DoorDashError(
-                "SLOT_UNAVAILABLE",
-                f"Scheduled slot '{slot_id}' is no longer available.",
-                suggested_action="Choose a different time slot.",
-                context={"slot_id": slot_id},
-            )
-
-        address = self._require_address(delivery_address_id)
-        self._require_payment_method(payment_method_id)
-
-        # Validate and enrich items
-        enriched_items = []
-        subtotal = 0.0
-        for entry in items:
-            item_id = entry.get("item_id")
-            item = self._require_menu_item(item_id)
-            if not item.get("available", True):
-                raise DoorDashError(
-                    "ITEM_UNAVAILABLE",
-                    f"Item '{item_id}' is currently unavailable.",
-                    suggested_action="Choose a different item from get_menu().",
-                    context={"item_id": item_id},
-                )
-            if item.get("restaurant_id") != restaurant_id:
-                raise DoorDashError(
-                    "ITEM_NOT_FROM_RESTAURANT",
-                    f"Item '{item_id}' does not belong to restaurant '{restaurant_id}'.",
-                    suggested_action="Only order items from the selected restaurant.",
-                    context={"item_id": item_id, "restaurant_id": restaurant_id},
-                )
-            qty = max(1, int(entry.get("quantity", 1)))
-            price = float(item.get("price", 0.0))
-            subtotal += price * qty
-            enriched_items.append(
-                {
-                    "item_id": item_id,
-                    "name": item.get("name"),
-                    "price": price,
-                    "quantity": qty,
-                    "selected_options": entry.get("selected_options", []),
-                    "special_instructions": entry.get("special_instructions", ""),
-                }
-            )
-
-        # Compute fees
-        delivery_fee = round(float(restaurant.get("delivery_fee", 2.99)), 2)
-        service_fee = round(subtotal * 0.10, 2)
-        tax = round(subtotal * 0.095, 2)
-        tip_amount = round(max(0.0, float(tip)), 2)
-
-        # Apply offer
-        applied_promo = None
-        discount = 0.0
-        if offer_id:
-            offer = self.offers.get(offer_id)
-            if not offer:
-                raise DoorDashError(
-                    "OFFER_NOT_FOUND",
-                    f"Offer '{offer_id}' not found.",
-                    suggested_action="Check get_promos() for valid offer IDs.",
-                    context={"offer_id": offer_id},
-                )
-            profile_promos = self.profile.get("promo", [])
-            if offer_id not in profile_promos:
-                raise DoorDashError(
-                    "OFFER_NOT_IN_WALLET",
-                    f"Offer '{offer_id}' is not in your promo wallet.",
-                    suggested_action="Only offers in your promo wallet can be applied.",
-                    context={"offer_id": offer_id},
-                )
-            min_order = float(offer.get("min_order", 0.0))
-            if subtotal < min_order:
-                raise DoorDashError(
-                    "OFFER_MIN_ORDER_NOT_MET",
-                    f"Order subtotal ${subtotal:.2f} is below the minimum ${min_order:.2f} for this offer.",
-                    suggested_action="Add more items to meet the minimum order requirement.",
-                    context={
-                        "offer_id": offer_id,
-                        "min_order": min_order,
-                        "subtotal": subtotal,
-                    },
-                )
-            if offer.get("dashpass") and not self.profile.get("dashpass", False):
-                raise DoorDashError(
-                    "DASHPASS_REQUIRED",
-                    "This offer requires an active DashPass membership.",
-                    suggested_action="Subscribe to DashPass to use this offer.",
-                    context={"offer_id": offer_id},
-                )
-            discount = round(float(offer.get("discount", 0.0)), 2)
-            applied_promo = {"offer_id": offer_id, "discount": discount}
-            self.profile["promo"] = [o for o in profile_promos if o != offer_id]
-
-        total = round(
-            max(
-                0.0, subtotal + delivery_fee + service_fee + tax + tip_amount - discount
-            ),
-            2,
-        )
-        order_id = self._new_id("order")
-        now = _utc_now_iso()
-
-        self.orders[order_id] = {
-            "order_id": order_id,
-            "restaurant_id": restaurant_id,
-            "restaurant_name": restaurant.get("name"),
-            "items": enriched_items,
-            "fees": {
-                "delivery_fee": delivery_fee,
-                "service_fee": service_fee,
-                "tax": tax,
-                "tip": tip_amount,
-            },
-            "total": total,
-            "status": "scheduled",
-            "created_at": now,
-            "applied_promo": applied_promo,
-            "delivery_address": {
-                "street": address.get("street"),
-                "city": address.get("city"),
-                "state": address.get("state"),
-                "zip": address.get("zip"),
-            },
-            "scheduled_slot": {
-                "slot_id": slot_id,
-                "start_time": slot.get("start_time"),
-                "end_time": slot.get("end_time"),
-            },
-            "eta_min": 0,
-        }
-
-        return order_id

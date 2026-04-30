@@ -304,9 +304,14 @@ class LyftAPI(PatchableMixin):
         wait_and_save: bool = False,
         priority_pickup: bool = False,
         payment_method_id: Optional[str] = None,
+        wait_and_save_offer_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-        Request a ride with optional Wait & Save or Priority Pickup.
+        Request an immediate ride. Supports Wait & Save (with or without a
+        pre-quoted offer), Priority Pickup, and Round Up donations.
+
+        For scheduled / future rides, use ``schedule_ride`` instead — Lyft
+        keeps the scheduled flow on its own method.
 
         Args:
             pickup_lat (float): Pickup latitude.
@@ -315,8 +320,14 @@ class LyftAPI(PatchableMixin):
             dropoff_lng (float): Dropoff longitude.
             ride_type_id (str): The ride type.
             wait_and_save (bool): Accept longer wait for lower price.
+                Auto-set to True if `wait_and_save_offer_id` is provided.
             priority_pickup (bool): Pay extra for faster pickup.
             payment_method_id (str, optional): Payment method from profile.
+            wait_and_save_offer_id (str, optional): Offer ID from a prior
+                ``get_wait_and_save_estimate()`` call. When set, the locked
+                discounted_fare and wait_time_minutes from that quote are
+                honored and `wait_and_save` is treated as True. Mutually
+                exclusive with `priority_pickup`.
 
         Returns:
             Dict[str, Any]: ride_id, status, fare_total, prime_time_pct,
@@ -325,6 +336,11 @@ class LyftAPI(PatchableMixin):
         rt = self._require_ride_type(ride_type_id)
         if not rt.get("available", True):
             raise LyftError("RIDE_TYPE_UNAVAILABLE", f"Ride type '{ride_type_id}' is not available.")
+
+        # Wait & Save offer implies the wait_and_save mode.
+        if wait_and_save_offer_id is not None:
+            wait_and_save = True
+
         if wait_and_save and priority_pickup:
             raise LyftError("INCOMPATIBLE_OPTIONS",
                              "Cannot use Wait & Save and Priority Pickup together.")
@@ -333,8 +349,25 @@ class LyftAPI(PatchableMixin):
         minutes = max(5, miles * 2.5 + self._rng.uniform(-2, 3))
         prime_pct = self._get_prime_time_pct(pickup_lat, pickup_lng)
 
-        fare_info = self._compute_fare(miles, minutes, rt, prime_pct, wait_and_save)
-        total = fare_info["total_fare"]
+        # Resolve a pre-quoted Wait & Save offer if one was supplied. The
+        # offer's locked discounted_fare and wait_time_minutes win over
+        # the freshly-computed values.
+        locked_offer = None
+        if wait_and_save_offer_id is not None:
+            locked_offer = self.wait_and_save.get(wait_and_save_offer_id)
+            if not locked_offer:
+                raise LyftError(
+                    "WAIT_AND_SAVE_OFFER_NOT_FOUND",
+                    f"Wait & Save offer '{wait_and_save_offer_id}' not found.",
+                )
+
+        if locked_offer is not None:
+            total = float(locked_offer.get("discounted_fare", 0.0))
+            prime_time_pct = 0
+        else:
+            fare_info = self._compute_fare(miles, minutes, rt, prime_pct, wait_and_save)
+            total = fare_info["total_fare"]
+            prime_time_pct = fare_info["prime_time_pct"]
 
         if priority_pickup:
             total = round(total + 3.00, 2)
@@ -346,11 +379,14 @@ class LyftAPI(PatchableMixin):
         else:
             status = "requesting"
 
-        eta_pickup = self._rng.randint(3, 10)
-        if priority_pickup:
-            eta_pickup = max(1, eta_pickup - 3)
-        if wait_and_save:
-            eta_pickup += self._rng.randint(3, 8)
+        if locked_offer is not None:
+            eta_pickup = int(locked_offer.get("wait_time_minutes", 10))
+        else:
+            eta_pickup = self._rng.randint(3, 10)
+            if priority_pickup:
+                eta_pickup = max(1, eta_pickup - 3)
+            if wait_and_save:
+                eta_pickup += self._rng.randint(3, 8)
         eta_dropoff = round(minutes)
 
         # Round-up donation
@@ -368,8 +404,9 @@ class LyftAPI(PatchableMixin):
             "ride_type": ride_type_id,
             "status": status,
             "fare_total": total,
-            "prime_time_pct": fare_info["prime_time_pct"],
+            "prime_time_pct": prime_time_pct,
             "wait_and_save": wait_and_save,
+            "wait_and_save_offer_id": wait_and_save_offer_id,
             "priority_pickup": priority_pickup,
             "driver_id": driver["driver_id"] if driver else None,
             "eta_pickup_min": eta_pickup if driver else None,
@@ -382,11 +419,13 @@ class LyftAPI(PatchableMixin):
 
         result = {
             "ride_id": ride_id, "status": status, "fare_total": total,
-            "prime_time_pct": fare_info["prime_time_pct"],
+            "prime_time_pct": prime_time_pct,
             "eta_pickup_min": eta_pickup if driver else None,
             "eta_dropoff_min": eta_dropoff if driver else None,
             "wait_and_save": wait_and_save, "priority_pickup": priority_pickup,
         }
+        if wait_and_save_offer_id is not None:
+            result["wait_and_save_offer_id"] = wait_and_save_offer_id
         if driver:
             result["driver"] = {
                 "name": driver.get("name"),
@@ -397,14 +436,39 @@ class LyftAPI(PatchableMixin):
 
     def cancel_trip(self, ride_id: str) -> Dict[str, Any]:
         """
-        Cancel a ride. Fee may apply if driver already en route.
+        Cancel a trip. Accepts EITHER an immediate-ride id (looked up in
+        ``self.rides``) OR a scheduled-ride id (looked up in
+        ``self.scheduled_rides``); the function detects which store owns
+        the id and updates the correct one in place.
+
+        - For immediate rides: a fee may apply if the driver is already
+          en route. The matched driver, if any, is freed back to the pool.
+        - For scheduled rides: free cancellation (no driver assigned yet),
+          fee is 0.
 
         Args:
-            ride_id (str): The ride to cancel.
+            ride_id (str): The ride or scheduled-ride to cancel.
 
         Returns:
-            Dict[str, Any]: ride_id, status "cancelled", cancel_fee.
+            Dict[str, Any]: ride_id (echoes the input id), kind
+                ("ride" or "scheduled_ride"), status "cancelled",
+                cancel_fee (float).
         """
+        # Scheduled-ride path — id lives in self.scheduled_rides.
+        if ride_id in self.scheduled_rides:
+            r = self.scheduled_rides[ride_id]
+            if r.get("status") == "cancelled":
+                raise LyftError("ALREADY_CANCELLED",
+                                "This scheduled ride is already cancelled.")
+            r["status"] = "cancelled"
+            return {
+                "ride_id": ride_id,
+                "kind": "scheduled_ride",
+                "status": "cancelled",
+                "cancel_fee": 0.0,
+            }
+
+        # Immediate-ride path — id lives in self.rides.
         ride = self._require_ride(ride_id)
         if ride.get("status") in ("completed", "cancelled"):
             raise LyftError("CANNOT_CANCEL", f"Ride is already {ride.get('status')}.")
@@ -414,7 +478,12 @@ class LyftAPI(PatchableMixin):
             if d:
                 d["availability"] = "available"
         ride["status"] = "cancelled"
-        return {"ride_id": ride_id, "status": "cancelled", "cancel_fee": cancel_fee}
+        return {
+            "ride_id": ride_id,
+            "kind": "ride",
+            "status": "cancelled",
+            "cancel_fee": cancel_fee,
+        }
 
     def get_trip(self, ride_id: str) -> Dict[str, Any]:
         """
@@ -632,26 +701,6 @@ class LyftAPI(PatchableMixin):
         results.sort(key=lambda x: x.get("scheduled_time", ""))
         return results
 
-    def cancel_scheduled_ride(self, scheduled_ride_id: str) -> Dict[str, Any]:
-        """
-        Cancel a scheduled ride.
-
-        Args:
-            scheduled_ride_id (str): The scheduled ride to cancel.
-
-        Returns:
-            Dict[str, Any]: scheduled_ride_id, status "cancelled".
-        """
-        r = self.scheduled_rides.get(scheduled_ride_id)
-        if not r:
-            raise LyftError("SCHEDULED_RIDE_NOT_FOUND",
-                            f"Scheduled ride '{scheduled_ride_id}' not found.")
-        if r.get("status") == "cancelled":
-            raise LyftError("ALREADY_CANCELLED",
-                            "This scheduled ride is already cancelled.")
-        r["status"] = "cancelled"
-        return {"scheduled_ride_id": scheduled_ride_id, "status": "cancelled"}
-
     # ---- Wait & Save ----
 
     def get_wait_and_save_estimate(
@@ -684,61 +733,6 @@ class LyftAPI(PatchableMixin):
             "wait_time_minutes": wait_time,
         }
         return deepcopy(self.wait_and_save[offer_id])
-
-    def request_wait_and_save_ride(
-        self, pickup: str, dropoff: str,
-        payment_method_id: Optional[str] = None,
-        offer_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """
-        Request a Wait & Save discounted ride.
-
-        Args:
-            pickup (str): Pickup address.
-            dropoff (str): Dropoff address.
-            payment_method_id (str, optional): Payment method from profile.
-            offer_id (str, optional): Offer ID from a previous estimate.
-
-        Returns:
-            Dict[str, Any]: ride_id, pickup, dropoff, fare,
-                wait_time_minutes, status.
-        """
-        if offer_id and offer_id in self.wait_and_save:
-            offer = self.wait_and_save[offer_id]
-            fare = offer.get("discounted_fare", 12.0)
-            wait_time = offer.get("wait_time_minutes", 10)
-        else:
-            fare = round(12.0 + self._rng.uniform(3, 18), 2)
-            wait_time = self._rng.randint(5, 15)
-
-        ride_id = self._new_id("ride")
-        now = _utc_now_iso()
-        self.rides[ride_id] = {
-            "ride_id": ride_id,
-            "pickup": {"address": pickup},
-            "dropoff": {"address": dropoff},
-            "ride_type": "Standard",
-            "status": "requesting",
-            "fare_total": fare,
-            "prime_time_pct": 0,
-            "wait_and_save": True,
-            "priority_pickup": False,
-            "driver_id": None,
-            "eta_pickup_min": wait_time,
-            "eta_dropoff_min": None,
-            "tip_amount": 0,
-            "rating": None,
-            "round_up_donation": 0,
-            "created_at": now,
-        }
-        return {
-            "ride_id": ride_id,
-            "pickup": pickup,
-            "dropoff": dropoff,
-            "fare": fare,
-            "wait_time_minutes": wait_time,
-            "status": "requesting",
-        }
 
     # ---- Ride Challenges ----
 

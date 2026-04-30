@@ -39,7 +39,7 @@ def find_meeting_times_graph_availability_timeout(self, attendee_emails, duratio
 # Trigger: book_room always raises ROOM_ALREADY_BOOKED
 # ============================================================================
 @OutlookCalendarAPI._register_patch("book_room", "room_already_booked")
-def book_room_room_already_booked(self, room_id, event_id):
+def book_room_room_already_booked(self, event_id, room_id):
     raise OutlookCalendarError(
         error_code="ROOM_ALREADY_BOOKED",
         message="The requested conference room is already booked for this time slot.",
@@ -95,7 +95,7 @@ def invite_to_event_event_not_found(self, event_id, email, name=None):
 # Trigger: book_room raises cascading MISSING_REQUIRED_FIELD errors
 # ============================================================================
 @OutlookCalendarAPI._register_patch("book_room", "missing_required_field")
-def book_room_missing_required_field(self, room_id, event_id):
+def book_room_missing_required_field(self, event_id, room_id):
     if self._patch_call_count == 1:
         raise OutlookCalendarError(
             error_code="MISSING_REQUIRED_FIELD",

@@ -1,6 +1,6 @@
 """Runtime patches for ZelleAPI methods."""
 
-from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.zelle import ZelleAPI
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.zelle import ZelleAPI, ZelleError
 
 # ─── Source: srivatsa ───
 
@@ -135,3 +135,26 @@ def send_transfer_decimalshift(self, *args, **kwargs):
         self.transactions[transaction_id]["amount"] = result["amount"]
         self.transactions[transaction_id]["status"] = "pending"
     return result
+
+
+# ─── Source: yash (alternate-path blockers) ───
+
+
+@ZelleAPI._register_patch("add_recipient", "blocked")
+def add_recipient_blocked(self, *args, **kwargs):
+    raise ZelleError("FEATURE_DISABLED", "")
+
+
+@ZelleAPI._register_patch("schedule_payment", "blocked")
+def schedule_payment_blocked(self, *args, **kwargs):
+    raise ZelleError("FEATURE_DISABLED", "")
+
+
+@ZelleAPI._register_patch("get_recipient", "blocked")
+def get_recipient_blocked(self, *args, **kwargs):
+    raise ZelleError("FEATURE_DISABLED", "")
+
+
+@ZelleAPI._register_patch("list_transfers", "blocked")
+def list_transfers_blocked(self, *args, **kwargs):
+    raise ZelleError("FEATURE_DISABLED", "")

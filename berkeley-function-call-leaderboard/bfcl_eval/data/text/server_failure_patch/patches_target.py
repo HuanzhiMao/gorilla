@@ -30,10 +30,24 @@ def put_in_cart_region_denied_permanent(self, product_id, quantity, fulfillment_
 
 
 # ft_026 -- RedCard discount glitch (0.5% instead of 5%)
+# Guard: only fires when the selected payment path qualifies for the RedCard
+# discount under TargetAPI's own logic: either the payment method itself is a
+# red card or the profile has red_card membership enabled. If checkout uses a
+# non-RedCard path, the call passes through unmodified so the patch does not
+# invent a discount glitch on a payment flow that should not receive one.
 @TargetAPI._register_patch("checkout_order", "redcardglitch")
 def checkout_order_redcardglitch(self, *args, **kwargs):
+    payment_method_id = kwargs.get("payment_method_id")
+    if payment_method_id is None and len(args) >= 1:
+        payment_method_id = args[0]
+    membership = self.profile.get("membership", {})
+    pm = self.profile.get("payment_methods", {}).get(payment_method_id, {})
+    is_redcard = pm.get("type") == "red_card" or membership.get("red_card", False)
     cart_snapshot = deepcopy(self.cart)
     result = self._original_function(*args, **kwargs)
+    if not is_redcard:
+        self.cart = cart_snapshot
+        return result
     order_id = result["order_id"]
     subtotal = result["subtotal"]
     bad_discount = int(round(subtotal * 0.005))
@@ -55,14 +69,19 @@ def checkout_order_redcardglitch(self, *args, **kwargs):
 # ft_extra_32 -- schema_mismatch/permanent. The Circle offer engine has
 # rolled out a v2 schema that requires a 'circle_offer_v2_token' qualifier
 # on the request. Until the client SDK is updated this call permanently
-# fails with SCHEMA_MIGRATION_REQUIRED. Agent must NOT keep retrying;
-# pivot to apply_discount_code with the equivalent legacy promo code, or
-# warn the user the Circle offer cannot be applied right now.
+# fails with SCHEMA_MIGRATION_REQUIRED for the offer_id path. Agent must
+# NOT keep retrying; pivot to the promo_code path of the SAME function
+# with an equivalent legacy promo code, or warn the user the Circle offer
+# cannot be applied right now. The promo_code path is unaffected and
+# falls through to the original implementation.
 @TargetAPI._register_patch("apply_circle_offer", "offer_schema_v2_required_permanent")
-def apply_circle_offer_offer_schema_v2_required_permanent(self, offer_id, *args, **kwargs):
-    """Permanent. Every call raises SCHEMA_MIGRATION_REQUIRED. The error is
-    explicitly NOT retryable -- the suggested_action notes that the legacy
-    v1 schema has been retired and only a server-side rollout fixes it."""
+def apply_circle_offer_offer_schema_v2_required_permanent(self, offer_id=None, promo_code=None, *args, **kwargs):
+    """Permanent. Calls that target a Circle offer (offer_id set) raise
+    SCHEMA_MIGRATION_REQUIRED. Calls on the promo_code path (offer_id is
+    None) fall through to the original — the Circle migration does not
+    affect the discount-code wallet."""
+    if offer_id is None:
+        return self._original_function(*args, offer_id=offer_id, promo_code=promo_code, **kwargs)
     raise TargetError(
         error_code="SCHEMA_MIGRATION_REQUIRED",
         message=(
@@ -71,9 +90,10 @@ def apply_circle_offer_offer_schema_v2_required_permanent(self, offer_id, *args,
             "been retired and the v2 client SDK is not yet rolled out."
         ),
         suggested_action=(
-            "Do NOT retry -- this will not self-heal. Use "
-            "apply_discount_code with an equivalent legacy promo code, or "
-            "tell the user the Circle offer cannot be applied right now."
+            "Do NOT retry -- this will not self-heal. Call the same "
+            "function with promo_code='<legacy_code>' instead of "
+            "offer_id, or tell the user the Circle offer cannot be "
+            "applied right now."
         ),
         context={"offer_id": offer_id, "schema_version": "circle_v2"},
     )

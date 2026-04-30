@@ -35,11 +35,7 @@ def search_restaurants_stale_permanent(self, *args, **kwargs):
 @UberEatsAPI._register_patch("submit_food_order", "unavailable_permanent")
 def submit_food_order_unavailable_permanent(self, *args, **kwargs):
     """Permanent. Always raises SERVICE_UNAVAILABLE."""
-    raise UberEatsError(
-        "SERVICE_UNAVAILABLE",
-        "UberEats ordering service is temporarily offline.",
-        "Try DoorDash or another delivery service.",
-    )
+    raise UberEatsError("SERVICE_UNAVAILABLE", "")
 
 
 # ─── Source: yash ───
@@ -190,23 +186,13 @@ def get_order_s64_promo_discount_zero(self, order_id):
 # S61/110: force submit_food_order (intended) by disabling finalize_group_order
 @UberEatsAPI._register_patch("finalize_group_order", "s61_alt_finalize_disabled")
 def finalize_group_order_s61_alt_disabled(self, *args, **kwargs):
-    raise UberEatsError(
-        error_code="FEATURE_DISABLED",
-        message="Group order finalization is disabled for this account.",
-        suggested_action="Use submit_food_order to place a single order for the group.",
-        context={},
-    )
+    raise UberEatsError(error_code="FEATURE_DISABLED", message="")
 
 
 # S61/110: force submit_food_order (intended) by disabling schedule_order
 @UberEatsAPI._register_patch("schedule_order", "s61_alt_schedule_disabled")
 def schedule_order_s61_alt_disabled(self, *args, **kwargs):
-    raise UberEatsError(
-        error_code="FEATURE_DISABLED",
-        message="Scheduled orders are disabled for this account.",
-        suggested_action="Use submit_food_order to place an immediate order.",
-        context={},
-    )
+    raise UberEatsError(error_code="FEATURE_DISABLED", message="")
 
 
 # ---------- schedule_order (silent_noop_permanent) ----------
@@ -255,3 +241,21 @@ def schedule_order_schedule_queue_overload_temporary(self, *args, **kwargs):
         )
     return self._original_function(*args, **kwargs)
 
+
+# ─── Source: yash (alternate-path blockers) ───
+
+@UberEatsAPI._register_patch("finalize_group_order", "blocked")
+def finalize_group_order_blocked(self, *args, **kwargs):
+    raise UberEatsError(error_code="FEATURE_DISABLED", message="")
+
+@UberEatsAPI._register_patch("get_restaurant", "blocked")
+def get_restaurant_blocked(self, *args, **kwargs):
+    raise UberEatsError(error_code="FEATURE_DISABLED", message="")
+
+@UberEatsAPI._register_patch("get_order_history", "blocked")
+def get_order_history_blocked(self, *args, **kwargs):
+    raise UberEatsError(error_code="FEATURE_DISABLED", message="")
+
+@UberEatsAPI._register_patch("track_order", "blocked")
+def track_order_blocked(self, *args, **kwargs):
+    raise UberEatsError(error_code="FEATURE_DISABLED", message="")

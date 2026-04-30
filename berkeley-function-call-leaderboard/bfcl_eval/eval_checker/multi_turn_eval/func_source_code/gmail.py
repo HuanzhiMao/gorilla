@@ -64,9 +64,11 @@ SYSTEM_FOLDER_NAMES = (
     "sent",
     "spam",
     "trash",
+    "drafts",
     "starred",
     "important",
     "unread",
+    "snoozed",
     "category_primary",
     "category_social",
     "category_promotions",
@@ -77,7 +79,6 @@ DEFAULT_STATE = {
     "random_seed": 1234,
     "profile": {},
     "emails": {},
-    "drafts": {},
     "contacts": {},
     "folders": {},
     "snoozed_emails": {},
@@ -93,10 +94,10 @@ class GmailAPI(PatchableMixin):
     State variables:
     - profile: Dict of {name, email}
     - emails: Dict of {email_id -> {email_id, thread_id, from, to[], cc[],
-      bcc[], subject, body, attachments[], labels[], read, starred, important,
-      created_at}}
-    - drafts: Dict of {draft_id -> {draft_id, to[], cc[], bcc[], subject, body,
-      attachments[], created_at}}
+      bcc[], subject, body, attachments[], labels[], read, starred,
+      important, status ("sent" | "draft"), created_at}}
+      (Drafts live in this same dict, distinguished by status="draft" and
+      labels=["drafts"]; saved via send_email with empty `to`.)
     - contacts: Dict of {name, email}
     - folders: Dict of {folder_name -> [email_id, ...]}
 
@@ -105,10 +106,9 @@ class GmailAPI(PatchableMixin):
 
 
     def __init__(self):
-        self._id_counters = {"email": 0, "thread": 0, "draft": 0}
+        self._id_counters = {"email": 0, "thread": 0}
         self.profile: Dict[str, Dict[str, Any]] = {}
         self.emails: Dict[str, Dict[str, Any]] = {}
-        self.drafts: Dict[str, Dict[str, Any]] = {}
         self.contacts: Dict[str, Dict[str, Any]] = {}
         self.folders: Dict[str, List[str]] = {}
         self.snoozed_emails: Dict[str, str] = {}
@@ -142,7 +142,6 @@ class GmailAPI(PatchableMixin):
         )
         self.profile = scenario.get("profile", DEFAULT_STATE_COPY["profile"])
         self.emails = scenario.get("emails", DEFAULT_STATE_COPY["emails"])
-        self.drafts = scenario.get("drafts", DEFAULT_STATE_COPY["drafts"])
         self.contacts = scenario.get("contacts", DEFAULT_STATE_COPY["contacts"])
         self.folders = scenario.get("folders", DEFAULT_STATE_COPY["folders"])
         self.snoozed_emails = scenario.get("snoozed_emails", DEFAULT_STATE_COPY["snoozed_emails"])
@@ -197,17 +196,6 @@ class GmailAPI(PatchableMixin):
                 context={"email_id": email_id},
             )
         return email
-
-    def _require_draft(self, draft_id: str) -> Dict[str, Any]:
-        draft = self.drafts.get(draft_id)
-        if not draft:
-            raise GmailError(
-                "DRAFT_NOT_FOUND",
-                f"Draft '{draft_id}' not found.",
-                suggested_action="Use create_draft() to create a draft first.",
-                context={"draft_id": draft_id},
-            )
-        return draft
 
     def _add_to_folder(self, folder_name: str, email_id: str) -> None:
         """Add an email_id to a folder list and the email's labels."""
@@ -363,177 +351,90 @@ class GmailAPI(PatchableMixin):
 
     def send_email(
         self,
-        to: List[str],
-        subject: str,
-        body: str,
+        to: Optional[List[str]] = None,
+        subject: str = "",
+        body: str = "",
         cc: Optional[List[str]] = None,
         bcc: Optional[List[str]] = None,
         attachments: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
-        Compose and send an email immediately.
+        Compose and send an email, or save it as a draft.
+
+        Behavior depends on the `to` argument:
+          * `to` non-empty  → the email is sent immediately and stored
+            in the "sent" folder with status="sent".
+          * `to` empty/None → the email is saved as a draft (no recipient
+            yet) and stored in the "drafts" folder with status="draft".
+            Subject, body, cc, bcc, and attachments are all preserved.
+
+        This is the single entry point for both compose-and-send and
+        compose-without-sending — there is no separate create_draft /
+        send_draft pair.
 
         Args:
-            to (List[str]): Recipient email addresses.
-            subject (str): Subject line.
-            body (str): Body text.
+            to (List[str], optional): Recipient email addresses. Empty
+                or None saves the email as a draft.
+            subject (str): Subject line. Defaults to "".
+            body (str): Body text. Defaults to "".
             cc (List[str], optional): Carbon copy recipients.
             bcc (List[str], optional): Blind carbon copy recipients.
             attachments (List[str], optional): Attachment filenames or IDs.
 
         Returns:
             Dict[str, Any]:
-                email_id (str), thread_id (str), status (str).
+                email_id (str), thread_id (str | None),
+                status (str — "sent" or "draft").
         """
         user = self._require_user(self.user_id)
-        if not to:
-            raise GmailError(
-                "NO_RECIPIENTS",
-                "At least one recipient is required.",
-                suggested_action="Provide at least one email address in the 'to' field.",
-                context={"user_id": self.user_id},
-            )
+        to = to or []
+        cc = cc or []
+        bcc = bcc or []
+        is_draft = not to
 
         now = _utc_now_iso()
         sender = user.get("email_address", self.user_id)
-        all_participants = list(set([sender] + (to or []) + (cc or [])))
-        thread_id = self._get_or_create_thread_id(subject, all_participants)
+
+        if is_draft:
+            thread_id = None
+            target_folder = "drafts"
+            status = "draft"
+            labels = ["drafts"]
+            self.folders.setdefault("drafts", [])
+        else:
+            all_participants = list(set([sender] + to + cc))
+            thread_id = self._get_or_create_thread_id(subject, all_participants)
+            target_folder = "sent"
+            status = "sent"
+            labels = ["sent"]
 
         email_id = self._new_id("email")
         email_obj = {
             "email_id": email_id,
             "thread_id": thread_id,
             "from": sender,
-            "to": to or [],
-            "cc": cc or [],
-            "bcc": bcc or [],
+            "to": to,
+            "cc": cc,
+            "bcc": bcc,
             "subject": subject,
             "body": body,
             "attachments": attachments or [],
-            "labels": ["sent"],
+            "labels": labels,
             "read": True,
             "starred": False,
             "important": False,
             "created_at": now,
+            "status": status,
         }
 
         self.emails[email_id] = email_obj
-        self._add_to_folder("sent", email_id)
+        self._add_to_folder(target_folder, email_id)
 
         return {
             "email_id": email_id,
             "thread_id": thread_id,
-            "status": "sent",
+            "status": status,
         }
-
-    def create_draft(
-        self,
-        to: Optional[List[str]] = None,
-        subject: str = "",
-        body: str = "",
-        cc: Optional[List[str]] = None,
-        bcc: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Create a new email draft.
-
-        Args:
-            to (List[str], optional): Intended recipients.
-            subject (str): Subject line. Defaults to "".
-            body (str): Body text. Defaults to "".
-            cc (List[str], optional): CC recipients.
-            bcc (List[str], optional): BCC recipients.
-
-        Returns:
-            Dict[str, Any]:
-                draft_id (str), status (str).
-        """
-        self._require_user(self.user_id)
-        now = _utc_now_iso()
-        draft_id = self._new_id("draft")
-        self.drafts[draft_id] = {
-            "draft_id": draft_id,
-            "to": to or [],
-            "cc": cc or [],
-            "bcc": bcc or [],
-            "subject": subject,
-            "body": body,
-            "attachments": [],
-            "created_at": now,
-        }
-        return {"draft_id": draft_id, "status": "created"}
-
-    def update_draft(
-        self,
-        draft_id: str,
-        to: Optional[List[str]] = None,
-        subject: Optional[str] = None,
-        body: Optional[str] = None,
-        cc: Optional[List[str]] = None,
-        bcc: Optional[List[str]] = None,
-        attachments: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Update an existing draft with new content.
-
-        Args:
-            draft_id (str): The draft to update.
-            to (List[str], optional): Updated recipients. None keeps current.
-            subject (str, optional): Updated subject. None keeps current.
-            body (str, optional): Updated body. None keeps current.
-            cc (List[str], optional): Updated CC. None keeps current.
-            bcc (List[str], optional): Updated BCC. None keeps current.
-            attachments (List[str], optional): Updated attachments. None keeps current.
-
-        Returns:
-            Dict[str, Any]: The updated draft object.
-        """
-        draft = self._require_draft(draft_id)
-        if to is not None:
-            draft["to"] = to
-        if subject is not None:
-            draft["subject"] = subject
-        if body is not None:
-            draft["body"] = body
-        if cc is not None:
-            draft["cc"] = cc
-        if bcc is not None:
-            draft["bcc"] = bcc
-        if attachments is not None:
-            draft["attachments"] = attachments
-        return deepcopy(draft)
-
-    def send_draft(self, draft_id: str) -> Dict[str, Any]:
-        """
-        Send a previously created draft. The draft is removed after sending.
-
-        Args:
-            draft_id (str): The draft to send.
-
-        Returns:
-            Dict[str, Any]:
-                email_id (str), thread_id (str), status (str).
-        """
-        draft = self._require_draft(draft_id)
-        if not draft.get("to"):
-            raise GmailError(
-                "NO_RECIPIENTS",
-                "Draft has no recipients.",
-                suggested_action="Call update_draft() to add recipients first.",
-                context={"draft_id": draft_id},
-            )
-
-        result = self.send_email(
-            to=draft["to"],
-            subject=draft.get("subject", ""),
-            body=draft.get("body", ""),
-            cc=draft.get("cc"),
-            bcc=draft.get("bcc"),
-            attachments=draft.get("attachments"),
-        )
-
-        del self.drafts[draft_id]
-        return result
 
     def reply_to_email(
         self,
@@ -627,38 +528,123 @@ class GmailAPI(PatchableMixin):
     # Label / folder management
     # -----------------------------------------------------------------------
 
+    def create_label(self, label_name: str) -> Dict[str, Any]:
+        """
+        Create a new custom label. Custom labels are user-defined buckets
+        that emails can be tagged into via add_label/remove_label. System
+        labels (inbox, sent, drafts, starred, important, unread, snoozed,
+        trash, spam, category_*) are reserved and managed by their dedicated
+        functions (star_email, archive_email, mark_as_unread, etc.).
+
+        Args:
+            label_name (str): The custom label name to create.
+
+        Returns:
+            Dict[str, Any]:
+                label (str), status (str).
+        """
+        self._require_user(self.user_id)
+        if label_name in SYSTEM_FOLDER_NAMES:
+            raise GmailError(
+                "INVALID_LABEL",
+                f"'{label_name}' is a reserved system label and cannot be created.",
+                suggested_action=(
+                    "Choose a different name. System labels are managed by the "
+                    "dedicated functions (star_email, archive_email, mark_as_unread, etc.)."
+                ),
+                context={"label_name": label_name},
+            )
+        if label_name in self.folders:
+            raise GmailError(
+                "LABEL_EXISTS",
+                f"Label '{label_name}' already exists.",
+                suggested_action="Use a different name or proceed with add_label().",
+                context={"label_name": label_name},
+            )
+        self.folders[label_name] = []
+        return {"label": label_name, "status": "created"}
+
     def add_label(self, email_id: str, label: str) -> Dict[str, Any]:
         """
-        Add a label (folder membership) to an email.
+        Add a custom label to an email. The label must already exist
+        (create it with create_label first). System labels (starred,
+        important, unread, etc.) cannot be added here — use the
+        dedicated functions (star_email, mark_as_unread, archive_email,
+        ...) for those.
 
         Args:
             email_id (str): The email to label.
-            label (str): The folder/label name to add (e.g. "starred",
-                "important", or a system folder name).
+            label (str): The custom label name to add.
 
         Returns:
             Dict[str, Any]:
                 email_id (str), labels (List[str]).
         """
         em = self._require_email(email_id)
+        if label in SYSTEM_FOLDER_NAMES:
+            raise GmailError(
+                "INVALID_LABEL",
+                f"'{label}' is a system label; add_label only accepts custom labels.",
+                suggested_action=(
+                    "Use the dedicated function for this label "
+                    "(star_email, mark_as_unread, archive_email, etc.)."
+                ),
+                context={"label": label},
+            )
+        if label not in self.folders:
+            raise GmailError(
+                "LABEL_NOT_FOUND",
+                f"Label '{label}' does not exist.",
+                suggested_action=f"Call create_label('{label}') first.",
+                context={"label": label},
+            )
         self._add_to_folder(label, email_id)
         return {"email_id": email_id, "labels": list(em.get("labels", []))}
 
     def remove_label(self, email_id: str, label: str) -> Dict[str, Any]:
         """
-        Remove a label (folder membership) from an email.
+        Remove a custom label from an email. System labels cannot be
+        removed here — use the dedicated inverse functions (unstar_email,
+        mark_as_read, etc.).
 
         Args:
             email_id (str): The email to modify.
-            label (str): The folder/label name to remove.
+            label (str): The custom label name to remove.
 
         Returns:
             Dict[str, Any]:
                 email_id (str), labels (List[str]).
         """
         em = self._require_email(email_id)
+        if label in SYSTEM_FOLDER_NAMES:
+            raise GmailError(
+                "INVALID_LABEL",
+                f"'{label}' is a system label; remove_label only accepts custom labels.",
+                suggested_action=(
+                    "Use the dedicated inverse function "
+                    "(unstar_email, mark_as_read, etc.)."
+                ),
+                context={"label": label},
+            )
+        if label not in self.folders:
+            raise GmailError(
+                "LABEL_NOT_FOUND",
+                f"Label '{label}' does not exist.",
+                suggested_action="Use list_labels() to see existing custom labels.",
+                context={"label": label},
+            )
         self._remove_from_folder(label, email_id)
         return {"email_id": email_id, "labels": list(em.get("labels", []))}
+
+    def list_labels(self) -> List[str]:
+        """
+        List all custom labels (system labels are excluded).
+
+        Returns:
+            List[str]: Custom label names.
+        """
+        self._require_user(self.user_id)
+        return [name for name in self.folders if name not in SYSTEM_FOLDER_NAMES]
 
     # -----------------------------------------------------------------------
     # Inbox actions
@@ -1060,14 +1046,15 @@ class GmailAPI(PatchableMixin):
 
     def cancel_scheduled_email(self, scheduled_id: str) -> Dict[str, Any]:
         """
-        Cancel a scheduled send and move the content to drafts.
+        Cancel a scheduled send and move the content to drafts via
+        send_email's draft mode (empty recipient).
 
         Args:
             scheduled_id (str): The scheduled email to cancel.
 
         Returns:
             Dict[str, Any]:
-                scheduled_id (str), draft_id (str), status (str).
+                scheduled_id (str), draft_email_id (str), status (str).
         """
         scheduled = self.scheduled_emails.get(scheduled_id)
         if not scheduled:
@@ -1077,17 +1064,20 @@ class GmailAPI(PatchableMixin):
                 suggested_action="Use list_scheduled_emails() to find valid scheduled IDs.",
                 context={"scheduled_id": scheduled_id},
             )
-        draft_result = self.create_draft(
-            to=scheduled.get("to"),
+        # Save the content as a draft by calling send_email with no
+        # recipient. cc/bcc/attachments/subject/body are preserved.
+        draft_result = self.send_email(
+            to=[],
             subject=scheduled.get("subject", ""),
             body=scheduled.get("body", ""),
             cc=scheduled.get("cc"),
             bcc=scheduled.get("bcc"),
+            attachments=scheduled.get("attachments"),
         )
         del self.scheduled_emails[scheduled_id]
         return {
             "scheduled_id": scheduled_id,
-            "draft_id": draft_result["draft_id"],
+            "draft_email_id": draft_result["email_id"],
             "status": "cancelled_to_draft",
         }
 

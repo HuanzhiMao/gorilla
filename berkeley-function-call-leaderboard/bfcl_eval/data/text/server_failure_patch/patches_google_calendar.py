@@ -3,6 +3,7 @@
 from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.google_calendar import GoogleCalendarAPI, GoogleCalendarError
 from datetime import datetime
 from datetime import datetime, timezone
+import types
 import uuid
 
 # ─── Source: jason ────────────────────────────────────────────────────────────
@@ -12,8 +13,8 @@ import uuid
 def get_free_busy_availability_engine_offline(self, time_min, time_max):
     raise GoogleCalendarError(
         error_code="AVAILABILITY_ENGINE_OFFLINE",
-        message="The availability engine is currently offline for maintenance.",
-        suggested_action="Use an alternative calendar service to check availability, or try again later.",
+        message="",
+        suggested_action="",
         context={},
     )
 
@@ -224,11 +225,7 @@ def create_event_noop_permanent(self, *args, **kwargs):
 def create_event_unavailable_temporary(self, *args, **kwargs):
     """Temporary. Fails on calls 1-2, passes through on 3+."""
     if self._patch_call_count <= 2:
-        raise GoogleCalendarError(
-            "SERVICE_UNAVAILABLE",
-            "Google Calendar service temporarily unavailable.",
-            "Retry the request.",
-        )
+        raise GoogleCalendarError("SERVICE_UNAVAILABLE", "")
     return self._original_function(*args, **kwargs)
 
 
@@ -245,13 +242,33 @@ def create_event_schema_mismatch_permanent(self, *args, **kwargs):
 @GoogleCalendarAPI._register_patch("create_event", "attendee_delay_temporary")
 def create_event_attendee_delay_temporary(self, *args, **kwargs):
     """Temporary silent no-op. On first call, creates event but removes attendees from the stored event.
-    Returns success with attendees listed. On 2nd+, passes through normally."""
+    Returns success with attendees listed. The first get_event sees the delayed
+    empty attendee list; the second get_event restores the attendees."""
     if self._patch_call_count <= 1:
         result = self._original_function(*args, **kwargs)
         event_id = result.get("event_id")
         if event_id and event_id in self.events:
-            # Remove attendees from the stored event (but keep them in the response)
+            delayed_attendees = self.events[event_id].get("attendees", [])
             self.events[event_id]["attendees"] = []
+            if not hasattr(self, "_attendee_delay_pending"):
+                self._attendee_delay_pending = {}
+                self._attendee_delay_get_counts = {}
+                original_get_event = self.get_event
+
+                def delayed_get_event(bound_self, delayed_event_id):
+                    if delayed_event_id in bound_self._attendee_delay_pending:
+                        bound_self._attendee_delay_get_counts[delayed_event_id] = (
+                            bound_self._attendee_delay_get_counts.get(delayed_event_id, 0) + 1
+                        )
+                        if bound_self._attendee_delay_get_counts[delayed_event_id] >= 2:
+                            bound_self.events[delayed_event_id]["attendees"] = (
+                                bound_self._attendee_delay_pending.pop(delayed_event_id)
+                            )
+                    return original_get_event(delayed_event_id)
+
+                self.get_event = types.MethodType(delayed_get_event, self)
+            self._attendee_delay_pending[event_id] = delayed_attendees
+            self._attendee_delay_get_counts[event_id] = 0
         return result
     return self._original_function(*args, **kwargs)
 
@@ -277,37 +294,25 @@ def create_event_ampmflip(self, *args, **kwargs):
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("quick_add_event", "blocked")
 def quick_add_event_blocked(self, *args, **kwargs):
-    raise GoogleCalendarError(
-        "FEATURE_DISABLED",
-        "This feature is currently disabled. Try using create_event instead.",
-    )
+    raise GoogleCalendarError("FEATURE_DISABLED", "")
 
 
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("list_events", "blocked")
 def list_events_blocked(self, *args, **kwargs):
-    raise GoogleCalendarError(
-        "FEATURE_DISABLED",
-        "This feature is currently disabled. Try using get_event instead.",
-    )
+    raise GoogleCalendarError("FEATURE_DISABLED", "")
 
 
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("search_events", "blocked")
 def search_events_blocked(self, *args, **kwargs):
-    raise GoogleCalendarError(
-        "FEATURE_DISABLED",
-        "This feature is currently disabled. Try using get_event instead.",
-    )
+    raise GoogleCalendarError("FEATURE_DISABLED", "")
 
 
 # ft_023 -- blocked
 @GoogleCalendarAPI._register_patch("update_event", "blocked")
 def update_event_blocked(self, *args, **kwargs):
-    raise GoogleCalendarError(
-        "FEATURE_DISABLED",
-        "This feature is currently disabled. Try a different approach to modify your event.",
-    )
+    raise GoogleCalendarError("FEATURE_DISABLED", "")
 
 
 # ---------- create_event (attendee_role_required_permanent) ----------
@@ -337,26 +342,6 @@ def create_event_attendee_role_required_permanent(self, *args, **kwargs):
             "this attendee set, or warn the user."
         ),
     )
-
-
-# ft_246 -- silent_noop/temporary. set_event_reminder returns a fully
-# formed success payload (including the requested reminders array) on
-# the first invocation, but the underlying event's reminders dict is
-# left untouched -- a classic write-acknowledged-but-not-persisted bug.
-# Second call falls through to the original implementation and writes
-# correctly. Agent must verify by re-reading the event via get_event
-# (whose reminders field will be the *old* list) before relying on the
-# reminder for any downstream action (e.g., notifying attendees).
-@GoogleCalendarAPI._register_patch("set_event_reminder", "silent_reminder_drop_temporary")
-def set_event_reminder_silent_reminder_drop_temporary(self, event_id, reminders):
-    """Temporary silent no-op. First call echoes back a success payload
-    without persisting; subsequent calls write through normally."""
-    if self._patch_call_count <= 1:
-        # Validate the event exists so the failure surfaces as a stale
-        # write rather than an obvious not-found error.
-        self._require_event(event_id)
-        return {"event_id": event_id, "reminders": reminders, "status": "updated"}
-    return self._original_function(event_id, reminders)
 
 
 # ft_247 -- silent_noop/temporary. update_event acknowledges a location
@@ -400,3 +385,55 @@ def update_event_location_silent_drop_temporary(
         event_id, title, start_time, end_time, description,
         location, attendees, reminders,
     )
+
+
+# ft_extra_40 -- silent_noop/temporary. update_event with a non-None
+# reminders payload acknowledges the change in the response but does
+# NOT persist the new reminders on the stored event. All other fields
+# update normally. Second call (after the agent verifies via get_event
+# and detects the unchanged reminders) writes through. This is the
+# canonical "reminder set silently dropped" failure -- migrated from
+# the deleted set_event_reminder method during the Round-2 source
+# cleanup that consolidated reminder writes into update_event.
+@GoogleCalendarAPI._register_patch("update_event", "silent_reminder_drop_temporary")
+def update_event_silent_reminder_drop_temporary(
+    self,
+    event_id,
+    title=None,
+    start_time=None,
+    end_time=None,
+    description=None,
+    location=None,
+    attendees=None,
+    reminders=None,
+):
+    """Temporary silent no-op on the reminders field only. First call:
+    update lands for every field except reminders -- the response includes
+    the requested reminders but the stored event keeps its old list. Second
+    call falls through to the original function so the reminders actually
+    persist."""
+    if self._patch_call_count <= 1 and reminders is not None:
+        ev = self._require_event(event_id)
+        old_reminders = list(ev.get("reminders", []))
+        result = self._original_function(
+            event_id, title, start_time, end_time, description,
+            location, attendees,
+            None,  # do NOT actually overwrite reminders on disk
+        )
+        # Restore old reminders on the stored event (defensive).
+        ev["reminders"] = old_reminders
+        # Pretend in the response payload that the new reminders took.
+        result["reminders"] = reminders
+        return result
+    return self._original_function(
+        event_id, title, start_time, end_time, description,
+        location, attendees, reminders,
+    )
+
+
+# ─── Source: yash (alternate-path blockers) ───
+
+
+@GoogleCalendarAPI._register_patch("book_appointment_slot", "blocked")
+def book_appointment_slot_blocked(self, *args, **kwargs):
+    raise GoogleCalendarError("FEATURE_DISABLED", "")

@@ -9,11 +9,7 @@ import uuid
 @VenmoAPI._register_patch("send_money", "unavailable_permanent")
 def send_money_unavailable_permanent(self, *args, **kwargs):
     """Permanent. Always raises SERVICE_UNAVAILABLE."""
-    raise VenmoError(
-        "SERVICE_UNAVAILABLE",
-        "Venmo payment service is currently unavailable.",
-        "Try using Zelle or another payment service.",
-    )
+    raise VenmoError("SERVICE_UNAVAILABLE", "")
 
 
 @VenmoAPI._register_patch("send_money", "phantom_permanent")
@@ -73,26 +69,17 @@ def get_transaction_direction_inversion(self, *args, **kwargs):
 
 @VenmoAPI._register_patch("create_group_payment", "blocked")
 def create_group_payment_blocked(self, *args, **kwargs):
-    raise VenmoError(
-        "FEATURE_DISABLED",
-        "Group payments are temporarily unavailable. Use send_money or request_money for individual transactions.",
-    )
+    raise VenmoError("FEATURE_DISABLED", "")
 
 
 @VenmoAPI._register_patch("request_money", "blocked")
 def request_money_blocked(self, *args, **kwargs):
-    raise VenmoError(
-        "FEATURE_DISABLED",
-        "Individual money requests are temporarily unavailable. Use a different payment service.",
-    )
+    raise VenmoError("FEATURE_DISABLED", "")
 
 
 @VenmoAPI._register_patch("send_money", "blocked")
 def send_money_blocked(self, *args, **kwargs):
-    raise VenmoError(
-        "FEATURE_DISABLED",
-        "Individual sends are temporarily unavailable. Use a different payment service.",
-    )
+    raise VenmoError("FEATURE_DISABLED", "")
 
 
 # ---------- request_money (cents_integer_schema_permanent) ----------
@@ -121,3 +108,23 @@ def request_money_cents_integer_schema_permanent(self, *args, **kwargs):
             "warn the user the request cannot be sent right now."
         ),
     )
+
+
+@VenmoAPI._register_patch("add_friend", "blocked")
+def add_friend_blocked(self, *args, **kwargs):
+    raise VenmoError("FEATURE_DISABLED", "")
+
+
+@VenmoAPI._register_patch("get_contact", "blocked")
+def get_contact_blocked(self, *args, **kwargs):
+    raise VenmoError("FEATURE_DISABLED", "")
+
+
+@VenmoAPI._register_patch("list_requests", "blocked")
+def list_requests_blocked(self, *args, **kwargs):
+    raise VenmoError("FEATURE_DISABLED", "")
+
+
+@VenmoAPI._register_patch("list_transactions", "blocked")
+def list_transactions_blocked(self, *args, **kwargs):
+    raise VenmoError("FEATURE_DISABLED", "")

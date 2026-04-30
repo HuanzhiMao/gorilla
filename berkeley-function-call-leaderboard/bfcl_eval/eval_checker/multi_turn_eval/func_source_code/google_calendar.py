@@ -302,7 +302,10 @@ class GoogleCalendarAPI(PatchableMixin):
         generate_meet_link: bool = False,
     ) -> Dict[str, Any]:
         """
-        Create a new calendar event.
+        Create a NEW calendar event. Always allocates a fresh event_id;
+        cannot be used to modify an existing event. To add attendees to
+        an existing event, use add_attendee (single email) or
+        update_event(attendees=[...]) (replace whole list).
 
         Args:
             calendar_id (str): The calendar to add the event to.
@@ -311,8 +314,8 @@ class GoogleCalendarAPI(PatchableMixin):
             end_time (str): End time (ISO-8601).
             description (str, optional): Event description.
             location (str, optional): Event location.
-            attendees (List[Dict], optional): List of attendees, each with
-                email (str), name (str, optional).
+            attendees (List[Dict], optional): Initial attendee list for the
+                new event, each with email (str), name (str, optional).
             reminders (List[Dict], optional): Reminders, each with
                 method ("popup"/"email") and minutes_before (int).
             recurrence (Dict, optional): Recurrence rule with freq
@@ -603,23 +606,6 @@ class GoogleCalendarAPI(PatchableMixin):
         ev["attendees"] = new_list
         ev["updated_at"] = _utc_now_iso()
         return {"event_id": event_id, "email": email, "status": "removed"}
-
-    def set_event_reminder(self, event_id: str, reminders: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Set reminders for an event.
-
-        Args:
-            event_id (str): The event.
-            reminders (List[Dict]): Reminders with method ("popup"/"email")
-                and minutes_before (int).
-
-        Returns:
-            Dict[str, Any]: event_id, reminders, status.
-        """
-        ev = self._require_event(event_id)
-        ev["reminders"] = reminders
-        ev["updated_at"] = _utc_now_iso()
-        return {"event_id": event_id, "reminders": reminders, "status": "updated"}
 
     # -----------------------------------------------------------------------
     # Availability

@@ -971,14 +971,19 @@ class VenmoAPI(PatchableMixin):
         participants: List[Dict[str, Any]],
     ) -> Dict[str, Any]:
         """
-        Create a group payment to split a bill among participants. If
-        individual amounts are not specified for each participant, the
-        total is split evenly. All participant contacts must exist.
+        Create a group payment to split a bill among MULTIPLE
+        participants (>= 2). If individual amounts are not specified for
+        each participant, the total is split evenly. All participant
+        contacts must exist. For charging a single contact, use
+        request_money() instead — this method is reserved for true bill
+        splits.
 
         Args:
             description (str): Description of what the payment is for.
             total_amount (float): Total bill amount (must be > 0).
-            participants (List[Dict]): Participants to split the bill among. If amounts are omitted, the total is split evenly.
+            participants (List[Dict]): Participants to split the bill among.
+                Must contain at least 2 entries. If amounts are omitted,
+                the total is split evenly.
                 - contact_id (str): Contact to charge.
                 - amount (float): [Optional] Amount to charge this participant.
 
@@ -994,11 +999,16 @@ class VenmoAPI(PatchableMixin):
                 suggested_action="Provide a positive total amount.",
                 context={"total_amount": total_amount},
             )
-        if not participants or len(participants) == 0:
+        if not participants or len(participants) < 2:
             raise VenmoError(
-                "NO_PARTICIPANTS",
-                "At least one participant is required.",
-                suggested_action="Provide a list of participants with contact IDs.",
+                "INSUFFICIENT_PARTICIPANTS",
+                "create_group_payment requires at least 2 participants. "
+                "For a single recipient, use request_money() instead.",
+                suggested_action=(
+                    "Add at least one more participant, or call "
+                    "request_money(contact_id=..., amount=..., note=...)."
+                ),
+                context={"participant_count": len(participants or [])},
             )
 
         # Validate all contacts exist

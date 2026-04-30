@@ -545,7 +545,17 @@ class GoogleMapReviewAPI(PatchableMixin):
 
     def save_place(self, business_id: str) -> Dict[str, Any]:
         """
-        Save a place to your saved list for later reference.
+        Save a place to the user's DEFAULT saved-places list (the
+        ``saved_places`` bucket — every Google Maps account has exactly
+        one).
+
+        This is the only entry point for the default bucket. To add a
+        place to a NAMED user-created list, use ``add_to_list()`` against
+        a list_id returned by ``create_list()``. The two stores are
+        disjoint:
+
+        - default bucket → ``self.saved_places``
+        - named lists → ``self.lists``
 
         Args:
             business_id (str): The place to save.
@@ -608,10 +618,14 @@ class GoogleMapReviewAPI(PatchableMixin):
 
     def create_list(self, name: str, description: str = "") -> Dict[str, Any]:
         """
-        Create a custom place list.
+        Create a new NAMED custom place list in the user's list store.
+        The reserved name ``"saved_places"`` is rejected — that string
+        identifies the default saved bucket managed by ``save_place()`` /
+        ``unpin_place()`` and may never be created as a named list.
 
         Args:
-            name (str): The name of the list.
+            name (str): The name of the list. Must not be
+                ``"saved_places"`` (case-insensitive).
             description (str, optional): A description for the list.
                 Defaults to "".
 
@@ -619,6 +633,17 @@ class GoogleMapReviewAPI(PatchableMixin):
             Dict[str, Any]:
                 list_id (str), name (str), description (str), status (str).
         """
+        if isinstance(name, str) and name.strip().lower() == "saved_places":
+            raise GoogleMapReviewError(
+                "RESERVED_LIST_NAME",
+                "'saved_places' is a reserved name for the default saved "
+                "bucket and cannot be used as a named list.",
+                suggested_action=(
+                    "Use save_place() to manage the default saved bucket, "
+                    "or pick a different name for your list."
+                ),
+                context={"name": name},
+            )
         list_id = self._new_id("list")
         self.lists[list_id] = {
             "list_id": list_id,
@@ -638,10 +663,16 @@ class GoogleMapReviewAPI(PatchableMixin):
         self, list_id: str, business_id: str, note: str = ""
     ) -> Dict[str, Any]:
         """
-        Add a place to a custom list with an optional note.
+        Add a place to a NAMED user-created list. The ``list_id`` MUST
+        refer to a list that exists in ``self.lists`` (i.e. one created
+        via ``create_list()`` or pre-loaded as part of the user's
+        account). The reserved id / name ``"saved_places"`` — which
+        identifies the default saved bucket managed by ``save_place()`` —
+        is explicitly NOT a valid argument here.
 
         Args:
-            list_id (str): The list to add the place to.
+            list_id (str): The list to add the place to. Must be a
+                user-created list id; never the reserved ``"saved_places"``.
             business_id (str): The place to add.
             note (str, optional): A note about this place. Defaults to "".
 
@@ -649,12 +680,25 @@ class GoogleMapReviewAPI(PatchableMixin):
             Dict[str, Any]:
                 list_id (str), business_id (str), status (str).
         """
+        if isinstance(list_id, str) and list_id.strip().lower() == "saved_places":
+            raise GoogleMapReviewError(
+                "RESERVED_LIST_ID",
+                "'saved_places' identifies the default saved bucket and "
+                "is not a valid list_id for add_to_list().",
+                suggested_action=(
+                    "To save a place to the default bucket, call "
+                    "save_place(business_id). Named lists must be created "
+                    "via create_list() first."
+                ),
+                context={"list_id": list_id},
+            )
         lst = self.lists.get(list_id)
         if not lst:
             raise GoogleMapReviewError(
                 "LIST_NOT_FOUND",
-                f"List '{list_id}' not found.",
-                suggested_action="Use get_all_lists() to find valid list IDs.",
+                f"List '{list_id}' not found. add_to_list() only accepts "
+                "user-created lists from create_list().",
+                suggested_action="Use get_all_lists() to find valid list IDs, or call create_list() first.",
                 context={"list_id": list_id},
             )
         place = self._require_place(business_id)

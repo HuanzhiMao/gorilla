@@ -883,11 +883,15 @@ class SpotifyAPI(PatchableMixin):
     ) -> Dict[str, Any]:
         """
         Start playing within a context (album or playlist). The context_uri
-        should be in the format "album:<album_id>" or "playlist:<playlist_id>".
-        Playback starts at the given offset index within the context.
+        is REQUIRED and must be in the format "album:<album_id>" or
+        "playlist:<playlist_id>" — None / empty values are rejected.
+        Playback starts at the given offset index within the context. To play
+        a single standalone track (no album/playlist context), call
+        start_track(track_id) instead.
 
         Args:
             context_uri (str): Context to play, e.g. "album:alb_1" or "playlist:pl_1".
+                Must be a non-empty string; None is not accepted.
             offset (int): Zero-based index of the track to start from within the
                 context. Defaults to 0.
             device_id (str, optional): Target device. Defaults to the active device.
@@ -897,6 +901,16 @@ class SpotifyAPI(PatchableMixin):
                 current_song_id (str), active_device_id (str), is_playing (bool),
                 position_ms (int), context_uri (str).
         """
+        if context_uri is None or not isinstance(context_uri, str) or not context_uri.strip():
+            raise SpotifyError(
+                "MISSING_CONTEXT_URI",
+                "context_uri is required and must be a non-empty string. "
+                "To play a single standalone track without album/playlist "
+                "context, call start_track(track_id) instead.",
+                suggested_action="Pass context_uri='album:<album_id>' or 'playlist:<playlist_id>', or call start_track().",
+                context={"context_uri": context_uri},
+            )
+
         parts = context_uri.split(":", 1)
         if len(parts) != 2 or parts[0] not in ("album", "playlist"):
             raise SpotifyError(

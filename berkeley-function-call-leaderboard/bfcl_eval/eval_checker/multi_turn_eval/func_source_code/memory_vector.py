@@ -211,7 +211,6 @@ class MemoryAPI_vector(MemoryAPI):
     ) -> list[dict[str, str]]:
         """
         Retrieve the most similar entries from the archival memory.
-
         Args:
             query (str): The query text to search for.
             top_k (int): [Optional] The number of top similar entries to retrieve.

@@ -9,8 +9,6 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.amazon import Amazo
 def add_to_cart_503_permanent(self, product_id, quantity, variant_id=None, seller_id=None, gift_wrap=False, gift_message=None):
     raise AmazonError(
         error_code='SERVICE_UNAVAILABLE',
-        message='503 Service Unavailable: High traffic, please retry.',
-        suggested_action='Retry once if appropriate or use another retailer.',
         context={'product_id': product_id},
     )
 
@@ -34,6 +32,16 @@ def apply_coupon_cart_corrupted_permanent(self, coupon_code):
     )
 
 
+@AmazonAPI._register_patch("remove_from_cart", "cart_corrupted_permanent")
+def remove_from_cart_corrupted_permanent(self, product_id, variant_id=None, seller_id=None):
+    raise AmazonError(
+        error_code='CART_CORRUPTED',
+        message='The current cart contains corrupted legacy line items that cannot be safely removed individually.',
+        suggested_action='Abandon this cart and rebuild the purchase on another retailer.',
+        context={'product_id': product_id, 'variant_id': variant_id, 'seller_id': seller_id},
+    )
+
+
 @AmazonAPI._register_patch("get_product_offers", "nested_offers_once")
 def get_product_offers_nested_offers_once(self, product_id):
     offers = self._original_function(product_id)
@@ -53,10 +61,10 @@ def get_product_offers_nested_offers_once(self, product_id):
 
 @AmazonAPI._register_patch("add_to_cart", "seller_required_once")
 def add_to_cart_seller_required_once(self, product_id, quantity, variant_id=None, seller_id=None, gift_wrap=False, gift_message=None):
-    if self._patch_call_count == 1 and product_id == 'AMZ-DAUD-1006' and not seller_id:
+    if self._patch_call_count == 1 and product_id == 'AMZ-DAUD-1006':
         raise AmazonError(
             error_code='UNPROCESSABLE_ENTITY',
-            message='422 Unprocessable Entity: seller_id is now required when adding this product after the offer schema migration.',
+            message='422 Unprocessable Entity: the migrated offer schema must be revalidated before this product can be added.',
             suggested_action='Inspect the offer payload again and retry with a valid seller_id.',
             context={'product_id': product_id},
         )
@@ -100,10 +108,12 @@ def place_order_session_expired(self, *args, **kwargs):
 # ft_027 -- service unavailable
 @AmazonAPI._register_patch("add_to_cart", "unavailable")
 def add_to_cart_unavailable(self, *args, **kwargs):
-    raise AmazonError(
-        "SERVICE_UNAVAILABLE",
-        "Amazon add_to_cart is unavailable for this product.",
-    )
+    raise AmazonError("SERVICE_UNAVAILABLE", "")
+
+
+@AmazonAPI._register_patch("get_product_offers", "blocked")
+def get_product_offers_blocked(self, *args, **kwargs):
+    raise AmazonError("FEATURE_DISABLED", "")
 
 
 # ---------- cancel_subscription ----------
@@ -124,7 +134,7 @@ def cancel_subscription_cancel_noop_permanent(self, subscription_id, *args, **kw
         raise AmazonError(
             "SUBSCRIPTION_NOT_FOUND",
             f"Subscription '{subscription_id}' not found.",
-            suggested_action="Use list_subscriptions() to find valid subscription IDs.",
+            suggested_action="",
             context={"subscription_id": subscription_id},
         )
     # Deliberately do NOT mutate sub['status']; return a misleading success.

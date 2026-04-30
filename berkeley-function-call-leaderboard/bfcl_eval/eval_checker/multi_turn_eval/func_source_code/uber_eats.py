@@ -66,7 +66,6 @@ DEFAULT_STATE = {
     "menu": {},
     "offers": {},
     "delivery_tracking": {},
-    "delivery_windows": {},
     "grocery_stores": {},
     "grocery_catalog": {},
     "group_orders": {},
@@ -88,7 +87,6 @@ class UberEatsAPI(PatchableMixin):
         self.menu: Dict[str, Dict[str, Any]] = {}
         self.offers: Dict[str, Dict[str, Any]] = {}
         self.delivery_tracking: Dict[str, Dict[str, Any]] = {}
-        self.delivery_windows: Dict[str, List[Dict[str, Any]]] = {}
         self.grocery_stores: Dict[str, Dict[str, Any]] = {}
         self.grocery_catalog: Dict[str, Dict[str, Any]] = {}
         self.group_orders: Dict[str, Dict[str, Any]] = {}
@@ -128,7 +126,6 @@ class UberEatsAPI(PatchableMixin):
         self.menu = scenario.get("menu", DEFAULT_STATE_COPY["menu"])
         self.offers = scenario.get("offers", DEFAULT_STATE_COPY["offers"])
         self.delivery_tracking = scenario.get("delivery_tracking", DEFAULT_STATE_COPY["delivery_tracking"])
-        self.delivery_windows = scenario.get("delivery_windows", DEFAULT_STATE_COPY["delivery_windows"])
         self.grocery_stores = scenario.get("grocery_stores", DEFAULT_STATE_COPY["grocery_stores"])
         self.grocery_catalog = scenario.get("grocery_catalog", DEFAULT_STATE_COPY["grocery_catalog"])
         self.group_orders = scenario.get("group_orders", DEFAULT_STATE_COPY["group_orders"])
@@ -815,210 +812,6 @@ class UberEatsAPI(PatchableMixin):
             else []
         )
         return {"uber_one": uber_one, "benefits": benefits}
-
-    # -----------------------------------------------------------------------
-    # Scheduled delivery
-    # -----------------------------------------------------------------------
-
-    def get_delivery_windows(self, restaurant_id: str) -> List[Dict[str, Any]]:
-        """
-        Retrieve available 30-minute delivery windows for the next 24 hours.
-
-        Args:
-            restaurant_id (str): The restaurant to get delivery windows for.
-
-        Returns:
-            List[Dict[str, Any]]: Available windows, each with:
-                window_id (str), start_time (str — ISO 8601), end_time (str — ISO 8601),
-                available (bool).
-        """
-        self._require_restaurant(restaurant_id)
-        windows = self.delivery_windows.get(restaurant_id, [])
-        return deepcopy(windows)
-
-    def schedule_order(
-        self,
-        restaurant_id: str,
-        items: List[Dict[str, Any]],
-        delivery_address_id: str,
-        payment_method_id: str,
-        window_id: str,
-        tip: float = 0.0,
-        offer_id: Optional[str] = None,
-    ) -> str:
-        """
-        Place a food delivery order scheduled for a specific delivery window.
-
-        Args:
-            restaurant_id (str): The restaurant to order from.
-            items (List[Dict]): Items to order. Each dict requires:
-                item_id (str), quantity (int >= 1).
-                Optional: selected_options (List), special_instructions (str).
-            delivery_address_id (str): Address ID from your profile to deliver to.
-            payment_method_id (str): Payment method ID from your profile to charge.
-            window_id (str): Delivery window ID from get_delivery_windows().
-            tip (float): Courier tip in dollars. Defaults to 0.0.
-            offer_id (str, optional): Offer ID from your promo wallet to apply.
-
-        Returns:
-            str: The new order_id. The order begins in "scheduled" status.
-        """
-        restaurant = self._require_restaurant(restaurant_id)
-        if not items:
-            raise UberEatsError(
-                "EMPTY_ORDER",
-                "Cannot place an order with no items.",
-                suggested_action="Provide at least one item.",
-                context={},
-            )
-
-        # Validate window
-        windows = self.delivery_windows.get(restaurant_id, [])
-        window = None
-        for w in windows:
-            if w.get("window_id") == window_id:
-                window = w
-                break
-        if not window:
-            raise UberEatsError(
-                "WINDOW_NOT_FOUND",
-                f"Delivery window '{window_id}' not found for restaurant '{restaurant_id}'.",
-                suggested_action="Use get_delivery_windows() to find valid window IDs.",
-                context={"window_id": window_id, "restaurant_id": restaurant_id},
-            )
-        if not window.get("available", True):
-            raise UberEatsError(
-                "WINDOW_UNAVAILABLE",
-                f"Delivery window '{window_id}' is no longer available.",
-                suggested_action="Choose a different delivery window.",
-                context={"window_id": window_id},
-            )
-
-        address = self._require_address(delivery_address_id)
-        self._require_payment_method(payment_method_id)
-
-        # Validate and enrich items
-        enriched_items = []
-        subtotal = 0.0
-        for entry in items:
-            item_id = entry.get("item_id")
-            item = self._require_menu_item(item_id)
-            if not item.get("available", True):
-                raise UberEatsError(
-                    "ITEM_UNAVAILABLE",
-                    f"Item '{item_id}' is currently unavailable.",
-                    suggested_action="Choose a different item from get_menu().",
-                    context={"item_id": item_id},
-                )
-            if item.get("restaurant_id") != restaurant_id:
-                raise UberEatsError(
-                    "ITEM_NOT_FROM_RESTAURANT",
-                    f"Item '{item_id}' does not belong to restaurant '{restaurant_id}'.",
-                    suggested_action="Only order items from the selected restaurant.",
-                    context={"item_id": item_id, "restaurant_id": restaurant_id},
-                )
-            qty = max(1, int(entry.get("quantity", 1)))
-            price = float(item.get("price", 0.0))
-            subtotal += price * qty
-            enriched_items.append(
-                {
-                    "item_id": item_id,
-                    "name": item.get("name"),
-                    "price": price,
-                    "quantity": qty,
-                    "selected_options": entry.get("selected_options", []),
-                    "special_instructions": entry.get("special_instructions", ""),
-                }
-            )
-
-        # Compute fees
-        delivery_fee = round(float(restaurant.get("delivery_fee", 2.99)), 2)
-        service_fee = round(subtotal * 0.10, 2)
-        tax = round(subtotal * 0.095, 2)
-        tip_amount = round(max(0.0, float(tip)), 2)
-
-        # Apply offer
-        applied_promo = None
-        discount = 0.0
-        if offer_id:
-            offer = self.offers.get(offer_id)
-            if not offer:
-                raise UberEatsError(
-                    "OFFER_NOT_FOUND",
-                    f"Offer '{offer_id}' not found.",
-                    suggested_action="Check get_available_offers() for valid offer IDs.",
-                    context={"offer_id": offer_id},
-                )
-            profile_promos = self.profile.get("promo", [])
-            if offer_id not in profile_promos:
-                raise UberEatsError(
-                    "OFFER_NOT_IN_WALLET",
-                    f"Offer '{offer_id}' is not in your promo wallet.",
-                    suggested_action="Only offers in your promo wallet can be applied.",
-                    context={"offer_id": offer_id},
-                )
-            min_order = float(offer.get("min_order", 0.0))
-            if subtotal < min_order:
-                raise UberEatsError(
-                    "OFFER_MIN_ORDER_NOT_MET",
-                    f"Order subtotal ${subtotal:.2f} is below the minimum ${min_order:.2f} for this offer.",
-                    suggested_action="Add more items to meet the minimum order requirement.",
-                    context={
-                        "offer_id": offer_id,
-                        "min_order": min_order,
-                        "subtotal": subtotal,
-                    },
-                )
-            if offer.get("uber_one") and not self.profile.get("uber_one", False):
-                raise UberEatsError(
-                    "UBER_ONE_REQUIRED",
-                    "This offer requires an active Uber One membership.",
-                    suggested_action="Subscribe to Uber One to use this offer.",
-                    context={"offer_id": offer_id},
-                )
-            discount = round(float(offer.get("discount", 0.0)), 2)
-            applied_promo = {"offer_id": offer_id, "discount": discount}
-            self.profile["promo"] = [o for o in profile_promos if o != offer_id]
-
-        total = round(
-            max(
-                0.0, subtotal + delivery_fee + service_fee + tax + tip_amount - discount
-            ),
-            2,
-        )
-        order_id = self._new_id("order")
-        now = _utc_now_iso()
-
-        self.orders[order_id] = {
-            "order_id": order_id,
-            "restaurant_id": restaurant_id,
-            "restaurant_name": restaurant.get("name"),
-            "items": enriched_items,
-            "fees": {
-                "delivery_fee": delivery_fee,
-                "service_fee": service_fee,
-                "tax": tax,
-                "tip": tip_amount,
-            },
-            "total": total,
-            "status": "scheduled",
-            "created_at": now,
-            "applied_promo": applied_promo,
-            "delivery_address": {
-                "street": address.get("street"),
-                "city": address.get("city"),
-                "state": address.get("state"),
-                "zip": address.get("zip"),
-            },
-            "scheduled_window": {
-                "window_id": window_id,
-                "start_time": window.get("start_time"),
-                "end_time": window.get("end_time"),
-            },
-            "eta_min": 0,
-        }
-
-        return order_id
 
     # -----------------------------------------------------------------------
     # Grocery delivery

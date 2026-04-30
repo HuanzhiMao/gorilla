@@ -95,13 +95,13 @@ def create_booking_roomswap(self, *args, **kwargs):
 def create_booking_dateguestpersistent009(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     reservation_id = result["booking_id"]
-    result["check_in"] = "2026-02-11"
-    result["check_out"] = "2026-02-14"
-    result["guests"] = 1
+    result["check_in_date"] = "2026-02-11"
+    result["check_out_date"] = "2026-02-14"
+    result["num_guests"] = 1
     if reservation_id in self.bookings:
-        self.bookings[reservation_id]["check_in"] = "2026-02-11"
-        self.bookings[reservation_id]["check_out"] = "2026-02-14"
-        self.bookings[reservation_id]["guests"] = 1
+        self.bookings[reservation_id]["check_in_date"] = "2026-02-11"
+        self.bookings[reservation_id]["check_out_date"] = "2026-02-14"
+        self.bookings[reservation_id]["num_guests"] = 1
     return result
 
 
@@ -110,13 +110,13 @@ def create_booking_dateguestpersistent009(self, *args, **kwargs):
 def create_booking_dateguestpersistent010(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
     reservation_id = result["booking_id"]
-    result["check_in"] = "2026-12-21"
-    result["check_out"] = "2026-12-24"
-    result["guests"] = 1
+    result["check_in_date"] = "2026-12-21"
+    result["check_out_date"] = "2026-12-24"
+    result["num_guests"] = 1
     if reservation_id in self.bookings:
-        self.bookings[reservation_id]["check_in"] = "2026-12-21"
-        self.bookings[reservation_id]["check_out"] = "2026-12-24"
-        self.bookings[reservation_id]["guests"] = 1
+        self.bookings[reservation_id]["check_in_date"] = "2026-12-21"
+        self.bookings[reservation_id]["check_out_date"] = "2026-12-24"
+        self.bookings[reservation_id]["num_guests"] = 1
     return result
 
 
@@ -186,19 +186,13 @@ def cancel_booking_refundcontradiction(self, *args, **kwargs):
 # ft_001/ft_005/ft_008/ft_009/ft_010 -- blocked (identical implementations)
 @BookingAPI._register_patch("modify_booking", "blocked")
 def modify_booking_blocked(self, *args, **kwargs):
-    raise BookingError(
-        "FEATURE_DISABLED",
-        "Booking modifications are not available for this property. Please try a different approach.",
-    )
+    raise BookingError("FEATURE_DISABLED", "")
 
 
 # ft_001/ft_005/ft_008/ft_009 -- blocked (identical implementations)
 @BookingAPI._register_patch("get_property", "blocked")
 def get_property_blocked(self, *args, **kwargs):
-    raise BookingError(
-        "FEATURE_DISABLED",
-        "Property details are temporarily not available. Please try a different approach.",
-    )
+    raise BookingError("FEATURE_DISABLED", "")
 
 
 # ---------- modify_booking (regional date format) ----------
@@ -250,3 +244,20 @@ def cancel_booking_refund_inflated_permanent(self, booking_id, *args, **kwargs):
         real["_refund_table_warning"] = "refund total may not match booking total_price"
     return real
 
+
+# ─── Source: yash (alternate-path blockers) ───
+
+
+@BookingAPI._register_patch("list_bookings", "blocked")
+def list_bookings_blocked(self, *args, **kwargs):
+    raise BookingError("FEATURE_DISABLED", "")
+
+
+@BookingAPI._register_patch("apply_genius_discount", "blocked")
+def apply_genius_discount_blocked(self, *args, **kwargs):
+    raise BookingError("FEATURE_DISABLED", "")
+
+
+@BookingAPI._register_patch("get_genius_deals", "blocked")
+def get_genius_deals_blocked(self, *args, **kwargs):
+    raise BookingError("FEATURE_DISABLED", "")

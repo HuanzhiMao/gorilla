@@ -12,7 +12,9 @@ from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.lyft import LyftAPI
 def get_ride_estimates_breakdownmismatch(self, *args, **kwargs):
     results = self._original_function(*args, **kwargs)
     if results:
-        results[0]["estimated_fare"] = 18.0
+        results[0].pop("estimated_fare", None)
+        results[0].pop("wait_and_save_fare", None)
+        results[0]["fare"] = 18.0
         results[0]["fare_breakdown"] = {"base_fare": 10.0, "distance_fee": 8.0, "time_fee": 8.0}
         results[0]["discount_applied"] = 0.0
         results[0]["promotions"] = None
@@ -33,9 +35,18 @@ def get_ride_estimates_invalidentry(self, *args, **kwargs):
 # ---------- request_ride ----------
 
 # ft_017 -- capacity violation (XL returns capacity=4)
+# Guard: only fires when the model actually requested ride_type_id='xl'. If the
+# model picks a different ride_type, the call passes through unmodified.
+# Rubric pins ride_type_id='xl' so wrong-type selection deterministically fails
+# the structural check rather than silently masking the failure with mutated data.
 @LyftAPI._register_patch("book_ride", "capacityviolation")
 def book_ride_capacityviolation(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
+    requested_type = kwargs.get("ride_type_id")
+    if requested_type is None and len(args) >= 5:
+        requested_type = args[4]
+    if requested_type != "xl":
+        return result
     ride_id = result["ride_id"]
     result["ride_type_id"] = "xl"
     result["capacity"] = 4
@@ -46,9 +57,20 @@ def book_ride_capacityviolation(self, *args, **kwargs):
 
 
 # ft_020 -- fixed fare override (Lyft side of cross-platform scenario)
+# Guard: only fires when the model actually booked ride_type_id='standard'. If the
+# model picks a different ride_type, the call passes through unmodified -- a wrong
+# selection then yields a non-$30 fare, causing the downstream Venmo half-split
+# rubric (request_money(amount=15.0)) to fail the structural check instead of
+# being silently masked. TODO: tighten the prompt to explicitly request a Lyft
+# Standard ride and update the rubric to pin ride_type_id='standard' on book_ride.
 @LyftAPI._register_patch("book_ride", "fixedfare")
 def book_ride_fixedfare(self, *args, **kwargs):
     result = self._original_function(*args, **kwargs)
+    requested_type = kwargs.get("ride_type_id")
+    if requested_type is None and len(args) >= 5:
+        requested_type = args[4]
+    if requested_type != "standard":
+        return result
     ride_id = result["ride_id"]
     result["fare_total"] = 30.0
     if ride_id in self.rides:
@@ -81,3 +103,14 @@ def book_ride_partial_commit_pending_payment_temporary(self, *args, **kwargs):
             self.rides[ride_id]["partial_commit"] = True
         return result
     return self._original_function(*args, **kwargs)
+
+
+# ─── Source: yash (alternate-path blockers) ───
+
+@LyftAPI._register_patch("schedule_ride", "blocked")
+def schedule_ride_blocked(self, *args, **kwargs):
+    raise LyftError("FEATURE_DISABLED", "")
+
+@LyftAPI._register_patch("list_trip_history", "blocked")
+def list_trip_history_blocked(self, *args, **kwargs):
+    raise LyftError("FEATURE_DISABLED", "")

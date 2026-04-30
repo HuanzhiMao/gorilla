@@ -854,106 +854,226 @@ class TargetAPI(PatchableMixin):
             )
         return results
 
-    def apply_circle_offer(self, offer_id: str) -> Dict[str, Any]:
+    def apply_circle_offer(
+        self,
+        offer_id: Optional[str] = None,
+        promo_code: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """
-        Clip and apply a Target Circle offer to the current user's cart. The offer must
-        be valid and applicable to at least one item in the cart.
+        Apply a discount to the current user's cart. This unified entry point
+        accepts EITHER a Target Circle offer (`offer_id`) OR a promotional
+        discount code (`promo_code`) — exactly one of the two must be provided.
+
+        Circle offer path (`offer_id`):
+            - Requires an active Target Circle membership.
+            - Reads from the Circle offer catalogue and validates expiry,
+              cart applicability (by product or department), and that the
+              offer has not already been applied.
+            - Clips the offer and appends `offer_id` to
+              `cart["circle_offers_applied"]`.
+
+        Discount code path (`promo_code`):
+            - No Circle membership requirement.
+            - Reads from the user's `profile.promos` wallet and validates
+              expiry and `min_order` threshold.
+            - Sets `cart["applied_promo"]` to the code.
 
         Args:
-            offer_id (str): The Circle offer to apply (from get_circle_offers()).
+            offer_id (str, optional): Circle offer ID (from
+                get_circle_offers()). Mutually exclusive with `promo_code`.
+            promo_code (str, optional): Promotional discount code from the
+                user's promo wallet. Mutually exclusive with `offer_id`.
 
         Returns:
             Dict[str, Any]:
-                applied (bool), offer_id (str), discount_preview (int, cents),
-                reason (str -- "OK", "OFFER_NOT_FOUND", "OFFER_EXPIRED",
-                "NOT_APPLICABLE", "ALREADY_APPLIED").
+                applied (bool), kind (str — "circle_offer" or "discount_code"),
+                offer_id (str | None), promo_code (str | None),
+                discount_preview (int, cents),
+                reason (str — "OK" or one of: "OFFER_NOT_FOUND",
+                    "OFFER_EXPIRED", "NOT_APPLICABLE", "ALREADY_APPLIED",
+                    "PROMO_NOT_FOUND", "PROMO_EXPIRED", "MIN_ORDER_NOT_MET").
         """
-        if not self.profile.get("membership", {}).get("circle_member", False):
+        # Exactly-one validation: caller must pick a path.
+        if (offer_id is None) == (promo_code is None):
             raise TargetError(
-                "NOT_CIRCLE_MEMBER",
-                "User is not a Target Circle member.",
-                suggested_action="Target Circle membership is required.",
-                context={},
+                "INVALID_DISCOUNT_ARGUMENTS",
+                "Provide exactly one of offer_id (Circle offer) or "
+                "promo_code (discount code).",
+                suggested_action=(
+                    "Pass offer_id='<circle_offer_id>' from "
+                    "get_circle_offers(), OR promo_code='<code>' from your "
+                    "promo wallet — but not both and not neither."
+                ),
+                context={"offer_id": offer_id, "promo_code": promo_code},
             )
 
-        offer = self.offers.get(offer_id)
-        if not offer:
+        # ---------------- Circle offer path ----------------
+        if offer_id is not None:
+            if not self.profile.get("membership", {}).get("circle_member", False):
+                raise TargetError(
+                    "NOT_CIRCLE_MEMBER",
+                    "User is not a Target Circle member.",
+                    suggested_action="Target Circle membership is required.",
+                    context={},
+                )
+
+            offer = self.offers.get(offer_id)
+            if not offer:
+                return {
+                    "applied": False,
+                    "kind": "circle_offer",
+                    "offer_id": offer_id,
+                    "promo_code": None,
+                    "discount_preview": 0,
+                    "reason": "OFFER_NOT_FOUND",
+                }
+
+            # Check expiry
+            expiry = offer.get("expiry")
+            if expiry:
+                try:
+                    exp_dt = datetime.fromisoformat(expiry)
+                    if exp_dt < datetime.now(timezone.utc):
+                        return {
+                            "applied": False,
+                            "kind": "circle_offer",
+                            "offer_id": offer_id,
+                            "promo_code": None,
+                            "discount_preview": 0,
+                            "reason": "OFFER_EXPIRED",
+                        }
+                except (ValueError, TypeError):
+                    pass
+
+            cart = self._get_user_cart()
+
+            # Check if already applied
+            if offer_id in cart.get("circle_offers_applied", []):
+                return {
+                    "applied": False,
+                    "kind": "circle_offer",
+                    "offer_id": offer_id,
+                    "promo_code": None,
+                    "discount_preview": 0,
+                    "reason": "ALREADY_APPLIED",
+                }
+
+            # Check applicability
+            applicable_products = offer.get("applicable_product_ids", [])
+            applicable_dept = offer.get("department")
+            cart_product_ids = [i["product_id"] for i in cart.get("items", [])]
+            cart_depts = set()
+            for item in cart.get("items", []):
+                product = self.products.get(item["product_id"], {})
+                dept = product.get("department", "")
+                if dept:
+                    cart_depts.add(dept.lower())
+
+            applicable = False
+            if applicable_products:
+                if any(pid in cart_product_ids for pid in applicable_products):
+                    applicable = True
+            elif applicable_dept:
+                if applicable_dept.lower() in cart_depts:
+                    applicable = True
+            else:
+                # General offer applies to everything
+                if cart.get("items"):
+                    applicable = True
+
+            if not applicable:
+                return {
+                    "applied": False,
+                    "kind": "circle_offer",
+                    "offer_id": offer_id,
+                    "promo_code": None,
+                    "discount_preview": 0,
+                    "reason": "NOT_APPLICABLE",
+                }
+
+            # Clip the offer
+            if not offer.get("clipped_by"):
+                offer.setdefault("clipped_by", []).append("user")
+
+            # Apply to cart
+            cart.setdefault("circle_offers_applied", []).append(offer_id)
+
+            discount = self._compute_circle_discount()
             return {
-                "applied": False,
+                "applied": True,
+                "kind": "circle_offer",
                 "offer_id": offer_id,
-                "discount_preview": 0,
-                "reason": "OFFER_NOT_FOUND",
+                "promo_code": None,
+                "discount_preview": discount,
+                "reason": "OK",
             }
 
-        # Check expiry
-        expiry = offer.get("expiry")
+        # ---------------- Discount code path ----------------
+        cart = self._get_user_cart()
+        subtotal = self._compute_cart_subtotal()
+
+        promos = self.profile.get("promos", {})
+        promo = promos.get((promo_code or "").upper())
+        if not promo:
+            for code, p in promos.items():
+                if code.upper() == (promo_code or "").upper():
+                    promo = p
+                    break
+        if not promo:
+            return {
+                "applied": False,
+                "kind": "discount_code",
+                "offer_id": None,
+                "promo_code": promo_code,
+                "discount_preview": 0,
+                "reason": "PROMO_NOT_FOUND",
+            }
+
+        min_order = promo.get("min_order")
+        if min_order is not None and subtotal < int(min_order):
+            return {
+                "applied": False,
+                "kind": "discount_code",
+                "offer_id": None,
+                "promo_code": promo_code,
+                "discount_preview": 0,
+                "reason": "MIN_ORDER_NOT_MET",
+            }
+
+        expiry = promo.get("expiry")
         if expiry:
             try:
                 exp_dt = datetime.fromisoformat(expiry)
                 if exp_dt < datetime.now(timezone.utc):
                     return {
                         "applied": False,
-                        "offer_id": offer_id,
+                        "kind": "discount_code",
+                        "offer_id": None,
+                        "promo_code": promo_code,
                         "discount_preview": 0,
-                        "reason": "OFFER_EXPIRED",
+                        "reason": "PROMO_EXPIRED",
                     }
             except (ValueError, TypeError):
                 pass
 
-        cart = self._get_user_cart()
-
-        # Check if already applied
-        if offer_id in cart.get("circle_offers_applied", []):
-            return {
-                "applied": False,
-                "offer_id": offer_id,
-                "discount_preview": 0,
-                "reason": "ALREADY_APPLIED",
-            }
-
-        # Check applicability
-        applicable_products = offer.get("applicable_product_ids", [])
-        applicable_dept = offer.get("department")
-        cart_product_ids = [i["product_id"] for i in cart.get("items", [])]
-        cart_depts = set()
-        for item in cart.get("items", []):
-            product = self.products.get(item["product_id"], {})
-            dept = product.get("department", "")
-            if dept:
-                cart_depts.add(dept.lower())
-
-        applicable = False
-        if applicable_products:
-            if any(pid in cart_product_ids for pid in applicable_products):
-                applicable = True
-        elif applicable_dept:
-            if applicable_dept.lower() in cart_depts:
-                applicable = True
+        discount_type = promo.get("discount_type", "percent")
+        discount_value = int(promo.get("discount_value", 0))
+        if discount_type == "percent":
+            discount_preview = int(round(subtotal * (discount_value / 100.0)))
+        elif discount_type == "flat":
+            discount_preview = min(discount_value, subtotal)
+        elif discount_type == "free_shipping":
+            discount_preview = 0
         else:
-            # General offer applies to everything
-            if cart.get("items"):
-                applicable = True
+            discount_preview = 0
 
-        if not applicable:
-            return {
-                "applied": False,
-                "offer_id": offer_id,
-                "discount_preview": 0,
-                "reason": "NOT_APPLICABLE",
-            }
-
-        # Clip the offer
-        if not offer.get("clipped_by"):
-            offer.setdefault("clipped_by", []).append("user")
-
-        # Apply to cart
-        cart.setdefault("circle_offers_applied", []).append(offer_id)
-
-        discount = self._compute_circle_discount()
+        cart["applied_promo"] = promo_code
         return {
             "applied": True,
-            "offer_id": offer_id,
-            "discount_preview": discount,
+            "kind": "discount_code",
+            "offer_id": None,
+            "promo_code": promo_code,
+            "discount_preview": discount_preview,
             "reason": "OK",
         }
 
@@ -989,71 +1109,6 @@ class TargetAPI(PatchableMixin):
     # -----------------------------------------------------------------------
     # Checkout & orders
     # -----------------------------------------------------------------------
-
-    def apply_discount_code(self, promo_code: str) -> Dict[str, Any]:
-        """
-        Apply a promotional code to the current user's cart.
-
-        Args:
-            promo_code (str): The promotional code to apply.
-
-        Returns:
-            Dict[str, Any]:
-                valid (bool), reason (str -- "OK" or error code such as
-                PROMO_NOT_FOUND, MIN_ORDER_NOT_MET, PROMO_EXPIRED),
-                discount_preview (int, cents).
-        """
-        cart = self._get_user_cart()
-        subtotal = self._compute_cart_subtotal()
-
-        promos = self.profile.get("promos", {})
-        promo = promos.get((promo_code or "").upper())
-        if not promo:
-            for code, p in promos.items():
-                if code.upper() == (promo_code or "").upper():
-                    promo = p
-                    break
-        if not promo:
-            return {"valid": False, "reason": "PROMO_NOT_FOUND", "discount_preview": 0}
-
-        min_order = promo.get("min_order")
-        if min_order is not None and subtotal < int(min_order):
-            return {
-                "valid": False,
-                "reason": "MIN_ORDER_NOT_MET",
-                "discount_preview": 0,
-            }
-
-        expiry = promo.get("expiry")
-        if expiry:
-            try:
-                exp_dt = datetime.fromisoformat(expiry)
-                if exp_dt < datetime.now(timezone.utc):
-                    return {
-                        "valid": False,
-                        "reason": "PROMO_EXPIRED",
-                        "discount_preview": 0,
-                    }
-            except (ValueError, TypeError):
-                pass
-
-        discount_type = promo.get("discount_type", "percent")
-        discount_value = int(promo.get("discount_value", 0))
-        if discount_type == "percent":
-            discount_preview = int(round(subtotal * (discount_value / 100.0)))
-        elif discount_type == "flat":
-            discount_preview = min(discount_value, subtotal)
-        elif discount_type == "free_shipping":
-            discount_preview = 0
-        else:
-            discount_preview = 0
-
-        cart["applied_promo"] = promo_code
-        return {
-            "valid": True,
-            "reason": "OK",
-            "discount_preview": discount_preview,
-        }
 
     def checkout_order(
         self,

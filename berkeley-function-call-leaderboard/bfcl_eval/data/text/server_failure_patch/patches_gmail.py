@@ -9,30 +9,15 @@ import uuid
 @GmailAPI._register_patch("send_email", "unavailable_permanent")
 def send_email_unavailable_permanent(self, *args, **kwargs):
     """Permanent. Always raises SERVICE_UNAVAILABLE."""
-    raise GmailError(
-        "SERVICE_UNAVAILABLE",
-        "Gmail SMTP service is currently unavailable.",
-        "Try using an alternative email service.",
-    )
+    raise GmailError("SERVICE_UNAVAILABLE", "")
 
 
 @GmailAPI._register_patch("send_email", "unavailable_temporary")
 def send_email_unavailable_temporary(self, *args, **kwargs):
     """Temporary. Fails on calls 1-2, passes through on 3+."""
     if self._patch_call_count <= 2:
-        raise GmailError(
-            "SERVICE_UNAVAILABLE",
-            "Gmail service temporarily unavailable. Please retry.",
-            "Retry the request.",
-        )
+        raise GmailError("SERVICE_UNAVAILABLE", "")
     return self._original_function(*args, **kwargs)
-
-
-@GmailAPI._register_patch("create_draft", "noop_permanent")
-def create_draft_noop_permanent(self, *args, **kwargs):
-    """Permanent silent no-op. Returns fake draft without ever creating it.
-    The draft never exists, so list_drafts will not show it."""
-    return {"draft_id": f"draft_{uuid.uuid4().hex[:8]}", "status": "created"}
 
 
 @GmailAPI._register_patch("send_email", "noop_permanent")
@@ -48,12 +33,12 @@ def send_email_noop_permanent(self, *args, **kwargs):
 
 @GmailAPI._register_patch("send_email", "schema_mismatch_temporary")
 def send_email_schema_mismatch_temporary(self, *args, **kwargs):
-    """Temporary. On first call raises INVALID_PARAMETER about renamed param. On 2nd+, passes through."""
+    """Temporary. On first call raises INVALID_PARAMETER. On 2nd+, passes through."""
     if self._patch_call_count <= 1:
         raise GmailError(
             "INVALID_PARAMETER",
-            "Parameter 'from' has been replaced by 'sender_alias'. Provide sender_alias with your configured alias name.",
-            "Use 'sender_alias' parameter.",
+            "Temporary send schema validation failed for this message.",
+            "Retry send_email with the documented recipient, subject, and body fields.",
         )
     return self._original_function(*args, **kwargs)
 
@@ -179,7 +164,7 @@ def forward_email_relay_outage(self, *args, **kwargs):
     """
     return {
         "error_code": "SERVICE_UNAVAILABLE",
-        "message": "Outbound mail relay is currently unavailable",
+        "message": "",
         "context": {"subsystem": "outbound_relay"}
     }
 
@@ -227,3 +212,30 @@ def send_email_body_truncation_temporary(self, *args, **kwargs):
                 email["_truncation_marker"] = True
         return result
     return self._original_function(*args, **kwargs)
+
+
+# ─── Source: yash (alternate-path blockers) ───
+
+@GmailAPI._register_patch("send_from_template", "blocked")
+def send_from_template_blocked(self, *args, **kwargs):
+    raise GmailError("FEATURE_DISABLED", "")
+
+@GmailAPI._register_patch("reply_to_email", "blocked")
+def reply_to_email_blocked(self, *args, **kwargs):
+    raise GmailError("FEATURE_DISABLED", "")
+
+@GmailAPI._register_patch("forward_email", "blocked")
+def forward_email_blocked(self, *args, **kwargs):
+    raise GmailError("FEATURE_DISABLED", "")
+
+@GmailAPI._register_patch("list_emails", "blocked")
+def list_emails_blocked(self, *args, **kwargs):
+    raise GmailError("FEATURE_DISABLED", "")
+
+@GmailAPI._register_patch("get_thread", "blocked")
+def get_thread_blocked(self, *args, **kwargs):
+    raise GmailError("FEATURE_DISABLED", "")
+
+@GmailAPI._register_patch("search_emails", "blocked")
+def search_emails_blocked(self, *args, **kwargs):
+    raise GmailError("FEATURE_DISABLED", "")

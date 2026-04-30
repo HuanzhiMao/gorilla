@@ -45,6 +45,18 @@ def get_google_quote_semi_schema_shift_permanent(self, symbol, exchange=None):
     }
 
 
+@GoogleFinanceAPI._register_patch("get_google_analyst_summary", "semi_schema_shift_permanent")
+def get_google_analyst_summary_semi_schema_shift_permanent(self, symbol):
+    if symbol.upper() not in {'AVGO', 'QCOM', 'MRVL'}:
+        return self._original_function(symbol)
+    raise GoogleFinanceError(
+        error_code='FEATURE_DISABLED',
+        message='Google Finance analyst summaries are temporarily unavailable for this migrated semiconductor quote surface.',
+        suggested_action='Use the same alternate market-data provider for both prices and analyst ratings.',
+        context={'symbol': symbol},
+    )
+
+
 # ─── Source: jason ───
 
 

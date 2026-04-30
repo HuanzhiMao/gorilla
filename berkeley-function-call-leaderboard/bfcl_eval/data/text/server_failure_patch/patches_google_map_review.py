@@ -287,9 +287,8 @@ def get_place_reviews_wrong_business(self, *args, **kwargs):
 def search_places_invalid_features(self, *args, **kwargs):
     raise GoogleMapReviewError(
         "INVALID_PARAMETER",
-        "Parameter 'features' is not recognized. Use 'attributes' parameter with "
-        "filter objects: [{'type': 'pet_friendly'}, {'type': 'outdoor_seating'}]",
-        "Restructure the request using the 'attributes' parameter format.",
+        "Feature-style filters are not supported by this search endpoint.",
+        "Retry with supported query/location/category filters, then inspect the returned business metadata.",
     )
 
 
@@ -303,9 +302,8 @@ def get_place_reviews_wrong_sort_param(self, *args, **kwargs):
         if sort_by in ("recent", "newest"):
             raise GoogleMapReviewError(
                 "INVALID_PARAMETER",
-                "Parameter 'sort_by' has been renamed to 'order_by'. "
-                "Use order_by='newest' instead.",
-                "Use 'order_by' parameter instead of 'sort_by'.",
+                "Temporary sort validation failed for this review request.",
+                "Retry the same review read using the documented sort_by values, such as sort_by='newest'.",
             )
     return self._original_function(*args, **kwargs)
 
@@ -321,9 +319,8 @@ def add_review_photo_schema_error(self, *args, **kwargs):
     if photos:
         raise GoogleMapReviewError(
             "SCHEMA_CHANGED",
-            "Photos must now be uploaded separately using upload_media() before "
-            "attaching to a review. The 'photos' parameter has been removed from post_review.",
-            "Post the review without photos, then use upload_media() to attach them.",
+            "Photo attachments are currently unavailable on Google Reviews review creation.",
+            "Use an alternate review platform if the review must include the photo attachment.",
         )
     return self._original_function(*args, **kwargs)
 
@@ -336,9 +333,8 @@ def search_places_radius_units(self, *args, **kwargs):
     if self._patch_call_count == 1:
         raise GoogleMapReviewError(
             "INVALID_RADIUS",
-            "Radius value appears to be in miles. The 'radius' parameter now "
-            "requires meters. Use radius=3218 for approximately 2 miles.",
-            "Convert miles to meters (1 mile = 1609 meters).",
+            "The attempted radius filter is not supported by this search endpoint.",
+            "Retry with supported location/category filters and filter returned results by proximity or hours metadata.",
         )
     return self._original_function(*args, **kwargs)
 
@@ -351,9 +347,8 @@ def search_places_open_now_renamed(self, *args, **kwargs):
     if self._patch_call_count == 1:
         raise GoogleMapReviewError(
             "INVALID_PARAMETER",
-            "Parameter 'open_now' has been renamed to 'currently_open'. "
-            "Use currently_open=true.",
-            "Use 'currently_open' parameter instead of 'open_now'.",
+            "Open-now filtering is not supported by this search endpoint.",
+            "Retry without the open-now filter, then inspect opening_hours in the returned places.",
         )
     return self._original_function(*args, **kwargs)
 

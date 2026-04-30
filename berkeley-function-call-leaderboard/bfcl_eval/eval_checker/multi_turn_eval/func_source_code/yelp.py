@@ -524,7 +524,16 @@ class YelpAPI(PatchableMixin):
 
     def save_business(self, business_id: str) -> Dict[str, Any]:
         """
-        Save (bookmark) a business for later reference.
+        Save a business to the user's DEFAULT saved-places list (the
+        ``saved_places`` bucket — every Yelp account has exactly one).
+
+        This is the only entry point for the default bucket. To add a
+        business to a NAMED user-created collection, use
+        ``add_to_collection()`` against a collection_id returned by
+        ``create_collection()``. The two stores are disjoint:
+
+        - default bucket → ``self.saved_places``
+        - named collections → ``self.collections``
 
         Args:
             business_id (str): The business to save.
@@ -651,10 +660,15 @@ class YelpAPI(PatchableMixin):
         self, name: str, description: str = ""
     ) -> Dict[str, Any]:
         """
-        Create a new collection (curated list of businesses).
+        Create a new NAMED collection (curated list of businesses) in the
+        user's collection store. The reserved name ``"saved_places"`` is
+        rejected — that string identifies the default saved-places bucket
+        managed by ``save_business()`` / ``unsave_business()`` and may
+        never be created as a named collection.
 
         Args:
-            name (str): The name of the collection.
+            name (str): The name of the collection. Must not be
+                ``"saved_places"`` (case-insensitive).
             description (str, optional): A description for the collection.
                 Defaults to "".
 
@@ -663,6 +677,17 @@ class YelpAPI(PatchableMixin):
                 collection_id (str), name (str), description (str),
                 status (str).
         """
+        if isinstance(name, str) and name.strip().lower() == "saved_places":
+            raise YelpError(
+                "RESERVED_COLLECTION_NAME",
+                "'saved_places' is a reserved name for the default saved "
+                "bucket and cannot be used as a named collection.",
+                suggested_action=(
+                    "Use save_business() to manage the default saved bucket, "
+                    "or pick a different name for your collection."
+                ),
+                context={"name": name},
+            )
         collection_id = self._new_id("collection")
         self.collections[collection_id] = {
             "collection_id": collection_id,
@@ -682,10 +707,18 @@ class YelpAPI(PatchableMixin):
         self, collection_id: str, business_id: str, note: str = ""
     ) -> Dict[str, Any]:
         """
-        Add a business to a collection with an optional note.
+        Add a business to a NAMED user-created collection. The
+        ``collection_id`` MUST refer to a collection that exists in
+        ``self.collections`` (i.e. one created via
+        ``create_collection()`` or pre-loaded as part of the user's
+        account). The reserved id / name ``"saved_places"`` — which
+        identifies the default saved bucket managed by
+        ``save_business()`` — is explicitly NOT a valid argument here.
 
         Args:
             collection_id (str): The collection to add the business to.
+                Must be a user-created collection id; never the reserved
+                ``"saved_places"``.
             business_id (str): The business to add.
             note (str, optional): A note about why this business is in the
                 collection. Defaults to "".
@@ -694,12 +727,25 @@ class YelpAPI(PatchableMixin):
             Dict[str, Any]:
                 collection_id (str), business_id (str), status (str).
         """
+        if isinstance(collection_id, str) and collection_id.strip().lower() == "saved_places":
+            raise YelpError(
+                "RESERVED_COLLECTION_ID",
+                "'saved_places' identifies the default saved bucket and "
+                "is not a valid collection_id for add_to_collection().",
+                suggested_action=(
+                    "To save a business to the default bucket, call "
+                    "save_business(business_id). Named collections must be "
+                    "created via create_collection() first."
+                ),
+                context={"collection_id": collection_id},
+            )
         collection = self.collections.get(collection_id)
         if not collection:
             raise YelpError(
                 "COLLECTION_NOT_FOUND",
-                f"Collection '{collection_id}' not found.",
-                suggested_action="Use list_collections() to find valid collection IDs.",
+                f"Collection '{collection_id}' not found. add_to_collection() "
+                "only accepts user-created collections from create_collection().",
+                suggested_action="Use list_collections() to find valid collection IDs, or call create_collection() first.",
                 context={"collection_id": collection_id},
             )
         biz = self._require_business(business_id)

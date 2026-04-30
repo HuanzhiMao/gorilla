@@ -47,10 +47,7 @@ def create_itinerary_nightlyratemismatch(self, *args, **kwargs):
 # ft_006 -- blocked (prevent alternate path)
 @ExpediaAPI._register_patch("update_itinerary", "blocked")
 def update_itinerary_blocked(self, *args, **kwargs):
-    raise ExpediaError(
-        "FEATURE_DISABLED",
-        "Booking modifications are not available for this property. Please try a different approach.",
-    )
+    raise ExpediaError("FEATURE_DISABLED", "")
 
 
 # ---------- create_itinerary (price_breakdown_partial_commit_permanent) ----------
@@ -87,3 +84,8 @@ def create_itinerary_price_breakdown_partial_commit_permanent(self, *args, **kwa
     target["partial_price_commit"] = True
     result["partial_price_commit"] = True
     return result
+
+
+@ExpediaAPI._register_patch("list_trips", "blocked")
+def list_trips_blocked(self, *args, **kwargs):
+    raise ExpediaError("FEATURE_DISABLED", "")
