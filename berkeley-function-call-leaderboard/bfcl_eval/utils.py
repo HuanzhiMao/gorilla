@@ -1431,7 +1431,7 @@ def query_contains_audio_input(message: dict) -> bool:
     if contains_audio and message.get("role") != "user":
         raise ValueError("Audio input should only appear in user messages")
 
-    if len(message.get("content", "")) > 0:
+    if contains_audio and len(message.get("content", "")) > 0:
         raise ValueError("Audio input should not have text content at the same time")
 
     return contains_audio
