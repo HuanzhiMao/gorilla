@@ -76,13 +76,19 @@ def _cast_to_openai_type(properties, mapping):
                     properties[key]["items"]["items"]["type"] = mapping[
                         properties[key]["items"]["items"]["type"]
                     ]
-                elif (
-                    properties[key]["items"]["type"] == "object"
-                    and "properties" in properties[key]["items"]
-                ):
-                    properties[key]["items"]["properties"] = _cast_to_openai_type(
-                        properties[key]["items"]["properties"], mapping
-                    )
+                elif properties[key]["items"]["type"] == "object":
+                    if "properties" in properties[key]["items"]:
+                        properties[key]["items"]["properties"] = _cast_to_openai_type(
+                            properties[key]["items"]["properties"], mapping
+                        )
+                    if "additionalProperties" in properties[key]["items"] and isinstance(
+                        properties[key]["items"]["additionalProperties"], dict
+                    ):
+                        ap = properties[key]["items"]["additionalProperties"]
+                        if "type" in ap and ap["type"] in mapping:
+                            ap["type"] = mapping[ap["type"]]
+                        if "properties" in ap:
+                            ap["properties"] = _cast_to_openai_type(ap["properties"], mapping)
     return properties
 
 
