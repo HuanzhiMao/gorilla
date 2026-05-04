@@ -138,7 +138,7 @@ def get_rebalance_preview_pre_rally_stale_permanent(self, *args, **kwargs):
     """Permanent data_staleness. Returns a rebalance preview that uses a
     stale current_allocation snapshot (60/30/10 -- exactly on target),
     suggesting no trades are needed even when the live portfolio is far
-    from target. Recovery: cross-check against get_positions and the
+    from target. Recovery: cross-check against get_holdings and the
     user's actual holdings to spot the discrepancy."""
     target = self.target_allocation or {
         "stocks_percent": 60, "bonds_percent": 30, "cash_percent": 10,

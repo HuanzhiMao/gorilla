@@ -168,7 +168,7 @@ class VanguardAPI(PatchableMixin):
         entry = self.portfolio.get(fund_id)
         if not entry:
             raise VanguardError("FUND_NOT_FOUND", f"Fund '{fund_id}' not found.",
-                                suggested_action="Use search_stocks() to find valid fund IDs.")
+                                suggested_action="Use find_stocks() to find valid fund IDs.")
         return entry
 
     def _require_order(self, order_id: str) -> Dict[str, Any]:
@@ -195,7 +195,7 @@ class VanguardAPI(PatchableMixin):
     # Funds / portfolio catalog
     # -----------------------------------------------------------------------
 
-    def get_stock_quote(self, fund_id: str) -> Dict[str, Any]:
+    def get_stock_price(self, fund_id: str) -> Dict[str, Any]:
         """
         Get detailed information about a fund.
 
@@ -210,7 +210,7 @@ class VanguardAPI(PatchableMixin):
         """
         return deepcopy(self._require_stock(fund_id))
 
-    def search_stocks(
+    def find_stocks(
         self, query: str, category: Optional[str] = None,
         share_class: Optional[str] = None, limit: int = 10,
     ) -> List[Dict[str, Any]]:
@@ -290,7 +290,7 @@ class VanguardAPI(PatchableMixin):
     # Positions (holdings)
     # -----------------------------------------------------------------------
 
-    def get_positions(self) -> Dict[str, Any]:
+    def get_holdings(self) -> Dict[str, Any]:
         """
         Get all fund holdings.
 
@@ -446,7 +446,7 @@ class VanguardAPI(PatchableMixin):
             "shares_sold": sell_shares, "proceeds": proceeds, "status": "filled",
         }
 
-    def get_order(self, order_id: str) -> Dict[str, Any]:
+    def get_order_placement(self, order_id: str) -> Dict[str, Any]:
         """
         Get order details.
 
@@ -459,7 +459,7 @@ class VanguardAPI(PatchableMixin):
         order = self._require_order(order_id)
         return deepcopy(order)
 
-    def list_orders(self, limit: int = 20) -> List[Dict[str, Any]]:
+    def list_order_placements(self, limit: int = 20) -> List[Dict[str, Any]]:
         """
         List orders, sorted newest first.
 
@@ -477,7 +477,7 @@ class VanguardAPI(PatchableMixin):
     # Watchlist
     # -----------------------------------------------------------------------
 
-    def add_to_watchlist(self, symbol: str) -> Dict[str, Any]:
+    def watchlist_add_symbol(self, symbol: str) -> Dict[str, Any]:
         """
         Add a fund to the watchlist.
 
@@ -493,7 +493,7 @@ class VanguardAPI(PatchableMixin):
         self.watchlist.append(symbol)
         return {"symbol": symbol, "status": "added"}
 
-    def remove_from_watchlist(self, symbol: str) -> Dict[str, Any]:
+    def watchlist_remove_symbol(self, symbol: str) -> Dict[str, Any]:
         """
         Remove a fund from the watchlist.
 
@@ -508,7 +508,7 @@ class VanguardAPI(PatchableMixin):
         self.watchlist.remove(symbol)
         return {"symbol": symbol, "status": "removed"}
 
-    def get_watchlist(self) -> List[Dict[str, Any]]:
+    def watchlist_list(self) -> List[Dict[str, Any]]:
         """
         Get the watchlist with current prices.
 
@@ -774,7 +774,7 @@ class VanguardAPI(PatchableMixin):
             raise VanguardError("NO_TARGET_SET", "Set a target allocation first.",
                                 suggested_action="Use set_target_allocation() first.")
 
-        positions_data = self.get_positions()
+        positions_data = self.get_holdings()
         total_value = positions_data.get("total_value", 0)
         cash = self.profile.get("cash_balance", 0)
         grand_total = total_value + cash
@@ -949,7 +949,7 @@ class VanguardAPI(PatchableMixin):
         if account_balance is not None:
             balance = account_balance
         else:
-            positions_data = self.get_positions()
+            positions_data = self.get_holdings()
             balance = positions_data.get("total_value", 0) + self.profile.get("cash_balance", 0)
 
         rmd_amount = round(balance / factor, 2)
