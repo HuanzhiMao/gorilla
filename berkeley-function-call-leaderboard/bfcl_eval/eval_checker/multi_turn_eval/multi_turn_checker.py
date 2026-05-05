@@ -229,6 +229,7 @@ def response_checker(
     return {"valid": True}
 
 
+# NOT USED
 def method_invoke_order_checker(model_instances: dict, ground_truth_instances: dict):
     """
     Checks if the model_instance called the same order of methods as the ground_truth_instance.
@@ -337,16 +338,20 @@ def multi_turn_func_call_constraint_checker(
         multi_turn_model_result_list_decoded: The decoded model responses across turns.
             Structure: list[turns] -> list[steps] -> list[func_call_strings]
         ground_truth: A dict with keys:
-            - "must_be_called_functions": list of function specs that must appear in order.
-            - "must_not_be_called_functions": list of function specs that must not appear.
+            - "must_be_called_functions": list of lists of function specs. Each inner list
+              must appear as an ordered subsequence of the model calls (other calls allowed
+              in between). The outer list has no ordering requirement across inner lists.
+            - "must_not_be_called_functions": list of lists of function specs. For each
+              inner list, none of its specs may appear in the model calls. The outer list
+              has no ordering requirement across inner lists.
 
     Each function spec is either:
         - "ClassName.method_name" — only checks that the method was called (args ignored)
         - "ClassName.method_name(arg1=val1, arg2=val2)" — checks that the method was called
           with at least the listed arguments matching the listed values (extra args are ok)
     """
-    must_be_called = ground_truth.get("must_be_called_functions", [])
-    must_not_be_called = ground_truth.get("must_not_be_called_functions", [])
+    must_be_called_groups = ground_truth.get("must_be_called_functions", [])
+    must_not_be_called_groups = ground_truth.get("must_not_be_called_functions", [])
 
     # Flatten all model function calls across turns and steps into a single ordered list
     all_model_calls = []
@@ -355,21 +360,19 @@ def multi_turn_func_call_constraint_checker(
             for func_call in step:
                 all_model_calls.append(func_call)
 
-    # Parse the constraint specs
-    must_be_called_specs = [_parse_func_spec(spec) for spec in must_be_called]
-    must_not_be_called_specs = [_parse_func_spec(spec) for spec in must_not_be_called]
+    # Each must_be_called group must appear as an ordered subsequence; groups are independent.
+    for group in must_be_called_groups:
+        specs = [_parse_func_spec(spec) for spec in group]
+        result = _check_must_be_called(all_model_calls, specs)
+        if not result["valid"]:
+            return result
 
-    # Check must_be_called: must appear as a subsequence (in order, other calls allowed in between)
-    must_be_called_result = _check_must_be_called(all_model_calls, must_be_called_specs)
-    if not must_be_called_result["valid"]:
-        return must_be_called_result
-
-    # Check must_not_be_called: none of these should appear
-    must_not_be_called_result = _check_must_not_be_called(
-        all_model_calls, must_not_be_called_specs
-    )
-    if not must_not_be_called_result["valid"]:
-        return must_not_be_called_result
+    # Each must_not_be_called group: none of its specs may appear; groups are independent.
+    for group in must_not_be_called_groups:
+        specs = [_parse_func_spec(spec) for spec in group]
+        result = _check_must_not_be_called(all_model_calls, specs)
+        if not result["valid"]:
+            return result
 
     return {"valid": True}
 
