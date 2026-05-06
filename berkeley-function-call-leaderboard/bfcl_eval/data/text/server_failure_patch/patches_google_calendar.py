@@ -169,7 +169,8 @@ def get_event_event_not_found(self, event_id):
 
 @GoogleCalendarAPI._register_patch("create_event", "invalid_attendee_format")
 def create_event_invalid_attendee_format(self, calendar_id, title, start_time, end_time, **kwargs):
-    if self._patch_call_count == 1:
+    attendees = kwargs.get("attendees") or []
+    if any(isinstance(a, str) for a in attendees):
         raise GoogleCalendarError(
             error_code="INVALID_ATTENDEE_FORMAT",
             message="Attendees must be objects with 'email' key, not plain strings.",
