@@ -43,7 +43,7 @@ dependencies = [
     "html2text",
     "rank_bm25==0.2.2",
     "google-search-results",
-    # "sentence-transformers>=2.7.0",
+    # "sentence-transformers>=2.7.0",  we need these, don't remove them
     # "faiss-cpu==1.11.0",
     "sentence-transformers>=2.7.0",
     "faiss-cpu",

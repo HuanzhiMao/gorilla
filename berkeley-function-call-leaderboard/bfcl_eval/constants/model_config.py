@@ -652,8 +652,8 @@ api_inference_model_map = {
         underscore_to_dot=False,
         supports_image_input=True,
     ),
-    "grok-4-1-fast-reasoning-FC": ModelConfig(
-        model_name="grok-4-1-fast-reasoning",
+    "grok-4.3-FC": ModelConfig(
+        model_name="grok-4.3",
         display_name="Grok-4-1-fast-reasoning (FC)",
         url="https://docs.x.ai/docs/models",
         org="xAI",
@@ -1201,14 +1201,14 @@ local_inference_model_map = {
         vllm_tool_call_parser="mistral",
     ),
     # @HuanzhiMao FIXME: Double check this
-    "mistral-small-2506": OSSModelConfig(
-        model_name="mistral-small-2506",
-        display_name="Mistral-Small-2506 (Prompt)",
-        url="https://docs.mistral.ai/guides/model-selection/",
+    "mistralai/Mistral-Small-4-119B-2603": OSSModelConfig(
+        model_name="mistralai/Mistral-Small-4-119B-2603",
+        display_name="Mistral-Small-4-119B-2603 (FC)",
+        url="https://huggingface.co/mistralai/Mistral-Small-4-119B-2603",
         org="Mistral AI",
         license="Proprietary",
         model_handler=MistralHandler,
-        is_fc_model=False,
+        is_fc_model=True,
         underscore_to_dot=False,
         supports_image_input=True,
     ),
