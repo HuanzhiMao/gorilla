@@ -55,7 +55,10 @@ MEMORY_SCENARIO_NAME = [
 
 SINGLE_TURN_CATEGORY = NON_LIVE_CATEGORY + LIVE_CATEGORY
 AGENTIC_CATEGORY = MEMORY_CATEGORY + WEB_SEARCH_CATEGORY
-NON_SCORING_CATEGORY = ["format_sensitivity"]
+# format_sensitivity was retired (prompt-mode only); its dataset now lives in
+# data/unused_datasets/. See data/unused_datasets/BFCL_v4_format_sensitivity.json
+# to run it against a checked-out version that still supports prompting mode.
+NON_SCORING_CATEGORY = []
 
 ALL_SCORING_CATEGORIES = SINGLE_TURN_CATEGORY + MULTI_TURN_CATEGORY + AGENTIC_CATEGORY
 ALL_CATEGORIES = ALL_SCORING_CATEGORIES + NON_SCORING_CATEGORY

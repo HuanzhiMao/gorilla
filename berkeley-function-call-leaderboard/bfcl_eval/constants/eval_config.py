@@ -31,7 +31,11 @@ MULTI_TURN_FUNC_DOC_PATH = PROMPT_PATH / "multi_turn_func_doc"
 POSSIBLE_ANSWER_PATH = PROMPT_PATH / "possible_answer"
 MEMORY_PREREQ_CONVERSATION_PATH = PROMPT_PATH / "memory_prereq_conversation"
 UTILS_PATH = PACKAGE_ROOT / "scripts"
-FORMAT_SENSITIVITY_IDS_PATH = PROMPT_PATH / f"{VERSION_PREFIX}_format_sensitivity.json"
+# Retired category: dataset moved to data/unused_datasets/. Kept resolvable so a
+# checked-out prompting-capable version can still load it. See category_mapping.py.
+FORMAT_SENSITIVITY_IDS_PATH = (
+    PROMPT_PATH / "unused_datasets" / f"{VERSION_PREFIX}_format_sensitivity.json"
+)
 
 RESULT_FILE_PATTERN = f"{VERSION_PREFIX}_*_result.json"
 
