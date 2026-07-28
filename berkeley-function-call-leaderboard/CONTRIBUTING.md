@@ -5,7 +5,7 @@ We welcome your contributions to the Leaderboard! This guide provides step-by-st
 - [How to Add New Models](#how-to-add-new-models)
   - [Repository Structure](#repository-structure)
   - [Where to Begin](#where-to-begin)
-  - [Function Calling (FC) vs. Prompt Models](#function-calling-fc-vs-prompt-models)
+  - [Function Calling (FC) Handlers](#function-calling-fc-handlers)
   - [Creating Your Model Handler](#creating-your-model-handler)
   - [Updating Model Config Mapping](#updating-model-config-mapping)
   - [Submitting Your Pull Request](#submitting-your-pull-request)
@@ -23,13 +23,8 @@ berkeley-function-call-leaderboard/
 │   │   ├── ast_eval/             # AST-based evaluation
 │   │   ├── multi_turn_eval/      # Multi-turn evaluation
 │   ├── model_handler/            # All model-specific handlers
-│   │   ├── local_inference/            # Handlers for locally-hosted models
-│   │   │   ├── base_oss_handler.py       # Base handler for OSS models
-│   │   │   ├── gemma.py                  # Example: Gemma models
-│   │   │   ├── qwen.py                   # Example: Qwen models (Prompt mode)
-│   │   │   ├── qwen_fc.py                # Example: Qwen models (FC mode)
-│   │   │   ├── deepseek_reasoning.py     # Example: DeepSeek reasoning models (with reasoning trace)
-│   │   │   ├── ...
+│   │   ├── local_inference/            # Handlers for locally-hosted (open-source) models
+│   │   │   ├── base_oss_handler.py       # Single FC handler for all OSS models (vLLM/sglang)
 │   │   ├── api_inference/    # Handlers for API-based models
 │   │   │   ├── openai.py             # Example: OpenAI models
 │   │   │   ├── claude.py             # Example: Claude models
@@ -50,32 +45,25 @@ To add a new model, focus primarily on the `model_handler` directory. You do not
   - If your model is hosted locally, you should also look at `bfcl_eval/model_handler/local_inference/base_oss_handler.py`.
 - **Reference Handlers:** Checkout some of the existing model handlers (such as `openai.py`, `claude.py`, etc); you can likely reuse some of the existing code if your new model outputs in a similar format.
   - If your model is OpenAI-compatible, the `openai.py` handler will be helpful (and you might be able to just use it as is).
-  - If your model is locally hosted, the `llama_fc.py` handler or the `deepseek_coder.py` handler can be good starting points.
+  - If your model is locally hosted, review `base_oss_handler.py` — most open-source models run through it directly by setting a vLLM/sglang tool-call parser in the model config.
 
-## Function Calling (FC) vs. Prompt Models
+## Function Calling (FC) Handlers
 
-We support models in two modes:
+BFCL evaluates every model through its native function-calling (FC) interface: function definitions are passed in the API's dedicated `tools` section (for API models) or parsed from the served model's native tool-call output via a vLLM/sglang tool-call parser (for locally-hosted models). The chat/prompt-based tool-calling pathway (where function docs were injected into the system prompt and the model's free-text output was parsed back into calls) has been retired.
 
-1. **Function Calling (FC) Mode:**  
-   Models with native tool/function calling capabilities. For example, OpenAI GPT in FC mode uses the `tools` section as documented in the [OpenAI function calling guide](https://platform.openai.com/docs/guides/function-calling).
+For API-based models, the handler methods that build requests and parse responses end with `_FC`.
 
-2. **Prompting Mode:**  
-   Models without native function calling capabilities rely on traditional prompt-based interactions, and we supply the function definitions in the `system prompt` section as opposed to a dedicated `tools` section. Prompt mode also serve as an alternative approach for models that support FC mode but do not fully leverage its function calling ability (i.e., we only use its normal text generation capability).
-
-For API-based models (such as OpenAI GPT), both FC and Prompting modes can be defined in the same handler. Methods related to FC mode end with `_FC`, while Prompting mode methods end with `_prompting`.
-
-For locally-hosted models, we only implement prompting methods to maintain code readablity. If a locally-hosted model has both FC and Prompting modes, you will typically create two separate handlers (e.g., `qwen_fc.py` for FC mode and `qwen.py` for Prompting mode).
+For locally-hosted (open-source) models you usually do **not** need a bespoke handler: point the model config's `model_handler` at `OSSHandler` (in `local_inference/base_oss_handler.py`) and set the appropriate `vllm_tool_call_parser` (and `vllm_reasoning_parser` if the model emits a reasoning trace). Only subclass `OSSHandler` if the model needs custom request/response handling.
 
 ## Creating Your Model Handler
 
 **For API-based Models:**
 
-- Implement all the methods marked as "not implemented" under the `FC Methods` or `Prompting Methods` sections in `base_handler.py`, depending on which mode(s) your model supports.
+- Implement the methods marked as "not implemented" under the `FC Methods` section in `base_handler.py`.
 
 **For Locally-Hosted Models:**
 
-- Implement the `_format_prompt` method in your handler.
-- Other methods from the `Prompting Methods` section in `base_oss_handler.py` are already implemented, but you may override them if necessary.
+- In most cases, reuse `OSSHandler` directly: set `model_handler=OSSHandler` and a `vllm_tool_call_parser` in the model config (see above). Only subclass `OSSHandler` if you need to customize request construction or response parsing.
 
 **Common Requirements for All Handlers:**  
 Regardless of mode or model type, you should implement the following methods to convert raw model response (output of `_parse_query_response_xxx`) into standard formats expected by the evaluation pipeline:
@@ -126,12 +114,12 @@ Regardless of mode or model type, you should implement the following methods to 
 
    | Flag                    | When to set it to `True`                                                                                                      |
    | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-   | **`is_fc_model`**       | The handler invokes the model in its _function-calling_ mode instead of prompt-based mode.                                    |
+   | **`is_fc_model`**       | Marks the model as a function-calling model. Set to `True` (the prompt-based pathway has been retired).                       |
    | **`underscore_to_dot`** | Your FC model rejects dots (`.`) in function names; set this so the dots will auto-converts to underscores during evaluation. |
 
 4. **Update Supported Models**
 
-   1. Add your model to the list of supported models in `SUPPORTED_MODELS.md`. Include the model name and type (FC or Prompt) in the table.
+   1. Add your model to the list of supported models in `SUPPORTED_MODELS.md`. Include the model name in the table.
    2. Add a new entry in `bfcl_eval/constants/supported_models.py` as well.
 
 ## Submitting Your Pull Request

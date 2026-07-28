@@ -19,7 +19,7 @@ and our release blogs:
 
 [BFCL V3](https://gorilla.cs.berkeley.edu/blogs/13_bfcl_v3_multi_turn.html#composition): Introduces multi-turn and multi-step function calling scenarios
 
-[BFCL V4 Agentic](https://gorilla.cs.berkeley.edu/blogs/15_bfcl_v4_web_search.html): BFCL V4 Agentic benchmark focuses on tool-calling in real-world agentic settings, featuring web search with multi-hop reasoning and error recovery, agent memory management, and format sensitivity evaluation.
+[BFCL V4 Agentic](https://gorilla.cs.berkeley.edu/blogs/15_bfcl_v4_web_search.html): BFCL V4 Agentic benchmark focuses on tool-calling in real-world agentic settings, featuring web search with multi-hop reasoning and error recovery, and agent memory management.
 
 **_Latest Version Release Date_**: 07/17/2025
 
@@ -189,19 +189,6 @@ BFCL V4 introduces agentic function calling scenarios that focus on real-world a
 - **Recursive Summarization (155)**: Tests the model's ability to manage memory through recursive text summarization, where information is continuously condensed and updated. This approach simulates how agents might maintain concise but comprehensive memory over extended interactions.
 
 Each memory backend presents unique challenges in how agents must structure, store, and retrieve information, providing insights into different approaches to persistent state management in agentic systems.
-
-#### Format Sensitivity Evaluation
-
-**Format Sensitivity (5200)**: This non-scoring category specifically tests how sensitive models are to different prompt formats and system message variations. The evaluation uses 26 different configurations across multiple dimensions:
-
-- **Return Format Variations**: Testing Python, JSON, verbose XML, and concise XML output formats
-- **Tool Call Tag Presence**: Evaluating with and without explicit tool call tags
-- **Function Documentation Format**: Testing Python, XML, and JSON function documentation styles  
-- **Prompt Format**: Comparing plaintext vs. markdown formatting
-- **Prompt Style**: Testing classic vs. experimental prompt styles
-
-This comprehensive format sensitivity testing helps identify how robust models are to prompt engineering variations, which is crucial for real-world deployment where prompt formats may vary across different applications and use cases.
-
 
 ### Evaluation
 

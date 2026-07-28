@@ -425,11 +425,6 @@ def main(args: Args):
 
     skip_rules = [
         (
-            is_format_sensitivity,
-            lambda cfg: cfg.is_fc_model,
-            "`Format sensitivity` test cases are only supported for prompting (non-FC) models.",
-        ),
-        (
             contain_native_audio_input,
             lambda cfg: not cfg.supports_audio_input,
             "`True audio` test cases are only supported for models that support native audio input.",

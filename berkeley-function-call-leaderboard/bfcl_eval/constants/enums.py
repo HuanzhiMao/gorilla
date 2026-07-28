@@ -36,9 +36,6 @@ class ReturnFormat(Enum):
     PYTHON = "python"
     JAVA = "java"
     JAVASCRIPT = "javascript"
-    JSON = "json"
-    VERBOSE_XML = "verbose_xml"
-    CONCISE_XML = "concise_xml"
 
 class Modality(Enum):
     """

@@ -488,14 +488,12 @@ def _build_audio_overall_row(display_name, nl, lv, mt, total_irrelevance, modali
 
 def generate_leaderboard_csv(leaderboard_table, output_path):
     print("📈 Aggregating data to generate leaderboard score table...")
-    all_format_configs = get_all_format_sensitivity_configs()
 
     # Text modality data
     data_text_non_live = []
     data_text_live = []
     data_text_multi_turn = []
     data_text_agentic = []
-    data_text_format_sensitivity = []
     data_text_overall = []
 
     # Audio modality data (true_audio and text_audio)
@@ -564,29 +562,6 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
             ]
         )
 
-        # Format Sensitivity (text only)
-        format_sensitivity_metadata = text_data.get("format_sensitivity", {})
-        format_sensitivity_max_delta = format_sensitivity_metadata.get(
-            "accuracy_max_delta", "N/A"
-        )
-        format_sensitivity_std = format_sensitivity_metadata.get("accuracy_std", "N/A")
-
-        config_accuracy_values = []
-        for cfg in all_format_configs:
-            cfg_stats = format_sensitivity_metadata.get(cfg, {})
-            cfg_acc = cfg_stats.get("accuracy", "N/A")
-            config_accuracy_values.append(cfg_acc)
-
-        data_text_format_sensitivity.append(
-            [
-                "N/A",
-                model_config.display_name,
-                format_sensitivity_max_delta,
-                format_sensitivity_std,
-                *config_accuracy_values,
-            ]
-        )
-
         # Text Overall
         text_total_irrelevance = calculate_unweighted_accuracy(
             [text_nl["irrelevance"], text_lv["irrelevance"]]
@@ -634,8 +609,6 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
                 text_mem_rec_sum["display_accuracy"],
                 text_lv["relevance"]["display_accuracy"],
                 text_total_irrelevance["display_accuracy"],
-                format_sensitivity_max_delta,
-                format_sensitivity_std,
             ]
         )
 
@@ -748,23 +721,11 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
         sort_column_index=2,
     )
 
-    COLUMNS_FORMAT_SENS = COLUMNS_TEXT_FORMAT_SENS_PREFIX + [
-        f"Config {cfg}" for cfg in all_format_configs
-    ]
-    write_score_csv_file(
-        data=data_text_format_sensitivity,
-        file_path=output_path / "score_text_format_sensitivity.csv",
-        header=COLUMNS_FORMAT_SENS,
-        sort_column_index=2,
-        no_conversion_numeric_column_index=[2, 3],
-    )
-
     write_score_csv_file(
         data=data_text_overall,
         file_path=output_path / "score_text_overall.csv",
         header=COLUMNS_TEXT_OVERALL,
         sort_column_index=1,
-        no_conversion_numeric_column_index=[27, 28],
     )
 
     # ---- Write Audio CSV Files ---- #

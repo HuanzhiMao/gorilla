@@ -8,7 +8,6 @@ You can specify a broad category (test group) to run multiple related tests at o
 
 - `all`: All test categories.
   - This is the default option if no test category is provided.
-  - This includes all test categories, including non-scoring yet useful categories like `format_sensitivity`.
 - `all_scoring`: All scoring test categories that will affect the overall accuracy score.
 - `agentic`: All agentic test categories (a superset that currently includes all `memory` and `web_search` categories).
 - `multi_turn`: All multi-turn test categories.
@@ -46,5 +45,3 @@ If you prefer more granular control, you can specify individual categories:
 - `memory_rec_sum`: Tests reading from and writing to a recursive-summarization memory backend.
 - `web_search_base`: Base entries for web-search calls.
 - `web_search_no_snippet`: Web-search calls where search-engine snippets are withheld, forcing the model to fetch and read webpages.
-- `format_sensitivity`: Various system prompt formats to test the format sensitivity of the model.
-  - This only works for the prompting mode models that rely on the default system prompt to do tool calls.

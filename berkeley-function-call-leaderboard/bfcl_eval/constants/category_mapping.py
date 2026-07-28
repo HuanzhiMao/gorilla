@@ -58,7 +58,9 @@ TEXT_FAILING_TOOLS_CATEGORY = [
 
 TEXT_SINGLE_TURN_CATEGORY = TEXT_NON_LIVE_CATEGORY + TEXT_LIVE_CATEGORY
 TEXT_AGENTIC_CATEGORY = TEXT_MEMORY_CATEGORY + TEXT_WEB_SEARCH_CATEGORY
-NON_SCORING_CATEGORY = ["text:format_sensitivity"]
+# Non-scoring categories are excluded from leaderboard aggregation. Currently empty
+# (the format_sensitivity category was retired together with prompting mode).
+NON_SCORING_CATEGORY = []
 
 #### Vision Modality ####
 

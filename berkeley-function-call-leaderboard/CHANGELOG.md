@@ -2,6 +2,11 @@
 
 All notable changes to the Berkeley Function Calling Leaderboard will be documented in this file.
 
+- [Jul 23, 2026] Retire the prompting (chat-based tool calling) pathway. BFCL now evaluates models exclusively through their native function-calling (FC) interface:
+  1. Removed the prompting inference drivers and abstract prompting hooks from the handler base classes, and all `*_prompting` overrides from the model handlers.
+  2. Locally-hosted (open-source) models now run through a single FC handler backed by vLLM/sglang tool-call and reasoning parsers; the per-model prompt-mode handlers have been removed.
+  3. Retired the non-scoring `format_sensitivity` category (it only applied to prompting-mode models); its dataset manifest has been moved to `bfcl_eval/data/unused_datasets/`. To reproduce past format-sensitivity results, check out a release from before this change.
+  4. Removed prompt-mode-only model entries. Models that had a paired FC entry remain on the leaderboard via that entry; models that had no FC entry have been removed and can return once evaluated in FC mode.
 - [Oct 1, 2025] [#1177](https://github.com/ShishirPatil/gorilla/pull/1177): Fix ground truth for `multi_turn_base_154`.
 - [Sep 27, 2025] [#1185](https://github.com/ShishirPatil/gorilla/pull/1185): Introduce the `--partial-eval` flag to the `bfcl evaluate` command, allowing partial evaluation on a subset of available test entries in the model result files.
 - [Sep 17, 2025] [#1175](https://github.com/ShishirPatil/gorilla/pull/1175): Fix wrong date in ground truth for `live_simple_205-116-13`.

@@ -22,7 +22,6 @@ from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
 )
 from bfcl_eval.eval_checker.vision_eval.vision_checker import vision_checker
 from bfcl_eval.model_handler.base_handler import BaseHandler
-from bfcl_eval.model_handler.utils import parse_prompt_variation_params
 from bfcl_eval.utils import *
 from dotenv import load_dotenv
 from tqdm import tqdm
@@ -584,12 +583,7 @@ def _evaluate_single_ast_entry(
         model_result_item,
         possible_answer_item,
         language,
-        # format sensitivity has parallel, multiple cases which is encoded in index
-        (
-            test_category
-            if not is_format_sensitivity(test_category)
-            else extract_test_category_from_id(index.split("|")[-1])
-        ),
+        test_category,
         model_name,
     )
 
@@ -608,111 +602,6 @@ def _evaluate_single_ast_entry(
         }
     return {"valid": True}
 
-
-def format_sensitivity_runner(
-    handler: BaseHandler,
-    model_result,
-    prompt,
-    possible_answer,
-    model_name,
-    test_category,
-    score_dir,
-):
-    assert (
-        len(model_result) == len(prompt) == len(possible_answer)
-    ), f"The length of the model result ({len(model_result)}) does not match the length of the prompt ({len(prompt)}) or possible answer ({len(possible_answer)}). Please check the input files for completeness."
-
-    # The format sensitivity tests are all single-turn tests, so we use a similar logic to the ast_file_runner to evaluate them.
-
-    result = []
-    correct_count = 0
-    # Track stats per format sensitivity configuration
-    config_stats: dict[str, dict[str, int]] = defaultdict(
-        lambda: {"correct": 0, "total": 0}
-    )
-
-    for i in range(len(model_result)):
-        index = model_result[i]["id"]
-        model_result_item = model_result[i]["result"]
-        prompt_entry = prompt[i]
-        possible_answer_item = possible_answer[i]["ground_truth"]
-
-        assert (
-            "|" in index and len(index.split("|")) == 2
-        ), f"Test entry ID {index} should contain exactly two pipe characters, since they are supposed to be the format sensitivity ids."
-
-        format_sensitivity_config = index.split("|")[1]
-        (
-            return_format,
-            has_tool_call_tag,
-            function_doc_format,
-            prompt_format,
-            prompt_style,
-        ) = parse_prompt_variation_params(format_sensitivity_config)
-
-        return_format = ReturnFormat(return_format)
-
-        entry_result = _evaluate_single_ast_entry(
-            handler,
-            index,
-            model_result_item,
-            possible_answer_item,
-            prompt_entry,
-            model_name,
-            test_category,
-            # Format sensitivity tests are all python tests
-            language=Language.PYTHON,
-            return_format=return_format,
-            has_tool_call_tag=has_tool_call_tag,
-        )
-
-        # Update stats for this configuration
-        config_stats[format_sensitivity_config]["total"] += 1
-        if entry_result["valid"]:
-            correct_count += 1
-            config_stats[format_sensitivity_config]["correct"] += 1
-        else:
-            result.append(entry_result)
-
-    # Compute accuracy per configuration
-    accuracy_by_config = {
-        cfg: {
-            "accuracy": stats["correct"] / stats["total"],
-            "correct_count": stats["correct"],
-            "total_count": stats["total"],
-        }
-        for cfg, stats in config_stats.items()
-    }
-
-    # Calculate statistics across different prompt configurations
-    config_accuracies = [v["accuracy"] for v in accuracy_by_config.values()]
-    if len(config_accuracies) > 1:
-        accuracy_variance = round(statistics.variance(config_accuracies) * 100**2, 2)
-        accuracy_std = round(statistics.stdev(config_accuracies) * 100, 2)
-        accuracy_max_delta = round(
-            (max(config_accuracies) - min(config_accuracies)) * 100, 2
-        )
-    else:
-        accuracy_variance = 0.0
-        accuracy_std = 0.0
-        accuracy_max_delta = 0.0
-
-    extra_header_fields = {
-        "accuracy_max_delta": accuracy_max_delta,
-        "accuracy_variance": accuracy_variance,
-        "accuracy_std": accuracy_std,
-        **accuracy_by_config,
-    }
-
-    return save_eval_results(
-        result,
-        correct_count,
-        model_result,
-        test_category,
-        model_name,
-        score_dir,
-        extra_header_fields=extra_header_fields,
-    )
 
 
 def vision_geoguessr_runner(
@@ -1052,18 +941,7 @@ def evaluate_task(
             model_result, prompt, possible_answer, allow_missing=allow_missing
         )
 
-        if is_format_sensitivity(test_category):
-            accuracy, total_count = format_sensitivity_runner(
-                handler,
-                model_result,
-                prompt,
-                possible_answer,
-                model_name,
-                test_category,
-                score_dir,
-            )
-
-        elif is_multi_turn(test_category):
+        if is_multi_turn(test_category):
             accuracy, total_count = multi_turn_runner(
                 handler,
                 model_result,

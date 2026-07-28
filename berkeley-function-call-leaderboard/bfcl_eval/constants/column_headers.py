@@ -51,14 +51,6 @@ COLUMNS_TEXT_AGENTIC = [
     "Memory Recursive Summarization",
 ]
 
-# Format Sensitivity columns are not scored but informative
-COLUMNS_TEXT_FORMAT_SENS_PREFIX = [
-    "Rank",
-    "Model",
-    "Format Sensitivity Max Delta",
-    "Format Sensitivity Standard Deviation",
-]
-
 COLUMNS_TEXT_OVERALL = [
     "Rank",
     "Overall Acc",
@@ -87,8 +79,6 @@ COLUMNS_TEXT_OVERALL = [
     "Memory Recursive Summarization",
     "Relevance Detection",
     "Irrelevance Detection",
-    "Format Sensitivity Max Delta",
-    "Format Sensitivity Standard Deviation",
 ]
 
 #### Audio Modalities (true_audio and text_audio share the same column structure) ####

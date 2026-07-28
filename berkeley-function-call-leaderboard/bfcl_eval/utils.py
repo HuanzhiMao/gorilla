@@ -124,7 +124,6 @@ def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = Fals
 
     Examples:
         "text:simple_python_5" → "text:simple_python"
-        "text:format_sensitivity_0|prompt_config|text:live_simple_23" → "text:format_sensitivity"
         "text:memory_kv_prereq_0" (without remove_prereq=True) → "text:memory_kv_prereq"
         "text:memory_kv_prereq_0" (with remove_prereq=True) → "text:memory_kv"
 
@@ -133,27 +132,7 @@ def extract_test_category_from_id(test_entry_id: str, remove_prereq: bool = Fals
     """
     if remove_prereq:
         test_entry_id = test_entry_id.replace("_prereq", "")
-    # Format sensitivity IDs use "|" as separator:
-    # Example: "text:format_sensitivity_0|prompt_config|text:live_simple_23"
-    if "|" in test_entry_id:
-        test_entry_id = test_entry_id.split("|")[0]
     return test_entry_id.rsplit("_", 1)[0]
-
-
-def extract_prompt_format_from_id(test_entry_id: str) -> str:
-    """
-    Extract the prompt format from the test entry ID.
-    Format sensitivity IDs use "|" as separator.
-    Example: "text:format_sensitivity_0|prompt_config|text:live_simple_23" → "prompt_config"
-    """
-    if "|" not in test_entry_id:
-        return DEFAULT_SYSTEM_PROMPT_FORMAT
-    else:
-        # @HuanzhiMao doublecheck
-        assert (
-            len(test_entry_id.split("|")) == 2
-        ), f"Test entry ID {test_entry_id} should contain exactly two pipes, since they are supposed to be the format sensitivity ids."
-        return test_entry_id.split("|")[1]
 
 
 def extract_memory_backend_type(test_category):
@@ -310,10 +289,6 @@ def is_vision(test_category: str) -> bool:
     return is_vision_web_search(test_category) or is_geoguessr(test_category)
 
 
-def is_format_sensitivity(test_category: str) -> bool:
-    return "format_sensitivity" in test_category
-
-
 # @HuanzhiMao TODO: rename this?
 def is_web_search(test_category):
     return "web_search" in test_category and not is_vision_web_search(test_category)
@@ -344,10 +319,8 @@ def is_live(test_category):
 
 
 def is_non_live(test_category: str) -> bool:
-    # Be careful that format sensitivity entry id are in the format of "format_sensitivity_0:prompt_format:live_simple_23-5-1", which might be misclassified if not checked first
     return not any(
         (
-            is_format_sensitivity(test_category),
             is_live(test_category),
             is_multi_turn(test_category),
             is_agentic(test_category),
@@ -528,11 +501,7 @@ def load_dataset_entry(
         assert modality is Modality.TEXT, f"Invalid modality: {modality}"
         # Text categories
 
-        if is_format_sensitivity(test_category):
-            # Format sensitivity categories
-            all_entries = load_format_sensitivity_test_cases()
-
-        elif is_web_search(test_category):
+        if is_web_search(test_category):
             # Web search categories
             all_entries = load_file(modality_path / "web_search.json")
             all_entries = process_web_search_test_case(all_entries, base_category)
@@ -579,11 +548,6 @@ def load_ground_truth_entry(test_category: str) -> list[dict]:
     """
     modality = get_category_modality(test_category)
     base_category = get_base_category(test_category)
-
-    if is_format_sensitivity(test_category):
-        # Format sensitivity ground truth handles its own ID construction;
-        # it calls load_ground_truth_entry() for inner categories which already prefix.
-        return load_format_sensitivity_ground_truth_entry()
 
     # Audio modalities reuse the text ground truth files.
     if modality in (Modality.TRUE_AUDIO, Modality.TEXT_AUDIO):
@@ -704,19 +668,6 @@ def sort_key(entry):
         priority = 6
 
     return (priority, test_category, int(index))
-
-
-def filter_entries_by_id(
-    reference_entries: list[dict],
-    candidate_entries: list[dict],
-) -> list[dict]:
-    """
-    Return all entries in `candidate_entries` whose ``"id"`` *matches*
-    at least one entry in `reference_entries`.
-    """
-
-    reference_ids = {entry["id"] for entry in reference_entries}
-    return [entry for entry in candidate_entries if entry["id"] in reference_ids]
 
 
 def update_available_tool_list_in_test_case(
@@ -1142,95 +1093,6 @@ def populate_initial_settings_for_web_search_test_cases(
             }
             entry["initial_config"] = init_config
     return test_cases
-
-
-#### Utils for Format Sensitivity ####
-
-
-def load_format_sensitivity_test_cases() -> list[dict]:
-    """
-    Loads all the format sensitivity test cases. 26 configs x 200 test cases = 5200 test cases.
-    """
-    _, all_test_entries_involved = load_test_entries_from_id_file(
-        FORMAT_SENSITIVITY_IDS_PATH
-    )
-    all_configs = get_all_format_sensitivity_configs()
-
-    all_format_sensitivity_test_cases = []
-    index = 0
-    for entry in all_test_entries_involved:
-        for config in all_configs:
-            entry_copy = deepcopy(entry)
-            entry_copy["id"] = f"format_sensitivity_{index}|{config}|{entry_copy['id']}"
-
-            all_format_sensitivity_test_cases.append(entry_copy)
-            index += 1
-
-    return all_format_sensitivity_test_cases
-
-
-def load_format_sensitivity_ground_truth_entry() -> list[dict]:
-    all_categories, all_test_entries_involved = load_test_entries_from_id_file(
-        FORMAT_SENSITIVITY_IDS_PATH
-    )
-    all_configs = get_all_format_sensitivity_configs()
-
-    ground_truth_entries = []
-    for category in all_categories:
-        ground_truth_entries.extend(load_ground_truth_entry(category))
-
-    ground_truth_entries = filter_entries_by_id(
-        reference_entries=all_test_entries_involved,
-        candidate_entries=ground_truth_entries,
-    )
-
-    all_ground_truth_entries = []
-    for entry in ground_truth_entries:
-        for _ in all_configs:
-            all_ground_truth_entries.append(deepcopy(entry))
-
-    return all_ground_truth_entries
-
-
-def get_all_format_sensitivity_configs() -> list[str]:
-    """
-    Get all the format sensitivity configs.
-    The format sensitivity configs are used to generate the default system prompt for prompting models.
-    For a detailed explanation of what each config represents, please refer to our blog post: https://gorilla.cs.berkeley.edu/blogs/17_bfcl_v4_prompt_variation.html#construction
-    """
-
-    RETURN_FORMAT = [
-        "python",
-        "json",
-        "verbose_xml",
-        "concise_xml",
-    ]
-    HAS_TOOL_CALL_TAG = ["True", "False"]
-    FUNCTION_DOC_FORMAT = [
-        "python",
-        "xml",
-        "json",
-    ]
-
-    all_configs = []
-    # 4 × 2 × 3 = 24 base combinations
-    for return_format in RETURN_FORMAT:
-        for has_tool_call_tag in HAS_TOOL_CALL_TAG:
-            for function_doc_format in FUNCTION_DOC_FORMAT:
-                all_configs.append(
-                    f"ret_fmt={return_format}&tool_call_tag={has_tool_call_tag}&func_doc_fmt={function_doc_format}&prompt_fmt=plaintext&style=classic"
-                )
-
-    # Add one config with markdown format
-    all_configs.append(
-        f"ret_fmt=python&tool_call_tag=False&func_doc_fmt=json&prompt_fmt=markdown&style=classic"
-    )
-    # Add one config with experimental prompt style
-    all_configs.append(
-        f"ret_fmt=python&tool_call_tag=False&func_doc_fmt=json&prompt_fmt=plaintext&style=experimental"
-    )
-
-    return all_configs
 
 
 #### Utils for Vision ####
