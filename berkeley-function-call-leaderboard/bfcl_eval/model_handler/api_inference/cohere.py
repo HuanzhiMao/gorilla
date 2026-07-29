@@ -5,13 +5,13 @@ import time
 from typing import Any
 
 import cohere
-from bfcl_eval.model_handler.base_handler import BaseHandler
-from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.constants.enums import ModelStyle
+from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
+from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.utils import (
     convert_to_tool,
-    retry_with_backoff,
     extract_system_prompt,
+    retry_with_backoff,
 )
 from tenacity.stop import stop_after_attempt
 
@@ -20,7 +20,7 @@ class CohereHandler(BaseHandler):
     can_handle_audio_input = False
     can_handle_image_input = False
     can_handle_image_tool_response = False
-    
+
     client: cohere.ClientV2
 
     def __init__(
@@ -38,106 +38,80 @@ class CohereHandler(BaseHandler):
         decoded_output = []
         if isinstance(result, list):
             for tool_call in result:
-                name = tool_call["tool_name"]
-                params = tool_call["parameters"]
-                decoded_output.append({name: params})
+                decoded_output.append({tool_call["tool_name"]: tool_call["parameters"]})
         return decoded_output
 
     def decode_execute(self, result, has_tool_call_tag):
         execution_list = []
         if isinstance(result, list):
             for tool_call in result:
-                parameter_key_value_list = []
-                for parameter_name, parameter_value in tool_call["parameters"].items():
-                    parameter_key_value_list.append(
-                        "{}={}".format(parameter_name, repr(parameter_value))
-                    )
-                execution_list.append(
-                    "{}({})".format(
-                        tool_call["tool_name"], ",".join(parameter_key_value_list)
-                    )
+                args = ",".join(
+                    f"{name}={value!r}" for name, value in tool_call["parameters"].items()
                 )
+                execution_list.append("{}({})".format(tool_call["tool_name"], args))
         return execution_list
 
     #### FC methods ####
 
     def _query_FC(self, inference_data: dict):
+        messages = []
         if system_message := inference_data.get("system_message"):
-            system_turn = [
-                cohere.SystemChatMessageV2(
-                    role="system",
-                    content=system_message,
-                )
-            ]
-        else:
-            system_turn = []
-        all_chat_turns = system_turn + inference_data["chat_turns"]
+            messages.append({"role": "system", "content": system_message})
+        messages.extend(inference_data["chat_turns"])
 
         response, latency = self.generate_with_backoff(
-            messages=all_chat_turns,
-            tools=[load_cohere_tool(tool=tool) for tool in inference_data["tools"]],
+            messages=messages,
+            tools=inference_data["tools"],
         )
 
-        model_tool_calls = []
-        chat_turn_to_append = cohere.AssistantChatMessageV2(role="assistant")
         response_message = response.message
-        if response_message.tool_calls:
-            chat_turn_to_append.tool_calls = response_message.tool_calls
-            for tool_call in response_message.tool_calls:
-                model_tool_calls.append(
-                    {
-                        "tool_name": tool_call.function.name,
-                        "parameters": json.loads(tool_call.function.arguments),
-                    }
-                )
-        if response_message.tool_plan:
-            chat_turn_to_append.tool_plan = response_message.tool_plan
-        if response_message.content:
-            if chat_turn_to_append.content is None:
-                chat_turn_to_append.content = []
 
-            for msg in response_message.content:
-                if hasattr(msg, "thinking"):
-                    chat_turn_to_append.content.append(
-                        cohere.ThinkingAssistantMessageV2ContentItem(thinking=msg.thinking)
-                    )
-                else:
-                    chat_turn_to_append.content.append(
-                        cohere.TextAssistantMessageV2ContentItem(text=msg.text)
-                    )
-        if response_message.citations:
-            chat_turn_to_append.citations = response_message.citations
-        inference_data["chat_turns"].append(chat_turn_to_append)
+        # Append the assistant turn (tool_plan, tool_calls and content) back into the
+        # history verbatim, as the documented tool-use loop does. We normalize it to a
+        # dict so the whole history stays uniformly subscriptable.
+        inference_data["chat_turns"].append(response_message.model_dump(exclude_none=True))
 
-        input_token: float | None = None
-        output_token: float | None = None
+        tool_calls = [
+            {
+                "tool_name": tool_call.function.name,
+                "parameters": json.loads(tool_call.function.arguments),
+            }
+            for tool_call in (response_message.tool_calls or [])
+        ]
+
+        # Reasoning models return "thinking" blocks alongside "text" blocks; dispatch on
+        # the block's `type` discriminator rather than on SDK class identity.
+        text_parts, thinking_parts = [], []
+        for block in response_message.content or []:
+            if block.type == "thinking":
+                thinking_parts.append(block.thinking)
+            elif block.type == "text":
+                text_parts.append(block.text)
+
+        input_token, output_token = 0, 0
         if response.usage and response.usage.billed_units:
-            input_token = response.usage.billed_units.input_tokens
-            output_token = response.usage.billed_units.output_tokens
+            input_token = response.usage.billed_units.input_tokens or 0
+            output_token = response.usage.billed_units.output_tokens or 0
 
         metadata = {
-            "model_responses": (
-                chat_turn_to_append.content if chat_turn_to_append.content else None
-            ),
-            "tool_calls": model_tool_calls,
-            "chat_history": [],
-            "input_token": input_token or 0,
-            "output_token": output_token or 0,
+            "text": "\n".join(text_parts),
+            "reasoning_content": "".join(thinking_parts),
+            "tool_calls": tool_calls,
+            "input_token": input_token,
+            "output_token": output_token,
         }
         return metadata, latency
 
     @retry_with_backoff(error_type=Exception, stop=stop_after_attempt(5), reraise=True)
     def generate_with_backoff(
-        self,
-        messages: list,
-        tools: list[cohere.types.ToolV2]
-    ) -> tuple[cohere.v2.types.V2ChatResponse, float]:
+        self, messages: list[dict], tools: list[dict]
+    ) -> tuple[Any, float]:
         start_time = time.time()
         api_response = self.client.chat(
-            model=self.model_name.replace("-FC", ""),
+            model=self.model_name,
             messages=messages,
             tools=tools,
-            citation_options=cohere.CitationOptions(mode="OFF"),
+            citation_options={"mode": "OFF"},
             temperature=self.temperature,
         )
         end_time = time.time()
@@ -150,15 +124,9 @@ class CohereHandler(BaseHandler):
             if turn_idx == 0:  # we only extract system message from the first turn
                 system_message = extract_system_prompt(turn)
                 if system_message:
-                    inference_data["system_message"] = (
-                        system_message  # we log system message if necessary
-                    )
-            if len(turn) > 0:
-                turns.append(preprocess_chat_turns(turn))
-            else:
-                turns.append(
-                    []
-                )  # for miss_func categories, the turn to supplement function will be empty
+                    inference_data["system_message"] = system_message
+            # miss_func categories have an empty turn to supplement the function later
+            turns.append(list(turn))
         assert len(turns) == len(test_entry["question"])
         test_entry["question"] = turns
         return inference_data
@@ -167,37 +135,18 @@ class CohereHandler(BaseHandler):
         functions: list = test_entry["function"]
 
         tools = convert_to_tool(functions, GORILLA_TO_OPENAPI, self.model_style)
-        inference_data["tools"] = tools
+        inference_data["tools"] = [_to_cohere_tool(tool) for tool in tools]
 
         return inference_data
 
     def _parse_query_response_FC(self, api_response: Any) -> dict:
-        reasoning_content = ""
-
-        if len(api_response["tool_calls"]) > 0:  # non empty tool call list
-            model_responses = api_response[
-                "tool_calls"
-            ]  # list: {"tool_name": , "parameters"}
-        else:
-            if isinstance(api_response["model_responses"], list):
-                model_responses = []
-                for item in api_response["model_responses"]:
-                    if isinstance(item, cohere.types.ThinkingAssistantMessageV2ContentItem):
-                        reasoning_content += item.thinking
-                        continue
-                    elif isinstance(item, cohere.types.TextAssistantMessageV2ContentItem):
-                        model_responses.append(item.text)
-                    else:
-                        model_responses.append(item)
-                model_responses = "\n".join(model_responses)
-            else:
-                model_responses = api_response["model_responses"]
-
+        # A turn is either tool calls or a text answer, never both.
+        tool_calls = api_response["tool_calls"]
         return {
-            "model_responses": model_responses,
-            "reasoning_content": reasoning_content or None,
-            "tool_calls": api_response["tool_calls"],
-            "chat_history": api_response["chat_history"],
+            "model_responses": tool_calls if tool_calls else api_response["text"],
+            "reasoning_content": api_response["reasoning_content"] or None,
+            "tool_calls": tool_calls,
+            "chat_history": [],
             "input_token": api_response["input_token"],
             "output_token": api_response["output_token"],
         }
@@ -205,25 +154,9 @@ class CohereHandler(BaseHandler):
     def add_first_turn_message_FC(
         self, inference_data: dict, first_turn_message: list[dict]
     ) -> dict:
-        chat_turns = []
-        for message in first_turn_message:
-            message_role = message["role"]
-            assert message_role in [
-                "user",
-                "assistant",
-            ], "message role must be in ['user', 'assistant']"
-            if message_role == "user":
-                chat_turns.append(
-                    cohere.UserChatMessageV2(role="user", content=message["content"])
-                )
-            else:
-                chat_turns.append(
-                    cohere.AssistantChatMessageV2(
-                        role="assistant",
-                        content=message["content"],
-                    )
-                )
-        inference_data["chat_turns"] = chat_turns
+        inference_data["chat_turns"] = [
+            _to_cohere_message(message) for message in first_turn_message
+        ]
         inference_data["raw_prompt"] = []
         inference_data["raw_completion"] = []
         return inference_data
@@ -232,91 +165,77 @@ class CohereHandler(BaseHandler):
         self, inference_data: dict, user_message: list[dict]
     ) -> dict:
         assert "chat_turns" in inference_data, "expected chat_turns to be present"
+        chat_turns = inference_data["chat_turns"]
         for message in user_message:
-            message_role = message["role"]
-            if message_role == "user":
-                inference_data["chat_turns"].append(
-                    cohere.UserChatMessageV2(role="user", content=message["content"])
-                )
-            elif message_role == "assistant":
-                inference_data["chat_turns"].append(
-                    cohere.AssistantChatMessageV2(
-                        role="assistant",
-                        content=message["content"],
-                    )
-                )
-            else:
-                raise Exception(f"Role {message_role} is undefined!")
-        if inference_data["chat_turns"][-1].role != "user":
-            # if last turn is not user turn - we suffixing a user turn at the end of the conversation history
-            inference_data["chat_turns"].append(
-                cohere.UserChatMessageV2(role="user", content="")
-            )
+            chat_turns.append(_to_cohere_message(message))
+        if chat_turns[-1]["role"] != "user":
+            # The conversation must end on a user turn for the model to respond to it.
+            chat_turns.append({"role": "user", "content": ""})
         return inference_data
 
     def _add_assistant_message_FC(
         self, inference_data: dict, model_response_data: dict
     ) -> dict:
-        # Cohere has all the messages in the chat history already, so no need to add anything here
+        # Already appended verbatim in _query_FC, so there is nothing to add here.
         return inference_data
 
     def _add_execution_results_FC(
         self, inference_data: dict, execution_results: list[dict], model_response_data: dict
     ) -> dict:
-        if execution_results:
-            # non-empty execution_results, the last turn of inference_data["chat_turns"] must be a tool use turn
-            # otherwise, do nothing
-            assert (
-                inference_data["chat_turns"][-1].role == "assistant"
-            ), "last turn must be tool use turn and from the assistant"
-            assert inference_data["chat_turns"][
-                -1
-            ].tool_calls, "last turn must have tool calls"
-            assert len(inference_data["chat_turns"][-1].tool_calls) == len(
-                execution_results
-            ), "Number of execution result must match number of tool calls from last turn!"
-            tool_call_messages = []
-            for tool_call, execution_result in zip(
-                inference_data["chat_turns"][-1].tool_calls, execution_results
-            ):
-                tool_call_id = tool_call.id
-                result_str = execution_result["result"]
-                try:
-                    tool_execution_result = ast.literal_eval(result_str)
-                except:
-                    tool_execution_result = result_str
-                if isinstance(tool_execution_result, dict):
-                    if "id" in tool_execution_result:
-                        tool_execution_result["ID"] = tool_execution_result["id"]
-                        del tool_execution_result["id"]
-                    result_to_render = json.dumps(tool_execution_result)
-                else:
-                    result_to_render = result_str
-                one_tool_call_output = cohere.ToolChatMessageV2(
-                    tool_call_id=tool_call_id,
-                    content=[
-                        cohere.TextToolContent(type="text", text=result_to_render),
+        if not execution_results:
+            return inference_data
+
+        # Non-empty execution_results means the last turn must have been a tool-call turn.
+        last_turn = inference_data["chat_turns"][-1]
+        assert (
+            last_turn["role"] == "assistant"
+        ), "last turn must be tool use turn and from the assistant"
+        tool_calls = last_turn.get("tool_calls")
+        assert tool_calls, "last turn must have tool calls"
+        assert len(tool_calls) == len(
+            execution_results
+        ), "Number of execution result must match number of tool calls from last turn!"
+
+        for tool_call, execution_result in zip(tool_calls, execution_results):
+            inference_data["chat_turns"].append(
+                {
+                    "role": "tool",
+                    "tool_call_id": tool_call["id"],
+                    "content": [
+                        {"type": "text", "text": _render_result(execution_result["result"])}
                     ],
-                )
-                tool_call_messages.append(one_tool_call_output)
-            inference_data["chat_turns"].extend(tool_call_messages)
+                }
+            )
         return inference_data
 
 
-def preprocess_chat_turns(all_messages: list[dict]) -> list[dict]:
-    processed_messages: list[dict] = []
-    for message in all_messages:
-        processed_messages.append(message)
-    return processed_messages
+def _render_result(result_str: str) -> str:
+    """Render an execution result for the tool message content."""
+    try:
+        result = ast.literal_eval(result_str)
+    except Exception:
+        return result_str
+    if isinstance(result, dict):
+        if "id" in result:
+            # `id` is reserved by Cohere's document handling; surface it as `ID` instead.
+            result["ID"] = result.pop("id")
+        return json.dumps(result)
+    return result_str
 
 
-def load_cohere_tool(tool: dict):
+def _to_cohere_message(message: dict) -> dict:
+    role = message["role"]
+    assert role in ("user", "assistant"), "message role must be in ['user', 'assistant']"
+    return {"role": role, "content": message["content"]}
+
+
+def _to_cohere_tool(tool: dict) -> dict:
     function = tool["function"]
-    return cohere.ToolV2(
-        type="function",
-        function=cohere.ToolV2Function(
-            name=function["name"],
-            description=function["description"],
-            parameters=function["parameters"],
-        ),
-    )
+    return {
+        "type": "function",
+        "function": {
+            "name": function["name"],
+            "description": function["description"],
+            "parameters": function["parameters"],
+        },
+    }

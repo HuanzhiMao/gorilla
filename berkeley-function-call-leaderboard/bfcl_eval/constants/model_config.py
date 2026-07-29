@@ -105,21 +105,21 @@ class OSSModelConfig(ModelConfig):
 
 # Inference through API calls
 api_inference_model_map = {
-    "gorilla-openfunctions-v2": ModelConfig(
-        model_name="gorilla-openfunctions-v2",
-        display_name="Gorilla-OpenFunctions-v2",
-        url="https://gorilla.cs.berkeley.edu/blogs/7_open_functions_v2.html",
-        org="Gorilla LLM",
-        license="Apache 2.0",
-        model_handler=GorillaHandler,
-        input_price=None,
-        output_price=None,
-        underscore_to_dot=False,
-    ),
-    "DeepSeek-V3.2-FC": ModelConfig(
-        model_name="deepseek-chat",
-        display_name="DeepSeek-V3.2",
-        url="https://api-docs.deepseek.com/news/news251201",
+    # "gorilla-openfunctions-v2": ModelConfig(
+    #     model_name="gorilla-openfunctions-v2",
+    #     display_name="Gorilla-OpenFunctions-v2",
+    #     url="https://gorilla.cs.berkeley.edu/blogs/7_open_functions_v2.html",
+    #     org="Gorilla LLM",
+    #     license="Apache 2.0",
+    #     model_handler=GorillaHandler,
+    #     input_price=None,
+    #     output_price=None,
+    #     underscore_to_dot=False,
+    # ),
+    "DeepSeek-V4-Pro": ModelConfig(
+        model_name="deepseek-v4-pro",
+        display_name="DeepSeek-V4-Pro",
+        url="https://api-docs.deepseek.com/news/news260424",
         org="DeepSeek",
         license="MIT",
         model_handler=DeepSeekAPIHandler,
@@ -127,23 +127,33 @@ api_inference_model_map = {
         output_price=None,
         underscore_to_dot=True,
     ),
-    # @HuanzhiMao FIXME: remove this
-    "gpt-5.2-2025-12-11-FC": ModelConfig(
-        model_name="gpt-5.2-2025-12-11",
-        display_name="GPT-5.2-2025-12-11",
-        url="https://openai.com/zh-Hans-CN/index/introducing-gpt-5-2/",
+    "DeepSeek-V4-Flash": ModelConfig(
+        model_name="deepseek-v4-flash",
+        display_name="DeepSeek-V4-Flash",
+        url="https://api-docs.deepseek.com/news/news260424",
+        org="DeepSeek",
+        license="MIT",
+        model_handler=DeepSeekAPIHandler,
+        input_price=None,
+        output_price=None,
+        underscore_to_dot=True,
+    ),
+    "gpt-5.6-sol": ModelConfig(
+        model_name="gpt-5.6-sol",
+        display_name="GPT-5.6-Sol",
+        url="https://openai.com/index/gpt-5-6/",
         org="OpenAI",
         license="Proprietary",
         model_handler=OpenAIResponsesHandler,
-        input_price=1.75,
-        output_price=14,
+        input_price=5,
+        output_price=30,
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    "gpt-5.4-2026-03-05-FC": ModelConfig(
-        model_name="gpt-5.4-2026-03-05",
-        display_name="GPT-5.4-2026-03-05",
-        url="https://openai.com/zh-Hans-CN/index/introducing-gpt-5-2/",
+    "gpt-5.6-terra": ModelConfig(
+        model_name="gpt-5.6-terra",
+        display_name="GPT-5.6-Terra",
+        url="https://openai.com/index/gpt-5-6/",
         org="OpenAI",
         license="Proprietary",
         model_handler=OpenAIResponsesHandler,
@@ -152,82 +162,22 @@ api_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    "gpt-5.4-mini-2026-03-17-FC": ModelConfig(
-        model_name="gpt-5.4-mini-2026-03-17",
-        display_name="GPT-5.4-mini-2026-03-17",
-        url="https://openai.com/index/introducing-gpt-5/",
+    "gpt-5.6-luna": ModelConfig(
+        model_name="gpt-5.6-luna",
+        display_name="GPT-5.6-Luna",
+        url="https://openai.com/index/gpt-5-6/",
         org="OpenAI",
         license="Proprietary",
         model_handler=OpenAIResponsesHandler,
-        input_price=0.75,
-        output_price=4.5,
+        input_price=1,
+        output_price=6,
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    "gpt-5.4-nano-2026-03-17-FC": ModelConfig(
-        model_name="gpt-5.4-nano-2026-03-17",
-        display_name="GPT-5.4-nano-2026-03-17",
-        url="https://openai.com/index/introducing-gpt-5/",
-        org="OpenAI",
-        license="Proprietary",
-        model_handler=OpenAIResponsesHandler,
-        input_price=0.2,
-        output_price=1.25,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
-    "gpt-4o-2024-11-20-FC": ModelConfig(
-        model_name="gpt-4o-2024-11-20",
-        display_name="GPT-4o-2024-11-20",
-        url="https://openai.com/index/hello-gpt-4o/",
-        org="OpenAI",
-        license="Proprietary",
-        model_handler=OpenAIResponsesHandler,
-        input_price=2.5,
-        output_price=10,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
-    "gpt-4o-mini-2024-07-18-FC": ModelConfig(
-        model_name="gpt-4o-mini-2024-07-18",
-        display_name="GPT-4o-mini-2024-07-18",
-        url="https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/",
-        org="OpenAI",
-        license="Proprietary",
-        model_handler=OpenAIResponsesHandler,
-        input_price=0.15,
-        output_price=0.6,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
-    "o3-2025-04-16-FC": ModelConfig(
-        model_name="o3-2025-04-16",
-        display_name="o3-2025-04-16",
-        url="https://openai.com/index/introducing-o3-and-o4-mini/",
-        org="OpenAI",
-        license="Proprietary",
-        model_handler=OpenAIResponsesHandler,
-        input_price=2,
-        output_price=8,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
-    "o4-mini-2025-04-16-FC": ModelConfig(
-        model_name="o4-mini-2025-04-16",
-        display_name="o4-mini-2025-04-16",
-        url="https://openai.com/index/introducing-o3-and-o4-mini/",
-        org="OpenAI",
-        license="Proprietary",
-        model_handler=OpenAIResponsesHandler,
-        input_price=1.10,
-        output_price=4.40,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
-    "claude-opus-4-7-FC": ModelConfig(
-        model_name="claude-opus-4-7",
-        display_name="Claude-Opus-4-7",
-        url="https://www.anthropic.com/news/claude-opus-4-7",
+    "claude-opus-5": ModelConfig(
+        model_name="claude-opus-5",
+        display_name="Claude-Opus-5",
+        url="https://www.anthropic.com/news/claude-opus-5",
         org="Anthropic",
         license="Proprietary",
         model_handler=ClaudeHandler,
@@ -236,10 +186,10 @@ api_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    "claude-sonnet-4-6-FC": ModelConfig(
-        model_name="claude-sonnet-4-6",
-        display_name="Claude-Sonnet-4-6",
-        url="https://www.anthropic.com/news/claude-sonnet-4-6",
+    "claude-sonnet-5": ModelConfig(
+        model_name="claude-sonnet-5",
+        display_name="Claude-Sonnet-5",
+        url="https://www.anthropic.com/news/claude-sonnet-5",
         org="Anthropic",
         license="Proprietary",
         model_handler=ClaudeHandler,
@@ -248,7 +198,7 @@ api_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    "claude-haiku-4-5-20251001-FC": ModelConfig(
+    "claude-haiku-4-5-20251001": ModelConfig(
         model_name="claude-haiku-4-5-20251001",
         display_name="Claude-Haiku-4-5-20251001",
         url="https://www.anthropic.com/news/claude-haiku-4-5",
@@ -298,9 +248,9 @@ api_inference_model_map = {
         underscore_to_dot=True,
     ),
     # @HuanzhiMao FIXME: check mistral implementation
-    "mistral-medium-2508-FC": OSSModelConfig(
-        model_name="mistral-medium-2508",
-        display_name="Mistral-Medium-2508",
+    "mistral-medium-3-5": OSSModelConfig(
+        model_name="mistral-medium-3-5",
+        display_name="Mistral-Medium-3.5",
         url="https://docs.mistral.ai/guides/model-selection/",
         org="Mistral AI",
         license="Proprietary",
@@ -308,7 +258,7 @@ api_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    "gemini-3.1-flash-lite-preview-FC": ModelConfig(
+    "gemini-3.1-flash-lite-preview": ModelConfig(
         model_name="gemini-3.1-flash-lite-preview",
         display_name="Gemini-3.1-Flash-Lite-Preview",
         url="https://deepmind.google/technologies/gemini/flash-lite/",
@@ -317,9 +267,9 @@ api_inference_model_map = {
         model_handler=GeminiHandler,
         underscore_to_dot=True,
     ),
-    "gemini-3-flash-preview-FC": ModelConfig(
-        model_name="gemini-3-flash-preview",
-        display_name="Gemini-3-Flash-Preview",
+    "gemini-3.5-flash": ModelConfig(
+        model_name="gemini-3.5-flash",
+        display_name="Gemini-3.5-Flash",
         url="https://deepmind.google/technologies/gemini/flash/",
         org="Google",
         license="Proprietary",
@@ -328,7 +278,7 @@ api_inference_model_map = {
         output_price=3,
         underscore_to_dot=True,
     ),
-    "gemini-3.1-pro-preview-FC": ModelConfig(
+    "gemini-3.1-pro-preview": ModelConfig(
         model_name="gemini-3.1-pro-preview",
         display_name="Gemini-3.1-Pro-Preview",
         url="https://deepmind.google/technologies/gemini/pro/",
@@ -341,7 +291,7 @@ api_inference_model_map = {
         supports_image_input=True,
     ),
     # @HuanzhiMao FIXME: check if this is still available
-    "palmyra-x5-FC": ModelConfig(
+    "palmyra-x5": ModelConfig(
         model_name="palmyra-x5",
         display_name="palmyra-x5",
         url="https://dev.writer.com/home/models#palmyra-x5",
@@ -350,39 +300,17 @@ api_inference_model_map = {
         model_handler=WriterHandler,
         underscore_to_dot=True,
     ),
-    "grok-4.20-beta-0309-reasoning-FC": ModelConfig(
-        model_name="grok-4.20-beta-0309-reasoning",
-        display_name="Grok-4.20-Beta-0309-Reasoning",
+    # Grok 4.5 exposes reasoning effort (low/medium/high) on a single model string;
+    # we run it at xAI's default effort (high).
+    "grok-4.5": ModelConfig(
+        model_name="grok-4.5",
+        display_name="Grok-4.5",
         url="https://docs.x.ai/docs/models",
         org="xAI",
         license="Proprietary",
         model_handler=GrokHandler,
         input_price=2,
         output_price=6,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
-    "grok-4.3-FC": ModelConfig(
-        model_name="grok-4.3",
-        display_name="Grok-4.3",
-        url="https://docs.x.ai/docs/models",
-        org="xAI",
-        license="Proprietary",
-        model_handler=GrokHandler,
-        input_price=0.2,
-        output_price=0.5,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
-    "grok-4-1-fast-non-reasoning-FC": ModelConfig(
-        model_name="grok-4-1-fast-non-reasoning",
-        display_name="Grok-4-1-fast-non-reasoning",
-        url="https://docs.x.ai/docs/models",
-        org="xAI",
-        license="Proprietary",
-        model_handler=GrokHandler,
-        input_price=0.2,
-        output_price=0.5,
         underscore_to_dot=True,
         supports_image_input=True,
     ),
@@ -603,10 +531,10 @@ api_inference_model_map = {
     #     is_fc_model=False,
     #     underscore_to_dot=False,
     # ),
-    "glm-5.1-FC": ModelConfig(
-        model_name="glm-5.1",
-        display_name="GLM-5.1 (thinking)",
-        url="https://huggingface.co/zai-org/GLM-5.1",
+    "glm-5.2": ModelConfig(
+        model_name="glm-5.2",
+        display_name="GLM-5.2 (thinking)",
+        url="https://huggingface.co/zai-org/GLM-5.2",
         org="Zhipu AI",
         license="MIT",
         model_handler=GLMAPIHandler,
@@ -614,7 +542,7 @@ api_inference_model_map = {
         output_price=None,
         underscore_to_dot=True,
     ),
-    "glm-5v-turbo-FC": ModelConfig(
+    "glm-5v-turbo": ModelConfig(
         model_name="glm-5v-turbo",
         display_name="GLM-5v-Turbo",
         url="https://docs.z.ai/guides/vlm/glm-5v-turbo",
@@ -626,10 +554,10 @@ api_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    "kimi-k2.5-FC": ModelConfig(
-        model_name="kimi-k2.5",
-        display_name="Kimi-K2.5",
-        url="https://huggingface.co/moonshotai/Kimi-K2.5",
+    "kimi-k3": ModelConfig(
+        model_name="kimi-k3",
+        display_name="Kimi-K3",
+        url="https://huggingface.co/moonshotai/Kimi-K3",
         org="MoonshotAI",
         license="modified-mit",
         model_handler=KimiHandler,
@@ -638,7 +566,7 @@ api_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    "Nanbeige3.5-Pro-Thinking-FC": ModelConfig(
+    "Nanbeige3.5-Pro-Thinking": ModelConfig(
         model_name="Nanbeige3.5-Pro-Thinking",
         display_name="Nanbeige3.5-Pro-Thinking",
         url="https://huggingface.co/Nanbeige",
@@ -654,20 +582,21 @@ api_inference_model_map = {
 # Inference through local hosting
 local_inference_model_map = {
     # @huanzhiMao FIXME, check, for oss model, if is_fc_model, do we still supply system prompt?
-    "deepseek-ai/DeepSeek-V3.2-FC": OSSModelConfig(
-        model_name="deepseek-ai/DeepSeek-V3.2",
-        display_name="DeepSeek-V3.2 (self-hosted)",
-        url="https://huggingface.co/deepseek-ai/DeepSeek-V3.2",
+    "deepseek-ai/DeepSeek-V4-Pro": OSSModelConfig(
+        model_name="deepseek-ai/DeepSeek-V4-Pro",
+        display_name="DeepSeek-V4-Pro (self-hosted)",
+        url="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro",
         org="DeepSeek",
         license="MIT",
         model_handler=OSSHandler,
         is_reasoning_model=True,
         underscore_to_dot=False,
-        vllm_tool_call_parser="deepseek_v32",
-        vllm_reasoning_parser="deepseek_v3",
+        vllm_tool_call_parser="deepseek_v4",
+        # @HuanzhiMao FIXME: reasoning parser name inferred, not yet validated on a real run
+        vllm_reasoning_parser="deepseek_v4",
         inference_request_extra_body={"chat_template_kwargs": {"thinking": True}},
     ),
-    "google/gemma-4-E2B-it-FC": OSSModelConfig(
+    "google/gemma-4-E2B-it": OSSModelConfig(
         model_name="google/gemma-4-E2B-it",
         display_name="Gemma-4-E2B-it",
         url="https://huggingface.co/google/gemma-4-E2B-it",
@@ -682,7 +611,7 @@ local_inference_model_map = {
         supports_audio_input=True,
         supports_image_input=True,
     ),
-    "google/gemma-4-E4B-it-FC": OSSModelConfig(
+    "google/gemma-4-E4B-it": OSSModelConfig(
         model_name="google/gemma-4-E4B-it",
         display_name="Gemma-4-E4B-it",
         url="https://huggingface.co/google/gemma-4-E4B-it",
@@ -697,7 +626,7 @@ local_inference_model_map = {
         supports_audio_input=True,
         supports_image_input=True,
     ),
-    "google/gemma-4-26B-A4B-it-FC": OSSModelConfig(
+    "google/gemma-4-26B-A4B-it": OSSModelConfig(
         model_name="google/gemma-4-26B-A4B-it",
         display_name="Gemma-4-26B-A4B-it",
         url="https://huggingface.co/google/gemma-4-26B-A4B-it",
@@ -711,7 +640,7 @@ local_inference_model_map = {
         inference_request_extra_body={"chat_template_kwargs": {"enable_thinking": True}},
         supports_image_input=True,
     ),
-    "google/gemma-4-31B-it-FC": OSSModelConfig(
+    "google/gemma-4-31B-it": OSSModelConfig(
         model_name="google/gemma-4-31B-it",
         display_name="Gemma-4-31B-it",
         url="https://huggingface.co/google/gemma-4-31B-it",
@@ -726,7 +655,7 @@ local_inference_model_map = {
         supports_image_input=True,
     ),
     # @HuanzhiMao FIXME: Check below for is_reasoning_model
-    "google/functiongemma-270m-it-FC": OSSModelConfig(
+    "google/functiongemma-270m-it": OSSModelConfig(
         model_name="google/functiongemma-270m-it",
         display_name="FunctionGemma-270m-it",
         url="https://ai.google.dev/gemma/docs/functiongemma",
@@ -736,7 +665,7 @@ local_inference_model_map = {
         underscore_to_dot=False,
         vllm_tool_call_parser="functiongemma",
     ),
-    "meta-llama/Llama-3.2-1B-Instruct-FC": OSSModelConfig(
+    "meta-llama/Llama-3.2-1B-Instruct": OSSModelConfig(
         model_name="meta-llama/Llama-3.2-1B-Instruct",
         display_name="Llama-3.2-1B-Instruct",
         url="https://llama.meta.com/llama3",
@@ -746,7 +675,7 @@ local_inference_model_map = {
         underscore_to_dot=False,
         vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-3.2-3B-Instruct-FC": OSSModelConfig(
+    "meta-llama/Llama-3.2-3B-Instruct": OSSModelConfig(
         model_name="meta-llama/Llama-3.2-3B-Instruct",
         display_name="Llama-3.2-3B-Instruct",
         url="https://llama.meta.com/llama3",
@@ -756,7 +685,7 @@ local_inference_model_map = {
         underscore_to_dot=False,
         vllm_tool_call_parser="llama3_json",
     ),
-    "meta-llama/Llama-4-Scout-17B-16E-Instruct-FC": OSSModelConfig(
+    "meta-llama/Llama-4-Scout-17B-16E-Instruct": OSSModelConfig(
         model_name="meta-llama/Llama-4-Scout-17B-16E-Instruct",
         display_name="Llama-4-Scout-17B-16E-Instruct",
         url="https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
@@ -767,7 +696,7 @@ local_inference_model_map = {
         supports_image_input=True,
         vllm_tool_call_parser="llama4_pythonic",
     ),
-    "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC": OSSModelConfig(
+    "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8": OSSModelConfig(
         model_name="meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
         display_name="Llama-4-Maverick-17B-128E-Instruct-FP8",
         url="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
@@ -828,7 +757,7 @@ local_inference_model_map = {
         underscore_to_dot=False,
         vllm_tool_call_parser="xlam",
     ),
-    "mistralai/Mistral-Large-3-675B-Instruct-2512-FC": OSSModelConfig(
+    "mistralai/Mistral-Large-3-675B-Instruct-2512": OSSModelConfig(
         model_name="mistralai/Mistral-Large-3-675B-Instruct-2512",
         display_name="Mistral-Large-3-675B-Instruct-2512",
         url="https://huggingface.co/mistralai/Mistral-Large-3-675B-Instruct-2512",
@@ -851,9 +780,9 @@ local_inference_model_map = {
         supports_image_input=True,
         vllm_tool_call_parser="mistral",
     ),
-    "mistral-small-2506-FC": OSSModelConfig(
-        model_name="mistral-small-2506",
-        display_name="Mistral-small-2506",
+    "mistral-small-2603": OSSModelConfig(
+        model_name="mistral-small-2603",
+        display_name="Mistral-small-2603",
         url="https://docs.mistral.ai/guides/model-selection/",
         org="Mistral AI",
         license="Proprietary",
@@ -862,7 +791,7 @@ local_inference_model_map = {
         supports_image_input=True,
     ),
     # FIXME, check
-    "microsoft/Phi-4-mini-instruct-FC": OSSModelConfig(
+    "microsoft/Phi-4-mini-instruct": OSSModelConfig(
         model_name="microsoft/Phi-4-mini-instruct",
         display_name="Phi-4-mini-instruct",
         url="https://huggingface.co/microsoft/Phi-4-mini-instruct",
@@ -942,7 +871,7 @@ local_inference_model_map = {
         vllm_tool_call_parser="xlam",
         underscore_to_dot=False,
     ),
-    "Qwen/Qwen3.5-0.8B-FC": OSSModelConfig(
+    "Qwen/Qwen3.5-0.8B": OSSModelConfig(
         model_name="Qwen/Qwen3.5-0.8B",
         display_name="Qwen3.5-0.8B",
         url="https://huggingface.co/Qwen/Qwen3.5-0.8B",
@@ -954,7 +883,7 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-2B-FC": OSSModelConfig(
+    "Qwen/Qwen3.5-2B": OSSModelConfig(
         model_name="Qwen/Qwen3.5-2B",
         display_name="Qwen3.5-2B",
         url="https://huggingface.co/Qwen/Qwen3.5-2B",
@@ -966,7 +895,7 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-4B-FC": OSSModelConfig(
+    "Qwen/Qwen3.5-4B": OSSModelConfig(
         model_name="Qwen/Qwen3.5-4B",
         display_name="Qwen3.5-4B",
         url="https://huggingface.co/Qwen/Qwen3.5-4B",
@@ -978,7 +907,7 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-9B-FC": OSSModelConfig(
+    "Qwen/Qwen3.5-9B": OSSModelConfig(
         model_name="Qwen/Qwen3.5-9B",
         display_name="Qwen3.5-9B",
         url="https://huggingface.co/Qwen/Qwen3.5-9B",
@@ -990,10 +919,10 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-27B-FC": OSSModelConfig(
-        model_name="Qwen/Qwen3.5-27B",
-        display_name="Qwen3.5-27B",
-        url="https://huggingface.co/Qwen/Qwen3.5-27B",
+    "Qwen/Qwen3.6-27B": OSSModelConfig(
+        model_name="Qwen/Qwen3.6-27B",
+        display_name="Qwen3.6-27B",
+        url="https://huggingface.co/Qwen/Qwen3.6-27B",
         org="Qwen",
         license="apache-2.0",
         model_handler=OSSHandler,
@@ -1002,10 +931,10 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-35B-A3B-FC": OSSModelConfig(
-        model_name="Qwen/Qwen3.5-35B-A3B",
-        display_name="Qwen3.5-35B-A3B",
-        url="https://huggingface.co/Qwen/Qwen3.5-35B-A3B",
+    "Qwen/Qwen3.6-35B-A3B": OSSModelConfig(
+        model_name="Qwen/Qwen3.6-35B-A3B",
+        display_name="Qwen3.6-35B-A3B",
+        url="https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
         org="Qwen",
         license="apache-2.0",
         model_handler=OSSHandler,
@@ -1014,7 +943,7 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-122B-A10B-FC": OSSModelConfig(
+    "Qwen/Qwen3.5-122B-A10B": OSSModelConfig(
         model_name="Qwen/Qwen3.5-122B-A10B",
         display_name="Qwen3.5-122B-A10B",
         url="https://huggingface.co/Qwen/Qwen3.5-122B-A10B",
@@ -1026,7 +955,7 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
-    "Qwen/Qwen3.5-397B-A17B-FC": OSSModelConfig(
+    "Qwen/Qwen3.5-397B-A17B": OSSModelConfig(
         model_name="Qwen/Qwen3.5-397B-A17B",
         display_name="Qwen3.5-397B-A17B",
         url="https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
@@ -1096,86 +1025,7 @@ local_inference_model_map = {
     #     is_fc_model=True,
     #     underscore_to_dot=True,
     # ),
-    # "watt-ai/watt-tool-8B": OSSModelConfig(
-    #     model_name="watt-ai/watt-tool-8B",
-    #     display_name="watt-tool-8B (FC)",
-    #     url="https://huggingface.co/watt-ai/watt-tool-8B/",
-    #     org="Watt AI Lab",
-    #     license="Apache-2.0",
-    #     model_handler=LlamaHandler,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "watt-ai/watt-tool-70B": OSSModelConfig(
-    #     model_name="watt-ai/watt-tool-70B",
-    #     display_name="watt-tool-70B (FC)",
-    #     url="https://huggingface.co/watt-ai/watt-tool-70B/",
-    #     org="Watt AI Lab",
-    #     license="Apache-2.0",
-    #     model_handler=LlamaHandler,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "NovaSky-AI/Sky-T1-32B-Preview": OSSModelConfig(
-    #     model_name="NovaSky-AI/Sky-T1-32B-Preview",
-    #     display_name="Sky-T1-32B-Preview (Prompt)",
-    #     url="https://huggingface.co/NovaSky-AI/Sky-T1-32B-Preview",
-    #     org="NovaSky-AI",
-    #     license="apache-2.0",
-    #     model_handler=QwenHandler,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "uiuc-convai/CoALM-8B": OSSModelConfig(
-    #     model_name="uiuc-convai/CoALM-8B",
-    #     display_name="CoALM-8B",
-    #     url="https://huggingface.co/uiuc-convai/CoALM-8B",
-    #     org="UIUC + Oumi",
-    #     license="Meta Llama 3 Community",
-    #     model_handler=LlamaHandler,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "uiuc-convai/CoALM-70B": OSSModelConfig(
-    #     model_name="uiuc-convai/CoALM-70B",
-    #     display_name="CoALM-70B",
-    #     url="https://huggingface.co/uiuc-convai/CoALM-70B",
-    #     org="UIUC + Oumi",
-    #     license="Meta Llama 3 Community",
-    #     model_handler=LlamaHandler,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "uiuc-convai/CoALM-405B": OSSModelConfig(
-    #     model_name="uiuc-convai/CoALM-405B",
-    #     display_name="CoALM-405B",
-    #     url="https://huggingface.co/uiuc-convai/CoALM-405B",
-    #     org="UIUC + Oumi",
-    #     license="Meta Llama 3 Community",
-    #     model_handler=LlamaHandler,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "ThinkAgents/ThinkAgent-1B": OSSModelConfig(
-    #     model_name="ThinkAgents/ThinkAgent-1B",
-    #     display_name="ThinkAgent-1B (FC)",
-    #     url="https://huggingface.co/ThinkAgents/ThinkAgent-1B",
-    #     org="ThinkAgents",
-    #     license="apache-2.0",
-    #     model_handler=ThinkAgentHandler,
-    #     is_fc_model=True,
-    #     underscore_to_dot=False,
-    # ),
-    # "phronetic-ai/RZN-T": OSSModelConfig(
-    #     model_name="phronetic-ai/RZN-T",
-    #     display_name="RZN-T (Prompt)",
-    #     url="https://huggingface.co/phronetic-ai/RZN-T",
-    #     org="Phronetic AI",
-    #     license="apache-2.0",
-    #     model_handler=QwenHandler,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
+
     # "Nanbeige/Nanbeige4-3B-Thinking-2511": OSSModelConfig(
     #     model_name="Nanbeige/Nanbeige4-3B-Thinking-2511",
     #     display_name="Nanbeige4-3B-Thinking-2511 (FC)",
@@ -1191,8 +1041,8 @@ local_inference_model_map = {
 # Inference through third-party inference platforms for open-source models
 third_party_inference_model_map = {
     # Via Qwen Agent Framework
-    "qwen3-4b-think-FC": ModelConfig(
-        model_name="qwen3-4b-think-FC",
+    "qwen3-4b-think": ModelConfig(
+        model_name="qwen3-4b-think",
         display_name="Qwen3-4B-Think",
         url="https://huggingface.co/Qwen/Qwen3-4B",
         org="Qwen",
@@ -1202,8 +1052,8 @@ third_party_inference_model_map = {
         output_price=None,
         underscore_to_dot=True,
     ),
-    "qwen3-4b-nothink-FC": ModelConfig(
-        model_name="qwen3-4b-nothink-FC",
+    "qwen3-4b-nothink": ModelConfig(
+        model_name="qwen3-4b-nothink",
         display_name="Qwen3-4B-NoThink",
         url="https://huggingface.co/Qwen/Qwen3-4B",
         org="Qwen",
@@ -1221,7 +1071,7 @@ third_party_inference_model_map = {
 audio_model_map = {}
 
 vision_model_map = {
-    "glm-4.6v-FC": ModelConfig(
+    "glm-4.6v": ModelConfig(
         model_name="glm-4.6v",
         display_name="GLM-4.6v",
         url="https://huggingface.co/zai-org/GLM-4.6",
@@ -1233,7 +1083,7 @@ vision_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    "glm-4.6v-flash-FC": ModelConfig(
+    "glm-4.6v-flash": ModelConfig(
         model_name="glm-4.6v-flash",
         display_name="GLM-4.6v-Flash",
         url="https://huggingface.co/zai-org/GLM-4.6v-Flash",

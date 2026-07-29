@@ -58,10 +58,8 @@ class ClaudeHandler(BaseHandler):
         max_tokens is required to be set when querying, so we default to the model's max tokens
         """
         # https://platform.claude.com/docs/en/about-claude/models/overview
-        if "opus" in self.model_name:
+        if "opus" in self.model_name or "sonnet" in self.model_name:
             return 128000
-        elif "sonnet" in self.model_name:
-            return 64000
         elif "haiku" in self.model_name:
             return 64000
         else:
@@ -94,7 +92,7 @@ class ClaudeHandler(BaseHandler):
                     count += 1
 
         kwargs = {
-            "model": self.model_name.strip("-FC"),
+            "model": self.model_name,
             "max_tokens": self._get_max_tokens(),
             "temperature": self.temperature,
             "tools": inference_data["tools"],
@@ -105,7 +103,9 @@ class ClaudeHandler(BaseHandler):
         if "system_prompt" in inference_data:
             kwargs["system"] = inference_data["system_prompt"]
         
-        if "opus-4-7" in self.model_name:
+        # Opus 5 and Sonnet 5 reject sampling params (temperature/top_p/top_k)
+        # with a 400; Haiku 4.5 still accepts them.
+        if any(m in self.model_name for m in ("opus-5", "sonnet-5")):
             del kwargs["temperature"]
 
         # Need to set timeout to avoid auto-error when requesting large context length

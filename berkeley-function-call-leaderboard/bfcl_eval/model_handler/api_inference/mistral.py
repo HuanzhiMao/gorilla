@@ -11,7 +11,7 @@ from bfcl_eval.model_handler.utils import (
     convert_to_tool,
     retry_with_backoff,
 )
-from mistralai import Mistral
+from mistralai.client import Mistral
 
 
 class MistralHandler(BaseHandler):

@@ -41,7 +41,7 @@ class QwenAPIHandler(OpenAICompletionsHandler):
 
         return self.generate_with_backoff(
             messages=inference_data["message"],
-            model=self.model_name.replace("-FC", ""),
+            model=self.model_name,
             tools=tools,
             parallel_tool_calls=True,
             extra_body={"enable_thinking": True},
