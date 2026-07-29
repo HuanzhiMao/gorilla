@@ -11,11 +11,7 @@ from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.utils import (
     convert_to_function_call,
     convert_to_tool,
-    default_decode_ast_prompting,
-    default_decode_execute_prompting,
-    format_execution_results_prompting,
     retry_with_backoff,
-    system_prompt_pre_processing_chat_model,
 )
 from bfcl_eval.utils import (
     audio_to_base64,
@@ -71,21 +67,15 @@ class OpenAICompletionsHandler(BaseHandler):
         return kwargs
 
     def decode_ast(self, result, language, has_tool_call_tag):
-        if self.is_fc_model:
-            decoded_output = []
-            for invoked_function in result:
-                name = list(invoked_function.keys())[0]
-                params = json.loads(invoked_function[name])
-                decoded_output.append({name: params})
-            return decoded_output
-        else:
-            return default_decode_ast_prompting(result, language, has_tool_call_tag)
+        decoded_output = []
+        for invoked_function in result:
+            name = list(invoked_function.keys())[0]
+            params = json.loads(invoked_function[name])
+            decoded_output.append({name: params})
+        return decoded_output
 
     def decode_execute(self, result, has_tool_call_tag):
-        if self.is_fc_model:
-            return convert_to_function_call(result)
-        else:
-            return default_decode_execute_prompting(result)
+        return convert_to_function_call(result)
 
     @retry_with_backoff(error_type=RateLimitError)
     def generate_with_backoff(self, **kwargs):
@@ -289,112 +279,6 @@ class OpenAICompletionsHandler(BaseHandler):
         # Capture the reasoning trace so it can be logged to the local result file.
         if hasattr(message, "reasoning_content"):
             response_data["reasoning_content"] = message.reasoning_content
-
-        # vllm might use `reasoning` instead of `reasoning_content`
-        if hasattr(message, "reasoning"):
-            response_data["reasoning_content"] = message.reasoning
-
-    #### Prompting methods ####
-
-    def _query_prompting(self, inference_data: dict):
-        inference_data["inference_input_log"] = {"message": repr(inference_data["message"])}
-
-        return self.generate_with_backoff(
-            messages=inference_data["message"],
-            model=self.model_name,
-            temperature=self.temperature,
-            store=False,
-        )
-
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-        test_entry_id: str = test_entry["id"]
-
-        test_entry["question"][0] = system_prompt_pre_processing_chat_model(
-            test_entry["question"][0], functions, test_entry_id
-        )
-
-        return {"message": []}
-
-    def _parse_query_response_prompting(self, api_response: Any) -> dict:
-        response_data = {
-            "model_responses": api_response.choices[0].message.content,
-            "model_responses_message_for_chat_history": api_response.choices[0].message,
-            "input_token": api_response.usage.prompt_tokens,
-            "output_token": api_response.usage.completion_tokens,
-        }
-        self._add_reasoning_content_if_available_prompting(api_response, response_data)
-        return response_data
-
-    def add_first_turn_message_prompting(
-        self, inference_data: dict, first_turn_message: list[dict]
-    ) -> dict:
-        for message in first_turn_message:
-            if "image_content" in message:
-                image_content_list = message["image_content"]
-                new_content = []
-                for image_content in image_content_list:
-                    new_content.append(
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:{image_content['type']};base64,{image_content['image_base64']}"
-                            },
-                        }
-                    )
-                new_content.append({"type": "text", "text": message["content"]})
-                message["content"] = new_content
-                del message["image_content"]
-
-        inference_data["message"].extend(first_turn_message)
-        return inference_data
-
-    def _add_next_turn_user_message_prompting(
-        self, inference_data: dict, user_message: list[dict]
-    ) -> dict:
-        inference_data["message"].extend(user_message)
-        return inference_data
-
-    def _add_assistant_message_prompting(
-        self, inference_data: dict, model_response_data: dict
-    ) -> dict:
-        inference_data["message"].append(
-            model_response_data["model_responses_message_for_chat_history"]
-        )
-        return inference_data
-
-    def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
-    ) -> dict:
-        formatted_results_message = format_execution_results_prompting(
-            inference_data, execution_results, model_response_data
-        )
-        inference_data["message"].append(
-            {"role": "user", "content": formatted_results_message}
-        )
-
-        return inference_data
-
-    def _add_reasoning_content_if_available_prompting(
-        self, api_response: Any, response_data: dict
-    ) -> None:
-        """
-        OpenAI models don't show reasoning content in the api response,
-        but many other models that use the OpenAI interface do, such as DeepSeek and Grok.
-        This method is included here to avoid code duplication.
-
-        These models often don't take reasoning content in the chat history for next turn.
-        Thus, this method saves reasoning content to response_data (for local result file) if present in the response,
-        but does not include it in the chat history.
-        """
-        message = api_response.choices[0].message
-        if hasattr(message, "reasoning_content"):
-            response_data["reasoning_content"] = message.reasoning_content
-            # Reasoning content should not be included in the chat history
-            response_data["model_responses_message_for_chat_history"] = {
-                "role": "assistant",
-                "content": str(response_data["model_responses"]),
-            }
 
         # vllm might use `reasoning` instead of `reasoning_content`
         if hasattr(message, "reasoning"):

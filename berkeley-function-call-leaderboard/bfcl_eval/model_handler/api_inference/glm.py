@@ -12,10 +12,9 @@ class GLMAPIHandler(OpenAICompletionsHandler):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
         self.client = OpenAI(
             api_key=os.getenv("GLM_API_KEY"),
             base_url="https://open.bigmodel.cn/api/paas/v4/",

@@ -11,11 +11,6 @@ from bfcl_eval.constants.eval_config import LOCAL_SERVER_PORT
 from bfcl_eval.model_handler.api_inference.openai_completion import (
     OpenAICompletionsHandler,
 )
-from bfcl_eval.model_handler.utils import (
-    default_decode_ast_prompting,
-    default_decode_execute_prompting,
-    system_prompt_pre_processing_chat_model,
-)
 from openai import OpenAI
 from overrides import EnforceOverrides, final, override
 
@@ -26,11 +21,10 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         dtype="bfloat16",
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
         self.model_name_huggingface = model_name
         self.dtype = dtype
         self.model_style = ModelStyle.OSSMODEL
@@ -106,14 +100,12 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
             if not skip_server_setup:
                 if backend == "vllm":
                     reasoning_parser = self._resolve_reasoning_parser()
-                    tool_call_parser = None
-                    if self.is_fc_model:
-                        tool_call_parser = self._resolve_tool_call_parser()
-                        if not tool_call_parser:
-                            raise ValueError(
-                                "Function calling models require a supported vLLM tool call parser. "
-                                "Set VLLM_TOOL_CALL_PARSER or update the model handler."
-                            )
+                    tool_call_parser = self._resolve_tool_call_parser()
+                    if not tool_call_parser:
+                        raise ValueError(
+                            "Function calling models require a supported vLLM tool call parser. "
+                            "Set VLLM_TOOL_CALL_PARSER or update the model handler."
+                        )
                     cmd = [
                         "vllm",
                         "serve",
@@ -279,41 +271,3 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
             kwargs["extra_body"] = extra_body
 
         return self.generate_with_backoff(**kwargs)
-
-    #### Prompting methods ####
-    @override
-    def _query_prompting(self, inference_data: dict):
-        inference_data["inference_input_log"] = {"message": repr(inference_data["message"])}
-
-        kwargs = {
-            "messages": inference_data["message"],
-            "model": self.model_path_or_id,
-            "temperature": self.temperature,
-            "timeout": 72000,
-        }
-        extra_body = self._build_extra_body()
-        if extra_body:
-            kwargs["extra_body"] = extra_body
-
-        return self.generate_with_backoff(**kwargs)
-
-    @override
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-        test_entry_id: str = test_entry["id"]
-
-        test_entry["question"][0] = system_prompt_pre_processing_chat_model(
-            test_entry["question"][0], functions, test_entry_id
-        )
-
-        return {"message": []}
-
-    # @HuanzhiMao FIXME: remove this
-    def _format_prompt(self, messages, function):
-        """
-        Manually apply the chat template to construct the formatted prompt.
-        This way, we can have full control over the final formatted prompt and is generally recommended for advanced use cases.
-        """
-        raise NotImplementedError(
-            "OSS Models should implement their own prompt formatting."
-        )

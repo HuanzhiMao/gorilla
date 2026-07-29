@@ -33,7 +33,6 @@ def get_handler(model_name: str) -> BaseHandler:
         model_name=config.model_name,
         temperature=0,
         registry_name=model_name,
-        is_fc_model=config.is_fc_model,
     )
     return handler
 

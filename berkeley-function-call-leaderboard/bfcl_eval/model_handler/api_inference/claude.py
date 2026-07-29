@@ -12,12 +12,8 @@ from bfcl_eval.model_handler.utils import (
     combine_consecutive_user_prompts,
     convert_to_function_call,
     convert_to_tool,
-    default_decode_ast_prompting,
-    default_decode_execute_prompting,
     extract_system_prompt,
-    format_execution_results_prompting,
     retry_with_backoff,
-    system_prompt_pre_processing_chat_model,
 )
 from bfcl_eval.utils import contain_multi_step_interaction
 
@@ -28,32 +24,23 @@ class ClaudeHandler(BaseHandler):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
         self.model_style = ModelStyle.ANTHROPIC
         self.client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
     def decode_ast(self, result, language, has_tool_call_tag):
-        if not self.is_fc_model:
-            return default_decode_ast_prompting(result, language, has_tool_call_tag)
-
-        else:
-            decoded_output = []
-            for invoked_function in result:
-                name = list(invoked_function.keys())[0]
-                params = json.loads(invoked_function[name])
-                decoded_output.append({name: params})
-            return decoded_output
+        decoded_output = []
+        for invoked_function in result:
+            name = list(invoked_function.keys())[0]
+            params = json.loads(invoked_function[name])
+            decoded_output.append({name: params})
+        return decoded_output
 
     def decode_execute(self, result, has_tool_call_tag):
-        if not self.is_fc_model:
-            return default_decode_execute_prompting(result, has_tool_call_tag)
-
-        else:
-            function_call = convert_to_function_call(result)
-            return function_call
+        function_call = convert_to_function_call(result)
+        return function_call
 
     @retry_with_backoff(
         error_type=RateLimitError,
@@ -267,123 +254,5 @@ class ClaudeHandler(BaseHandler):
                 )
 
         inference_data["message"].append(tool_message)
-
-        return inference_data
-
-    #### Prompting methods ####
-
-    def _query_prompting(self, inference_data: dict):
-        inference_data["inference_input_log"] = {
-            "message": repr(inference_data["message"]),
-            "system_prompt": inference_data["system_prompt"],
-        }
-
-        if inference_data["caching_enabled"]:
-            # Cache the system prompt
-            inference_data["system_prompt"][0]["cache_control"] = {"type": "ephemeral"}
-            # Add cache control to the last two user messages as well
-            count = 0
-            for message in reversed(inference_data["message"]):
-                if message["role"] == "user":
-                    if count < 2:
-                        message["content"][0]["cache_control"] = {"type": "ephemeral"}
-                    else:
-                        if "cache_control" in message["content"][0]:
-                            del message["content"][0]["cache_control"]
-                    count += 1
-
-        kwargs = {
-            "model": self.model_name,
-            "max_tokens": self._get_max_tokens(),
-            "temperature": self.temperature,
-            "messages": inference_data["message"],
-        }
-
-        # Include system_prompt if it exists
-        if "system_prompt" in inference_data:
-            kwargs["system"] = inference_data["system_prompt"]
-
-        # Need to set timeout to avoid auto-error when requesting large context length
-        # https://github.com/anthropics/anthropic-sdk-python#long-requests
-        kwargs["timeout"] = 1200
-
-        return self.generate_with_backoff(**kwargs)
-
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-        test_entry_id: str = test_entry["id"]
-        test_category: str = test_entry_id.rsplit("_", 1)[0]
-
-        test_entry["question"][0] = system_prompt_pre_processing_chat_model(
-            test_entry["question"][0], functions, test_entry_id
-        )
-        # Claude takes in system prompt in a specific field, not in the message field, so we don't need to add it to the message
-        system_prompt = extract_system_prompt(test_entry["question"][0])
-
-        system_prompt = [{"type": "text", "text": system_prompt}]
-
-        # Claude doesn't allow consecutive user prompts, so we need to combine them
-        for round_idx in range(len(test_entry["question"])):
-            test_entry["question"][round_idx] = combine_consecutive_user_prompts(
-                test_entry["question"][round_idx]
-            )
-
-        test_entry_id: str = test_entry["id"]
-        test_category: str = test_entry_id.rsplit("_", 1)[0]
-        # caching enabled only for multi_turn category
-        caching_enabled: bool = contain_multi_step_interaction(test_category)
-
-        return {
-            "message": [],
-            "system_prompt": system_prompt,
-            "caching_enabled": caching_enabled,
-        }
-
-    def _parse_query_response_prompting(self, api_response: Any) -> dict:
-        return {
-            "model_responses": api_response.content[0].text,
-            "input_token": api_response.usage.input_tokens,
-            "output_token": api_response.usage.output_tokens,
-        }
-
-    def add_first_turn_message_prompting(
-        self, inference_data: dict, first_turn_message: list[dict]
-    ) -> dict:
-        for message in first_turn_message:
-            message["content"] = [{"type": "text", "text": message["content"]}]
-        inference_data["message"].extend(first_turn_message)
-        return inference_data
-
-    def _add_next_turn_user_message_prompting(
-        self, inference_data: dict, user_message: list[dict]
-    ) -> dict:
-        for message in user_message:
-            message["content"] = [{"type": "text", "text": message["content"]}]
-        inference_data["message"].extend(user_message)
-        return inference_data
-
-    def _add_assistant_message_prompting(
-        self, inference_data: dict, model_response_data: dict
-    ) -> dict:
-        inference_data["message"].append(
-            {
-                "role": "assistant",
-                "content": model_response_data["model_responses"],
-            }
-        )
-        return inference_data
-
-    def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
-    ) -> dict:
-        formatted_results_message = format_execution_results_prompting(
-            inference_data, execution_results, model_response_data
-        )
-        inference_data["message"].append(
-            {
-                "role": "user",
-                "content": [{"type": "text", "text": formatted_results_message}],
-            }
-        )
 
         return inference_data

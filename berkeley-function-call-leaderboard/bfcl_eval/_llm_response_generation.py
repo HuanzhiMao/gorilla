@@ -113,7 +113,6 @@ def build_handler(model_name, temperature):
         model_name=config.model_name,
         temperature=temperature,
         registry_name=model_name,
-        is_fc_model=config.is_fc_model,
     )
     # If this is a locally hosted OSS model, pass any vLLM-specific config
     # through to the handler instance.

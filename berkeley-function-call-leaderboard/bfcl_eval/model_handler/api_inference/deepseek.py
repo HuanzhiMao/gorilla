@@ -6,9 +6,7 @@ from typing import Any
 from bfcl_eval.model_handler.api_inference.openai_completion import OpenAICompletionsHandler
 from bfcl_eval.constants.enums import ModelStyle
 from bfcl_eval.model_handler.utils import (
-    combine_consecutive_user_prompts,
     retry_with_backoff,
-    system_prompt_pre_processing_chat_model,
 )
 from openai import OpenAI, RateLimitError
 from overrides import override
@@ -21,10 +19,9 @@ class DeepSeekAPIHandler(OpenAICompletionsHandler):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
         self.model_style = ModelStyle.OPENAI_COMPLETIONS
         base = "https://api.deepseek.com"
 
@@ -70,52 +67,6 @@ class DeepSeekAPIHandler(OpenAICompletionsHandler):
                 messages=message,
                 temperature=self.temperature,
             )
-
-    @override
-    def _query_prompting(self, inference_data: dict):
-        """
-        This method is intended to be used by the `DeepSeek-R1` models. If used for other models, you will need to modify the code accordingly.
-
-        Reasoning models don't support temperature parameter
-        https://api-docs.deepseek.com/guides/reasoning_model
-
-        `DeepSeek-R1` should use `deepseek-reasoner` as the model name in the API
-        https://api-docs.deepseek.com/quick_start/pricing
-        """
-        message: list[dict] = inference_data["message"]
-        inference_data["inference_input_log"] = {"message": repr(message)}
-
-        return self.generate_with_backoff(
-            model=self.model_name,
-            messages=message,
-        )
-
-    @override
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-        test_entry_id: str = test_entry["id"]
-
-        test_entry["question"][0] = system_prompt_pre_processing_chat_model(
-            test_entry["question"][0], functions, test_entry_id
-        )
-
-        # 'deepseek-reasoner does not support successive user messages, so we need to combine them
-        for round_idx in range(len(test_entry["question"])):
-            test_entry["question"][round_idx] = combine_consecutive_user_prompts(
-                test_entry["question"][round_idx]
-            )
-
-        return {"message": []}
-
-    @override
-    def _parse_query_response_prompting(self, api_response: Any) -> dict:
-        """
-        DeepSeek does not take reasoning content in next turn chat history, for both prompting and function calling mode.
-        Error: Error code: 400 - {'error': {'message': 'The reasoning_content is an intermediate result for display purposes only and will not be included in the context for inference. Please remove the reasoning_content from your message to reduce network traffic.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_request_error'}}
-        """
-        response_data = super()._parse_query_response_prompting(api_response)
-        self._add_reasoning_content_if_available_prompting(api_response, response_data)
-        return response_data
 
     @override
     def _parse_query_response_FC(self, api_response: Any) -> dict:

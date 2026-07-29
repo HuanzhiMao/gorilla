@@ -2,6 +2,15 @@
 
 All notable changes to the Berkeley Function Calling Leaderboard will be documented in this file.
 
+- [Jul 29, 2026] Follow-up cleanup now that every model runs in FC mode. This lands as part of the next major BFCL release, which intentionally breaks compatibility with earlier versions; handlers and configs written against the previous release are not supported as-is.
+  1. Dropped the redundant `(FC)` suffix from every leaderboard display name. `GLM-5.1 (FC thinking)` becomes `GLM-5.1 (thinking)`, and the self-hosted DeepSeek entry is now `DeepSeek-V3.2 (self-hosted)` so it no longer collides with the API entry.
+  2. Removed the `is_fc_model` field from `ModelConfig` and the corresponding constructor argument from `BaseHandler` and every model handler. It was `True` for all models and gated no remaining behavior. Breaking change: custom handlers must drop the argument from their `__init__` signature and `super().__init__(...)` call.
+  3. Locally-hosted models now receive every test entry exactly as written, with no message normalization. A few `live_irrelevance` entries contain consecutive user turns, and some chat templates (Gemma's, for one) reject those outright. We deliberately do not merge them: real-world queries are noisy, so a template that cannot accept them is a genuine model limitation and should be reflected in the score rather than hidden by a benchmark-side rewrite. Affected entries are recorded as inference errors and scored as failures; the rest of the run is unaffected. Note that the Claude and Nova handlers still merge consecutive user messages, because their APIs reject them at the API layer rather than in a chat template.
+  4. Fixed `mistralai/Mistral-Small-4-119B-2603`, which was routed to the Mistral API handler instead of being served locally, and `qwen3-4b-nothink-FC`, whose handler could not be constructed.
+  5. Regenerated `SUPPORTED_MODELS.md` from the model registry and dropped its now-uniform `Type` column.
+- [Jul 28, 2026] Drop support for a set of models and providers that are no longer actively tracked, to reduce maintenance surface. BFCL now focuses on models from major labs and providers; the community is welcome to add support for other models in a fork.
+  1. Removed the `Bielik`, `Arch-Agent` (katanemo), `BitAgent`/`GoGoAgent` (Bittensor), and `Falcon3` (TII UAE) model entries and their handlers.
+  2. Removed Novita AI as a third-party inference provider, along with the `NOVITA_AI` model style, the `NovitaHandler`, and the `NOVITA_API_KEY` setting. The Llama-4-Maverick, Llama-4-Scout, and QwQ-32B models previously served via Novita remain available as self-hosted entries.
 - [Jul 23, 2026] Retire the prompting (chat-based tool calling) pathway. BFCL now evaluates models exclusively through their native function-calling (FC) interface:
   1. Removed the prompting inference drivers and abstract prompting hooks from the handler base classes, and all `*_prompting` overrides from the model handlers.
   2. Locally-hosted (open-source) models now run through a single FC handler backed by vLLM/sglang tool-call and reasoning parsers; the per-model prompt-mode handlers have been removed.

@@ -28,12 +28,10 @@ class CohereHandler(BaseHandler):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
         self.model_style = ModelStyle.COHERE
-        self.is_fc_model = True
         self.client = cohere.ClientV2(api_key=os.getenv("COHERE_API_KEY"))
 
     def decode_ast(self, result, language, has_tool_call_tag):

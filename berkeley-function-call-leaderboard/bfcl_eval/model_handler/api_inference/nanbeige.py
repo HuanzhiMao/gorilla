@@ -18,10 +18,9 @@ class NanbeigeAPIHandler(OpenAICompletionsHandler):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
         self.model_style = ModelStyle.OPENAI_COMPLETIONS
         self.client = OpenAI(
             base_url="https://nanbeige.zhipin.com/api/gpt/open/chat/openai/v1",

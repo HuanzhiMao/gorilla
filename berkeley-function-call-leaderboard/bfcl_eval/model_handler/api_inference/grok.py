@@ -14,20 +14,13 @@ class GrokHandler(OpenAICompletionsHandler):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
         self.client = OpenAI(
             base_url="https://api.x.ai/v1",
             api_key=os.getenv("GROK_API_KEY"),
         )
-
-    @override
-    def _parse_query_response_prompting(self, api_response: Any) -> dict:
-        response_data = super()._parse_query_response_prompting(api_response)
-        self._add_reasoning_content_if_available_prompting(api_response, response_data)
-        return response_data
 
     @override
     def _parse_query_response_FC(self, api_response: Any) -> dict:

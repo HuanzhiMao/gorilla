@@ -9,11 +9,7 @@ from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.utils import (
     convert_to_function_call,
     convert_to_tool,
-    default_decode_ast_prompting,
-    default_decode_execute_prompting,
-    format_execution_results_prompting,
     retry_with_backoff,
-    system_prompt_pre_processing_chat_model,
 )
 from mistralai import Mistral
 
@@ -24,31 +20,24 @@ class MistralHandler(BaseHandler):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
         self.model_style = ModelStyle.MISTRAL
 
         self.client = Mistral(api_key=os.getenv("MISTRAL_API_KEY"))
 
     def decode_ast(self, result, language, has_tool_call_tag):
-        if self.is_fc_model:
-            decoded_output = []
-            for invoked_function in result:
-                name = list(invoked_function.keys())[0]
-                params = json.loads(invoked_function[name])
-                decoded_output.append({name: params})
-            return decoded_output
-        else:
-            return default_decode_ast_prompting(result, language, has_tool_call_tag)
+        decoded_output = []
+        for invoked_function in result:
+            name = list(invoked_function.keys())[0]
+            params = json.loads(invoked_function[name])
+            decoded_output.append({name: params})
+        return decoded_output
 
     def decode_execute(self, result, has_tool_call_tag):
-        if self.is_fc_model:
-            function_call = convert_to_function_call(result)
-            return function_call
-        else:
-            return default_decode_execute_prompting(result, has_tool_call_tag)
+        function_call = convert_to_function_call(result)
+        return function_call
 
     @retry_with_backoff(error_message_pattern=r".*Status 429.*")
     def generate_with_backoff(self, **kwargs):
@@ -174,91 +163,4 @@ class MistralHandler(BaseHandler):
                 "tool_call_id": tool_call_id,
             }
             inference_data["message"].append(tool_message)
-        return inference_data
-
-    #### Prompting methods ####
-
-    def _query_prompting(self, inference_data: dict):
-        message = inference_data["message"]
-        inference_data["inference_input_log"] = {"message": message}
-
-        return self.generate_with_backoff(
-            model=self.model_name,
-            messages=message,
-            temperature=self.temperature,
-        )
-
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-        test_entry_id: str = test_entry["id"]
-
-        test_entry["question"][0] = system_prompt_pre_processing_chat_model(
-            test_entry["question"][0], functions, test_entry_id
-        )
-
-        return {"message": []}
-
-    def _parse_query_response_prompting(self, api_response: Any) -> dict:
-        return {
-            "model_responses": api_response.choices[0].message.content,
-            "model_responses_message_for_chat_history": api_response.choices[0].message,
-            "input_token": api_response.usage.prompt_tokens,
-            "output_token": api_response.usage.completion_tokens,
-        }
-
-    def add_first_turn_message_prompting(
-        self, inference_data: dict, first_turn_message: list[dict]
-    ) -> dict:
-        for message in first_turn_message:
-            has_image = "image_content" in message
-            has_audio = "audio_content" in message
-            if has_image or has_audio:
-                new_content = []
-                if has_image:
-                    for image_content in message["image_content"]:
-                        new_content.append(
-                            {
-                                "type": "image_url",
-                                "image_url": f"data:{image_content['type']};base64,{image_content['image_base64']}",
-                            }
-                        )
-                    del message["image_content"]
-                if has_audio:
-                    for audio_content in message["audio_content"]:
-                        new_content.append(
-                            {
-                                "type": "input_audio",
-                                "input_audio": audio_content["audio_base64"],
-                            }
-                        )
-                    del message["audio_content"]
-                new_content.append({"type": "text", "text": message["content"]})
-                message["content"] = new_content
-        inference_data["message"].extend(first_turn_message)
-        return inference_data
-
-    def _add_next_turn_user_message_prompting(
-        self, inference_data: dict, user_message: list[dict]
-    ) -> dict:
-        inference_data["message"].extend(user_message)
-        return inference_data
-
-    def _add_assistant_message_prompting(
-        self, inference_data: dict, model_response_data: dict
-    ) -> dict:
-        inference_data["message"].append(
-            model_response_data["model_responses_message_for_chat_history"]
-        )
-        return inference_data
-
-    def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
-    ) -> dict:
-        formatted_results_message = format_execution_results_prompting(
-            inference_data, execution_results, model_response_data
-        )
-        inference_data["message"].append(
-            {"role": "user", "content": formatted_results_message}
-        )
-
         return inference_data

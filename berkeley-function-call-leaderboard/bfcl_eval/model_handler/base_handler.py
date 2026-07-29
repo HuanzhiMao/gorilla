@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any
 from tqdm import tqdm
 from bfcl_eval.constants.default_prompts import (
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
-    DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING,
 )
 import traceback
 from bfcl_eval.constants.enums import ModelStyle, ResultType, ReturnFormat
@@ -40,7 +39,6 @@ if TYPE_CHECKING:
 
 class BaseHandler:
     model_name: str
-    is_fc_model: bool
     registry_name: str
     temperature: float
     registry_dir_name: str
@@ -71,18 +69,16 @@ class BaseHandler:
             )
 
     def __init__(
-        self, model_name, temperature, registry_name, is_fc_model, **kwargs
+        self, model_name, temperature, registry_name, **kwargs
     ) -> None:
         """
         Args:
             model_name: The name of the model as used in the vendor API or on Hugging Face.
             temperature: The temperature of the model.
             registry_name: The name of the model as used internally in BFCL, used for result directory naming.
-            is_fc_model: Whether the model is a function calling model.
             **kwargs: Additional attributes passed via kwargs.
         """
         self.model_name = model_name
-        self.is_fc_model = is_fc_model
         self.registry_name = registry_name
 
         # Replace the dash and dot with underscore for valid variable name
@@ -108,18 +104,11 @@ class BaseHandler:
         exclude_state_log: bool,
     ):
         # This method is used to retrive model response for each model.
-
-        # FC model
-        # TODO: Let all models have the is_fc_model attribute and remove the "FC" check
-        if "FC" in self.registry_name or self.is_fc_model:
-            return self.inference_multi_turn_FC(
-                test_entry, include_input_log, exclude_state_log
-            )
-        # Prompting model
-        else:
-            return self.inference_multi_turn_prompting(
-                test_entry, include_input_log, exclude_state_log
-            )
+        # Only function-calling (FC) inference is supported; the prompting
+        # (chat-based tool calling) pathway has been retired.
+        return self.inference_multi_turn_FC(
+            test_entry, include_input_log, exclude_state_log
+        )
 
     @final
     def inference_multi_turn_FC(
@@ -601,382 +590,6 @@ class BaseHandler:
         return all_model_response, metadata
 
     @final
-    def inference_multi_turn_prompting(
-        self,
-        test_entry: dict,
-        include_input_log: bool,
-        exclude_state_log: bool,
-    ) -> tuple[list[list], dict]:
-        raise NotImplementedError
-        initial_config: dict = test_entry.get("initial_config", {})
-        involved_classes: list = test_entry["involved_classes"]
-        test_entry_id: str = test_entry["id"]
-        test_category: str = test_entry_id.rsplit("_", 1)[0]
-        modality = get_category_modality(test_category)
-        max_step_limit = MAXIMUM_STEP_LIMIT.get(modality, MAXIMUM_STEP_LIMIT_DEFAULT)
-
-        # This is only for the miss function category
-        # Supports conditions: "after_n_turns" and "after_n_invoke"
-        missed_classes_rules: list[dict] = test_entry.get("missed_classes", [])
-        failure_injection: list | None = test_entry.get("failure_injection")
-
-        total_input_token_count: list[list[float]] = []
-        total_output_token_count: list[list[float]] = []
-        total_latency: list[list[float]] = []
-        # The model response that will be used for later evaluation
-        all_model_response: list[list] = []
-        # Only for reasoning models, reasoning content will be stored as part of metadata and in inference log
-        all_reasoning_content: list[list] = []
-        # The debugging log for human to understand
-        all_inference_log: list[list[dict]] = []
-        force_quit = False  # Whether the model has been forced to quit. If True, this whole entry will be failed.
-
-        # Execute no function call, but just to get a reference to all the instances to get the initial state for logging purpose
-        # Also applies failure_injection patches at instance creation time (turn 0).
-        _, involved_instances = execute_multi_turn_func_call(
-            [],
-            initial_config,
-            involved_classes,
-            self.model_name_underline_replaced,
-            test_entry_id,
-            long_context=("long_context" in test_category or "composite" in test_category),
-            is_evaL_run=False,
-            failure_injection=failure_injection,
-        )
-
-        if failure_injection:
-            all_inference_log.append(
-                [
-                    {
-                        "role": "handler_log",
-                        "content": {
-                            "action": "failure_injection_applied",
-                            "patches": failure_injection,
-                        },
-                    }
-                ]
-            )
-
-        if is_memory(test_category):
-            assert (
-                len(involved_instances) == 1
-            ), "Memory category should only involve one class."
-
-            memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
-            test_entry["question"] = add_memory_instruction_system_prompt(
-                test_entry["question"],
-                test_category,
-                test_entry["scenario"],
-                memory_instance,
-            )
-
-        if not exclude_state_log:
-            state_log = []
-            for class_name, class_instance in involved_instances.items():
-                if class_name in STATELESS_CLASSES or class_name in OMIT_STATE_INFO_CLASSES:
-                    continue
-                # Avoid modification in future turns
-                class_instance = deepcopy(class_instance)
-                state_log.append(
-                    {
-                        "role": "state_info",
-                        "class_name": class_name,
-                        "content": {
-                            key: value
-                            for key, value in vars(class_instance).items()
-                            if not key.startswith("_")
-                        },
-                    }
-                )
-            if len(state_log) > 0:
-                all_inference_log.append(state_log)
-
-        inference_data: dict = self._pre_query_processing_prompting(test_entry)
-
-        all_multi_turn_messages: list[list[dict]] = test_entry["question"]
-        for turn_idx, current_turn_message in enumerate(all_multi_turn_messages):
-            current_turn_message: list[dict]
-
-            released_holdout_log = []
-            for holdout_rule in missed_classes_rules:
-                if holdout_rule.get("_released"):
-                    continue
-                if holdout_rule["condition"] == "after_n_turns" and turn_idx == holdout_rule["value"]:
-                    released_func_names = [d['name'] for d in holdout_rule['holdout_func_docs']]
-                    tqdm.write(f"[missed_classes] Releasing holdout at turn {turn_idx}: {released_func_names}")
-                    released_holdout_log.append({
-                        "released_functions": released_func_names,
-                        "condition": "after_n_turns",
-                        "trigger_turn": turn_idx,
-                    })
-                    holdout_rule["_released"] = True
-                    assert (
-                        len(current_turn_message) == 0
-                    ), "Holdout turn should not have user message."
-                    current_turn_message = [
-                        {
-                            "role": "user",
-                            "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING.format(
-                                functions=holdout_rule["holdout_func_docs"]
-                            ),
-                        }
-                    ]
-
-            current_turn_response = []
-            current_turn_reasoning_content = []
-
-            current_turn_message_for_logging = deepcopy(current_turn_message)
-            if is_vision_web_search(test_category):
-                for message in current_turn_message_for_logging:
-                    if "image_content" in message:
-                        del message["image_content"]["image_bytes"]
-                        del message["image_content"]["image_base64"]
-
-            current_turn_inference_log: list[dict] = {
-                "begin_of_turn_query": current_turn_message_for_logging
-            }
-            if released_holdout_log:
-                current_turn_inference_log["released_holdout_functions"] = released_holdout_log
-            current_turn_input_token_count: list[float] = []
-            current_turn_output_token_count: list[float] = []
-            current_turn_latency: list[float] = []
-
-            if turn_idx == 0:
-                inference_data = self.add_first_turn_message_prompting(
-                    inference_data, current_turn_message
-                )
-            else:
-                inference_data = self._add_next_turn_user_message_prompting(
-                    inference_data, current_turn_message
-                )
-
-            step_count = 0
-            while True:
-                tqdm.write(
-                    f"{'-' * 100}\nID: {test_entry_id}, Turn: {turn_idx}, Step: {step_count}"
-                )
-                current_step_inference_log: list[dict] = []
-                # Add to the current_turn_inference_log at beginning of each step so that we don't need to bother dealing with the break statements
-                current_turn_inference_log[f"step_{step_count}"] = (
-                    current_step_inference_log
-                )
-
-                api_response, query_latency = self._query_prompting(inference_data)
-
-                # This part of logging is disabled by default because it is too verbose and will make the result file extremely large
-                # It is only useful to see if the inference pipeline is working as expected (eg, does it convert all the inputs correctly)
-                if include_input_log:
-                    current_step_inference_log.append(
-                        {
-                            "role": "inference_input",
-                            "content": inference_data.get("inference_input_log", ""),
-                        }
-                    )
-
-                # Try parsing the model response
-                model_response_data = self._parse_query_response_prompting(api_response)
-                model_responses = model_response_data["model_responses"]
-
-                # Add the assistant message to the chat history
-                inference_data = self._add_assistant_message_prompting(
-                    inference_data, model_response_data
-                )
-
-                # Process the metadata
-                current_turn_input_token_count.append(model_response_data["input_token"])
-                current_turn_output_token_count.append(model_response_data["output_token"])
-                current_turn_latency.append(query_latency)
-
-                current_turn_response.append(model_responses)
-                reasoning_content = model_response_data.get("reasoning_content", "")
-                current_turn_reasoning_content.append(reasoning_content)
-
-                log_entry = {
-                    "role": "assistant",
-                    "content": model_responses,
-                }
-                if reasoning_content:
-                    log_entry["reasoning_content"] = reasoning_content
-
-                current_step_inference_log.append(log_entry)
-
-                # Try decoding the model response
-                try:
-                    decoded_model_responses = self.decode_execute(
-                        model_responses, has_tool_call_tag=False
-                    )
-                    current_step_inference_log.append(
-                        {
-                            "role": "handler_log",
-                            "content": "Successfully decoded model response.",
-                            "model_response_decoded": decoded_model_responses,
-                        }
-                    )
-
-                    model_response_data["model_responses_decoded"] = decoded_model_responses
-                    if is_empty_execute_response(decoded_model_responses):
-                        print("Empty response from the model. Proceed to next turn.")
-                        current_step_inference_log.append(
-                            {
-                                "role": "handler_log",
-                                "content": f"Empty response from the model. Proceed to next turn.",
-                                "model_response_decoded": decoded_model_responses,
-                            }
-                        )
-                        break
-
-                except Exception as e:
-                    print("Failed to decode the model response. Proceed to next turn.")
-                    current_step_inference_log.append(
-                        {
-                            "role": "handler_log",
-                            "content": f"Error decoding the model response. Proceed to next turn.",
-                            "error": str(e),
-                        }
-                    )
-                    break
-
-                # Obtain the execution results
-                execution_results, involved_instances = execute_multi_turn_func_call(
-                    decoded_model_responses,
-                    initial_config,
-                    involved_classes,
-                    self.model_name_underline_replaced,
-                    test_entry_id,
-                    long_context=(
-                        "long_context" in test_category or "composite" in test_category
-                    ),
-                    is_evaL_run=False,
-                )
-
-                # Add the execution results to the chat history for the next turn
-                inference_data = self._add_execution_results_prompting(
-                    inference_data, execution_results, model_response_data
-                )
-
-                for execution_result in execution_results:
-                    current_step_inference_log.append(
-                        {
-                            "role": "tool",
-                            "content": execution_result,
-                        }
-                    )
-
-                # Check if holdout functions should be released after this invocation
-                for holdout_rule in missed_classes_rules:
-                    if holdout_rule.get("_released"):
-                        continue
-                    if holdout_rule["condition"] == "after_n_invoke":
-                        # target_function may be "ClassName.func_name"; decoded responses use bare func names
-                        target_func = holdout_rule["target_function"]
-                        if "." in target_func:
-                            target_func = target_func.split(".", 1)[1]
-                        for func_call in decoded_model_responses:
-                            if isinstance(func_call, str) and func_call.startswith(target_func + "("):
-                                holdout_rule.setdefault("_invoke_count", 0)
-                                holdout_rule["_invoke_count"] += 1
-                                if holdout_rule["_invoke_count"] >= holdout_rule["n"]:
-                                    released_func_names = [d['name'] for d in holdout_rule['holdout_func_docs']]
-                                    tqdm.write(f"[missed_classes] Releasing holdout after {holdout_rule['_invoke_count']} invocations of '{holdout_rule['target_function']}': {released_func_names}")
-                                    current_step_inference_log.append(
-                                        {
-                                            "role": "handler_log",
-                                            "content": {
-                                                "action": "missed_classes_holdout_released",
-                                                "released_functions": released_func_names,
-                                                "condition": "after_n_invoke",
-                                                "target_function": holdout_rule["target_function"],
-                                                "invoke_count": holdout_rule["_invoke_count"],
-                                                "required_invocations": holdout_rule["n"],
-                                            },
-                                        }
-                                    )
-                                    inference_data = self._add_next_turn_user_message_prompting(
-                                        inference_data,
-                                        [
-                                            {
-                                                "role": "user",
-                                                "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_PROMPTING.format(
-                                                    functions=holdout_rule["holdout_func_docs"]
-                                                ),
-                                            }
-                                        ],
-                                    )
-                                    holdout_rule["_released"] = True
-                                break
-
-                step_count += 1
-                # Force quit after too many steps
-                if step_count > max_step_limit:
-                    force_quit = True
-                    current_step_inference_log.append(
-                        {
-                            "role": "handler_log",
-                            "content": f"Model has been forced to quit after {max_step_limit} steps.",
-                        }
-                    )
-                    break
-
-            # Add to the total list
-            all_model_response.append(current_turn_response)
-            all_reasoning_content.append(current_turn_reasoning_content)
-            all_inference_log.append(current_turn_inference_log)
-            total_input_token_count.append(current_turn_input_token_count)
-            total_output_token_count.append(current_turn_output_token_count)
-            total_latency.append(current_turn_latency)
-
-            if not exclude_state_log:
-                state_log = []
-                for class_name, class_instance in involved_instances.items():
-                    if (
-                        class_name in STATELESS_CLASSES
-                        or class_name in OMIT_STATE_INFO_CLASSES
-                    ):
-                        continue
-                    # Avoid modification in future turns
-                    class_instance = deepcopy(class_instance)
-                    state_log.append(
-                        {
-                            "role": "state_info",
-                            "class_name": class_name,
-                            "content": {
-                                key: value
-                                for key, value in vars(class_instance).items()
-                                if not key.startswith("_")
-                            },
-                        }
-                    )
-                if len(state_log) > 0:
-                    all_inference_log.append(state_log)
-
-            if force_quit:
-                break
-
-        # Special handling for the memory category
-        # Need to flush the memory to local file at the end of the conversation
-        if is_memory_prereq(test_entry_id):
-            assert (
-                len(involved_instances) == 1
-            ), "Memory category should only involve one class."
-            memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
-            memory_instance._flush_memory_to_local_file()
-
-        metadata = {
-            "input_token_count": total_input_token_count,
-            "output_token_count": total_output_token_count,
-            "latency": total_latency,
-            "inference_log": all_inference_log,
-        }
-        # We only include reasoning content if it exists and is not empty
-        if not all(
-            all(content == "" for content in single_turn_reasoning_content)
-            for single_turn_reasoning_content in all_reasoning_content
-        ):
-            metadata["reasoning_content"] = all_reasoning_content
-
-        return all_model_response, metadata
-
-    @final
     def inference_single_turn_FC(
         self, test_entry: dict, include_input_log: bool
     ) -> tuple[any, dict]:
@@ -991,41 +604,6 @@ class BaseHandler:
 
         # Try parsing the model response
         model_response_data = self._parse_query_response_FC(api_response)
-
-        # Process the metadata
-        metadata = {}
-        if include_input_log:
-            metadata["inference_log"] = [
-                {
-                    "role": "inference_input",
-                    "content": inference_data.get("inference_input_log", ""),
-                }
-            ]
-        metadata["input_token_count"] = model_response_data["input_token"]
-        metadata["output_token_count"] = model_response_data["output_token"]
-        metadata["latency"] = query_latency
-
-        if (
-            "reasoning_content" in model_response_data
-            and model_response_data["reasoning_content"] != ""
-        ):
-            metadata["reasoning_content"] = model_response_data["reasoning_content"]
-
-        return model_response_data["model_responses"], metadata
-
-    @final
-    def inference_single_turn_prompting(
-        self, test_entry: dict, include_input_log: bool
-    ) -> tuple[any, dict]:
-        inference_data: dict = self._pre_query_processing_prompting(test_entry)
-        inference_data = self.add_first_turn_message_prompting(
-            inference_data, test_entry["question"][0]
-        )
-
-        api_response, query_latency = self._query_prompting(inference_data)
-
-        # Try parsing the model response
-        model_response_data = self._parse_query_response_prompting(api_response)
 
         # Process the metadata
         metadata = {}
@@ -1203,87 +781,5 @@ class BaseHandler:
         """
         Add the execution results to the chat history to prepare for the next turn of query.
         Some models may need to add additional information to the chat history, such as tool call IDs.
-        """
-        raise NotImplementedError
-
-    #### Prompting methods ####
-
-    def _query_prompting(self, inference_data: dict):
-        """
-        Call the model API in prompting mode to get the response.
-        Return the response object that can be used to feed into the decode method.
-        """
-        raise NotImplementedError
-
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
-        """
-        Preprocess the testset entry before sending it to the model.
-        This might includes transforming the input user message into the format expected by the model, extract out the system prompt (if any), and any other necessary preprocessing steps. Those steps can also be done in the `add_first_turn_message_prompting` and `_add_next_turn_user_message_prompting` methods, but it's usually cleaner to do it here.
-        The function docs are usually supplied to the prompting models as part of the system prompt, done via the `system_prompt_pre_processing_chat_model` function from `model_handler/utils.py`, unless the model has a different way of handling it.
-        Returns a dict that contains all the necessary information for the query method.
-        Things like `system_prompt` and `chat_history` are optional, specific to the model.
-
-        Note: This method has different signature from its FC version.
-        """
-        raise NotImplementedError
-
-    def _parse_query_response_prompting(self, api_response: Any) -> dict:
-        """
-        Parses the raw response from the model API to extract the result, input token count, and output token count.
-
-        Args:
-            api_response (any): The raw response from the model API.
-
-        Returns:
-            A dict containing the following elements:
-                - model_responses (any): The parsed result that can be directly used as input to the decode method.
-                - input_token (int): The number of tokens used in the input to the model.
-                - output_token (int): The number of tokens generated by the model as output.
-                - Any other metadata that is specific to the model.
-        """
-        raise NotImplementedError
-
-    def add_first_turn_message_prompting(
-        self, inference_data: dict, first_turn_message: list[dict]
-    ) -> dict:
-        """
-        Add the first turn message to the chat history, in the format that the model expects.
-
-        Args:
-            inference_data (dict): The inference data from previous processing steps.
-            first_turn_message (list[dict]): The first turn message from the test entry. It has variable length. It might contain one or more of the following roles:
-                - "system": The system message. This role will only appear at most once, at the beginning of the first turn.
-                - "user": The user message.
-                - "assistant": The assistant message. For most entry, this role will not appear.
-
-        Returns:
-            inference_data (dict): The updated inference data that will be send to `_query_prompting` to call the model API.
-        """
-        raise NotImplementedError
-
-    def _add_next_turn_user_message_prompting(
-        self, inference_data: dict, user_message: list[dict]
-    ) -> dict:
-        """
-        [Only for multi-turn]
-        Add next turn user message to the chat history for query.
-        user_message is a list of 1 element, which is guaranteed to be a `user` role message.
-        """
-        raise NotImplementedError
-
-    def _add_assistant_message_prompting(
-        self, inference_data: dict, model_response_data: dict
-    ) -> dict:
-        """
-        Add assistant message to the chat history.
-        """
-        raise NotImplementedError
-
-    def _add_execution_results_prompting(
-        self, inference_data: dict, execution_results: list[dict], model_response_data: dict
-    ) -> dict:
-        """
-        Add the execution results to the chat history to prepare for the next turn of query.
-        By default, execution results are added back as a `user` role message, as most models don't support the `tool` role in prompting mode.
         """
         raise NotImplementedError

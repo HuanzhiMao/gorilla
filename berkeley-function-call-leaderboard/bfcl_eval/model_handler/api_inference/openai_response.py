@@ -8,11 +8,7 @@ from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.utils import (
     convert_to_function_call,
     convert_to_tool,
-    default_decode_ast_prompting,
-    default_decode_execute_prompting,
-    format_execution_results_prompting,
     retry_with_backoff,
-    system_prompt_pre_processing_chat_model,
 )
 from openai import OpenAI, RateLimitError
 from openai.types.responses import Response
@@ -61,21 +57,15 @@ class OpenAIResponsesHandler(BaseHandler):
         return prompts
 
     def decode_ast(self, result, language, has_tool_call_tag):
-        if self.is_fc_model:
-            decoded_output = []
-            for invoked_function in result:
-                name = list(invoked_function.keys())[0]
-                params = json.loads(invoked_function[name])
-                decoded_output.append({name: params})
-            return decoded_output
-        else:
-            return default_decode_ast_prompting(result, language, has_tool_call_tag)
+        decoded_output = []
+        for invoked_function in result:
+            name = list(invoked_function.keys())[0]
+            params = json.loads(invoked_function[name])
+            decoded_output.append({name: params})
+        return decoded_output
 
     def decode_execute(self, result, has_tool_call_tag):
-        if self.is_fc_model:
-            return convert_to_function_call(result)
-        else:
-            return default_decode_execute_prompting(result, has_tool_call_tag)
+        return convert_to_function_call(result)
 
     @retry_with_backoff(error_type=RateLimitError)
     def generate_with_backoff(self, **kwargs):
@@ -238,118 +228,5 @@ class OpenAIResponsesHandler(BaseHandler):
                 }
 
             inference_data["message"].append(tool_message)
-
-        return inference_data
-
-    #### Prompting methods ####
-
-    def _query_prompting(self, inference_data: dict):
-        inference_data["inference_input_log"] = {"message": repr(inference_data["message"])}
-
-        kwargs = {
-            "input": inference_data["message"],
-            "model": self.model_name,
-            "store": False,
-            "include": ["reasoning.encrypted_content"],
-            "reasoning": {"summary": "auto"},
-            "temperature": self.temperature,
-        }
-
-        # OpenAI reasoning models don't support temperature parameter
-        if (
-            "o3" in self.model_name
-            or "o4-mini" in self.model_name
-            or "gpt-5" in self.model_name
-        ):
-            del kwargs["temperature"]
-
-        # Non-reasoning models don't support reasoning parameter
-        else:
-            del kwargs["reasoning"]
-            del kwargs["include"]
-
-        return self.generate_with_backoff(**kwargs)
-
-    def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-        test_entry_id: str = test_entry["id"]
-
-        test_entry["question"][0] = system_prompt_pre_processing_chat_model(
-            test_entry["question"][0], functions, test_entry_id
-        )
-
-        for round_idx in range(len(test_entry["question"])):
-            test_entry["question"][round_idx] = self._substitute_prompt_role(
-                test_entry["question"][round_idx]
-            )
-
-        return {"message": []}
-
-    def _parse_query_response_prompting(self, api_response: Response) -> dict:
-        # OpenAI reasoning models don't show full reasoning content in the api response,
-        # but only a summary of the reasoning content.
-        reasoning_content = ""
-        for item in api_response.output:
-            if item.type == "reasoning":
-                for summary in item.summary:
-                    reasoning_content += summary.text + "\n"
-
-        return {
-            "model_responses": api_response.output_text,
-            "model_responses_message_for_chat_history": api_response.output,
-            "reasoning_content": reasoning_content,
-            "input_token": api_response.usage.input_tokens,
-            "output_token": api_response.usage.output_tokens,
-        }
-
-    def add_first_turn_message_prompting(
-        self, inference_data: dict, first_turn_message: list[dict]
-    ) -> dict:
-        for message in first_turn_message:
-            # @HuanzhiMao fixme, abstract
-            if "image_content" in message:
-                image_content = message["image_content"]
-                inference_data["message"].append(
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "input_image",
-                                "image_url": f"data:{image_content['type']};base64,{image_content['image_base64']}",
-                            },
-                            {"type": "input_text", "text": message["content"]},
-                        ],
-                    }
-                )
-            else:
-                inference_data["message"].append(message)
-        return inference_data
-
-    def _add_next_turn_user_message_prompting(
-        self, inference_data: dict, user_message: list[dict]
-    ) -> dict:
-        inference_data["message"].extend(user_message)
-        return inference_data
-
-    def _add_assistant_message_prompting(
-        self, inference_data: dict, model_response_data: dict
-    ) -> dict:
-        inference_data["message"].extend(
-            model_response_data["model_responses_message_for_chat_history"]
-        )
-        return inference_data
-
-    def _add_execution_results_prompting(
-        self,
-        inference_data: dict,
-        execution_results: list[dict],
-        model_response_data: dict,
-    ) -> dict:
-        formatted_results_message = format_execution_results_prompting(
-            inference_data, execution_results, model_response_data
-        )
-        inference_data["message"].append(
-            {"role": "user", "content": formatted_results_message}
-        )
 
         return inference_data

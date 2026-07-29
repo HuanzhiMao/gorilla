@@ -15,10 +15,9 @@ class KimiHandler(OpenAICompletionsHandler):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
 
         self.client = OpenAI(
             base_url="https://api.moonshot.ai/v1",
@@ -45,17 +44,6 @@ class KimiHandler(OpenAICompletionsHandler):
             kwargs["tools"] = tools
 
         return self.generate_with_backoff(**kwargs)
-
-    @override
-    def _query_prompting(self, inference_data: dict):
-        inference_data["inference_input_log"] = {"message": repr(inference_data["message"])}
-
-        return self.generate_with_backoff(
-            messages=inference_data["message"],
-            model=self.model_name,
-            temperature=1,
-            store=False,
-        )
 
     @override
     def _parse_query_response_FC(self, api_response: Any) -> dict:
