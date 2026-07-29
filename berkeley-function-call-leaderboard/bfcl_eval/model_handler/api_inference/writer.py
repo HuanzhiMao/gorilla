@@ -17,10 +17,9 @@ class WriterHandler(OpenAICompletionsHandler):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
         self.model_style = ModelStyle.WRITER
         self.client = Writer(api_key=os.getenv("WRITER_API_KEY"))
 

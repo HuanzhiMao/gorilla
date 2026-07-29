@@ -45,7 +45,6 @@ Below is a comprehensive table of models supported for running leaderboard evalu
 | Hammer2.1-3b                           | Self-hosted 💻 | MadeAgents/Hammer2.1-3b                              |
 | Hammer2.1-7b                           | Self-hosted 💻 | MadeAgents/Hammer2.1-7b                              |
 | Kimi-K2.5                              | MoonshotAI    | kimi-k2.5-FC                                         |
-| Llama-3.1-Nemotron-Ultra-253B-v1       | NVIDIA        | nvidia/llama-3.1-nemotron-ultra-253b-v1              |
 | Llama-3.2-1B-Instruct                  | Self-hosted 💻 | meta-llama/Llama-3.2-1B-Instruct-FC                  |
 | Llama-3.2-3B-Instruct                  | Self-hosted 💻 | meta-llama/Llama-3.2-3B-Instruct-FC                  |
 | Llama-4-Maverick-17B-128E-Instruct-FP8 | Self-hosted 💻 | meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8-FC |

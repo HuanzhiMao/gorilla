@@ -32,7 +32,6 @@ SUPPORTED_MODELS = [
     "gemini-3.1-flash-lite-preview-FC",
     "gemini-3-flash-preview-FC",
     "gemini-3.1-pro-preview-FC",
-    "nvidia/llama-3.1-nemotron-ultra-253b-v1",
     "palmyra-x5-FC",
     "grok-4.20-beta-0309-reasoning-FC",
     "grok-4.3-FC",

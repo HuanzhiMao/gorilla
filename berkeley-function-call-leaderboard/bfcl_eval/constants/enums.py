@@ -13,7 +13,6 @@ class ModelStyle(Enum):
     GOOGLE = "google"
     AMAZON = "amazon"
     FIREWORK_AI = "firework_ai"
-    NEXUS = "nexus"
     OSSMODEL = "ossmodel"
     COHERE = "cohere"
     WRITER = "writer"

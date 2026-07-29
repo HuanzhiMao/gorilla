@@ -20,10 +20,9 @@ class OpenAIResponsesHandler(BaseHandler):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
         self.model_style = ModelStyle.OPENAI_RESPONSES
         self.client = OpenAI(**self._build_client_kwargs())
 

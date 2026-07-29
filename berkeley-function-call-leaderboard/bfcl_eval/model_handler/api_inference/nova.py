@@ -21,12 +21,10 @@ class NovaHandler(BaseHandler):
         model_name,
         temperature,
         registry_name,
-        is_fc_model,
         **kwargs,
     ) -> None:
-        super().__init__(model_name, temperature, registry_name, is_fc_model, **kwargs)
+        super().__init__(model_name, temperature, registry_name, **kwargs)
         self.model_style = ModelStyle.AMAZON
-        self.is_fc_model = True
         _session = boto3.Session(
             profile_name=os.getenv("AWS_SSO_PROFILE_NAME"), region_name="us-east-1"
         )
