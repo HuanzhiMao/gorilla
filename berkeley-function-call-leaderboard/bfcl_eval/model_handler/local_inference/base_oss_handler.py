@@ -21,12 +21,10 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
         model_name,
         temperature,
         registry_name,
-        dtype="bfloat16",
         **kwargs,
     ) -> None:
         super().__init__(model_name, temperature, registry_name, **kwargs)
         self.model_name_huggingface = model_name
-        self.dtype = dtype
         self.model_style = ModelStyle.OSSMODEL
 
         self.reasoning_parser = None
@@ -112,8 +110,6 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
                         str(self.model_path_or_id),
                         "--port",
                         str(self.local_server_port),
-                        "--dtype",
-                        str(self.dtype),
                         "--tensor-parallel-size",
                         str(num_gpus),
                         "--gpu-memory-utilization",

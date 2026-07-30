@@ -3,13 +3,13 @@ from re import S
 from typing import Optional
 
 from bfcl_eval.model_handler.api_inference.claude import ClaudeHandler
-from bfcl_eval.model_handler.api_inference.cohere import CohereHandler
 from bfcl_eval.model_handler.api_inference.deepseek import DeepSeekAPIHandler
 from bfcl_eval.model_handler.api_inference.gemini import GeminiHandler
 from bfcl_eval.model_handler.api_inference.glm import GLMAPIHandler
 from bfcl_eval.model_handler.api_inference.gorilla import GorillaHandler
 from bfcl_eval.model_handler.api_inference.grok import GrokHandler
 from bfcl_eval.model_handler.api_inference.kimi import KimiHandler
+from bfcl_eval.model_handler.api_inference.meta import MetaHandler
 from bfcl_eval.model_handler.api_inference.mining import MiningHandler
 from bfcl_eval.model_handler.api_inference.mistral import MistralHandler
 from bfcl_eval.model_handler.api_inference.nanbeige import NanbeigeAPIHandler
@@ -32,6 +32,17 @@ from bfcl_eval.model_handler.local_inference.base_oss_handler import OSSHandler
 # Each key corresponds to the model id passed to the `--model` argument
 # in both generation and evaluation commands.
 # Make sure to update the `supported_models.py` file as well when updating this map.
+#
+# Which map does a new model go in?
+#   1. If its weights are public, self-host it (`local_inference_model_map`) rather
+#      than calling the vendor API, so the score reflects the model and not a
+#      provider's serving stack.
+#   2. Except above ~500B total parameters, where self-hosting stops being
+#      reproducible for most people -- those go through the API
+#      (`api_inference_model_map`) even when the weights are public.
+#   3. A model with no public weights, or whose tool-call parser is missing from
+#      every released vLLM, has to use the API regardless of size.
+# No model should appear in both maps.
 # -----------------------------------------------------------------------------
 
 
@@ -116,6 +127,8 @@ api_inference_model_map = {
     #     output_price=None,
     #     underscore_to_dot=False,
     # ),
+    # DeepSeek-V4-Pro has MIT weights on HF, but at 1.6T parameters it is far past the
+    # point where self-hosting is reproducible, so it is API-only.
     "DeepSeek-V4-Pro": ModelConfig(
         model_name="deepseek-v4-pro",
         display_name="DeepSeek-V4-Pro",
@@ -205,10 +218,27 @@ api_inference_model_map = {
         org="Anthropic",
         license="Proprietary",
         model_handler=ClaudeHandler,
-        input_price=0.8,
-        output_price=4,
+        input_price=1,
+        output_price=5,
         underscore_to_dot=True,
         supports_image_input=True,
+    ),
+    # Muse Spark is Meta Superintelligence Labs' successor to Llama, and unlike Llama
+    # it is API-only (no open weights). It exposes reasoning effort (minimal..xhigh)
+    # on a single model string; we run it at Meta's default effort.
+    # Inputs are text/image/video/PDF -- no audio.
+    "muse-spark-1.1": ModelConfig(
+        model_name="muse-spark-1.1",
+        display_name="Muse-Spark-1.1",
+        url="https://ai.meta.com/blog/introducing-muse-spark-meta-model-api/",
+        org="Meta",
+        license="Proprietary",
+        model_handler=MetaHandler,
+        input_price=1.25,
+        output_price=4.25,
+        underscore_to_dot=True,
+        supports_image_input=True,
+        is_reasoning_model=True,
     ),
     # @HuanzhiMao TODO: update to Nova Pro 2 when it's out
     # Nova series don't support audio input
@@ -247,14 +277,19 @@ api_inference_model_map = {
         output_price=0.14,
         underscore_to_dot=True,
     ),
-    # @HuanzhiMao FIXME: check mistral implementation
-    "mistral-medium-3-5": OSSModelConfig(
-        model_name="mistral-medium-3-5",
-        display_name="Mistral-Medium-3.5",
-        url="https://docs.mistral.ai/guides/model-selection/",
+    # Mistral Large 3 is Apache 2.0 and self-hostable in principle, but at 675B total
+    # parameters (41B active) it is over the self-hosting cutoff, so we call the API.
+    # `mistral-large-2512` is the pinned id for the 25.12 release; `mistral-large-latest`
+    # is the moving alias, which we avoid so runs stay comparable.
+    "mistral-large-2512": ModelConfig(
+        model_name="mistral-large-2512",
+        display_name="Mistral-Large-3",
+        url="https://docs.mistral.ai/models/model-cards/mistral-large-3-25-12",
         org="Mistral AI",
-        license="Proprietary",
+        license="apache-2.0",
         model_handler=MistralHandler,
+        input_price=0.5,
+        output_price=1.5,
         underscore_to_dot=True,
         supports_image_input=True,
     ),
@@ -314,223 +349,9 @@ api_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
-    # @HuanzhiMao FIXME: Update qwen series
-    # "qwen3-0.6b-FC": ModelConfig(
-    #     model_name="qwen3-0.6b",
-    #     display_name="Qwen3-0.6B (FC)",
-    #     url="https://huggingface.co/Qwen/Qwen3-0.6B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=True,
-    #     underscore_to_dot=True,
-    # ),
-    # "qwen3-0.6b": ModelConfig(
-    #     model_name="qwen3-0.6b",
-    #     display_name="Qwen3-0.6B (Prompt)",
-    #     url="https://huggingface.co/Qwen/Qwen3-0.6B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "qwen3-1.7b-FC": ModelConfig(
-    #     model_name="qwen3-1.7b",
-    #     display_name="Qwen3-1.7B (FC)",
-    #     url="https://huggingface.co/Qwen/Qwen3-1.7B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=True,
-    #     underscore_to_dot=True,
-    # ),
-    # "qwen3-1.7b": ModelConfig(
-    #     model_name="qwen3-1.7b",
-    #     display_name="Qwen3-1.7B (Prompt)",
-    #     url="https://huggingface.co/Qwen/Qwen3-1.7B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "qwen3-4b-FC": ModelConfig(
-    #     model_name="qwen3-4b",
-    #     display_name="Qwen3-4B (FC)",
-    #     url="https://huggingface.co/Qwen/Qwen3-4B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=True,
-    #     underscore_to_dot=True,
-    # ),
-    # "qwen3-4b": ModelConfig(
-    #     model_name="qwen3-4b",
-    #     display_name="Qwen3-4B (Prompt)",
-    #     url="https://huggingface.co/Qwen/Qwen3-4B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "qwen3-8b-FC": ModelConfig(
-    #     model_name="qwen3-8b",
-    #     display_name="Qwen3-8B (FC)",
-    #     url="https://huggingface.co/Qwen/Qwen3-8B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=True,
-    #     underscore_to_dot=True,
-    # ),
-    # "qwen3-8b": ModelConfig(
-    #     model_name="qwen3-8b",
-    #     display_name="Qwen3-8B (Prompt)",
-    #     url="https://huggingface.co/Qwen/Qwen3-8B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "qwen3-14b-FC": ModelConfig(
-    #     model_name="qwen3-14b",
-    #     display_name="Qwen3-14B (FC)",
-    #     url="https://huggingface.co/Qwen/Qwen3-14B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=True,
-    #     underscore_to_dot=True,
-    # ),
-    # "qwen3-14b": ModelConfig(
-    #     model_name="qwen3-14b",
-    #     display_name="Qwen3-14B (Prompt)",
-    #     url="https://huggingface.co/Qwen/Qwen3-14B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "qwen3-32b-FC": ModelConfig(
-    #     model_name="qwen3-32b",
-    #     display_name="Qwen3-32B (FC)",
-    #     url="https://huggingface.co/Qwen/Qwen3-32B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=True,
-    #     underscore_to_dot=True,
-    # ),
-    # "qwen3-32b": ModelConfig(
-    #     model_name="qwen3-32b",
-    #     display_name="Qwen3-32B (Prompt)",
-    #     url="https://huggingface.co/Qwen/Qwen3-32B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "qwen3-30b-a3b-instruct-2507-FC": ModelConfig(
-    #     model_name="qwen3-30b-a3b-instruct-2507",
-    #     display_name="Qwen3-30B-A3B-Instruct-2507 (FC)",
-    #     url="https://huggingface.co/Qwen/Qwen3-30B-A3B-Instruct-2507",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=True,
-    #     underscore_to_dot=True,
-    # ),
-    # "qwen3-30b-a3b-instruct-2507": ModelConfig(
-    #     model_name="qwen3-30b-a3b-instruct-2507",
-    #     display_name="Qwen3-30B-A3B-Instruct-2507 (Prompt)",
-    #     url="https://huggingface.co/Qwen/Qwen3-30B-A3B-Instruct-2507",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "qwen3-235b-a22b-instruct-2507-FC": ModelConfig(
-    #     model_name="qwen3-235b-a22b-instruct-2507",
-    #     display_name="Qwen3-235B-A22B-Instruct-2507 (FC)",
-    #     url="https://huggingface.co/Qwen/Qwen3-235B-A22B-Instruct-2507",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=True,
-    #     underscore_to_dot=False,
-    # ),
-    # "qwen3-235b-a22b-instruct-2507": ModelConfig(
-    #     model_name="qwen3-235b-a22b-instruct-2507",
-    #     display_name="Qwen3-235B-A22B-Instruct-2507 (Prompt)",
-    #     url="https://huggingface.co/Qwen/Qwen3-235B-A22B-Instruct-2507",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "qwq-32b-FC": ModelConfig(
-    #     model_name="qwq-32b",
-    #     display_name="QwQ-32B (FC)",
-    #     url="https://huggingface.co/Qwen/QwQ-32B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=True,
-    #     underscore_to_dot=True,
-    # ),
-    # "qwq-32b": ModelConfig(
-    #     model_name="qwq-32b",
-    #     display_name="QwQ-32B (Prompt)",
-    #     url="https://huggingface.co/Qwen/QwQ-32B",
-    #     org="Qwen",
-    #     license="apache-2.0",
-    #     model_handler=QwenAPIHandler,
-    #     input_price=None,
-    #     output_price=None,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
+    # GLM-5.2's weights are MIT, but at 753B parameters (~1.5TB in bf16) it is over the
+    # self-hosting cutoff, so we evaluate it through the Z.ai API. Z.ai serves it in
+    # thinking mode by default, matching the mode the display name advertises.
     "glm-5.2": ModelConfig(
         model_name="glm-5.2",
         display_name="GLM-5.2 (thinking)",
@@ -541,6 +362,7 @@ api_inference_model_map = {
         input_price=None,
         output_price=None,
         underscore_to_dot=True,
+        is_reasoning_model=True,
     ),
     "glm-5v-turbo": ModelConfig(
         model_name="glm-5v-turbo",
@@ -554,6 +376,9 @@ api_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
     ),
+    # Kimi-K3 has open weights (moonshotai/Kimi-K3, modified MIT) but stays on the
+    # Moonshot API on both counts: it is 2.8T parameters, and vLLM's `kimi_k3` parsers
+    # are only on `main`, in none of the releases (checked v0.23.0 through v0.26.0).
     "kimi-k3": ModelConfig(
         model_name="kimi-k3",
         display_name="Kimi-K3",
@@ -582,20 +407,6 @@ api_inference_model_map = {
 # Inference through local hosting
 local_inference_model_map = {
     # @huanzhiMao FIXME, check, for oss model, if is_fc_model, do we still supply system prompt?
-    "deepseek-ai/DeepSeek-V4-Pro": OSSModelConfig(
-        model_name="deepseek-ai/DeepSeek-V4-Pro",
-        display_name="DeepSeek-V4-Pro (self-hosted)",
-        url="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro",
-        org="DeepSeek",
-        license="MIT",
-        model_handler=OSSHandler,
-        is_reasoning_model=True,
-        underscore_to_dot=False,
-        vllm_tool_call_parser="deepseek_v4",
-        # @HuanzhiMao FIXME: reasoning parser name inferred, not yet validated on a real run
-        vllm_reasoning_parser="deepseek_v4",
-        inference_request_extra_body={"chat_template_kwargs": {"thinking": True}},
-    ),
     "google/gemma-4-E2B-it": OSSModelConfig(
         model_name="google/gemma-4-E2B-it",
         display_name="Gemma-4-E2B-it",
@@ -664,26 +475,6 @@ local_inference_model_map = {
         model_handler=OSSHandler,
         underscore_to_dot=False,
         vllm_tool_call_parser="functiongemma",
-    ),
-    "meta-llama/Llama-3.2-1B-Instruct": OSSModelConfig(
-        model_name="meta-llama/Llama-3.2-1B-Instruct",
-        display_name="Llama-3.2-1B-Instruct",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=OSSHandler,
-        underscore_to_dot=False,
-        vllm_tool_call_parser="llama3_json",
-    ),
-    "meta-llama/Llama-3.2-3B-Instruct": OSSModelConfig(
-        model_name="meta-llama/Llama-3.2-3B-Instruct",
-        display_name="Llama-3.2-3B-Instruct",
-        url="https://llama.meta.com/llama3",
-        org="Meta",
-        license="Meta Llama 3 Community",
-        model_handler=OSSHandler,
-        underscore_to_dot=False,
-        vllm_tool_call_parser="llama3_json",
     ),
     "meta-llama/Llama-4-Scout-17B-16E-Instruct": OSSModelConfig(
         model_name="meta-llama/Llama-4-Scout-17B-16E-Instruct",
@@ -757,16 +548,25 @@ local_inference_model_map = {
         underscore_to_dot=False,
         vllm_tool_call_parser="xlam",
     ),
-    "mistralai/Mistral-Large-3-675B-Instruct-2512": OSSModelConfig(
-        model_name="mistralai/Mistral-Large-3-675B-Instruct-2512",
-        display_name="Mistral-Large-3-675B-Instruct-2512",
-        url="https://huggingface.co/mistralai/Mistral-Large-3-675B-Instruct-2512",
+    # Mistral Medium 3.5 ships open weights (Modified MIT), so we self-host it
+    # instead of going through the Mistral API.
+    # Hybrid reasoning: the chat template accepts only `reasoning_effort` of 'none'
+    # or 'high' and defaults to 'none'; we serve it in reasoning mode, which Mistral
+    # recommends for agentic use. vLLM forwards the top-level `reasoning_effort`
+    # request field straight into the chat template.
+    "mistralai/Mistral-Medium-3.5-128B": OSSModelConfig(
+        model_name="mistralai/Mistral-Medium-3.5-128B",
+        display_name="Mistral-Medium-3.5-128B",
+        url="https://huggingface.co/mistralai/Mistral-Medium-3.5-128B",
         org="Mistral AI",
-        license="apache-2.0",
+        license="Modified MIT",
         model_handler=OSSHandler,
+        is_reasoning_model=True,
         underscore_to_dot=False,
         supports_image_input=True,
         vllm_tool_call_parser="mistral",
+        vllm_reasoning_parser="mistral",
+        inference_request_extra_body={"reasoning_effort": "high"},
     ),
     # @HuanzhiMao FIXME: Double check this
     "mistralai/Mistral-Small-4-119B-2603": OSSModelConfig(
@@ -779,16 +579,6 @@ local_inference_model_map = {
         underscore_to_dot=False,
         supports_image_input=True,
         vllm_tool_call_parser="mistral",
-    ),
-    "mistral-small-2603": OSSModelConfig(
-        model_name="mistral-small-2603",
-        display_name="Mistral-small-2603",
-        url="https://docs.mistral.ai/guides/model-selection/",
-        org="Mistral AI",
-        license="Proprietary",
-        model_handler=MistralHandler,
-        underscore_to_dot=True,
-        supports_image_input=True,
     ),
     # FIXME, check
     "microsoft/Phi-4-mini-instruct": OSSModelConfig(
@@ -967,101 +757,110 @@ local_inference_model_map = {
         vllm_tool_call_parser="qwen3_coder",
         supports_image_input=True,
     ),
-    "CohereLabs/command-a-reasoning-08-2025": OSSModelConfig(
-        model_name="CohereLabs/command-a-reasoning-08-2025",
-        display_name="Command A Reasoning",
-        url="https://huggingface.co/CohereLabs/command-a-reasoning-08-2025",
+    # Command A+ replaces the Command A / A-Reasoning / A-Vision trio: it is a single
+    # model covering all three (agentic tool use, reasoning, vision), it is Apache 2.0
+    # rather than cc-by-nc-4.0, and it is ungated. Flags are from Cohere's own model
+    # card: `cohere_command4` for both tool calls and reasoning, which imports the
+    # `cohere_melody` package (in the `oss_eval_vllm` extra). Its chat template thinks
+    # by default -- `reasoning` is only false when `reasoning_effort` is 'none'.
+    #
+    # Cohere publishes no unquantized-and-unsuffixed repo; `-bf16` is the reference
+    # checkpoint (~437GB, 8xH100). `-fp8` and `-w4a4` are the same model at 4x and 2x
+    # H100, and Cohere reports negligible benchmark differences -- point
+    # `--local-model-path` at one of those to run this on fewer GPUs.
+    "CohereLabs/command-a-plus-05-2026-bf16": OSSModelConfig(
+        model_name="CohereLabs/command-a-plus-05-2026-bf16",
+        display_name="Command A+",
+        url="https://huggingface.co/CohereLabs/command-a-plus-05-2026-bf16",
         org="Cohere",
-        license="cc-by-nc-4.0",
-        model_handler=CohereHandler,
-        underscore_to_dot=True,
-    ),
-    "CohereLabs/c4ai-command-a-03-2025": OSSModelConfig(
-        model_name="CohereLabs/c4ai-command-a-03-2025",
-        display_name="Command A",
-        url="https://huggingface.co/CohereLabs/c4ai-command-a-03-2025",
-        org="Cohere",
-        license="cc-by-nc-4.0",
-        model_handler=CohereHandler,
-        underscore_to_dot=True,
-    ),
-    "CohereLabs/command-a-vision-07-2025": OSSModelConfig(
-        model_name="CohereLabs/command-a-vision-07-2025",
-        display_name="Command A Vision",
-        url="https://huggingface.co/CohereLabs/command-a-vision-07-2025",
-        org="Cohere",
-        license="cc-by-nc-4.0",
-        model_handler=CohereHandler,
-        underscore_to_dot=True,
+        license="apache-2.0",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
         supports_image_input=True,
+        vllm_tool_call_parser="cohere_command4",
+        vllm_reasoning_parser="cohere_command4",
     ),
-    # "Team-ACE/ToolACE-2-8B": OSSModelConfig(
-    #     model_name="Team-ACE/ToolACE-2-8B",
-    #     display_name="ToolACE-2-8B (FC)",
-    #     url="https://huggingface.co/Team-ACE/ToolACE-2-8B",
-    #     org="Huawei Noah & USTC",
-    #     license="Apache-2.0",
-    #     model_handler=LlamaHandler,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "openbmb/MiniCPM3-4B": OSSModelConfig(
-    #     model_name="openbmb/MiniCPM3-4B",
-    #     display_name="MiniCPM3-4B (Prompt)",
-    #     url="https://huggingface.co/openbmb/MiniCPM3-4B",
-    #     org="openbmb",
-    #     license="Apache-2.0",
-    #     model_handler=MiniCPMHandler,
-    #     is_fc_model=False,
-    #     underscore_to_dot=False,
-    # ),
-    # "openbmb/MiniCPM3-4B-FC": OSSModelConfig(
-    #     model_name="openbmb/MiniCPM3-4B",
-    #     display_name="MiniCPM3-4B-FC (FC)",
-    #     url="https://huggingface.co/openbmb/MiniCPM3-4B",
-    #     org="openbmb",
-    #     license="Apache-2.0",
-    #     model_handler=MiniCPMFCHandler,
-    #     is_fc_model=True,
-    #     underscore_to_dot=True,
-    # ),
-
-    # "Nanbeige/Nanbeige4-3B-Thinking-2511": OSSModelConfig(
-    #     model_name="Nanbeige/Nanbeige4-3B-Thinking-2511",
-    #     display_name="Nanbeige4-3B-Thinking-2511 (FC)",
-    #     url="https://huggingface.co/Nanbeige/Nanbeige4-3B-Thinking-2511",
-    #     org="Nanbeige",
-    #     license="apache-2.0",
-    #     model_handler=NanbeigeFCHandler,
-    #     is_fc_model=True,
-    #     underscore_to_dot=False,
-    # ),
-}
-
-# Inference through third-party inference platforms for open-source models
-third_party_inference_model_map = {
-    # Via Qwen Agent Framework
-    "qwen3-4b-think": ModelConfig(
-        model_name="qwen3-4b-think",
-        display_name="Qwen3-4B-Think",
-        url="https://huggingface.co/Qwen/Qwen3-4B",
-        org="Qwen",
+    # The `Team-ACE/ToolACE-2-8B` repo this entry used to point at does not exist on
+    # HF; the ToolACE-2 release is `ToolACE-2-Llama-3.1-8B`, and 2.5 supersedes it.
+    # vLLM lists ToolACE under the `pythonic` parser (it emits `[func(arg=val)]`).
+    "Team-ACE/ToolACE-2.5-Llama-3.1-8B": OSSModelConfig(
+        model_name="Team-ACE/ToolACE-2.5-Llama-3.1-8B",
+        display_name="ToolACE-2.5-Llama-3.1-8B",
+        url="https://huggingface.co/Team-ACE/ToolACE-2.5-Llama-3.1-8B",
+        org="Huawei Noah & USTC",
         license="apache-2.0",
-        model_handler=QwenAgentThinkHandler,
-        input_price=None,
-        output_price=None,
-        underscore_to_dot=True,
+        model_handler=OSSHandler,
+        underscore_to_dot=False,
+        vllm_tool_call_parser="pythonic",
     ),
-    "qwen3-4b-nothink": ModelConfig(
-        model_name="qwen3-4b-nothink",
-        display_name="Qwen3-4B-NoThink",
-        url="https://huggingface.co/Qwen/Qwen3-4B",
-        org="Qwen",
+    # Replaces the two MiniCPM3-4B entries, whose bespoke handlers were deleted with
+    # the rest of local_inference. The model card only mentions SGLang's `minicpm5`
+    # parser, but vLLM registers one under the same name (since v0.23.0).
+    # @HuanzhiMao FIXME: served in non-thinking mode on purpose -- MiniCPM5 is hybrid
+    # reasoning, but vLLM has a `minicpm5` *tool-call* parser and no matching
+    # *reasoning* parser, so with thinking on the `<think>` block lands in content.
+    "openbmb/MiniCPM5-1B": OSSModelConfig(
+        model_name="openbmb/MiniCPM5-1B",
+        display_name="MiniCPM5-1B",
+        url="https://huggingface.co/openbmb/MiniCPM5-1B",
+        org="openbmb",
         license="apache-2.0",
-        model_handler=QwenAgentNoThinkHandler,
-        input_price=None,
-        output_price=None,
-        underscore_to_dot=True,
+        model_handler=OSSHandler,
+        underscore_to_dot=False,
+        vllm_tool_call_parser="minicpm5",
+        inference_request_extra_body={"chat_template_kwargs": {"enable_thinking": False}},
+    ),
+    # @HuanzhiMao FIXME: `nanbeige` is the parser name the Nanbeige4.2 model card
+    # gives, but it is registered in NEITHER vLLM's tool-call nor reasoning registry
+    # (checked v0.23.0, v0.25.1, v0.26.0 and main), so `vllm serve` will reject it and
+    # this entry cannot run yet. Nanbeige presumably ships it out-of-tree -- if so,
+    # add `--tool-parser-plugin <path>` via vllm_extra_serve_args.
+    "Nanbeige/Nanbeige4.2-3B": OSSModelConfig(
+        model_name="Nanbeige/Nanbeige4.2-3B",
+        display_name="Nanbeige4.2-3B",
+        url="https://huggingface.co/Nanbeige/Nanbeige4.2-3B",
+        org="Nanbeige",
+        license="apache-2.0",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        vllm_tool_call_parser="nanbeige",
+        vllm_reasoning_parser="nanbeige",
+    ),
+    # Both GLM-V entries were previously served through the Z.ai API; they have MIT open
+    # weights and are small enough to host, so we self-host them. The `glm45` parser
+    # names come from vLLM's own recipe (recipes.vllm.ai/zai-org/GLM-4.6V), not the
+    # model cards, which omit them. Both chat templates think by default.
+    #
+    # GLM-4.6V is ~215GB in bf16; vLLM's recipe serves the FP8 twin
+    # (`zai-org/GLM-4.6V-FP8`) on 4 GPUs -- point `--local-model-path` at it to
+    # reproduce with less hardware.
+    "zai-org/GLM-4.6V": OSSModelConfig(
+        model_name="zai-org/GLM-4.6V",
+        display_name="GLM-4.6V",
+        url="https://huggingface.co/zai-org/GLM-4.6V",
+        org="Zhipu AI",
+        license="MIT",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        supports_image_input=True,
+        vllm_tool_call_parser="glm45",
+        vllm_reasoning_parser="glm45",
+    ),
+    "zai-org/GLM-4.6V-Flash": OSSModelConfig(
+        model_name="zai-org/GLM-4.6V-Flash",
+        display_name="GLM-4.6V-Flash",
+        url="https://huggingface.co/zai-org/GLM-4.6V-Flash",
+        org="Zhipu AI",
+        license="MIT",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        supports_image_input=True,
+        vllm_tool_call_parser="glm45",
+        vllm_reasoning_parser="glm45",
     ),
 }
 
@@ -1070,37 +869,15 @@ third_party_inference_model_map = {
 # add audio support for openai completion.
 audio_model_map = {}
 
-vision_model_map = {
-    "glm-4.6v": ModelConfig(
-        model_name="glm-4.6v",
-        display_name="GLM-4.6v",
-        url="https://huggingface.co/zai-org/GLM-4.6",
-        org="Zhipu AI",
-        license="MIT",
-        model_handler=GLMAPIHandler,
-        input_price=None,
-        output_price=None,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
-    "glm-4.6v-flash": ModelConfig(
-        model_name="glm-4.6v-flash",
-        display_name="GLM-4.6v-Flash",
-        url="https://huggingface.co/zai-org/GLM-4.6v-Flash",
-        org="Zhipu AI",
-        license="MIT",
-        model_handler=GLMAPIHandler,
-        input_price=None,
-        output_price=None,
-        underscore_to_dot=True,
-        supports_image_input=True,
-    ),
-}
+# Vision-capable models are not a separate hosting pathway -- they live in the
+# api/local maps above and are marked with `supports_image_input=True`. The two
+# GLM-4.6V entries that used to sit here are now self-hosted (see the zai-org
+# entries in `local_inference_model_map`).
+vision_model_map = {}
 
 MODEL_CONFIG_MAPPING: dict[str, ModelConfig] = {
     **api_inference_model_map,
     **local_inference_model_map,
-    **third_party_inference_model_map,
     **vision_model_map,
 }
 

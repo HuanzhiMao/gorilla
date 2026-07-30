@@ -74,8 +74,10 @@ include = ["bfcl_eval*"]
 Repository = "https://github.com/ShishirPatil/gorilla/tree/main/berkeley-function-call-leaderboard"
 
 [project.optional-dependencies]
-# vllm>=0.23.0 for the DeepSeek-V4 (deepseek_v4 tool parser) and Qwen3.6 entries
-oss_eval_vllm = ["vllm>=0.23.0"]
+# vllm>=0.23.0 for the DeepSeek-V4 (deepseek_v4 tool parser) and Qwen3.6 entries.
+# cohere_melody is imported by vLLM's `cohere_command4` parser (Command A+) and is not
+# a vllm dependency; >=0.9.0 is the minimum Cohere's model card gives.
+oss_eval_vllm = ["vllm>=0.23.0", "cohere_melody>=0.9.0"]
 wandb = ["wandb==0.18.5"]
 
 [tool.setuptools_scm]
