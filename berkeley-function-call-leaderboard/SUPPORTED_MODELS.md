@@ -28,6 +28,8 @@ Below is a comprehensive table of models supported for running leaderboard evalu
 | GPT-5.6-Luna                           | OpenAI        | gpt-5.6-luna                                      |
 | GPT-5.6-Sol                            | OpenAI        | gpt-5.6-sol                                       |
 | GPT-5.6-Terra                          | OpenAI        | gpt-5.6-terra                                     |
+| gpt-oss-120b                           | Self-hosted 💻 | openai/gpt-oss-120b                               |
+| gpt-oss-20b                            | Self-hosted 💻 | openai/gpt-oss-20b                                |
 | Granite-3.1-8B-Instruct                | Self-hosted 💻 | ibm-granite/granite-3.1-8b-instruct               |
 | Granite-3.2-8B-Instruct                | Self-hosted 💻 | ibm-granite/granite-3.2-8b-instruct               |
 | Granite-4.0-350m                       | Self-hosted 💻 | ibm-granite/granite-4.0-350m                      |
@@ -36,10 +38,18 @@ Below is a comprehensive table of models supported for running leaderboard evalu
 | Hammer2.1-1.5b                         | Self-hosted 💻 | MadeAgents/Hammer2.1-1.5b                         |
 | Hammer2.1-3b                           | Self-hosted 💻 | MadeAgents/Hammer2.1-3b                           |
 | Hammer2.1-7b                           | Self-hosted 💻 | MadeAgents/Hammer2.1-7b                           |
+| Hy3                                    | Self-hosted 💻 | tencent/Hy3                                       |
+| Inkling                                | Self-hosted 💻 | thinkingmachines/Inkling                          |
+| Inkling-Small                          | Self-hosted 💻 | thinkingmachines/Inkling-Small                    |
 | Kimi-K3                                | MoonshotAI    | kimi-k3                                           |
+| Ling-2.6-1T                            | inclusionAI   | Ling-2.6-1T                                       |
+| Ling-2.6-flash                         | Self-hosted 💻 | inclusionAI/Ling-2.6-flash                        |
 | Llama-4-Maverick-17B-128E-Instruct-FP8 | Self-hosted 💻 | meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8 |
 | Llama-4-Scout-17B-16E-Instruct         | Self-hosted 💻 | meta-llama/Llama-4-Scout-17B-16E-Instruct         |
+| MiMo-V2.5                              | Self-hosted 💻 | XiaomiMiMo/MiMo-V2.5                              |
+| MiMo-V2.5-Pro                          | Xiaomi        | mimo-v2.5-pro                                     |
 | MiniCPM5-1B                            | Self-hosted 💻 | openbmb/MiniCPM5-1B                               |
+| MiniMax-M3                             | Self-hosted 💻 | MiniMaxAI/MiniMax-M3                              |
 | Mistral-Large-3                        | Mistral AI    | mistral-large-2512                                |
 | Mistral-Medium-3.5-128B                | Self-hosted 💻 | mistralai/Mistral-Medium-3.5-128B                 |
 | Mistral-Small-4-119B-2603              | Self-hosted 💻 | mistralai/Mistral-Small-4-119B-2603               |
@@ -56,6 +66,8 @@ Below is a comprehensive table of models supported for running leaderboard evalu
 | Qwen3.5-9B                             | Self-hosted 💻 | Qwen/Qwen3.5-9B                                   |
 | Qwen3.6-27B                            | Self-hosted 💻 | Qwen/Qwen3.6-27B                                  |
 | Qwen3.6-35B-A3B                        | Self-hosted 💻 | Qwen/Qwen3.6-35B-A3B                              |
+| Seed-OSS-36B-Instruct                  | Self-hosted 💻 | ByteDance-Seed/Seed-OSS-36B-Instruct              |
+| Step-3.7-Flash                         | Self-hosted 💻 | stepfun-ai/Step-3.7-Flash                         |
 | ToolACE-2.5-Llama-3.1-8B               | Self-hosted 💻 | Team-ACE/ToolACE-2.5-Llama-3.1-8B                 |
 | xLAM-2-1b-fc-r                         | Self-hosted 💻 | Salesforce/xLAM-2-1b-fc-r                         |
 | xLAM-2-32b-fc-r                        | Self-hosted 💻 | Salesforce/xLAM-2-32b-fc-r                        |

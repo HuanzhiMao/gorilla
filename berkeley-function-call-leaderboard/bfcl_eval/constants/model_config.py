@@ -10,6 +10,8 @@ from bfcl_eval.model_handler.api_inference.gorilla import GorillaHandler
 from bfcl_eval.model_handler.api_inference.grok import GrokHandler
 from bfcl_eval.model_handler.api_inference.kimi import KimiHandler
 from bfcl_eval.model_handler.api_inference.meta import MetaHandler
+from bfcl_eval.model_handler.api_inference.ling import LingAPIHandler
+from bfcl_eval.model_handler.api_inference.mimo import MiMoHandler
 from bfcl_eval.model_handler.api_inference.mining import MiningHandler
 from bfcl_eval.model_handler.api_inference.mistral import MistralHandler
 from bfcl_eval.model_handler.api_inference.nanbeige import NanbeigeAPIHandler
@@ -42,6 +44,9 @@ from bfcl_eval.model_handler.local_inference.base_oss_handler import OSSHandler
 #      (`api_inference_model_map`) even when the weights are public.
 #   3. A model with no public weights, or whose tool-call parser is missing from
 #      every released vLLM, has to use the API regardless of size.
+#   4. Rule 2 needs somewhere to send the model. When a >500B model has no first-party
+#      API -- only resellers, which put us back to scoring someone's serving stack -- we
+#      self-host it instead of routing through an aggregator (see thinkingmachines/Inkling).
 # No model should appear in both maps.
 # -----------------------------------------------------------------------------
 
@@ -401,6 +406,42 @@ api_inference_model_map = {
         input_price=None,
         output_price=None,
         underscore_to_dot=True,
+    ),
+    # Ling-2.6-1T: MIT weights, 1T total / 50B active, past the self-hosting line, so it
+    # runs against Ant's own Bailing/Tbox endpoint. Like Ling-2.6-flash it is an instruct
+    # model with no thinking mode.
+    # @HuanzhiMao FIXME: two things to confirm on the first run. (1) The API model id --
+    # the Tbox platform historically used dated names (`Ling-lite-1.5-250604`), so
+    # `Ling-2.6-1T` may need a suffix. (2) Whether that endpoint accepts `tools` at all;
+    # the open weights support tool calling, but Tbox's API reference is behind a login.
+    "Ling-2.6-1T": ModelConfig(
+        model_name="Ling-2.6-1T",
+        display_name="Ling-2.6-1T",
+        url="https://huggingface.co/inclusionAI/Ling-2.6-1T",
+        org="inclusionAI",
+        license="MIT",
+        model_handler=LingAPIHandler,
+        input_price=None,
+        output_price=None,
+        underscore_to_dot=False,
+    ),
+    # MiMo-V2.5-Pro has MIT weights, but at 1.02T total / 42B active it is past the point
+    # where self-hosting is reproducible, so it goes through Xiaomi's own OpenAI-compatible
+    # API. Prices are the official cache-miss input and output rates.
+    # @HuanzhiMao FIXME: the platform lists "Deep Thinking" as a capability of
+    # `mimo-v2.5-pro` but does not document the toggle, and the open-weight twin ships with
+    # thinking off, so `is_reasoning_model` stays False until we can confirm how to turn it
+    # on -- then flip this and set the parameter in MiMoHandler.
+    "mimo-v2.5-pro": ModelConfig(
+        model_name="mimo-v2.5-pro",
+        display_name="MiMo-V2.5-Pro",
+        url="https://huggingface.co/XiaomiMiMo/MiMo-V2.5-Pro",
+        org="Xiaomi",
+        license="MIT",
+        model_handler=MiMoHandler,
+        input_price=0.435,
+        output_price=0.87,
+        underscore_to_dot=False,
     ),
 }
 
@@ -861,6 +902,204 @@ local_inference_model_map = {
         supports_image_input=True,
         vllm_tool_call_parser="glm45",
         vllm_reasoning_parser="glm45",
+    ),
+    # gpt-oss (Apache 2.0) is text-only and speaks OpenAI's harmony format rather than
+    # a plain chat template. vLLM switches to its HarmonyParser purely off the config
+    # (`model_type == "gpt_oss"`), so no reasoning parser is set here: the analysis
+    # channel already comes back as `reasoning_content`, and `--reasoning-parser` is
+    # bypassed on the harmony path. The tool call parser is still needed --
+    # `--tool-call-parser openai` (OpenAIToolParser) is what the vLLM recipe uses for
+    # user-defined functions. The MXFP4 checkpoints are small for their parameter
+    # count: ~61GB for 120b, ~14GB for 20b.
+    #
+    # Reasoning effort rides in the harmony system message. We run at harmony's default
+    # (medium); pass `inference_request_extra_body={"reasoning_effort": "high"}` (only
+    # low/medium/high are accepted) to change it.
+    #
+    # @HuanzhiMao FIXME: harmony stamps the current date into the system message and
+    # vLLM has no flag to pin it, so runs are not byte-identical across days.
+    "openai/gpt-oss-120b": OSSModelConfig(
+        model_name="openai/gpt-oss-120b",
+        display_name="gpt-oss-120b",
+        url="https://huggingface.co/openai/gpt-oss-120b",
+        org="OpenAI",
+        license="apache-2.0",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        vllm_tool_call_parser="openai",
+    ),
+    "openai/gpt-oss-20b": OSSModelConfig(
+        model_name="openai/gpt-oss-20b",
+        display_name="gpt-oss-20b",
+        url="https://huggingface.co/openai/gpt-oss-20b",
+        org="OpenAI",
+        license="apache-2.0",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        vllm_tool_call_parser="openai",
+    ),
+    # Seed-OSS (Apache 2.0), 36B dense and text-only. vLLM's recipe passes only
+    # `--tool-call-parser seed_oss`, but we add the matching `seed_oss` reasoning parser:
+    # unlike gpt-oss there is no harmony auto-detection here, just a chat template, so
+    # without it the `<seed:think>` block lands in `content`.
+    # CoT length is a chat-template kwarg (multiples of 512; 0 answers directly); leaving
+    # it unset means an unbudgeted CoT, which is what we score.
+    "ByteDance-Seed/Seed-OSS-36B-Instruct": OSSModelConfig(
+        model_name="ByteDance-Seed/Seed-OSS-36B-Instruct",
+        display_name="Seed-OSS-36B-Instruct",
+        url="https://huggingface.co/ByteDance-Seed/Seed-OSS-36B-Instruct",
+        org="ByteDance",
+        license="apache-2.0",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        vllm_tool_call_parser="seed_oss",
+        vllm_reasoning_parser="seed_oss",
+    ),
+    # Ling-2.6-flash (MIT) is 107B total / 7.4B active. Ling is the instruct half of the
+    # Ling/Ring split -- it does not think -- so there is no reasoning parser and
+    # `is_reasoning_model` stays False. The 1T sibling is past the self-hosting line.
+    #
+    # @HuanzhiMao FIXME: validate `hermes` before publishing a score. vLLM registers no
+    # `bailing`/`ling` tool parser (checked main) and the vLLM recipe omits the flag, but
+    # the model card's SGLang instructions say `--tool-call-parser qwen25` and the chat
+    # template emits hermes-style `<tool_call>{"name": ..., "arguments": ...}</tool_call>`,
+    # so `hermes` is the vLLM equivalent.
+    "inclusionAI/Ling-2.6-flash": OSSModelConfig(
+        model_name="inclusionAI/Ling-2.6-flash",
+        display_name="Ling-2.6-flash",
+        url="https://huggingface.co/inclusionAI/Ling-2.6-flash",
+        org="inclusionAI",
+        license="MIT",
+        model_handler=OSSHandler,
+        underscore_to_dot=False,
+        vllm_tool_call_parser="hermes",
+    ),
+    # MiniMax-M3: 427B total / 26B active, natively multimodal (image + video in), under
+    # MiniMax's own community license rather than MIT. `--block-size 128` is mandatory on
+    # every platform (MSA sparse/index cache alignment), hence vllm_extra_serve_args.
+    # Thinking defaults to `adaptive`, where the model decides per request whether to
+    # reason -- that makes runs hard to compare, so we pin it to `enabled`.
+    "MiniMaxAI/MiniMax-M3": OSSModelConfig(
+        model_name="MiniMaxAI/MiniMax-M3",
+        display_name="MiniMax-M3",
+        url="https://huggingface.co/MiniMaxAI/MiniMax-M3",
+        org="MiniMax",
+        license="minimax-community",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        supports_image_input=True,
+        vllm_tool_call_parser="minimax_m3",
+        vllm_reasoning_parser="minimax_m3",
+        vllm_extra_serve_args=["--block-size", "128"],
+        inference_request_extra_body={
+            "chat_template_kwargs": {"thinking_mode": "enabled"}
+        },
+    ),
+    # Step-3.7-Flash: 201B total / ~11B active vision-language MoE, Apache 2.0.
+    # `--disable-cascade-attn` is a correctness requirement, not tuning -- the recipe's
+    # troubleshooting section says the hybrid SWA/GA schedule is incompatible with vLLM's
+    # cascade attention. The recipe also runs `--enable-expert-parallel` and MTP-3
+    # speculative decoding; both are throughput knobs tied to its 8-GPU layout, so they
+    # are left out here.
+    "stepfun-ai/Step-3.7-Flash": OSSModelConfig(
+        model_name="stepfun-ai/Step-3.7-Flash",
+        display_name="Step-3.7-Flash",
+        url="https://huggingface.co/stepfun-ai/Step-3.7-Flash",
+        org="StepFun",
+        license="apache-2.0",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        supports_image_input=True,
+        vllm_tool_call_parser="step3p5",
+        vllm_reasoning_parser="step3p5",
+        vllm_extra_serve_args=["--disable-cascade-attn"],
+    ),
+    # Hy3 (Tencent): 299B total / 21B active, text-only, Apache 2.0. Chain-of-thought is
+    # off by default (`reasoning_effort: "no_think"`); we score reasoning mode, so we send
+    # "high" -- the other accepted values are "no_think" and "low".
+    "tencent/Hy3": OSSModelConfig(
+        model_name="tencent/Hy3",
+        display_name="Hy3",
+        url="https://huggingface.co/tencent/Hy3",
+        org="Tencent",
+        license="apache-2.0",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        vllm_tool_call_parser="hy_v3",
+        vllm_reasoning_parser="hy_v3",
+        inference_request_extra_body={
+            "chat_template_kwargs": {"reasoning_effort": "high"}
+        },
+    ),
+    # Inkling-Small (Apache 2.0): 266B total / 12B active, natively multimodal -- text,
+    # image and audio in, text out. The tokenizer is custom, so `--tokenizer-mode inkling`
+    # is required. BF16 weights are ~532GB; vLLM's recipe serves the NVFP4 twin
+    # (`thinkingmachines/Inkling-Small-NVFP4`, ~180GB) -- point `--local-model-path` at it
+    # to reproduce on one node. The 975B Inkling is past the self-hosting line.
+    #
+    # `supports_audio_input` describes the model, as it does for the gemma-4 entries;
+    # OSSHandler still inherits `can_handle_audio_input = False`, so that is what actually
+    # gates whether the audio categories run.
+    "thinkingmachines/Inkling-Small": OSSModelConfig(
+        model_name="thinkingmachines/Inkling-Small",
+        display_name="Inkling-Small",
+        url="https://huggingface.co/thinkingmachines/Inkling-Small",
+        org="Thinking Machines Lab",
+        license="apache-2.0",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        supports_image_input=True,
+        supports_audio_input=True,
+        vllm_tool_call_parser="inkling",
+        vllm_reasoning_parser="inkling",
+        vllm_extra_serve_args=["--tokenizer-mode", "inkling"],
+    ),
+    # Inkling (Apache 2.0): 952B total / 41B active, same modalities and parsers as
+    # Inkling-Small. Self-hosted as a deliberate exception to the ~500B rule (rule 4
+    # above): Thinking Machines ships no first-party inference API, so the alternative
+    # was an aggregator. BF16 is ~1.9TB; vLLM's recipe serves `Inkling-NVFP4` on 4x GB200,
+    # so expect to pass `--local-model-path`.
+    "thinkingmachines/Inkling": OSSModelConfig(
+        model_name="thinkingmachines/Inkling",
+        display_name="Inkling",
+        url="https://huggingface.co/thinkingmachines/Inkling",
+        org="Thinking Machines Lab",
+        license="apache-2.0",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        supports_image_input=True,
+        supports_audio_input=True,
+        vllm_tool_call_parser="inkling",
+        vllm_reasoning_parser="inkling",
+        vllm_extra_serve_args=["--tokenizer-mode", "inkling"],
+    ),
+    # MiMo-V2.5 (MIT): 311B total / 15B active omnimodal model -- text, image, video and
+    # audio in. Thinking is off unless requested, so we turn it on per request. The 1.02T
+    # MiMo-V2.5-Pro is past the self-hosting line and lives in api_inference_model_map.
+    "XiaomiMiMo/MiMo-V2.5": OSSModelConfig(
+        model_name="XiaomiMiMo/MiMo-V2.5",
+        display_name="MiMo-V2.5",
+        url="https://huggingface.co/XiaomiMiMo/MiMo-V2.5",
+        org="Xiaomi",
+        license="MIT",
+        model_handler=OSSHandler,
+        is_reasoning_model=True,
+        underscore_to_dot=False,
+        supports_image_input=True,
+        supports_audio_input=True,
+        vllm_tool_call_parser="mimo",
+        vllm_reasoning_parser="mimo",
+        inference_request_extra_body={
+            "chat_template_kwargs": {"enable_thinking": True}
+        },
     ),
 }
 
