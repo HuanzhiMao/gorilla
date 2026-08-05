@@ -20,7 +20,7 @@ from bfcl_eval.constants.executable_backend_config import (
     MULTI_TURN_FUNC_DOC_FILE_MAPPING,
     UPDATED_TOOL_LIST_CLASSES,
 )
-from bfcl_eval.constants.enums import Modality
+from bfcl_eval.constants.enums import Language, Modality
 from filelock import FileLock
 
 _FILE_LOCK_REGISTRY: dict[str, FileLock] = {}
@@ -213,22 +213,24 @@ def parse_test_category_argument(test_category_args: list[str]) -> list[str]:
     return sorted(list(test_name_total))
 
 
-def load_test_entries_from_id_file(id_file_path: Path) -> tuple[list[str], list[dict]]:
+def load_test_entries_from_id_file(id_file_path: Path):
     """
     Helper function to load the test entries from the id file (e.g. `test_case_ids_to_generate.json.example`)
     """
+    from bfcl_eval.dataset_loader import load_dataset_entries
+
     with open(id_file_path) as f:
         test_ids_to_generate = json.load(f)
 
     categories: list[str] = []
-    entries: list[dict] = []
+    entries = []
     for category, test_ids in test_ids_to_generate.items():
         # Skip categories that have an empty ID list
         if not test_ids:
             continue
         # Extend the entries list with only those whose id is present in the ID list
         entries.extend(
-            [entry for entry in load_dataset_entry(category) if entry["id"] in test_ids]
+            [entry for entry in load_dataset_entries(category) if entry.id in test_ids]
         )
         categories.append(category)
 
@@ -287,6 +289,32 @@ def contain_vision_input(test_category: str) -> bool:
 
 def is_vision(test_category: str) -> bool:
     return is_vision_web_search(test_category) or is_geoguessr(test_category)
+
+
+def contain_image_tool_response(test_category: str) -> bool:
+    """Whether this category's tools hand images back to the model.
+
+    Separate from :func:`contain_vision_input`: geoguessr asks a text question and
+    returns every image through ``StreetViewAPI``, so a model can be perfectly capable
+    of reading an attached image and still have no way to receive one from a tool.
+
+    Accepts the same vocabulary as its neighbours here -- a modality-prefixed category
+    (``vision:geoguessr_type1``), an entry id (``vision:geoguessr_type1_0``), or a bare
+    base name (``geoguessr_type1``) -- because the substring predicates next to this one
+    accept unprefixed names and callers reasonably assume all three do.
+
+    That tolerance lives here rather than on ``TestCategory``, which has one strict
+    constructor: guessing which of three vocabularies a string is written in is a
+    legacy-compatibility concern, and typed callers read ``entry.category`` instead.
+    """
+    from bfcl_eval.schemas.category import CATEGORY_SPECS
+
+    base_name = test_category.partition(":")[2] or test_category
+    for candidate in (base_name, base_name.rsplit("_", 1)[0]):
+        spec = CATEGORY_SPECS.get(candidate)
+        if spec is not None:
+            return spec.tools_return_images
+    return False
 
 
 # @HuanzhiMao TODO: rename this?
@@ -470,6 +498,20 @@ def load_dataset_entry(
     include_language_specific_hint: bool = True,
 ) -> list[dict]:
     """
+    Load a category's entries as raw dicts.
+
+    DEPRECATED for production use: ``bfcl_eval.dataset_loader.load_dataset_entries``
+    is the loader the pipeline runs on, and returns typed ``TestEntry`` objects. This
+    implementation is kept deliberately as an *independent reference*, so the two can
+    be compared entry for entry -- a real two-implementation check rather than a
+    round-trip of one. Two known differences, both fixed in the new loader and left
+    here so the comparison still shows them:
+
+    * this one drops entries whose ``initial_config`` file cannot be read, rather than
+      raising (see ``resolve_initial_config_file_paths``);
+    * it applies the language hint via the category name, which is why Java and
+      JavaScript descriptions used to read "Python 3 syntax".
+
     This function retrieves the dataset entry for a given test category.
     The test_category must be a modality-prefixed category (e.g., "text:simple_python").
     File paths use the base category name; entry IDs are prefixed with the modality at the end.
@@ -568,12 +610,37 @@ def load_ground_truth_entry(test_category: str) -> list[dict]:
     else:
         entries = load_file(ground_truth_dir / f"{base_category}.json")
 
-    # Prefix all entry IDs with the modality to match dataset entries
+    # Several categories share one ground-truth file, so the ids in it name the shared
+    # file rather than the category -- "web_search_0" for both web_search_base and
+    # web_search_no_snippet. The prompt loader rebrands its ids the same way, so do the
+    # same here or the two sides can never be paired up by id.
+    shared_stem = _ground_truth_file_stem(test_category)
+    for entry in entries:
+        if "id" in entry and shared_stem != base_category:
+            entry["id"] = entry["id"].replace(shared_stem, base_category, 1)
+
+    # Prefix all entry IDs with the modality to match dataset entries.
+    # NOTE `modality.value`, not `modality`: interpolating the enum itself yields
+    # "Modality.TEXT:simple_python_0", which never matches a prompt id.
     for entry in entries:
         if "id" in entry:
-            entry["id"] = f"{modality}:{entry['id']}"
+            entry["id"] = f"{modality.value}:{entry['id']}"
 
     return entries
+
+
+def _ground_truth_file_stem(test_category: str) -> str:
+    """The base name of the ground-truth file a category reads.
+
+    Mirrors the branching above so id rebranding and file selection cannot drift.
+    """
+    if is_vision_web_search(test_category):
+        return "vision_base"
+    if is_memory(test_category):
+        return "memory"
+    if is_web_search(test_category):
+        return "web_search"
+    return get_base_category(test_category)
 
 
 def write_list_of_dicts_to_file(filename, data, subdir=None, use_lock: bool = True) -> None:
@@ -636,7 +703,8 @@ def sort_key(entry):
 
     In either case, the universal index is enough to sort the entries.
     """
-    entry_id = entry["id"].split(":")[-1]
+    entry_id_full = entry.id if hasattr(entry, "id") else entry["id"]
+    entry_id = entry_id_full.split(":")[-1]
     parts = entry_id.rsplit("_", 1)
     test_category, index = parts[0], parts[1]
     # This handles the case where the index is in the form TestCategory_Index-FuncDocSubIndex-PromptSubIndex
@@ -670,12 +738,14 @@ def sort_key(entry):
     return (priority, test_category, int(index))
 
 
-def update_available_tool_list_in_test_case(
-    test_entry: dict, involved_instances: dict
-) -> dict:
+def update_available_tool_list_in_test_case(test_entry, involved_instances: dict):
     """
     Update the available tool list in the test entry.
+
+    Some backends gate which of their methods are callable on their current state, so
+    the tool list is re-derived between turns.
     """
+    from bfcl_eval.schemas.function_doc import FunctionDoc
 
     for class_name, class_instance in involved_instances.items():
         if class_name in UPDATED_TOOL_LIST_CLASSES:
@@ -687,21 +757,15 @@ def update_available_tool_list_in_test_case(
                 MULTI_TURN_FUNC_DOC_PATH / MULTI_TURN_FUNC_DOC_FILE_MAPPING[class_name]
             )
 
-            # Get all tool names for this backend
+            # Swap out every tool belonging to this backend for the currently
+            # available subset.
             backend_tool_names = {tool["name"] for tool in backend_func_docs}
-
-            # Remove all tools tied to this backend from test_entry["function"]
-            test_entry["function"] = [
-                tool
-                for tool in test_entry["function"]
-                if tool["name"] not in backend_tool_names
-            ]
-
-            # Add back only the tools that are still available (name exists in updated_tool_list)
             updated_tool_docs = [
-                tool for tool in backend_func_docs if tool["name"] in available_tool_names
+                FunctionDoc.from_dict(tool)
+                for tool in backend_func_docs
+                if tool["name"] in available_tool_names
             ]
-            test_entry["function"].extend(updated_tool_docs)
+            test_entry.replace_backend_tools(updated_tool_docs, backend_tool_names)
 
     return test_entry
 
@@ -761,10 +825,18 @@ def is_empty_output(decoded_output):
 #### Helper functions to process the dataset entries ####
 
 
-def _get_language_specific_hint(test_category):
-    if test_category == "java":
+def _get_language_specific_hint(language) -> str:
+    """The syntax note appended to every tool description.
+
+    Takes a `Language` (or its value). It previously took a *test category* and
+    compared it to the bare strings "java"/"javascript", which no caller ever passed,
+    so both non-Python branches were unreachable and Java and JavaScript entries were
+    described to the model as Python.
+    """
+    value = getattr(language, "value", language)
+    if value == Language.JAVA.value:
         return " Note that the provided function is in Java 8 SDK syntax."
-    elif test_category == "javascript":
+    elif value == Language.JAVASCRIPT.value:
         return " Note that the provided function is in JavaScript syntax."
     else:
         return " Note that the provided function is in Python 3 syntax."
@@ -965,13 +1037,12 @@ def clean_up_memory_prereq_entries(test_cases: list[dict]) -> list[dict]:
     1. Remove memory-prerequisite test cases when their corresponding non-prerequisite memory cases are absent. If all memory questions have been generated, but the pre-requisite entries are not there (maybe deleted), there is no point to generate the pre-requisite entries again.
     2. If, for some reason, some of the pre-req enries have been genrated, then they should be removed from the dependency list. Otherwise, the dependency list will block forever.
     """
-    memory_entries = [entry for entry in test_cases if is_memory(entry["id"])]
+    memory_entries = [entry for entry in test_cases if entry.category.is_memory]
 
     # Group test cases by their category to help identify the count
     test_cases_by_category = {}
     for entry in memory_entries:
-        test_category = extract_test_category_from_id(entry["id"])
-        test_cases_by_category.setdefault(test_category, []).append(entry)
+        test_cases_by_category.setdefault(entry.category.value, []).append(entry)
 
     for test_category, category_test_cases in test_cases_by_category.items():
         if is_memory_prereq(test_category) and len(category_test_cases) != 0:
@@ -981,14 +1052,13 @@ def clean_up_memory_prereq_entries(test_cases: list[dict]) -> list[dict]:
                     test_cases.remove(entry)
 
     # Remove already-generated entries from dependency lists to prevent blocking
-    test_case_ids_to_generate = {entry["id"] for entry in test_cases}
+    test_case_ids_to_generate = {entry.id for entry in test_cases}
     for test_case in test_cases:
-        if "depends_on" in test_case:
-            test_case["depends_on"] = [
-                dep_id
-                for dep_id in test_case["depends_on"]
-                if dep_id in test_case_ids_to_generate
-            ]
+        test_case.depends_on = [
+            dep_id
+            for dep_id in test_case.depends_on
+            if dep_id in test_case_ids_to_generate
+        ]
 
     return test_cases
 
@@ -1061,18 +1131,15 @@ def populate_initial_settings_for_memory_test_cases(
     Special handling for the memory category, as it loads the initial configuration from local files
     """
     for entry in test_cases:
-        if is_memory(entry["id"]):
-            involved_classes = entry["involved_classes"]
-
-            init_config = {
-                involved_classes[0]: {
+        if entry.category.is_memory:
+            entry.environment.initial_config = {
+                entry.environment.primary_class: {
                     "model_result_dir": model_result_dir,
-                    "scenario": entry["scenario"],
-                    "test_id": entry["id"],
-                    "test_category": extract_test_category_from_id(entry["id"]),
+                    "scenario": entry.scenario,
+                    "test_id": entry.id,
+                    "test_category": entry.category.value,
                 }
             }
-            entry["initial_config"] = init_config
     return test_cases
 
 
@@ -1083,15 +1150,12 @@ def populate_initial_settings_for_web_search_test_cases(
     Special handling for the web search category, as it controls the show_snippet parameter
     """
     for entry in test_cases:
-        if is_web_search(entry["id"]):
-            involved_classes = entry["involved_classes"]
-
-            init_config = {
-                involved_classes[0]: {
-                    "show_snippet": False if "no_snippet" in entry["id"] else True
+        if entry.category.is_web_search:
+            entry.environment.initial_config = {
+                entry.environment.primary_class: {
+                    "show_snippet": "no_snippet" not in entry.id
                 }
             }
-            entry["initial_config"] = init_config
     return test_cases
 
 
@@ -1166,18 +1230,6 @@ def process_geoguessr_test_case(test_cases: list[dict]) -> list[dict]:
     return test_cases
 
 
-def query_contains_image_input(message: dict) -> bool:
-    """Return True iff the message is a user message that carries raw image."""
-
-    assert type(message) == dict, "Message should be a dict"
-
-    contains_image = "image_content" in message
-
-    # If audio is present, it must come from the user.
-    if contains_image and message.get("role") != "user":
-        raise ValueError("Image input should only appear in user messages")
-    
-    return contains_image
 
 
 #### Audio helper methods ####
@@ -1282,21 +1334,6 @@ def process_audio_test_case(test_cases: list[dict], modality: Modality) -> list[
     return test_cases
 
 
-def query_contains_audio_input(message: dict) -> bool:
-    """Return True iff the message is a user message that carries raw audio."""
-
-    assert type(message) == dict, "Message should be a dict"
-
-    contains_audio = "audio_content" in message
-
-    # If audio is present, it must come from the user.
-    if contains_audio and message.get("role") != "user":
-        raise ValueError("Audio input should only appear in user messages")
-
-    if contains_audio and len(message.get("content", "")) > 0:
-        raise ValueError("Audio input should not have text content at the same time")
-
-    return contains_audio
 
 
 # @HuanzhiMao FIXME: use data class to abstract the audio message and image message for clearer readability

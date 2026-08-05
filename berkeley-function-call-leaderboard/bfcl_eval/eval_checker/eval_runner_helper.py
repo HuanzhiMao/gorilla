@@ -9,6 +9,8 @@ import pandas as pd
 from bfcl_eval.constants.column_headers import *
 from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING
+from bfcl_eval.dataset_loader import load_dataset_entries
+from bfcl_eval.schemas.results import ScoreHeader
 from bfcl_eval.utils import *
 
 
@@ -187,15 +189,15 @@ def save_eval_results(
     """
     if accuracy is None:
         accuracy = correct_count / len(model_result)
-    header = {
-        "accuracy": accuracy,
-        "correct_count": correct_count,
-        "total_count": len(model_result),
-    }
-    if extra_header_fields:
-        header.update(extra_header_fields)
+    header = ScoreHeader(
+        accuracy=accuracy,
+        correct_count=correct_count,
+        total_count=len(model_result),
+        **(extra_header_fields or {}),
+    )
 
-    result.insert(0, header)
+    # Line 0 of every score file is the header; the rest are the failing entries.
+    result.insert(0, header.to_dict())
     base_category = get_base_category(test_category)
     output_file_name = f"{base_category}_score.json"
     output_file_dir = (
@@ -258,7 +260,7 @@ def get_category_score(modality_dict: dict, base_category: str, modality: str) -
         The base category name without modality prefix (e.g. ``"simple_python"``).
     modality : str
         The modality value string (e.g. ``"text"``), used to construct the full
-        prefixed category when falling back to ``load_dataset_entry``.
+        prefixed category when falling back to counting the category's entries.
     """
     if base_category in modality_dict:
         score = modality_dict[base_category]
@@ -267,7 +269,7 @@ def get_category_score(modality_dict: dict, base_category: str, modality: str) -
     else:
         full_category = f"{modality}:{base_category}"
         num_entry = len(
-            load_dataset_entry(
+            load_dataset_entries(
                 full_category, include_prereq=False, include_language_specific_hint=False
             )
         )
@@ -827,7 +829,9 @@ def update_leaderboard_table_with_local_score_file(
         model_name = subdir.relative_to(score_path).name
         # Find and process all score JSON files recursively in the subdirectory
         for model_score_json in subdir.rglob(SCORE_FILE_PATTERN):
-            metadata = load_file(model_score_json)[0]
+            # Line 0 of a score file is the header; the failing entries after it are
+            # not needed for the leaderboard.
+            metadata = ScoreHeader.from_dict(load_file(model_score_json)[0]).to_dict()
             base_category = extract_test_category(model_score_json)
             modality = detect_modality_from_path(model_score_json, subdir)
             if model_name not in leaderboard_table:

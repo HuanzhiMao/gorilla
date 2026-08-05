@@ -7,6 +7,18 @@ from overrides import override
 
 
 class GLMAPIHandler(OpenAICompletionsHandler):
+    # Zhipu's `input_audio` part exists only for the GLM voice models, none of
+    # which are registered here.
+    can_handle_audio_input = False
+    # The vision models (glm-5v-*) take an `image_url`; the text models do not, which
+    # `supports_image_input` decides per model. Zhipu's reference says the `url` field
+    # holds "the image URL or Base64 encoding" and their samples show both a bare
+    # base64 string and a data URI; the inherited renderer sends the data URI, which is
+    # the form Zhipu's own Python SDK uses.
+    can_handle_image_input = True
+    # Via the inherited workaround -- a GLM tool message content is a string.
+    can_handle_image_tool_response = True
+
     def __init__(
         self,
         model_name,

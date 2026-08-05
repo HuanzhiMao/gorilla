@@ -9,6 +9,9 @@ from bfcl_eval.eval_checker.ast_eval.type_convertor.java_type_converter import (
 from bfcl_eval.eval_checker.ast_eval.type_convertor.js_type_converter import (
     js_type_converter,
 )
+from bfcl_eval.schemas.category import CategoryFamily, TestCategory
+from bfcl_eval.schemas.function_doc import FunctionDoc
+from bfcl_eval.schemas.ground_truth import ExpectedFunctionCall
 
 #### Constants ####
 PYTHON_TYPE_MAPPING = {
@@ -31,21 +34,30 @@ NESTED_CONVERSION_TYPE_LIST = ["Array", "ArrayList", "array"]
 
 #### Main function ####
 def ast_checker(
-    func_description,
+    func_descriptions: list[FunctionDoc],
     model_output,
-    possible_answer,
+    expected_calls: list[ExpectedFunctionCall],
     language: Language,
-    test_category: str,
+    category: TestCategory,
     model_name: str,
 ):
-    if "parallel" in test_category:
+    """Score one decoded model response against its expected calls.
+
+    ``model_output`` is the handler's ``decode_ast`` output: a list of
+    ``{func_name: {param: value}}`` dicts.
+
+    Which sub-checker runs is decided by the category's family rather than by
+    substring-matching its name, but the partition is the same one the substring
+    tests produced: the parallel families first, then multiple, then simple.
+    """
+    if category.spec.family in (CategoryFamily.PARALLEL, CategoryFamily.PARALLEL_MULTIPLE):
         return parallel_function_checker_no_order(
-            func_description, model_output, possible_answer, language, model_name
+            func_descriptions, model_output, expected_calls, language, model_name
         )
 
-    elif "multiple" in test_category:
+    elif category.spec.family is CategoryFamily.MULTIPLE:
         return multiple_function_checker(
-            func_description, model_output, possible_answer, language, model_name
+            func_descriptions, model_output, expected_calls, language, model_name
         )
 
     else:
@@ -57,19 +69,19 @@ def ast_checker(
             }
 
         return simple_function_checker(
-            func_description[0], model_output[0], possible_answer[0], language, model_name
+            func_descriptions[0], model_output[0], expected_calls[0], language, model_name
         )
 
 
 #### Helper functions for AST ####
-def find_description(func_descriptions, name):
+def find_description(func_descriptions, name: str) -> FunctionDoc | None:
     if type(func_descriptions) == list:
         for func_description in func_descriptions:
-            if func_description["name"] == name:
+            if func_description.name == name:
                 return func_description
         return None
     else:
-        # it is a dict, there is only one function
+        # it is a single doc, not a list
         return func_descriptions
 
 
@@ -331,17 +343,20 @@ def list_dict_checker(param: str, model_output: list, possible_answers: list):
 
 
 def simple_function_checker(
-    func_description: dict,
+    func_description: FunctionDoc,
     model_output: dict,
-    possible_answer: dict,
+    expected: ExpectedFunctionCall,
     language: Language,
     model_name: str,
 ):
-    possible_answer = list(possible_answer.values())[0]
+    # `expected.params` maps a parameter name to its list of acceptable values.
+    # This used to be `list(possible_answer.values())[0]` -- an unwrap of a dict that
+    # was documented, but not enforced, to have exactly one key.
+    possible_answer = expected.params
     # Extract function name and parameters details
-    func_name = func_description["name"]
-    param_details = func_description["parameters"]["properties"]
-    required_params = func_description["parameters"]["required"]
+    func_name = func_description.name
+    param_details = func_description.properties
+    required_params = func_description.required
 
     # Initialize a result dictionary
     result = {
@@ -380,7 +395,7 @@ def simple_function_checker(
             return result
 
         full_param_details = param_details[param]
-        expected_type_description = full_param_details["type"]  # This is a string
+        expected_type_description = full_param_details.type  # This is a string
         is_variable = False
         nested_type_converted = None
 
@@ -397,7 +412,7 @@ def simple_function_checker(
                     return result
 
                 if expected_type_description in NESTED_CONVERSION_TYPE_LIST:
-                    nested_type = param_details[param]["items"]["type"]
+                    nested_type = param_details[param].items.type
                     nested_type_converted = JAVA_TYPE_CONVERSION[nested_type]
                     value = java_type_converter(
                         value, expected_type_description, nested_type
@@ -418,7 +433,7 @@ def simple_function_checker(
                     return result
 
                 if expected_type_description in NESTED_CONVERSION_TYPE_LIST:
-                    nested_type = param_details[param]["items"]["type"]
+                    nested_type = param_details[param].items.type
                     nested_type_converted = JS_TYPE_CONVERSION[nested_type]
                     value = js_type_converter(value, expected_type_description, nested_type)
                 else:
@@ -427,7 +442,7 @@ def simple_function_checker(
         elif language == Language.PYTHON:
             expected_type_converted = PYTHON_TYPE_MAPPING[expected_type_description]
             if expected_type_description in PYTHON_NESTED_TYPE_CHECK_LIST:
-                nested_type = param_details[param]["items"]["type"]
+                nested_type = param_details[param].items.type
                 nested_type_converted = PYTHON_TYPE_MAPPING[nested_type]
 
         else:
@@ -515,50 +530,14 @@ def simple_function_checker(
     return result
 
 
-def parallel_function_checker_enforce_order(
-    func_descriptions: list,
-    model_output: list,
-    possible_answers: dict,
-    language: Language,
-    model_name: str,
-):
-    if len(model_output) != len(possible_answers):
-        return {
-            "valid": False,
-            "error": ["Wrong number of functions."],
-            "error_type": "parallel_function_checker_enforce_order:wrong_count",
-        }
-
-    func_name_list = list(possible_answers.keys())
-    possible_answers_list = []
-
-    for key, value in possible_answers.items():
-        possible_answers_list.append({key: value})
-
-    for i in range(len(possible_answers_list)):
-        func_description = find_description(func_descriptions, func_name_list[i])
-
-        result = simple_function_checker(
-            func_description,
-            model_output[i],
-            possible_answers_list[i],
-            language,
-            model_name,
-        )
-        if not result["valid"]:
-            return result
-
-    return {"valid": True, "error": []}
-
-
 def parallel_function_checker_no_order(
-    func_descriptions: list,
+    func_descriptions: list[FunctionDoc],
     model_output: list,
-    possible_answers: list,
+    expected_calls: list[ExpectedFunctionCall],
     language: Language,
     model_name: str,
 ):
-    if len(model_output) != len(possible_answers):
+    if len(model_output) != len(expected_calls):
         return {
             "valid": False,
             "error": ["Wrong number of functions."],
@@ -569,10 +548,9 @@ def parallel_function_checker_no_order(
 
     # We go throught the possible answers one by one, and eliminate the model output that matches the possible answer
     # It must be this way because we need ground truth to fetch the correct function description
-    for i in range(len(possible_answers)):
-        # possible_answers[i] is a dictionary with only one key
-        func_name_expected = list(possible_answers[i].keys())[0]
-        func_description = find_description(func_descriptions, func_name_expected)
+    for i in range(len(expected_calls)):
+        expected = expected_calls[i]
+        func_description = find_description(func_descriptions, expected.name)
 
         all_errors = []
 
@@ -583,7 +561,7 @@ def parallel_function_checker_no_order(
             result = simple_function_checker(
                 func_description,
                 model_output[index],
-                possible_answers[i],
+                expected,
                 language,
                 model_name,
             )
@@ -598,7 +576,7 @@ def parallel_function_checker_no_order(
                             "sub_error": result["error"],
                             "sub_error_type": result["error_type"],
                             "model_output_item": model_output[index],
-                            "possible_answer_item": possible_answers[i],
+                            "possible_answer_item": expected.to_dict(),
                         }
                     }
                 )
@@ -621,26 +599,26 @@ def parallel_function_checker_no_order(
 
 
 def multiple_function_checker(
-    func_descriptions: list,
+    func_descriptions: list[FunctionDoc],
     model_output: list,
-    possible_answers: list,
+    expected_calls: list[ExpectedFunctionCall],
     language: Language,
     model_name: str,
 ):
-    if len(model_output) != len(possible_answers):
+    if len(model_output) != len(expected_calls):
         return {
             "valid": False,
             "error": ["Wrong number of functions."],
             "error_type": "multiple_function_checker:wrong_count",
         }
 
-    # possible_answers is a list of only one dictionary with only one key
-    func_name_expected = list(possible_answers[0].keys())[0]
-    func_description = find_description(func_descriptions, func_name_expected)
+    # The `multiple` categories offer several tools but expect exactly one call.
+    expected = expected_calls[0]
+    func_description = find_description(func_descriptions, expected.name)
     return simple_function_checker(
         func_description,
         model_output[0],
-        possible_answers[0],
+        expected,
         language,
         model_name,
     )

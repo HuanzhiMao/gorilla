@@ -8,6 +8,13 @@ from openai import OpenAI
 
 
 class MiningHandler(OpenAICompletionsHandler):
+    # A generic OpenAI-compatible endpoint configured entirely from the environment,
+    # so the protocol -- not any known model -- is what these describe. Whether the
+    # model behind MINING_BASE_URL reads images is its registry row's business.
+    can_handle_audio_input = True
+    can_handle_image_input = True
+    can_handle_image_tool_response = True
+
     def __init__(
         self,
         model_name,

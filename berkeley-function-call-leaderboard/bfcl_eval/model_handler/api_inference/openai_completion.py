@@ -1,29 +1,39 @@
-from enum import Flag
 import json
 import os
 import time
 from typing import Any
 
-from bfcl_eval.constants.default_prompts import VISION_TOOL_RESPONSE_TEXT_PROMPT
+from bfcl_eval.constants.default_prompts import (
+    VISION_TOOL_RESPONSE_TEXT_PROMPT,
+    VISION_TOOL_RESPONSE_USER_MESSAGE_PREFIX,
+)
 from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.utils import (
     convert_to_function_call,
     convert_to_tool,
+    image_content_from_execution_result,
+    render_messages_for_log,
     retry_with_backoff,
 )
-from bfcl_eval.utils import (
-    audio_to_base64,
-    query_contains_audio_input,
-    query_contains_image_input,
-)
+from bfcl_eval.schemas.entries import TestEntry
+from bfcl_eval.schemas.message import ImageContent, Message, Role
 from openai import OpenAI, RateLimitError
 
 
 class OpenAICompletionsHandler(BaseHandler):
-    can_handle_audio_input = False
+    # These say what the *protocol* can carry, not what any one model accepts -- the
+    # per-model gate is `supports_audio_input` / `supports_image_input` in
+    # `model_config.py`. Chat Completions defines an `input_audio` content part, so
+    # every vendor speaking this protocol (and vLLM) can be handed audio; whether the
+    # model on the other end understands it is the registry's business.
+    can_handle_audio_input = True
     can_handle_image_input = True
+    # Not natively: a Chat Completions `tool` message is text-only. The handler
+    # emulates it with a text placeholder plus a trailing user message that carries
+    # the bytes, which is the documented workaround -- so the image does reach the
+    # model, which is what this flag promises.
     can_handle_image_tool_response = True
 
     def __init__(
@@ -89,7 +99,7 @@ class OpenAICompletionsHandler(BaseHandler):
     def _query_FC(self, inference_data: dict):
         message: list[dict] = inference_data["message"]
         tools = inference_data["tools"]
-        inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
+        inference_data["inference_input_log"] = {"message": render_messages_for_log(message), "tools": tools}
 
         kwargs = {
             "messages": message,
@@ -107,10 +117,8 @@ class OpenAICompletionsHandler(BaseHandler):
         inference_data["message"] = []
         return inference_data
 
-    def _compile_tools(self, inference_data: dict, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-
-        tools = convert_to_tool(functions, GORILLA_TO_OPENAPI, self.model_style)
+    def _compile_tools(self, inference_data: dict, test_entry: TestEntry) -> dict:
+        tools = convert_to_tool(test_entry.functions, GORILLA_TO_OPENAPI, self.model_style)
 
         inference_data["tools"] = tools
 
@@ -140,47 +148,61 @@ class OpenAICompletionsHandler(BaseHandler):
         self._add_reasoning_content_if_available_FC(api_response, response_data)
         return response_data
 
+    def _render_message_content(self, message: Message) -> list[dict]:
+        """One user/system message as a Chat Completions content-part list.
+
+        Text first, then images, then audio -- the order OpenAI's vision guide uses.
+        The text part is omitted when there is none: a ``true_audio`` entry carries no
+        ``content`` at all, and ``{"type": "text", "text": None}`` is a 400.
+
+        Note the two encodings are deliberately different, and both are required:
+        an image is a full ``data:`` URL, an audio payload is bare base64.
+        """
+        content: list[dict] = []
+
+        if message.content:
+            content.append({"type": "text", "text": message.content})
+
+        for image in message.images:
+            content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:{image.mime_type};base64,{image.image_base64}"
+                    },
+                }
+            )
+
+        if message.has_audio:
+            content.append(
+                {
+                    "type": "input_audio",
+                    "input_audio": {
+                        "data": message.audio.base64(),
+                        # The API accepts "wav" and "mp3" only; BFCL audio is mp3.
+                        "format": message.audio.audio_format,
+                    },
+                }
+            )
+
+        # A message with nothing in it at all would be rejected; keep the empty string.
+        return content or [{"type": "text", "text": message.content or ""}]
+
     def add_first_turn_message_FC(
-        self, inference_data: dict, first_turn_message: list[dict]
+        self, inference_data: dict, first_turn_message: list[Message]
     ) -> dict:
         for message in first_turn_message:
-            if query_contains_image_input(message):
-                image_content_list = message["image_content"]
-                new_content = []
-                new_content.append({"type": "text", "text": message["content"]})
-                for image_content in image_content_list:
-                    new_content.append(
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:{image_content['type']};base64,{image_content['image_base64']}"
-                            },
-                        }
-                    )
-                message["content"] = new_content
-                del message["image_content"]
-
-            elif query_contains_audio_input(message):
-                message["content"] = [
-                    {
-                        "type": "input_audio",
-                        "input_audio": {
-                            "data": audio_to_base64(message["audio_content"]),
-                            "format": "mp3",
-                        },
-                    }
-                ]
-                del message["audio_content"]
-
-            else:
-                message["content"] = [{"type": "text", "text": message["content"]}]
-
-        inference_data["message"].extend(first_turn_message)
+            inference_data["message"].append(
+                {
+                    "role": message.role.value,
+                    "content": self._render_message_content(message),
+                }
+            )
 
         return inference_data
 
     def _add_next_turn_user_message_FC(
-        self, inference_data: dict, user_message: list[dict]
+        self, inference_data: dict, user_message: list[Message]
     ) -> dict:
         return self.add_first_turn_message_FC(inference_data, user_message)
 
@@ -198,38 +220,42 @@ class OpenAICompletionsHandler(BaseHandler):
         execution_results: list[dict],
         model_response_data: dict,
     ) -> dict:
-        # @HuanzhiMao FIXME: might need to turn this into constants
-        user_role_image_message = {
-            "role": "user",
-            "content": "The user gives no new instructions. ",
-            "image_content": [],
-        }
+        # A Chat Completions `tool` message may only carry text -- its content type is
+        # narrowed to ChatCompletionContentPartText, unlike a user message's. So an
+        # image tool result is delivered in two parts: a text placeholder that closes
+        # out the tool_call_id, and one trailing user message carrying every image
+        # produced this round.
+        image_note = VISION_TOOL_RESPONSE_USER_MESSAGE_PREFIX
+        tool_response_images: list[ImageContent] = []
+
         # Add the execution results to the current round result, one at a time
         for execution_result, tool_call_id in zip(
             execution_results, model_response_data["tool_call_ids"]
         ):
-            if execution_result["result_type"] == ResultType.TEXT:
-                tool_message = {
-                    "role": "tool",
-                    "content": execution_result["result"],
-                    "tool_call_id": tool_call_id,
-                }
-                inference_data["message"].append(tool_message)
-            elif execution_result["result_type"] == ResultType.IMAGE:
-                user_role_image_message[
-                    "content"
-                ] += f"Tool response for tool call id {tool_call_id} is an image, attached below. "
-                user_role_image_message["image_content"].append(execution_result["result"])
-                tool_message = {
-                    "role": "tool",
-                    "content": VISION_TOOL_RESPONSE_TEXT_PROMPT,
-                    "tool_call_id": tool_call_id,
-                }
-                inference_data["message"].append(tool_message)
+            if execution_result["result_type"] == ResultType.IMAGE:
+                image_note += (
+                    f"Tool response for tool call id {tool_call_id} is an image, "
+                    f"attached below. "
+                )
+                tool_response_images.append(
+                    image_content_from_execution_result(execution_result)
+                )
+                content = VISION_TOOL_RESPONSE_TEXT_PROMPT
+            else:
+                content = execution_result["result"]
 
-        if len(user_role_image_message["image_content"]) > 0:
+            inference_data["message"].append(
+                {
+                    "role": "tool",
+                    "content": content,
+                    "tool_call_id": tool_call_id,
+                }
+            )
+
+        if tool_response_images:
             inference_data = self._add_next_turn_user_message_FC(
-                inference_data, [user_role_image_message]
+                inference_data,
+                [Message(role=Role.USER, content=image_note, images=tool_response_images)],
             )
 
         return inference_data

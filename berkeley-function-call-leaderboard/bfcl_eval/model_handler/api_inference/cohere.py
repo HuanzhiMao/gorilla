@@ -5,21 +5,34 @@ import time
 from typing import Any
 
 import cohere
-from bfcl_eval.constants.enums import ModelStyle
+from bfcl_eval.constants.default_prompts import (
+    VISION_TOOL_RESPONSE_TEXT_PROMPT,
+    VISION_TOOL_RESPONSE_USER_MESSAGE_PREFIX,
+)
+from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.utils import (
     convert_to_tool,
     extract_system_prompt,
+    image_content_from_execution_result,
     retry_with_backoff,
 )
+from bfcl_eval.schemas.entries import TestEntry
+from bfcl_eval.schemas.message import ImageContent, Message, Role
 from tenacity.stop import stop_after_attempt
 
 
 class CohereHandler(BaseHandler):
+    # Cohere Chat v2 has no audio content type of any kind.
     can_handle_audio_input = False
-    can_handle_image_input = False
-    can_handle_image_tool_response = False
+    # It does take images: Chat v2 user messages accept an `image_url` content part
+    # (Command A Vision and later). Whether a given Cohere model reads them is the
+    # registry's call, via `supports_image_input`.
+    can_handle_image_input = True
+    # Not natively -- a `tool` message may only hold text or document blocks -- so the
+    # image travels in a following user message, as on OpenAI Chat Completions.
+    can_handle_image_tool_response = True
 
     client: cohere.ClientV2
 
@@ -118,23 +131,15 @@ class CohereHandler(BaseHandler):
 
         return api_response, end_time - start_time
 
-    def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
-        turns = []
-        for turn_idx, turn in enumerate(test_entry["question"]):
-            if turn_idx == 0:  # we only extract system message from the first turn
-                system_message = extract_system_prompt(turn)
-                if system_message:
-                    inference_data["system_message"] = system_message
-            # miss_func categories have an empty turn to supplement the function later
-            turns.append(list(turn))
-        assert len(turns) == len(test_entry["question"])
-        test_entry["question"] = turns
+    def _pre_query_processing_FC(self, inference_data: dict, test_entry: TestEntry) -> dict:
+        # We only extract the system message from the first turn.
+        system_message = extract_system_prompt(test_entry.conversation[0])
+        if system_message:
+            inference_data["system_message"] = system_message
         return inference_data
 
-    def _compile_tools(self, inference_data: dict, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-
-        tools = convert_to_tool(functions, GORILLA_TO_OPENAPI, self.model_style)
+    def _compile_tools(self, inference_data: dict, test_entry: TestEntry) -> dict:
+        tools = convert_to_tool(test_entry.functions, GORILLA_TO_OPENAPI, self.model_style)
         inference_data["tools"] = [_to_cohere_tool(tool) for tool in tools]
 
         return inference_data
@@ -152,7 +157,7 @@ class CohereHandler(BaseHandler):
         }
 
     def add_first_turn_message_FC(
-        self, inference_data: dict, first_turn_message: list[dict]
+        self, inference_data: dict, first_turn_message: list[Message]
     ) -> dict:
         inference_data["chat_turns"] = [
             _to_cohere_message(message) for message in first_turn_message
@@ -162,7 +167,7 @@ class CohereHandler(BaseHandler):
         return inference_data
 
     def _add_next_turn_user_message_FC(
-        self, inference_data: dict, user_message: list[dict]
+        self, inference_data: dict, user_message: list[Message]
     ) -> dict:
         assert "chat_turns" in inference_data, "expected chat_turns to be present"
         chat_turns = inference_data["chat_turns"]
@@ -196,15 +201,36 @@ class CohereHandler(BaseHandler):
             execution_results
         ), "Number of execution result must match number of tool calls from last turn!"
 
+        image_note = VISION_TOOL_RESPONSE_USER_MESSAGE_PREFIX
+        tool_response_images: list[ImageContent] = []
+
         for tool_call, execution_result in zip(tool_calls, execution_results):
+            if execution_result["result_type"] == ResultType.IMAGE:
+                # A Cohere tool message carries text or documents, never an image, so
+                # the bytes go out in the user message appended below.
+                image_note += (
+                    f"Tool response for tool call id {tool_call['id']} is an image, "
+                    f"attached below. "
+                )
+                tool_response_images.append(
+                    image_content_from_execution_result(execution_result)
+                )
+                text = VISION_TOOL_RESPONSE_TEXT_PROMPT
+            else:
+                text = _render_result(execution_result["result"])
+
             inference_data["chat_turns"].append(
                 {
                     "role": "tool",
                     "tool_call_id": tool_call["id"],
-                    "content": [
-                        {"type": "text", "text": _render_result(execution_result["result"])}
-                    ],
+                    "content": [{"type": "text", "text": text}],
                 }
+            )
+
+        if tool_response_images:
+            inference_data = self._add_next_turn_user_message_FC(
+                inference_data,
+                [Message(role=Role.USER, content=image_note, images=tool_response_images)],
             )
         return inference_data
 
@@ -223,10 +249,25 @@ def _render_result(result_str: str) -> str:
     return result_str
 
 
-def _to_cohere_message(message: dict) -> dict:
-    role = message["role"]
+def _to_cohere_message(message: Message) -> dict:
+    role = message.role.value
     assert role in ("user", "assistant"), "message role must be in ['user', 'assistant']"
-    return {"role": role, "content": message["content"]}
+
+    if not message.images:
+        return {"role": role, "content": message.content or ""}
+
+    content: list[dict] = []
+    if message.content:
+        content.append({"type": "text", "text": message.content})
+    content.extend(
+        {
+            "type": "image_url",
+            # Chat v2 wants an object with a `url` key, holding a data URI.
+            "image_url": {"url": f"data:{image.mime_type};base64,{image.image_base64}"},
+        }
+        for image in message.images
+    )
+    return {"role": role, "content": content}
 
 
 def _to_cohere_tool(tool: dict) -> dict:

@@ -15,6 +15,11 @@ class LingAPIHandler(OpenAICompletionsHandler):
     that is left, and `model_name` is sent to the API as-is.
     """
 
+    # Bailing/Tbox documents message content as a plain string -- text only.
+    can_handle_audio_input = False
+    can_handle_image_input = False
+    can_handle_image_tool_response = False
+
     def __init__(
         self,
         model_name,

@@ -9,6 +9,13 @@ from overrides import override
 
 
 class GrokHandler(OpenAICompletionsHandler):
+    # xAI documents image understanding but no audio input on the chat endpoint.
+    can_handle_audio_input = False
+    can_handle_image_input = True
+    # Via the inherited placeholder-plus-user-message workaround: a Grok `tool`
+    # message takes a plain string, like OpenAI's.
+    can_handle_image_tool_response = True
+
     def __init__(
         self,
         model_name,

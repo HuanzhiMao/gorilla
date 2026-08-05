@@ -28,6 +28,10 @@ from bfcl_eval.model_handler.utils import (
     check_for_clarification,
     extract_clarification_context,
 )
+from bfcl_eval.schemas.entries import TestEntry
+from bfcl_eval.schemas.environment import HoldoutCondition
+from bfcl_eval.schemas.message import Message, Role
+from bfcl_eval.schemas.results import ModelResultEntry
 from bfcl_eval.utils import *
 from overrides import final
 
@@ -47,15 +51,24 @@ class BaseHandler:
 
     # Capability flags: every subclass must explicitly declare these as class
     # attributes so handler authors are forced to consider each modality.
+    #
+    # They answer "can THIS HANDLER put that modality on the wire for its provider's
+    # API", not "does the model understand it". The second question is per-model and
+    # lives on `ModelConfig.supports_audio_input` / `supports_image_input` in
+    # `constants/model_config.py`. A category runs only when both agree; see
+    # `skip_rules` in `_llm_response_generation.py`.
+    #
+    # `can_handle_image_tool_response` may be True on a provider whose tool-result
+    # message is text-only, as long as the handler delivers the image some other
+    # documented way -- what matters is that the bytes reach the model.
     can_handle_audio_input: bool
     can_handle_image_input: bool
     can_handle_image_tool_response: bool
 
-    # @HuanzhiMao FIXME: Uncomment these after testing
     _REQUIRED_CAPABILITY_FLAGS = (
-        # "can_handle_audio_input",
-        # "can_handle_image_input",
-        # "can_handle_image_tool_response",
+        "can_handle_audio_input",
+        "can_handle_image_input",
+        "can_handle_image_tool_response",
     )
 
     def __init_subclass__(cls, **kwargs):
@@ -66,6 +79,17 @@ class BaseHandler:
         if missing:
             raise TypeError(
                 f"{cls.__name__} must explicitly declare: {', '.join(missing)}"
+            )
+        # Delivering an image tool result means getting an image to the model, whether
+        # the provider has a field for it or an emulating user message is needed. Every
+        # route ends in a rendered image, so claiming one without the other describes
+        # nothing a handler can actually do -- and the emulated route builds its own
+        # user message, which never passes back through the modality backstop.
+        if cls.can_handle_image_tool_response and not cls.can_handle_image_input:
+            raise TypeError(
+                f"{cls.__name__} declares can_handle_image_tool_response without "
+                f"can_handle_image_input: an image tool result has to reach the model "
+                f"as an image either way."
             )
 
     def __init__(
@@ -97,9 +121,50 @@ class BaseHandler:
         for _key, _value in kwargs.items():
             setattr(self, _key, _value)
 
+    @final
+    def _reject_unrenderable_modalities(self, messages: list[Message]) -> None:
+        """Refuse a turn carrying a modality this handler cannot put on the wire.
+
+        The runner already skips categories a model/handler pair cannot take, so this
+        is a backstop rather than a routine check. It exists because the alternative
+        failure is invisible: every handler builds its payload field by field, so an
+        unhandled image or audio clip is simply *not copied* and the model is scored on
+        a question it was never shown.
+        """
+        for message in messages:
+            if message.has_audio and not self.can_handle_audio_input:
+                raise ValueError(
+                    f"{type(self).__name__} cannot send audio input, but a "
+                    f"{message.role.value} message carries an audio clip. Gate this "
+                    f"category out (`supports_audio_input` in model_config.py) rather "
+                    f"than letting the handler drop it."
+                )
+            if message.has_image and not self.can_handle_image_input:
+                raise ValueError(
+                    f"{type(self).__name__} cannot send image input, but a "
+                    f"{message.role.value} message carries {len(message.images)} "
+                    f"image(s). Gate this category out (`supports_image_input` in "
+                    f"model_config.py) rather than letting the handler drop them."
+                )
+
+    @final
+    def _reject_unrenderable_execution_results(
+        self, execution_results: list[dict]
+    ) -> None:
+        """Same backstop for images a tool returned."""
+        if self.can_handle_image_tool_response:
+            return
+        if any(result["result_type"] == ResultType.IMAGE for result in execution_results):
+            raise ValueError(
+                f"{type(self).__name__} cannot deliver an image tool result, but a "
+                f"tool returned one. Categories whose tools return images "
+                f"(`tools_return_images` on the category spec) must be gated out for "
+                f"this model."
+            )
+
     def inference(
         self,
-        test_entry: dict,
+        test_entry: TestEntry,
         include_input_log: bool,
         exclude_state_log: bool,
     ):
@@ -113,23 +178,26 @@ class BaseHandler:
     @final
     def inference_multi_turn_FC(
         self,
-        test_entry: dict,
+        test_entry: TestEntry,
         include_input_log: bool,
         exclude_state_log: bool,
     ) -> tuple[list[list], dict]:
-        initial_config: dict = test_entry.get("initial_config", {})
-        involved_classes: list = test_entry.get("involved_classes", [])
-        test_entry_id: str = test_entry["id"]
-        test_category: str = test_entry_id.rsplit("_", 1)[0]
-        modality = get_category_modality(test_category)
-        max_step_limit = MAXIMUM_STEP_LIMIT[modality]
+        environment = test_entry.environment
+        initial_config: dict = environment.initial_config
+        involved_classes: list = environment.involved_classes
+        test_entry_id: str = test_entry.id
+        category = test_entry.category
+        test_category: str = category.value
+        max_step_limit = MAXIMUM_STEP_LIMIT[category.modality]
         # Only for audio tasks, we allow the model to ask for clarification.
-        category_allow_clarification: bool = could_allow_clarification(test_category)
+        category_allow_clarification: bool = category.allows_clarification
 
         # This is only for the miss function category
         # Supports conditions: "after_n_turns" and "after_n_invoke"
-        missed_classes_rules: list[dict] = test_entry.get("missed_classes", [])
-        failure_injection: list | None = test_entry.get("failure_injection")
+        missed_classes_rules = environment.holdout_rules
+        failure_injection = (
+            [injection.to_dict() for injection in environment.failure_injections] or None
+        )
 
         total_input_token_count: list[list[float]] = []
         total_output_token_count: list[list[float]] = []
@@ -152,7 +220,7 @@ class BaseHandler:
             involved_classes,
             self.model_name_underline_replaced,
             test_entry_id,
-            long_context=("long_context" in test_category or "composite" in test_category),
+            long_context=category.long_context,
             is_evaL_run=False,
             failure_injection=failure_injection,
         )
@@ -170,16 +238,16 @@ class BaseHandler:
                 ]
             )
 
-        if is_memory(test_category):
+        if category.is_memory:
             assert (
                 len(involved_instances) == 1
             ), "Memory category should only involve one class."
 
             memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
-            test_entry["question"] = add_memory_instruction_system_prompt(
-                test_entry["question"],
+            test_entry.conversation = add_memory_instruction_system_prompt(
+                test_entry.conversation,
                 test_category,
-                test_entry["scenario"],
+                test_entry.scenario,
                 memory_instance,
             )
 
@@ -208,9 +276,9 @@ class BaseHandler:
         inference_data = self._pre_query_processing_FC(inference_data, test_entry)
         inference_data = self._compile_tools(inference_data, test_entry)
 
-        all_multi_turn_messages: list[list[dict]] = test_entry["question"]
+        all_multi_turn_messages = test_entry.conversation
         for turn_idx, current_turn_message in enumerate(all_multi_turn_messages):
-            current_turn_message: list[dict]
+            current_turn_message: list[Message]
 
             if any(
                 class_name in UPDATED_TOOL_LIST_CLASSES for class_name in involved_classes
@@ -222,37 +290,33 @@ class BaseHandler:
 
             released_holdout_log = []
             for holdout_rule in missed_classes_rules:
-                if holdout_rule.get("_released"):
-                    continue
-                if holdout_rule["condition"] == "after_n_turns" and turn_idx == holdout_rule["value"]:
-                    released_func_names = [d['name'] for d in holdout_rule['holdout_func_docs']]
+                if holdout_rule.is_triggered(turn_index=turn_idx):
                     released_holdout_log.append({
-                        "released_functions": released_func_names,
-                        "condition": holdout_rule["condition"],
+                        "released_functions": holdout_rule.holdout_function_names,
+                        "condition": holdout_rule.condition.value,
                         "triggered_turn": turn_idx,
                     })
-                    test_entry["function"].extend(holdout_rule["holdout_func_docs"])
+                    test_entry.release_holdout(holdout_rule)
                     inference_data = self._compile_tools(inference_data, test_entry)
-                    holdout_rule["_released"] = True
                     assert (
                         len(current_turn_message) == 0
                     ), "Holdout turn should not have user message."
                     # TODO: Move this to before pre_query_processing_FC.
                     # Shouldn't be happening in the inference loop.
                     current_turn_message = [
-                        {
-                            "role": "user",
-                            "content": DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
-                        }
+                        Message(
+                            role=Role.USER,
+                            content=DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
+                        )
                     ]
 
-            current_turn_message_for_logging = deepcopy(current_turn_message)
-            if contain_vision_input(test_category):
-                for message in current_turn_message_for_logging:
-                    if "image_content" in message:
-                        for image_content in message["image_content"]:
-                            del image_content["image_bytes"]
-                            del image_content["image_base64"]
+            # Binary payloads are stripped from the log rather than deep-copied out of
+            # it. Unconditionally: keying this on `contains_vision_input` left the mp3
+            # bytes of a true_audio entry to be stringified into every result file, and
+            # a log has no use for the bytes in any modality.
+            current_turn_message_for_logging = [
+                message.to_dict(redact_binary=True) for message in current_turn_message
+            ]
 
             current_turn_response = []
             current_turn_inference_log: list[dict] = {
@@ -264,6 +328,8 @@ class BaseHandler:
             current_turn_output_token_count: list[float] = []
             current_turn_latency: list[float] = []
             current_turn_reasoning_content = []
+
+            self._reject_unrenderable_modalities(current_turn_message)
 
             if turn_idx == 0:
                 inference_data = self.add_first_turn_message_FC(
@@ -334,7 +400,7 @@ class BaseHandler:
                 # we don't need to decode or execute function calls.
                 # The eval will handle decoding separately.
                 if (
-                    not contain_multi_step_interaction(test_entry_id)
+                    not category.contains_multi_step_interaction
                     and not category_allow_clarification
                 ):
                     break
@@ -382,7 +448,7 @@ class BaseHandler:
                 # Path 1: Model produced function calls → execute them
                 if has_function_calls:
                     # If it's a single-turn entry, we don't need to execute the function calls. The generation stops here.
-                    if not contain_multi_step_interaction(test_entry_id):
+                    if not category.contains_multi_step_interaction:
                         break
 
                     # Obtain the execution results
@@ -392,13 +458,12 @@ class BaseHandler:
                         involved_classes,
                         self.model_name_underline_replaced,
                         test_entry_id,
-                        long_context=(
-                            "long_context" in test_category or "composite" in test_category
-                        ),
+                        long_context=category.long_context,
                         is_evaL_run=False,
                     )
 
                     # Add the execution results to the chat history for the next turn
+                    self._reject_unrenderable_execution_results(execution_results)
                     inference_data = self._add_execution_results_FC(
                         inference_data, execution_results, model_response_data
                     )
@@ -422,35 +487,29 @@ class BaseHandler:
 
                     # Check if holdout functions should be released after this invocation
                     for holdout_rule in missed_classes_rules:
-                        if holdout_rule.get("_released"):
+                        if holdout_rule.released:
                             continue
-                        if holdout_rule["condition"] == "after_n_invoke":
+                        if holdout_rule.condition is HoldoutCondition.AFTER_N_INVOKE:
                             # target_function may be "ClassName.func_name"; decoded responses use bare func names
-                            target_func = holdout_rule["target_function"]
-                            if "." in target_func:
-                                target_func = target_func.split(".", 1)[1]
+                            target_func = holdout_rule.bare_target_function
                             for func_call in decoded_model_responses:
                                 if isinstance(func_call, str) and func_call.startswith(target_func + "("):
-                                    holdout_rule.setdefault("_invoke_count", 0)
-                                    holdout_rule["_invoke_count"] += 1
-                                    if holdout_rule["_invoke_count"] >= holdout_rule["n"]:
-                                        released_func_names = [d['name'] for d in holdout_rule['holdout_func_docs']]
+                                    if holdout_rule.record_invocation():
                                         current_step_inference_log.append(
                                             {
                                                 "role": "handler_log",
                                                 "content": {
                                                     "action": "missed_classes_holdout_released",
-                                                    "released_functions": released_func_names,
-                                                    "condition": holdout_rule["condition"],
-                                                    "target_function": holdout_rule["target_function"],
-                                                    "invoke_count": holdout_rule["_invoke_count"],
-                                                    "required_invocations": holdout_rule["n"],
+                                                    "released_functions": holdout_rule.holdout_function_names,
+                                                    "condition": holdout_rule.condition.value,
+                                                    "target_function": holdout_rule.target_function,
+                                                    "invoke_count": holdout_rule.invocations,
+                                                    "required_invocations": holdout_rule.invoke_threshold,
                                                 },
                                             }
                                         )
-                                        test_entry["function"].extend(holdout_rule["holdout_func_docs"])
+                                        test_entry.release_holdout(holdout_rule)
                                         inference_data = self._compile_tools(inference_data, test_entry)
-                                        holdout_rule["_released"] = True
                                     break
 
                     # If the model has taken too many steps, we force it to quit.
@@ -472,7 +531,7 @@ class BaseHandler:
                         allowed_clarifications,
                         original_user_request,
                         last_user_message_asr_output,
-                    ) = self._extract_clarification_context(current_turn_message)
+                    ) = extract_clarification_context(current_turn_message)
 
                     is_clarification, clarification_content = check_for_clarification(
                         model_response=model_responses,
@@ -493,9 +552,26 @@ class BaseHandler:
                             )
                             break
 
+                        # A clarification round costs a query like any other step, so
+                        # it has to answer to the step limit too. This branch used to
+                        # skip the check and was bounded only by the clarification
+                        # count, which let a turn spend MAXIMUM_CLARIFICATION_LIMIT
+                        # queries beyond a budget that is supposed to be the ceiling.
+                        if step_count > max_step_limit:
+                            force_quit = True
+                            current_step_inference_log.append(
+                                {
+                                    "role": "handler_log",
+                                    "content": f"Model has been forced to quit after {max_step_limit} steps.",
+                                }
+                            )
+                            break
+
+                        # Handlers consume `Message` objects, never raw dicts -- the
+                        # simulated clarification answer has to be one too.
                         inference_data = self._add_next_turn_user_message_FC(
                             inference_data,
-                            [{"role": "user", "content": clarification_content}],
+                            [Message(role=Role.USER, content=clarification_content)],
                         )
                         current_step_inference_log.append(
                             {
@@ -560,7 +636,7 @@ class BaseHandler:
 
         # Special handling for the memory category
         # Need to flush the memory to local file at the end of the conversation
-        if is_memory_prereq(test_entry_id):
+        if category.is_memory_prereq:
             assert (
                 len(involved_instances) == 1
             ), "Memory category should only involve one class."
@@ -578,7 +654,7 @@ class BaseHandler:
             "latency": total_latency,
         }
 
-        if contain_multi_step_interaction(test_entry_id):
+        if category.contains_multi_step_interaction:
             metadata["inference_log"] = all_inference_log
 
         if not all(
@@ -591,13 +667,14 @@ class BaseHandler:
 
     @final
     def inference_single_turn_FC(
-        self, test_entry: dict, include_input_log: bool
+        self, test_entry: TestEntry, include_input_log: bool
     ) -> tuple[any, dict]:
         inference_data: dict = {}
         inference_data = self._pre_query_processing_FC(inference_data, test_entry)
         inference_data = self._compile_tools(inference_data, test_entry)
+        self._reject_unrenderable_modalities(test_entry.conversation[0])
         inference_data = self.add_first_turn_message_FC(
-            inference_data, test_entry["question"][0]
+            inference_data, test_entry.conversation[0]
         )
 
         api_response, query_latency = self._query_FC(inference_data)
@@ -640,15 +717,24 @@ class BaseHandler:
 
     @final
     def write(self, result, result_dir, update_mode=False):
+        """Append (or update) result entries in the per-category result files.
+
+        Accepts `ModelResultEntry` objects, or the plain dicts they serialize to.
+        """
         # Use the internal registry name to decide the result directory to avoid
         # collisions between different variants that share the same API model name.
         model_result_dir = result_dir / self.registry_dir_name
 
-        if isinstance(result, dict):
+        if isinstance(result, (dict, ModelResultEntry)):
             result = [result]
 
         # Collect and format each entry for JSON compatibility
-        entries_to_write = [make_json_serializable(entry) for entry in result]
+        entries_to_write = [
+            make_json_serializable(
+                entry.to_dict() if isinstance(entry, ModelResultEntry) else entry
+            )
+            for entry in result
+        ]
 
         # Group entries by their `test_category` for efficient file handling
         file_entries = {}
@@ -703,7 +789,7 @@ class BaseHandler:
         """
         raise NotImplementedError
 
-    def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
+    def _pre_query_processing_FC(self, inference_data: dict, test_entry: TestEntry) -> dict:
         """
         Preprocess the testset entry before sending it to the model.
         This might includes transforming the input user message into the format expected by the model, extract out the system prompt (if any), and any other necessary preprocessing steps. Those steps can also be done in the `add_first_turn_message_FC` and `_add_next_turn_user_message_FC` methods, but it's usually cleaner to do it here.
@@ -713,7 +799,7 @@ class BaseHandler:
         """
         raise NotImplementedError
 
-    def _compile_tools(self, inference_data: dict, test_entry: dict) -> dict:
+    def _compile_tools(self, inference_data: dict, test_entry: TestEntry) -> dict:
         """
         [Only for FC mode]
         This method is used to prepare/compile the tools from the test entry and add them to the inference data to use for model query in FC mode.
@@ -740,14 +826,14 @@ class BaseHandler:
         raise NotImplementedError
 
     def add_first_turn_message_FC(
-        self, inference_data: dict, first_turn_message: list[dict]
+        self, inference_data: dict, first_turn_message: list[Message]
     ) -> dict:
         """
         Add the first turn message to the chat history, in the format that the model expects.
 
         Args:
             inference_data (dict): The inference data from previous processing steps.
-            first_turn_message (list[dict]): The first turn message from the test entry. It has variable length. It might contain one or more of the following roles:
+            first_turn_message (list[Message]): The first turn message from the test entry. It has variable length. It might contain one or more of the following roles:
                 - "system": The system message. This role will only appear at most once, at the beginning of the first turn. For most entry, this role will not appear.
                 - "user": The user message.
                 - "assistant": The assistant message. For most entry, this role will not appear.
@@ -758,7 +844,7 @@ class BaseHandler:
         raise NotImplementedError
 
     def _add_next_turn_user_message_FC(
-        self, inference_data: dict, user_message: list[dict]
+        self, inference_data: dict, user_message: list[Message]
     ) -> dict:
         """
         [Only for multi-turn]

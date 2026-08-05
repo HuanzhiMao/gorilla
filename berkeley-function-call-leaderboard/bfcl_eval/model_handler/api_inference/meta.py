@@ -4,6 +4,7 @@ from bfcl_eval.constants.enums import ModelStyle
 from bfcl_eval.model_handler.api_inference.openai_completion import (
     OpenAICompletionsHandler,
 )
+from bfcl_eval.model_handler.utils import render_messages_for_log
 from openai import OpenAI
 from overrides import override
 
@@ -42,7 +43,7 @@ class MetaHandler(OpenAICompletionsHandler):
     def _query_FC(self, inference_data: dict):
         message: list[dict] = inference_data["message"]
         tools = inference_data["tools"]
-        inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
+        inference_data["inference_input_log"] = {"message": render_messages_for_log(message), "tools": tools}
 
         # `store` is an OpenAI-only field, and we omit `temperature` because Muse Spark
         # is a reasoning model (depth is controlled by `reasoning_effort` instead; we

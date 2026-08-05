@@ -19,6 +19,15 @@ The repository is organized as follows:
 berkeley-function-call-leaderboard/
 ├── bfcl_eval/
 |   ├── constants/                # Global constants and configuration values
+│   ├── schemas/                  # The typed data model (dataclasses, no IO)
+│   │   ├── category.py             # TestCategory + the CategorySpec registry
+│   │   ├── entries.py              # TestEntry hierarchy
+│   │   ├── ground_truth.py         # GroundTruth hierarchy
+│   │   ├── message.py              # Conversation, Message, ImageContent, AudioContent
+│   │   ├── function_doc.py         # FunctionDoc, ParameterSchema
+│   │   ├── environment.py          # ToolEnvironment, MissedClassRule, FailureInjection
+│   │   ├── results.py              # ModelResultEntry, ScoreHeader, ScoreRecord
+│   ├── dataset_loader/           # Reading the dataset into the typed model
 │   ├── eval_checker/             # Evaluation modules
 │   │   ├── ast_eval/             # AST-based evaluation
 │   │   ├── multi_turn_eval/      # Multi-turn evaluation
@@ -26,7 +35,7 @@ berkeley-function-call-leaderboard/
 │   │   ├── local_inference/            # Handlers for locally-hosted (open-source) models
 │   │   │   ├── base_oss_handler.py       # Single FC handler for all OSS models (vLLM/sglang)
 │   │   ├── api_inference/    # Handlers for API-based models
-│   │   │   ├── openai.py             # Example: OpenAI models
+│   │   │   ├── openai_completion.py  # Example: OpenAI models
 │   │   │   ├── claude.py             # Example: Claude models
 │   │   │   ├── ...
 │   │   ├── parser/                # Parsing utilities for Java/JavaScript
@@ -38,6 +47,91 @@ berkeley-function-call-leaderboard/
 ```
 
 To add a new model, focus primarily on the `model_handler` directory. You do not need to modify the parsing utilities in `model_handler/parser` or any other directories.
+
+## Working With Test Entries
+
+Handlers receive **typed objects**, not raw dictionaries. A `TestEntry`
+(`bfcl_eval/schemas/entries.py`) exposes:
+
+| Attribute                       | What it holds                                                    |
+| ------------------------------- | ---------------------------------------------------------------- |
+| `entry.id`                      | The modality-prefixed id, e.g. `text:simple_python_0`             |
+| `entry.category`                | A `TestCategory` — ask it questions instead of matching substrings |
+| `entry.conversation`            | A `Conversation`: a list of turns, each a list of `Message`       |
+| `entry.functions`               | `list[FunctionDoc]` — the tools offered to the model               |
+| `entry.environment`             | `ToolEnvironment` — backend classes, initial state, holdout rules |
+| `entry.depends_on`              | Ids that must be generated before this one                        |
+
+Three rules keep handler code simple:
+
+1. **Read attributes off the base.** Every field above is always present — a
+   single-turn entry carries an empty `ToolEnvironment`, never `None`. There is no
+   need for `.get(..., {})` anywhere.
+2. **Ask the category, don't match the string.** Use `entry.category.is_multi_turn`,
+   `entry.category.language`, `entry.category.contains_multi_step_interaction`, and so
+   on. The traits come from a declarative registry in `schemas/category.py`.
+3. **Never `isinstance` in a handler.** Subclasses like `MemoryTestEntry` exist for
+   the few places that read a subclass-only field; handlers should stay generic.
+
+Messages are `Message` objects with `role`, `content`, `images`, and `audio`. Build
+your provider's payload from those fields rather than mutating the message — see
+`add_first_turn_message_FC` in `openai_completion.py` for the pattern:
+
+```python
+def add_first_turn_message_FC(self, inference_data, first_turn_message: list[Message]):
+    for message in first_turn_message:
+        if message.has_image:
+            content = [{"type": "text", "text": message.content}]
+            content += [render(image) for image in message.images]
+        else:
+            content = [{"type": "text", "text": message.content}]
+        inference_data["message"].append({"role": message.role.value, "content": content})
+    return inference_data
+```
+
+**Note for anyone comparing against older results:** four defects fixed in this
+release change what the model receives -- the Java/JavaScript syntax hint, the vision
+perturbation images, Nova's duplicated messages, and prompt/ground-truth pairing. Scores
+from before it are not comparable for those categories. See `CHANGELOG.md`.
+
+**Build fresh payloads; never mutate the entry.** Rendering the same entry twice must
+produce the same request. The pre-typed-entry handlers wrote their provider format back
+onto the entry's own message dicts, so a second render wrapped already-wrapped content
+and produced a malformed request. Returning new dicts, as above, avoids that.
+
+### Declaring What Your Handler Can Send
+
+Every handler class must set three booleans in its own class body. They are enforced at
+import time — inheriting them from a parent does **not** count, because the point is to
+make each new handler state the answer rather than acquire it by accident:
+
+```python
+class MyVendorHandler(BaseHandler):
+    can_handle_audio_input = False          # a user message carrying an mp3
+    can_handle_image_input = True           # a user message carrying a jpeg
+    can_handle_image_tool_response = True   # an image returned *by a tool call*
+```
+
+They describe **what this handler can put on the wire for its provider's API**, not
+what any one model understands. The per-model half lives on the registry row in
+`constants/model_config.py` (`supports_image_input`, `supports_audio_input`), and a
+category runs only when both halves agree — see `skip_rules` in
+`_llm_response_generation.py`.
+
+Two things are easy to get wrong:
+
+- **`can_handle_image_tool_response` is a separate question from image input.** Most
+  OpenAI-compatible APIs narrow a `tool` message to text, so an image cannot be
+  returned as a tool result at all. The flag may still be `True` if the handler
+  delivers the image some other documented way — `OpenAICompletionsHandler` answers the
+  tool call with a text placeholder and then appends a user message carrying the bytes.
+  What the flag promises is that the image reaches the model, not that the API has a
+  field for it. Categories whose tools return images are marked `tools_return_images`
+  in the category registry; today that is geoguessr, whose question is pure text.
+- **Declaring `False` is a real choice, not a default.** The base handler *refuses* a
+  turn carrying a modality the flag denies, rather than quietly rendering the parts it
+  understands. A silently dropped image would score the model on a question it was
+  never shown.
 
 ## Where to Begin
 
@@ -121,6 +215,41 @@ Regardless of mode or model type, you should implement the following methods to 
 
    1. Add your model to the list of supported models in `SUPPORTED_MODELS.md`. Include the model name in the table.
    2. Add a new entry in `bfcl_eval/constants/supported_models.py` as well.
+
+## Adding a New Test Category
+
+A category's behavior is one declarative row in `bfcl_eval/schemas/category.py`. Every
+field without a default is a decision you are forced to make, which is the point: the
+alternative used to be tracing an if/elif chain through the loader and the evaluator.
+
+```python
+CategorySpec(
+    base_name="my_category",
+    family=CategoryFamily.MULTI_TURN,
+    eval_strategy=EvalStrategy.MULTI_TURN_STATE,   # which runner scores it
+    ground_truth_kind=GroundTruthKind.MULTI_TURN_CALLS,  # what its answers look like
+    supported_modalities=TEXT_ONLY,
+    load_stages=_pipeline(),          # transforms applied on the way in
+    dataset_file=None,                # defaults to f"{base_name}.json"
+)
+```
+
+To see what a category actually does on load:
+
+```python
+>>> from bfcl_eval.dataset_loader.pipeline import describe
+>>> from bfcl_eval.schemas.category import TestCategory
+>>> describe(TestCategory.parse("text:memory_kv"))
+['memory_prereq_link', 'prefix_ids', 'parse', 'resolve_initial_config',
+ 'structured_answer_prompt', 'resolve_tools', 'resolve_holdout_docs', 'language_hint']
+```
+
+Stages are implemented in `bfcl_eval/dataset_loader/stages/`, split by which side of
+`StageId.PARSE` they run on — `raw.py` operates on JSON objects (it may change an
+entry's id or rebuild it outright), `typed.py` on `TestEntry` objects. If your category
+needs a transform none of the existing stages provide, add a `StageId`, implement it on
+the right side, and name it in your row. `run_pipeline` raises if a row names a stage
+with no implementation on the side of `PARSE` where it appears.
 
 ## Submitting Your Pull Request
 

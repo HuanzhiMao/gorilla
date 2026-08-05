@@ -6,6 +6,7 @@ from typing import Any
 from bfcl_eval.model_handler.api_inference.openai_completion import OpenAICompletionsHandler
 from bfcl_eval.constants.enums import ModelStyle
 from bfcl_eval.model_handler.utils import (
+    render_messages_for_log,
     retry_with_backoff,
 )
 from openai import OpenAI, RateLimitError
@@ -14,6 +15,12 @@ from overrides import override
 
 
 class DeepSeekAPIHandler(OpenAICompletionsHandler):
+    # DeepSeek's API is text-in/text-out: the docs describe no image or audio
+    # content part, and a `tool` message carries a plain string.
+    can_handle_audio_input = False
+    can_handle_image_input = False
+    can_handle_image_tool_response = False
+
     def __init__(
         self,
         model_name,
@@ -52,7 +59,7 @@ class DeepSeekAPIHandler(OpenAICompletionsHandler):
     def _query_FC(self, inference_data: dict):
         message: list[dict] = inference_data["message"]
         tools = inference_data["tools"]
-        inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
+        inference_data["inference_input_log"] = {"message": render_messages_for_log(message), "tools": tools}
 
         if len(tools) > 0:
             return self.generate_with_backoff(

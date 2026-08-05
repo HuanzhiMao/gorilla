@@ -21,7 +21,11 @@ from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     is_empty_execute_response,
 )
 from bfcl_eval.eval_checker.vision_eval.vision_checker import vision_checker
+from bfcl_eval.dataset_loader import load_dataset_entries, load_ground_truth_entries
 from bfcl_eval.model_handler.base_handler import BaseHandler
+from bfcl_eval.schemas.category import EvalStrategy, TestCategory
+from bfcl_eval.schemas.entries import TestEntry
+from bfcl_eval.schemas.ground_truth import GroundTruth, GroundTruthKind
 from bfcl_eval.utils import *
 from dotenv import load_dotenv
 from tqdm import tqdm
@@ -37,10 +41,21 @@ def get_handler(model_name: str) -> BaseHandler:
     return handler
 
 
+def _prompt_for_score(entry: TestEntry) -> dict:
+    """Render an entry for a score file: everything except the tool definitions.
+
+    The function docs are dropped purely for readability -- they are large, identical
+    across every entry of a category, and not useful when reading a failure.
+    """
+    rendered = entry.to_dict()
+    rendered.pop("function", None)
+    return rendered
+
+
 def _subset_entries_by_model_ids(
     model_result_entries: list[dict],
-    prompt_entries: list[dict],
-    ground_truth_entries: list[dict] = None,  # Irrelevance entries don't have ground truth
+    prompt_entries: list[TestEntry],
+    ground_truth_entries: list[GroundTruth] = None,  # Relevance entries have no ground truth
     allow_missing: bool = False,
 ):
     """
@@ -56,19 +71,31 @@ def _subset_entries_by_model_ids(
 
     all_present_ids = {entry["id"]: entry for entry in model_result_entries}
 
-    # Align prompt and ground-truth using the *index* of the prompt entry. Some
-    # ground-truth items use a different ID format, but the order between the
-    # prompt list and the ground-truth list is guaranteed to be identical. We
-    # therefore keep the element at index *i* in both lists whenever the
-    # prompt entry at that index has an ID present in the model results.
-    filtered_prompt_entries: list[dict] = []
-    filtered_ground_truth_entries: list[dict] = []
-    for idx, prompt_entry in enumerate(prompt_entries):
-        if prompt_entry["id"] in all_present_ids:
-            filtered_prompt_entries.append(prompt_entry)
-            # ground_truth_entries and prompt_entries are aligned by index.
-            if ground_truth_entries is not None:
-                filtered_ground_truth_entries.append(ground_truth_entries[idx])
+    # Pair each prompt with its ground truth by *id*. This used to be done by list
+    # index, because ground-truth ids were prefixed with the Modality enum's repr and
+    # so never matched a prompt id; now that they agree, pairing by id means a
+    # reordered or partially-regenerated ground-truth file can no longer silently
+    # score entries against the wrong expectation.
+    ground_truth_by_id = (
+        {entry.id: entry for entry in ground_truth_entries}
+        if ground_truth_entries is not None
+        else None
+    )
+
+    filtered_prompt_entries: list[TestEntry] = []
+    filtered_ground_truth_entries: list[GroundTruth] = []
+    for prompt_entry in prompt_entries:
+        if prompt_entry.id not in all_present_ids:
+            continue
+        filtered_prompt_entries.append(prompt_entry)
+        if ground_truth_by_id is not None:
+            try:
+                filtered_ground_truth_entries.append(ground_truth_by_id[prompt_entry.id])
+            except KeyError:
+                raise ValueError(
+                    f"No ground truth for {prompt_entry.id}. The prompt and "
+                    f"ground-truth files for this category are out of sync."
+                ) from None
 
     return filtered_prompt_entries, filtered_ground_truth_entries
 
@@ -77,15 +104,14 @@ def _evaluate_single_vision_geoguessr_entry(
     handler: BaseHandler,
     index,
     model_result_list,
-    possible_answer_item,
-    prompt_entry,
+    ground_truth: GroundTruth,
+    entry: TestEntry,
     model_name,
     test_category,
 ):
     """Helper method to process a single vision geoguessr entry."""
-    # Remove the function doc from the score file for better readability
-    if "function" in prompt_entry:
-        del prompt_entry["function"]
+    prompt_entry = _prompt_for_score(entry)
+    possible_answer_item = ground_truth.payload
 
     # Vision geoguessr test is a single-turn test, so the model result should be a list of one element
     if type(model_result_list) != list or len(model_result_list) != 1:
@@ -167,15 +193,14 @@ def _evaluate_single_agentic_entry(
     handler: BaseHandler,
     index,
     model_result_list,
-    possible_answer_item,
-    prompt_entry,
+    ground_truth: GroundTruth,
+    entry: TestEntry,
     model_name,
     test_category,
 ):
     """Helper method to process a single agentic entry."""
-    # Remove the function doc from the score file for better readability
-    if "function" in prompt_entry:
-        del prompt_entry["function"]
+    prompt_entry = _prompt_for_score(entry)
+    possible_answer_item = ground_truth.payload
 
     # Agentic test is a single-turn multi-step test, so the model result should be a list of one element
     if type(model_result_list) != list or len(model_result_list) != 1:
@@ -261,15 +286,14 @@ def _evaluate_single_multi_turn_entry(
     handler: BaseHandler,
     test_entry_id,
     model_result_list,
-    ground_truth_list,
-    prompt_entry,
+    ground_truth: GroundTruth,
+    entry: TestEntry,
     model_name,
     test_category,
 ):
     """Helper method to process a single multi-turn entry."""
-    # Remove the function doc from the score file for better readability
-    if "function" in prompt_entry:
-        del prompt_entry["function"]
+    prompt_entry = _prompt_for_score(entry)
+    ground_truth_list = [list(turn) for turn in ground_truth.turns]
 
     if type(model_result_list) != list:
         return {
@@ -333,8 +357,7 @@ def _evaluate_single_multi_turn_entry(
     accuracy_checker_result = multi_turn_checker(
         multi_turn_model_result_list_decoded,
         ground_truth_list,
-        prompt_entry,
-        test_category,
+        entry,
         model_name,
     )
 
@@ -358,8 +381,8 @@ def _evaluate_single_failing_tools_entry(
     handler: BaseHandler,
     index,
     model_result_list,
-    ground_truth,
-    prompt_entry,
+    ground_truth: GroundTruth,
+    entry: TestEntry,
     model_name,
     test_category,
 ):
@@ -369,6 +392,7 @@ def _evaluate_single_failing_tools_entry(
     The model result is [[step1, step2, ...]] (one turn, multiple steps).
     We decode the function calls and check must_be_called / must_not_be_called constraints.
     """
+    prompt_entry = _prompt_for_score(entry)
     if type(model_result_list) != list or len(model_result_list) != 1:
         return {
             "id": index,
@@ -383,7 +407,7 @@ def _evaluate_single_failing_tools_entry(
             },
             "prompt": prompt_entry,
             "model_result": model_result_list,
-            "possible_answer": ground_truth,
+            "possible_answer": ground_truth.payload,
         }
 
     # Decode model results into executable function calls
@@ -407,6 +431,7 @@ def _evaluate_single_failing_tools_entry(
         multi_turn_model_result_list_decoded,
         ground_truth,
     )
+    possible_answer = ground_truth.payload
 
     if not constraint_result["valid"]:
         return {
@@ -418,7 +443,7 @@ def _evaluate_single_failing_tools_entry(
             "prompt": prompt_entry,
             "model_result_raw": model_result_list,
             "model_result_decoded": multi_turn_model_result_list_decoded,
-            "possible_answer": ground_truth,
+            "possible_answer": possible_answer,
         }
 
     return {"valid": True}
@@ -442,15 +467,13 @@ def failing_tools_runner(
     for i in range(len(model_result)):
         index = model_result[i]["id"]
         model_result_list = model_result[i]["result"]
-        ground_truth = possible_answer[i]["ground_truth"]
-        test_entry = prompt[i]
 
         entry_result = _evaluate_single_failing_tools_entry(
             handler,
             index,
             model_result_list,
-            ground_truth,
-            test_entry,
+            possible_answer[i],
+            prompt[i],
             model_name,
             test_category,
         )
@@ -475,11 +498,12 @@ def _evaluate_single_relevance_entry(
     handler: BaseHandler,
     index,
     model_result_item,
-    prompt_entry,
+    entry: TestEntry,
     model_name,
     test_category,
 ):
     """Helper method to process a single relevance/irrelevance entry."""
+    prompt_entry = entry.to_dict()
     contain_func_call = False
     decoded_result = None
     decode_error = None
@@ -531,16 +555,20 @@ def _evaluate_single_ast_entry(
     handler: BaseHandler,
     index,
     model_result_item,
-    possible_answer_item,
-    prompt_entry,
+    ground_truth: GroundTruth,
+    entry: TestEntry,
     model_name,
-    test_category,
+    category: TestCategory,
     language: Language,
     return_format: ReturnFormat,
     has_tool_call_tag=False,
 ):
     """Helper method to process a single AST entry."""
-    prompt_function = prompt_entry["function"]
+    prompt_entry = entry.to_dict()
+    expected_calls = list(ground_truth.calls)
+    # Score files embed the expectation in its on-disk form.
+    possible_answer_item = ground_truth.payload
+    test_category = category.value
 
     try:
         model_result_item_raw = model_result_item
@@ -578,11 +606,11 @@ def _evaluate_single_ast_entry(
         }
 
     checker_result = ast_checker(
-        prompt_function,
+        entry.functions,
         model_result_item,
-        possible_answer_item,
+        expected_calls,
         language,
-        test_category,
+        category,
         model_name,
     )
 
@@ -621,15 +649,13 @@ def vision_geoguessr_runner(
     for i in range(len(model_result)):
         index = model_result[i]["id"]
         model_result_list = model_result[i]["result"]
-        possible_answer_item = possible_answer[i]["ground_truth"]
-        test_entry = prompt[i]
 
         entry_result = _evaluate_single_vision_geoguessr_entry(
             handler,
             index,
             model_result_list,
-            possible_answer_item,
-            test_entry,
+            possible_answer[i],
+            prompt[i],
             model_name,
             test_category,
         )
@@ -684,15 +710,13 @@ def agentic_runner(
     for i in range(len(model_result)):
         index = model_result[i]["id"]
         model_result_list = model_result[i]["result"]
-        possible_answer_item = possible_answer[i]["ground_truth"]
-        test_entry = prompt[i]
 
         entry_result = _evaluate_single_agentic_entry(
             handler,
             index,
             model_result_list,
-            possible_answer_item,
-            test_entry,
+            possible_answer[i],
+            prompt[i],
             model_name,
             test_category,
         )
@@ -731,15 +755,13 @@ def multi_turn_runner(
     for i in range(len(model_result)):
         index = model_result[i]["id"]
         multi_turn_model_result_list = model_result[i]["result"]
-        multi_turn_ground_truth_list = possible_answer[i]["ground_truth"]
-        test_entry = prompt[i]
 
         entry_result = _evaluate_single_multi_turn_entry(
             handler,
             index,
             multi_turn_model_result_list,
-            multi_turn_ground_truth_list,
-            test_entry,
+            possible_answer[i],
+            prompt[i],
             model_name,
             test_category,
         )
@@ -777,10 +799,9 @@ def relevance_file_runner(
     for i in range(len(model_result)):
         index = model_result[i]["id"]
         model_result_item = model_result[i]["result"]
-        prompt_entry = prompt[i]
 
         entry_result = _evaluate_single_relevance_entry(
-            handler, index, model_result_item, prompt_entry, model_name, test_category
+            handler, index, model_result_item, prompt[i], model_name, test_category
         )
 
         if entry_result["valid"]:
@@ -801,9 +822,9 @@ def relevance_file_runner(
 def ast_file_runner(
     handler: BaseHandler,
     model_result,
-    prompt,
-    possible_answer,
-    test_category,
+    prompt: list[TestEntry],
+    possible_answer: list[GroundTruth],
+    category: TestCategory,
     model_name,
     score_dir,
 ):
@@ -811,32 +832,23 @@ def ast_file_runner(
         len(model_result) == len(prompt) == len(possible_answer)
     ), f"The length of the model result ({len(model_result)}) does not match the length of the prompt ({len(prompt)}) or possible answer ({len(possible_answer)}). Please check the input files for completeness."
 
-    if is_java(test_category):
-        language = Language.JAVA
-        return_format = ReturnFormat.JAVA
-    elif is_js(test_category):
-        language = Language.JAVASCRIPT
-        return_format = ReturnFormat.JAVASCRIPT
-    else:
-        language = Language.PYTHON
-        return_format = ReturnFormat.PYTHON
+    language = category.language
+    return_format = ReturnFormat(language.value)
 
     result = []
     correct_count = 0
     for i in range(len(model_result)):
         index = model_result[i]["id"]
         model_result_item = model_result[i]["result"]
-        prompt_entry = prompt[i]
-        possible_answer_item = possible_answer[i]["ground_truth"]
 
         entry_result = _evaluate_single_ast_entry(
             handler,
             index,
             model_result_item,
-            possible_answer_item,
-            prompt_entry,
+            possible_answer[i],
+            prompt[i],
             model_name,
-            test_category,
+            category,
             language=language,
             return_format=return_format,
             has_tool_call_tag=False,
@@ -851,13 +863,29 @@ def ast_file_runner(
         result,
         correct_count,
         model_result,
-        test_category,
+        category.value,
         model_name,
         score_dir,
     )
 
 
 #### Main runner function ####
+
+# Which runner scores which category. Replaces an if/elif chain whose ordering was
+# load-bearing -- geoguessr had to be tested before agentic, and vision web search
+# before web search, because the predicates were substring matches. A dict has no
+# ordering to get wrong.
+#
+# The AST and relevance strategies are dispatched separately because their runners
+# take different arguments: relevance has no ground truth, and the AST runner needs
+# the parsed category to pick a language.
+_RUNNER_BY_STRATEGY = {
+    EvalStrategy.MULTI_TURN_STATE: lambda *a: multi_turn_runner(*a),
+    EvalStrategy.SUBSTRING_ANSWER: lambda *a: agentic_runner(*a),
+    EvalStrategy.GEO_DISTANCE: lambda *a: vision_geoguessr_runner(*a),
+    EvalStrategy.FUNC_CALL_CONSTRAINT: lambda *a: failing_tools_runner(*a),
+}
+
 def evaluate_task(
     test_category,
     score_dir,
@@ -871,66 +899,29 @@ def evaluate_task(
 
     record_cost_latency(leaderboard_table, model_name, test_category, model_result)
 
+    category = TestCategory.parse(test_category)
+
     # Find the corresponding prompt entries
-    prompt = load_dataset_entry(
-        test_category, include_prereq=False, include_language_specific_hint=False
+    prompt = load_dataset_entries(
+        category, include_prereq=False, include_language_specific_hint=False
     )
 
-    if is_geoguessr(test_category):
-        possible_answer = load_ground_truth_entry(test_category)
-        if is_geoguessr_type1(test_category):
-            accuracy, total_count = vision_geoguessr_runner(
-                handler,
-                model_result,
-                prompt,
-                possible_answer,
-                model_name,
-                test_category,
-                score_dir,
-            )
-        else:
-            accuracy, total_count = agentic_runner(
-                handler,
-                model_result,
-                prompt,
-                possible_answer,
-                model_name,
-                test_category,
-                score_dir,
-            )
-
-    elif is_vision_web_search(test_category):
-        possible_answer = load_ground_truth_entry(test_category)
-
-        # Vision is using the same substring matching logic as agentic categories
-        accuracy, total_count = agentic_runner(
-            handler,
-            model_result,
-            prompt,
-            possible_answer,
-            model_name,
-            test_category,
-            score_dir,
-        )
-
-    elif is_relevance_or_irrelevance(test_category):
+    if category.ground_truth_kind is GroundTruthKind.NONE:
+        # relevance / irrelevance: scored purely on whether a call was emitted.
+        possible_answer = []
         prompt, _ = _subset_entries_by_model_ids(
             model_result, prompt, None, allow_missing=allow_missing
         )
-
-        accuracy, total_count = relevance_file_runner(
-            handler,
-            model_result,
-            prompt,
-            model_name,
-            test_category,
-            score_dir,
-        )
-
+    elif category.is_vision:
+        possible_answer = load_ground_truth_entries(category)
+        # NOTE: the vision categories deliberately skip subsetting, so --partial-eval
+        # does not apply to them and the runners' length assertion fires instead.
+        # Preserved as-is. The ground truth is now complete -- vision_base.json holds
+        # all 250 entries, restored from the `vision` branch -- so that assertion
+        # passes for every vision web-search category.
     else:
         # @HuanzhiMao TODO: check if this works for audio cases.
-        # Find the corresponding possible answer entries
-        possible_answer = load_ground_truth_entry(test_category)
+        possible_answer = load_ground_truth_entries(category)
         # Sanity: prompt and ground truth should be 1:1
         assert len(prompt) == len(
             possible_answer
@@ -940,49 +931,19 @@ def evaluate_task(
             model_result, prompt, possible_answer, allow_missing=allow_missing
         )
 
-        if is_multi_turn(test_category):
-            accuracy, total_count = multi_turn_runner(
-                handler,
-                model_result,
-                prompt,
-                possible_answer,
-                model_name,
-                test_category,
-                score_dir,
-            )
-
-        elif is_agentic(test_category):
-            accuracy, total_count = agentic_runner(
-                handler,
-                model_result,
-                prompt,
-                possible_answer,
-                model_name,
-                test_category,
-                score_dir,
-            )
-
-        elif is_failing_tools(test_category):
-            accuracy, total_count = failing_tools_runner(
-                handler,
-                model_result,
-                prompt,
-                possible_answer,
-                model_name,
-                test_category,
-                score_dir,
-            )
-        # Single turn test
-        else:
-            accuracy, total_count = ast_file_runner(
-                handler,
-                model_result,
-                prompt,
-                possible_answer,
-                test_category,
-                model_name,
-                score_dir,
-            )
+    if category.eval_strategy is EvalStrategy.RELEVANCE:
+        accuracy, total_count = relevance_file_runner(
+            handler, model_result, prompt, model_name, test_category, score_dir
+        )
+    elif category.eval_strategy is EvalStrategy.AST:
+        accuracy, total_count = ast_file_runner(
+            handler, model_result, prompt, possible_answer, category, model_name, score_dir
+        )
+    else:
+        runner_fn = _RUNNER_BY_STRATEGY[category.eval_strategy]
+        accuracy, total_count = runner_fn(
+            handler, model_result, prompt, possible_answer, model_name, test_category, score_dir
+        )
 
     record_result(leaderboard_table, model_name, test_category, accuracy, total_count)
 

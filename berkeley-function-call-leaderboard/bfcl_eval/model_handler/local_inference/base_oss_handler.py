@@ -11,11 +11,25 @@ from bfcl_eval.constants.eval_config import LOCAL_SERVER_PORT
 from bfcl_eval.model_handler.api_inference.openai_completion import (
     OpenAICompletionsHandler,
 )
+from bfcl_eval.model_handler.utils import render_messages_for_log
 from openai import OpenAI
 from overrides import EnforceOverrides, final, override
 
 
 class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
+    # vLLM's OpenAI-compatible server parses `image_url` and `input_audio` parts for
+    # every role and needs no extra flags for `data:` URLs (audio additionally needs
+    # the server installed with the `audio` extra). Which of the ~46 served models
+    # actually has an image or audio tower is decided per model by
+    # `supports_image_input` / `supports_audio_input` in model_config.py.
+    can_handle_audio_input = True
+    can_handle_image_input = True
+    # Deliberately via the inherited user-message workaround rather than an image
+    # part inside a `tool` message: vLLM forwards the part to the chat template, and
+    # whether that renders, is ignored, or hard-errors is per-template (Gemma 4
+    # renders it, Inkling rejects it). The workaround works on every vision model.
+    can_handle_image_tool_response = True
+
     def __init__(
         self,
         model_name,
@@ -249,7 +263,7 @@ class OSSHandler(OpenAICompletionsHandler, EnforceOverrides):
     def _query_FC(self, inference_data: dict):
         message: list[dict] = inference_data["message"]
         tools = inference_data["tools"]
-        inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
+        inference_data["inference_input_log"] = {"message": render_messages_for_log(message), "tools": tools}
 
         kwargs = {
             "messages": message,

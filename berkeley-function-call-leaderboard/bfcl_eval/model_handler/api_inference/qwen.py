@@ -2,7 +2,9 @@ import os
 from typing import Any
 
 from bfcl_eval.model_handler.api_inference.openai_completion import OpenAICompletionsHandler
+from bfcl_eval.model_handler.utils import render_messages_for_log
 from bfcl_eval.constants.enums import ModelStyle
+from bfcl_eval.schemas.message import Message
 from openai import OpenAI
 from overrides import override
 import time
@@ -16,6 +18,13 @@ class QwenAPIHandler(OpenAICompletionsHandler):
     So to make things simple, we will just use streaming response for all Qwen model variants.
 
     """
+
+    # DashScope's compatible mode takes both, on a VL/omni model. Audio needs an
+    # override below because its `data` field is a data URI rather than bare base64.
+    can_handle_audio_input = True
+    can_handle_image_input = True
+    # Via the inherited workaround -- a DashScope tool message content is a string.
+    can_handle_image_tool_response = True
 
     def __init__(
         self,
@@ -34,10 +43,23 @@ class QwenAPIHandler(OpenAICompletionsHandler):
     #### FC methods ####
 
     @override
+    def _render_message_content(self, message: Message) -> list[dict]:
+        """As the base, except that DashScope wants audio as a data URI.
+
+        Alibaba's own example writes `"data": f"data:;base64,{b64}"` -- with an empty
+        media type -- where OpenAI wants bare base64. `format` is still required.
+        """
+        content = super()._render_message_content(message)
+        for part in content:
+            if part.get("type") == "input_audio":
+                part["input_audio"]["data"] = f"data:;base64,{part['input_audio']['data']}"
+        return content
+
+    @override
     def _query_FC(self, inference_data: dict):
         message: list[dict] = inference_data["message"]
         tools = inference_data["tools"]
-        inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
+        inference_data["inference_input_log"] = {"message": render_messages_for_log(message), "tools": tools}
 
         return self.generate_with_backoff(
             messages=inference_data["message"],
@@ -153,6 +175,13 @@ class QwenAPIHandler(OpenAICompletionsHandler):
 
 class QwenAgentThinkHandler(OpenAICompletionsHandler):
 
+    # This one does not speak to DashScope: it drives a local vLLM through the
+    # qwen_agent client, whose quick_chat_oai path is exercised only with plain text
+    # messages here. Nothing multimodal is claimed without a way to verify it.
+    can_handle_audio_input = False
+    can_handle_image_input = False
+    can_handle_image_tool_response = False
+
     def __init__(
         self,
         model_name,
@@ -200,7 +229,7 @@ class QwenAgentThinkHandler(OpenAICompletionsHandler):
     def _query_FC(self, inference_data: dict):
         message: list[dict] = inference_data["message"]
         tools = inference_data["tools"]
-        inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
+        inference_data["inference_input_log"] = {"message": render_messages_for_log(message), "tools": tools}
 
         start_time = time.time()
         if len(tools) > 0:
@@ -261,6 +290,10 @@ class QwenAgentThinkHandler(OpenAICompletionsHandler):
 
 
 class QwenAgentNoThinkHandler(QwenAgentThinkHandler):
+
+    can_handle_audio_input = False
+    can_handle_image_input = False
+    can_handle_image_tool_response = False
 
     def __init__(
         self,

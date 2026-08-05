@@ -8,13 +8,25 @@ from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.utils import (
     convert_to_function_call,
     convert_to_tool,
+    render_messages_for_log,
     retry_with_backoff,
 )
+from bfcl_eval.schemas.entries import TestEntry
+from bfcl_eval.schemas.message import Message, Role
 from openai import OpenAI, RateLimitError
 from openai.types.responses import Response
 
 
 class OpenAIResponsesHandler(BaseHandler):
+    # The Responses input union is text / image / file -- no audio member. OpenAI's
+    # audio guide redirects to Chat Completions with an audio-capable model, and the
+    # audio models are marked "not supported" on Responses.
+    can_handle_audio_input = False
+    can_handle_image_input = True
+    # Natively, and unlike Chat Completions: `function_call_output.output` accepts a
+    # list of input_text / input_image / input_file parts.
+    can_handle_image_tool_response = True
+
     def __init__(
         self,
         model_name,
@@ -45,15 +57,11 @@ class OpenAIResponsesHandler(BaseHandler):
         return kwargs
 
     @staticmethod
-    def _substitute_prompt_role(prompts: list[dict]) -> list[dict]:
-        # OpenAI allows `system` role in the prompt, but it is meant for "messages added by OpenAI"
-        # For our use case, it is recommended to use `developer` role instead.
+    def _provider_role(message: Message) -> str:
+        # OpenAI allows `system` role in the prompt, but it is meant for "messages added
+        # by OpenAI"; for our use case `developer` is recommended instead.
         # See https://model-spec.openai.com/2025-04-11.html#definitions
-        for prompt in prompts:
-            if prompt["role"] == "system":
-                prompt["role"] = "developer"
-
-        return prompts
+        return "developer" if message.role is Role.SYSTEM else message.role.value
 
     def decode_ast(self, result, language, has_tool_call_tag):
         decoded_output = []
@@ -82,7 +90,7 @@ class OpenAIResponsesHandler(BaseHandler):
         tools = inference_data["tools"]
 
         inference_data["inference_input_log"] = {
-            "message": repr(message),
+            "message": render_messages_for_log(message),
             "tools": tools,
         }
 
@@ -113,20 +121,13 @@ class OpenAIResponsesHandler(BaseHandler):
 
         return self.generate_with_backoff(**kwargs)
 
-    def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
-        for round_idx in range(len(test_entry["question"])):
-            test_entry["question"][round_idx] = self._substitute_prompt_role(
-                test_entry["question"][round_idx]
-            )
-
+    def _pre_query_processing_FC(self, inference_data: dict, test_entry: TestEntry) -> dict:
         inference_data["message"] = []
 
         return inference_data
 
-    def _compile_tools(self, inference_data: dict, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-
-        tools = convert_to_tool(functions, GORILLA_TO_OPENAPI, self.model_style)
+    def _compile_tools(self, inference_data: dict, test_entry: TestEntry) -> dict:
+        tools = convert_to_tool(test_entry.functions, GORILLA_TO_OPENAPI, self.model_style)
 
         inference_data["tools"] = tools
 
@@ -161,31 +162,54 @@ class OpenAIResponsesHandler(BaseHandler):
             "output_token": api_response.usage.output_tokens,
         }
 
+    @staticmethod
+    def _image_part(mime_type: str, image_base64: str) -> dict:
+        # Three things differ from Chat Completions and all three are load-bearing:
+        # the part type is `input_image`, the sibling text type is `input_text`, and
+        # `image_url` is a bare string rather than an object with a `url` key.
+        #
+        # `detail` is spelled out rather than left to the API's default because the
+        # same part is used in two positions with two generated types:
+        # `ResponseInputImageParam` (message content) marks it Required, while
+        # `ResponseInputImageContentParam` (function_call_output) marks it Optional.
+        # "auto" is the value the API would have picked anyway.
+        return {
+            "type": "input_image",
+            "image_url": f"data:{mime_type};base64,{image_base64}",
+            "detail": "auto",
+        }
+
+    def _render_message_content(self, message: Message) -> list[dict]:
+        """One message as a Responses content-part list, text first.
+
+        Text leads for consistency with every other handler here, so the leaderboard
+        compares providers on the same prompt structure. The empty-text part is
+        dropped: this API has no audio input, so a content-less message can only be a
+        degenerate one, and `{"type": "input_text", "text": null}` is not valid.
+        """
+        content: list[dict] = []
+        if message.content:
+            content.append({"type": "input_text", "text": message.content})
+        content.extend(
+            self._image_part(image.mime_type, image.image_base64)
+            for image in message.images
+        )
+        return content or [{"type": "input_text", "text": message.content or ""}]
+
     def add_first_turn_message_FC(
-        self, inference_data: dict, first_turn_message: list[dict]
+        self, inference_data: dict, first_turn_message: list[Message]
     ) -> dict:
         for message in first_turn_message:
-            # @HuanzhiMao fixme, abstract
-            if "image_content" in message:
-                new_content = []
-                for image_content in message["image_content"]:
-                    new_content.append(
-                        {
-                            "type": "input_image",
-                            "image_url": f"data:{image_content['type']};base64,{image_content['image_base64']}",
-                        }
-                    )
-                new_content.append({"type": "input_text", "text": message["content"]})
-                message["content"] = new_content
-                del message["image_content"]
-            else:
-                message["content"] = [{"type": "input_text", "text": message["content"]}]
-
-        inference_data["message"].extend(first_turn_message)
+            inference_data["message"].append(
+                {
+                    "role": self._provider_role(message),
+                    "content": self._render_message_content(message),
+                }
+            )
         return inference_data
 
     def _add_next_turn_user_message_FC(
-        self, inference_data: dict, user_message: list[dict]
+        self, inference_data: dict, user_message: list[Message]
     ) -> dict:
         return self.add_first_turn_message_FC(inference_data, user_message)
 
@@ -207,25 +231,24 @@ class OpenAIResponsesHandler(BaseHandler):
         for execution_result, tool_call_id in zip(
             execution_results, model_response_data["tool_call_ids"]
         ):
-            if execution_result["result_type"] == ResultType.TEXT:
-                tool_message = {
-                    "type": "function_call_output",
-                    "call_id": tool_call_id,
-                    "output": execution_result["result"],
-                }
-            elif execution_result["result_type"] == ResultType.IMAGE:
-                image_content = execution_result["result"]
-                tool_message = {
-                    "type": "function_call_output",
-                    "call_id": tool_call_id,
-                    "output": [
-                        {
-                            "type": "input_image",
-                            "image_url": f"data:{image_content['type']};base64,{image_content['image_base64']}",
-                        }
-                    ],
-                }
+            if execution_result["result_type"] == ResultType.IMAGE:
+                image = execution_result["result"]
+                # A list of content parts is a documented `output` value here, so no
+                # placeholder-plus-user-message dance is needed.
+                output = [
+                    self._image_part(
+                        image.get("type", "image/jpeg"), image["image_base64"]
+                    )
+                ]
+            else:
+                output = execution_result["result"]
 
-            inference_data["message"].append(tool_message)
+            inference_data["message"].append(
+                {
+                    "type": "function_call_output",
+                    "call_id": tool_call_id,
+                    "output": output,
+                }
+            )
 
         return inference_data

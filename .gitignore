@@ -39,6 +39,9 @@ berkeley-function-call-leaderboard/bfcl_eval/scripts/ground_truth_conversation/
 # Ignore lock files
 berkeley-function-call-leaderboard/**/*.lock
 
+# Local-only test suite for BFCL (including its recorded golden baselines)
+berkeley-function-call-leaderboard/tests/
+
 .direnv/
 .venv
 

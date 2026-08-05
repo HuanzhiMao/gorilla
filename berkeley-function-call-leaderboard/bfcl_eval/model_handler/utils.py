@@ -13,6 +13,8 @@ from bfcl_eval.constants.enums import ModelStyle, ReturnFormat
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.parser.java_parser import parse_java_function_call
 from bfcl_eval.model_handler.parser.js_parser import parse_javascript_function_call
+from bfcl_eval.schemas.function_doc import FunctionDoc
+from bfcl_eval.schemas.message import Conversation, ImageContent, Message, Role
 from bfcl_eval.utils import *
 from openai import OpenAI
 from tenacity import (
@@ -87,8 +89,14 @@ def _cast_to_openai_type(properties, mapping):
     return properties
 
 
-def convert_to_tool(functions, mapping, model_style):
-    functions = copy.deepcopy(functions)
+def convert_to_tool(functions: list["FunctionDoc"], mapping, model_style):
+    """Render BFCL function docs into one provider's tool format.
+
+    Takes typed docs and renders them to plain dicts up front; the per-provider
+    transforms below then mutate those dicts freely without touching the entry's
+    own tool list.
+    """
+    functions = [function.to_dict() for function in functions]
     oai_tool = []
     for item in functions:
         if "." in item["name"] and model_style in [
@@ -393,30 +401,121 @@ def convert_system_prompt_into_user_prompt(prompts: list[dict]) -> list[dict]:
     return prompts
 
 
-def combine_consecutive_user_prompts(prompts: list[dict]) -> list[dict]:
+def combine_consecutive_user_prompts(prompts: list[Message]) -> list[Message]:
     """
     Some models require the prompt to be alternating between user and assistant.
     We combine consecutive user prompts into a single user prompt.
+
+    Merging carries the images and audio across too. Folding only ``content`` would
+    silently drop the picture a merged-away message was asking about -- the merge runs
+    over every turn of every entry for Claude and Nova, so a multimodal turn that
+    happens to arrive as two user messages would lose its payload with nothing failing.
     """
-    combined_prompts = []
+    combined_prompts: list[Message] = []
     for prompt in prompts:
         if (
-            prompt["role"] == "user"
+            prompt.role is Role.USER
             and combined_prompts
-            and combined_prompts[-1]["role"] == "user"
+            and combined_prompts[-1].role is Role.USER
         ):
-            combined_prompts[-1]["content"] += "\n\n" + prompt["content"]
+            previous = combined_prompts[-1]
+            texts = [text for text in (previous.content, prompt.content) if text]
+            previous.content = "\n\n".join(texts) if texts else None
+            previous.images = previous.images + prompt.images
+            # Two native-audio messages cannot be concatenated into one clip; keeping
+            # the first and refusing to pretend otherwise beats silently dropping one.
+            if previous.audio is None:
+                previous.audio = prompt.audio
+            elif prompt.audio is not None:
+                raise ValueError(
+                    "cannot merge two consecutive user messages that each carry audio: "
+                    f"{previous.audio.audio_path!r} and {prompt.audio.audio_path!r}"
+                )
+            if previous.audio_source is None:
+                previous.audio_source = prompt.audio_source
+            if previous.original_content or prompt.original_content:
+                originals = [
+                    text
+                    for text in (previous.original_content, prompt.original_content)
+                    if text
+                ]
+                previous.original_content = "\n\n".join(originals)
+            if prompt.clarifications:
+                previous.clarifications = {
+                    **(previous.clarifications or {}),
+                    **prompt.clarifications,
+                }
         else:
             combined_prompts.append(prompt)
 
     return combined_prompts
 
 
+# Anything longer than this in a rendered request is a payload, not a prompt.
+_LOG_PAYLOAD_ELISION_THRESHOLD = 512
+
+
+def _elide_payloads(value):
+    """Recursively replace binary payloads with a size marker."""
+    if isinstance(value, bytes):
+        return f"<{len(value)} bytes elided>"
+    if isinstance(value, str):
+        if len(value) > _LOG_PAYLOAD_ELISION_THRESHOLD:
+            prefix, separator, _ = value.partition(";base64,")
+            if separator:
+                return f"{prefix};base64,<{len(value)} chars elided>"
+            return f"<{len(value)} chars elided>"
+        return value
+    if isinstance(value, dict):
+        return {key: _elide_payloads(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_elide_payloads(item) for item in value]
+    if hasattr(value, "model_dump"):  # provider SDK models, e.g. Gemini's Content
+        try:
+            return {type(value).__name__: _elide_payloads(value.model_dump())}
+        except Exception:
+            return repr(value)
+    return value
+
+
+def render_messages_for_log(messages) -> str:
+    """A ``repr`` of a rendered request with the base64 taken out.
+
+    ``inference_input_log`` reprs the provider payload, which for a multimodal turn is
+    a megabyte of base64 per image and ~57KB per audio clip -- written once per step,
+    per turn, into the result file. ``base_handler`` already redacts the *entry* side
+    of the log; this is the same for the provider side.
+    """
+    return repr(_elide_payloads(messages))
+
+
+def image_content_from_execution_result(execution_result: dict) -> ImageContent:
+    """Adapt one ``ResultType.IMAGE`` execution result into an :class:`ImageContent`.
+
+    ``ImageResult.to_dict`` emits ``{"image_base64", "image_bytes", "type"}`` and no
+    path -- the image was produced by a tool at run time, not read off disk. Handlers
+    that deliver an image tool result as a user message need it in the same shape as a
+    dataset image so one rendering path serves both.
+    """
+    result = execution_result["result"]
+    return ImageContent(
+        image_path="",
+        mime_type=result.get("type", "image/jpeg"),
+        image_base64=result["image_base64"],
+        image_bytes=result["image_bytes"],
+    )
+
+
 # TODO: Re-organize this file to make it more readable and maintainable
-def extract_system_prompt(prompts: list[dict]) -> str:
+def extract_system_prompt(prompts: list[Message]) -> str | None:
+    """Remove the first system message from ``prompts`` and return its content.
+
+    Destructive by design: providers that take the system prompt in a dedicated
+    field need it gone from the message list.
+    """
     for i, prompt in enumerate(prompts):
-        if prompt["role"] == "system":
-            system_prompt = prompt["content"]
+        if prompt.role is Role.SYSTEM:
+            system_prompt = prompt.content
             del prompts[i]
             return system_prompt
     return None
@@ -567,11 +666,11 @@ def retry_with_backoff(
 
 
 def add_memory_instruction_system_prompt(
-    prompts: list[list[dict]],
+    prompts: "Conversation",
     test_category: str,
     scenario: str,
     memory_backend_instance: "MemoryAPI",
-) -> list[list[dict]]:
+) -> "Conversation":
     """
     Memory categories requires a system prompt that instructs the model on how to use the memory backend, and also provides the content in core memory (if applicable).
     The input for prompts is a list of list of dictionaries, where each outer list item represents a conversation turn, and each inner list item represents a message in that turn.
@@ -595,16 +694,13 @@ def add_memory_instruction_system_prompt(
     # System prompt must be in the first position
     # If the question comes with a system prompt, append its content at the end of the chat template.
     first_turn_prompts = prompts[0]
-    if first_turn_prompts[0]["role"] == "system":
-        first_turn_prompts[0]["content"] = (
-            system_prompt + "\n\n" + first_turn_prompts[0]["content"]
+    if first_turn_prompts and first_turn_prompts[0].role is Role.SYSTEM:
+        first_turn_prompts[0].content = (
+            system_prompt + "\n\n" + (first_turn_prompts[0].content or "")
         )
     # Otherwise, use the system prompt template to create a new system prompt.
     else:
-        first_turn_prompts.insert(
-            0,
-            {"role": "system", "content": system_prompt},
-        )
+        first_turn_prompts.insert(0, Message(role=Role.SYSTEM, content=system_prompt))
 
     return prompts
 
@@ -613,30 +709,55 @@ def add_memory_instruction_system_prompt(
 # Utils for Audio
 
 def extract_clarification_context(
-        turn_messages: list[dict],
+        turn_messages: list[Message],
     ) -> tuple[dict, str, str]:
     """
-    Extract and remove clarification metadata from the last message in the turn.
+    Read the clarification metadata off the last message in the turn.
 
-    These fields are test-harness metadata that should not be forwarded to the
-    model, so they are popped in place.
+    Non-destructive. It used to clear the fields in place "so they are not forwarded
+    to the model", but handlers build their payload from ``role``/``content``/
+    ``images``/``audio`` and never look at these, so nothing was being prevented --
+    while the clearing meant the *second* step of a turn saw an empty
+    ``allowed_clarifications`` and could never approve a follow-up clarification. This
+    is called once per step, so it has to be a pure read.
+
+    ``original_user_request`` falls back to the audio sidecar's ground-truth
+    transcript. Only ``true_audio`` can reach that fallback, since ``text_audio``
+    always has ``original_content`` -- and today it yields nothing there either,
+    because ``process_audio_test_case`` deletes ``transcript`` before the typed parse.
+    It is written for the loader the audio corpus needs rather than the one it has;
+    ``AudioSource`` already models the field.
 
     Returns:
         (allowed_clarifications, original_user_request, asr_output)
     """
     last_message = turn_messages[-1]
-    allowed_clarifications = last_message.pop("clarifications", {})
-    original_user_request = last_message.pop("original_content", "")
-    asr_output = last_message.get("content", "")
+    allowed_clarifications = last_message.clarifications or {}
+    original_user_request = last_message.original_content or ""
+    if not original_user_request and last_message.audio_source is not None:
+        original_user_request = last_message.audio_source.transcript or ""
+    # `true_audio` shows the model no transcript at all -- it hears the recording -- so
+    # this is "" and `check_for_clarification` declines up front. That is deliberate:
+    # the judge prompt is written around comparing an ASR transcript against the
+    # intended request, and for native audio there is no transcript to compare.
+    asr_output = last_message.content or ""
     return allowed_clarifications, original_user_request, asr_output
-    
+
+
 def check_for_clarification(
     model_response: str,
     allowed_clarifications: dict[str, str],
     original_user_request: str,
     asr_output: str,
 ) -> tuple[bool, str]:
-    if not original_user_request or not asr_output:
+    # `allowed_clarifications` is checked first, and it is the load-bearing one: rule 3
+    # of the judge prompt below requires every topic the assistant asks about to appear
+    # in it, so with an empty dict the verdict is `allowed=false` by construction. The
+    # call was being made anyway -- one paid o3 request per tool-call-free step, on
+    # every audio entry, to learn nothing. It also made an OpenAI key a hard
+    # requirement for evaluating a self-hosted model on the audio categories, since
+    # this constructor raises when the key is absent.
+    if not allowed_clarifications or not original_user_request or not asr_output:
         return False, ""
 
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))

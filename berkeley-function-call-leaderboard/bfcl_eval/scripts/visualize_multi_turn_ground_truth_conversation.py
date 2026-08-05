@@ -3,9 +3,9 @@ from copy import deepcopy
 
 from bfcl_eval._llm_response_generation import parse_test_category_argument
 from bfcl_eval.constants.eval_config import UTILS_PATH
+from bfcl_eval.dataset_loader import load_dataset_entries
 from bfcl_eval.utils import (
     write_list_of_dicts_to_file,
-    load_dataset_entry,
     load_ground_truth_entry,
 )
 from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
@@ -13,10 +13,10 @@ from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     execute_multi_turn_func_call,
 )
 from bfcl_eval.constants.category_mapping import TEXT_MULTI_TURN_CATEGORY
-test_categories_total = parse_test_category_argument(["text_multi_turn"])
+test_categories_total = parse_test_category_argument(["text:multi_turn"])
 
 for test_category in test_categories_total:
-    dataset_data = load_dataset_entry(test_category)
+    dataset_data = [entry.to_dict() for entry in load_dataset_entries(test_category)]
     ground_truth_data = load_ground_truth_entry(test_category)
 
     result = []

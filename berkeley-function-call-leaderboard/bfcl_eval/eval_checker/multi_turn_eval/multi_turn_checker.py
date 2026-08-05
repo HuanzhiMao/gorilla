@@ -5,6 +5,8 @@ from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     execute_multi_turn_func_call,
     is_empty_execute_response,
 )
+from bfcl_eval.schemas.entries import TestEntry
+from bfcl_eval.schemas.ground_truth import CallConstraintGroundTruth
 
 #### Main functions ####
 
@@ -12,19 +14,23 @@ from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
 def multi_turn_checker(
     multi_turn_model_result_list_decoded: list[list[list[str]]],
     multi_turn_ground_truth_list: list[list[str]],
-    test_entry: dict,
-    test_category: str,
+    test_entry: TestEntry,
     model_name: str,
 ) -> dict:
     """
     The main function that checks the correctness of the model's function call execution.
     """
 
-    initial_config: dict = test_entry["initial_config"]
-    involved_classes: list = test_entry["involved_classes"]
-    test_entry_id: str = test_entry["id"]
-    test_category: str = test_entry_id.rsplit("_", 1)[0]
-    failure_injection: list | None = test_entry.get("failure_injection")
+    environment = test_entry.environment
+    initial_config: dict = environment.initial_config
+    involved_classes: list = environment.involved_classes
+    test_entry_id: str = test_entry.id
+    # The entry knows its own category; this used to be re-derived from the id, which
+    # silently shadowed the caller's `test_category` argument.
+    test_category: str = test_entry.category.value
+    failure_injection = (
+        [injection.to_dict() for injection in environment.failure_injections] or None
+    )
     execution_results: list[dict] = []
     all_turn_model_execution_results: list[dict] = []
 
@@ -329,7 +335,7 @@ def _is_subsequence_unordered(list1, list2) -> tuple[bool, list]:
 
 def multi_turn_func_call_constraint_checker(
     multi_turn_model_result_list_decoded: list[list[list[str]]],
-    ground_truth: dict,
+    ground_truth: CallConstraintGroundTruth,
 ) -> dict:
     """
     Checks the model's function calls against must_be_called and must_not_be_called constraints.
@@ -337,21 +343,20 @@ def multi_turn_func_call_constraint_checker(
     Args:
         multi_turn_model_result_list_decoded: The decoded model responses across turns.
             Structure: list[turns] -> list[steps] -> list[func_call_strings]
-        ground_truth: A dict with keys:
-            - "must_be_called_functions": list of lists of function specs. Each inner list
-              must appear as an ordered subsequence of the model calls (other calls allowed
-              in between). The outer list has no ordering requirement across inner lists.
-            - "must_not_be_called_functions": list of lists of function specs. For each
-              inner list, none of its specs may appear in the model calls. The outer list
-              has no ordering requirement across inner lists.
+        ground_truth: carries two groups of function specs.
+            - `must_be_called`: each inner list must appear as an ordered subsequence
+              of the model calls (other calls allowed in between). The outer list has
+              no ordering requirement across inner lists.
+            - `must_not_be_called`: for each inner list, none of its specs may appear
+              in the model calls. The outer list has no ordering requirement.
 
     Each function spec is either:
         - "ClassName.method_name" — only checks that the method was called (args ignored)
         - "ClassName.method_name(arg1=val1, arg2=val2)" — checks that the method was called
           with at least the listed arguments matching the listed values (extra args are ok)
     """
-    must_be_called_groups = ground_truth.get("must_be_called_functions", [])
-    must_not_be_called_groups = ground_truth.get("must_not_be_called_functions", [])
+    must_be_called_groups = ground_truth.must_be_called
+    must_not_be_called_groups = ground_truth.must_not_be_called
 
     # Flatten all model function calls across turns and steps into a single ordered list
     all_model_calls = []

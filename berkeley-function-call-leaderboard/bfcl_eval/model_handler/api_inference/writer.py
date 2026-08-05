@@ -12,6 +12,15 @@ from writerai import Writer
 
 
 class WriterHandler(OpenAICompletionsHandler):
+    # Writer's chat API documents image input and nothing audio-shaped.
+    can_handle_audio_input = False
+    # `image_url` is an object holding only `url` -- which is what the inherited
+    # renderer emits, since it never sets `detail`.
+    can_handle_image_input = True
+    # Undocumented for tool messages, so the inherited workaround is used; it relies
+    # only on features Writer does document.
+    can_handle_image_tool_response = True
+
     def __init__(
         self,
         model_name,

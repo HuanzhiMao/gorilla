@@ -13,12 +13,24 @@ from bfcl_eval.model_handler.utils import (
     convert_to_function_call,
     convert_to_tool,
     extract_system_prompt,
+    render_messages_for_log,
     retry_with_backoff,
 )
 from bfcl_eval.utils import contain_multi_step_interaction
+from bfcl_eval.schemas.entries import TestEntry
+from bfcl_eval.schemas.message import Message
 
 
 class ClaudeHandler(BaseHandler):
+    # The Messages API has no audio content block at all -- the request-side block
+    # union is text / image / document / search_result / thinking / tool_* -- and the
+    # installed anthropic SDK ships no audio type either. Documents are PDF and plain
+    # text only, so there is no back door for an mp3.
+    can_handle_audio_input = False
+    can_handle_image_input = True
+    # Natively: `tool_result.content` accepts a list of image blocks.
+    can_handle_image_tool_response = True
+
     def __init__(
         self,
         model_name,
@@ -69,7 +81,7 @@ class ClaudeHandler(BaseHandler):
 
     def _query_FC(self, inference_data: dict):
         inference_data["inference_input_log"] = {
-            "message": repr(inference_data["message"]),
+            "message": render_messages_for_log(inference_data["message"]),
             "tools": inference_data["tools"],
             "system_prompt": inference_data.get("system_prompt", []),
         }
@@ -81,15 +93,22 @@ class ClaudeHandler(BaseHandler):
                 inference_data["system_prompt"][0]["cache_control"] = {"type": "ephemeral"}
             # Only add cache control to the last two user messages
             # Remove previously set cache control flags from all user messages except the last two
+            #
+            # The breakpoint goes on the LAST block of the message, not the first: a
+            # cache_control marker ends the cached prefix at that block, so marking
+            # block 0 of a multi-block message leaves everything after it out of the
+            # cache -- which for a vision turn is the image, i.e. the only part
+            # expensive enough to be worth caching.
             count = 0
             for message in reversed(messages):
-                if message["role"] == "user":
-                    if count < 2:
-                        message["content"][0]["cache_control"] = {"type": "ephemeral"}
-                    else:
-                        if "cache_control" in message["content"][0]:
-                            del message["content"][0]["cache_control"]
-                    count += 1
+                if message["role"] != "user":
+                    continue
+                blocks = [block for block in message["content"] if isinstance(block, dict)]
+                for block in blocks:
+                    block.pop("cache_control", None)
+                if count < 2 and blocks:
+                    blocks[-1]["cache_control"] = {"type": "ephemeral"}
+                count += 1
 
         kwargs = {
             "model": self.model_name,
@@ -117,28 +136,21 @@ class ClaudeHandler(BaseHandler):
     def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
         inference_data["message"] = []
         # Claude takes in system prompt in a specific field, not in the message field, so we don't need to add it to the message
-        system_prompt = extract_system_prompt(test_entry["question"][0])
+        system_prompt = extract_system_prompt(test_entry.conversation[0])
         if system_prompt is not None:
             system_prompt = [{"type": "text", "text": system_prompt}]
             inference_data["system_prompt"] = system_prompt
 
-        for round_idx in range(len(test_entry["question"])):
-            test_entry["question"][round_idx] = combine_consecutive_user_prompts(
-                test_entry["question"][round_idx]
-            )
+        test_entry.conversation.map_turns(combine_consecutive_user_prompts)
 
-        test_entry_id: str = test_entry["id"]
-        test_category: str = test_entry_id.rsplit("_", 1)[0]
         # caching enabled only for multi_turn category
-        caching_enabled: bool = contain_multi_step_interaction(test_category)
+        caching_enabled: bool = test_entry.category.contains_multi_step_interaction
         inference_data["caching_enabled"] = caching_enabled
 
         return inference_data
 
-    def _compile_tools(self, inference_data: dict, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-
-        tools = convert_to_tool(functions, GORILLA_TO_OPENAPI, self.model_style)
+    def _compile_tools(self, inference_data: dict, test_entry: TestEntry) -> dict:
+        tools = convert_to_tool(test_entry.functions, GORILLA_TO_OPENAPI, self.model_style)
 
         if inference_data["caching_enabled"] and len(tools) > 0:
             # Add the cache control flag to the last tool
@@ -172,33 +184,50 @@ class ClaudeHandler(BaseHandler):
             "output_token": api_response.usage.output_tokens,
         }
 
+    @staticmethod
+    def _image_block(image) -> dict:
+        return {
+            "type": "image",
+            "source": {
+                "type": "base64",
+                # A bare base64 payload -- no `data:` URL prefix, unlike OpenAI's.
+                "data": image.image_base64,
+                "media_type": image.mime_type,
+            },
+        }
+
+    def _render_message_content(self, message: Message) -> list[dict]:
+        """One message as a list of Anthropic content blocks.
+
+        The text block is emitted only when there is text: ``{"type": "text",
+        "text": null}`` passes through the SDK untouched and is rejected by the API.
+
+        Anthropic's vision guide prefers images *before* text. We keep text first
+        anyway, so that every provider in the leaderboard receives the same prompt
+        structure -- the docs call the difference a soft preference ("images placed
+        after text ... still perform well"), and a cross-provider benchmark is worth
+        more than a per-provider micro-optimisation.
+        """
+        content: list[dict] = []
+        if message.content:
+            content.append({"type": "text", "text": message.content})
+        content.extend(self._image_block(image) for image in message.images)
+        return content or [{"type": "text", "text": message.content or ""}]
+
     def add_first_turn_message_FC(
-        self, inference_data: dict, first_turn_message: list[dict]
+        self, inference_data: dict, first_turn_message: list[Message]
     ) -> dict:
         for message in first_turn_message:
-            if "image_content" in message:
-                new_content = []
-                new_content.append({"type": "text", "text": message["content"]})
-                for image_content in message["image_content"]:
-                    new_content.append(
-                        {
-                            "type": "image",
-                            "source": {
-                                "type": "base64",
-                                "data": image_content["image_base64"],
-                                "media_type": image_content["type"],
-                            },
-                        }
-                    )
-                del message["image_content"]
-                message["content"] = new_content
-            else:
-                message["content"] = [{"type": "text", "text": message["content"]}]
-            inference_data["message"].append(message)
+            inference_data["message"].append(
+                {
+                    "role": message.role.value,
+                    "content": self._render_message_content(message),
+                }
+            )
         return inference_data
 
     def _add_next_turn_user_message_FC(
-        self, inference_data: dict, user_message: list[dict]
+        self, inference_data: dict, user_message: list[Message]
     ) -> dict:
         return self.add_first_turn_message_FC(inference_data, user_message)
 

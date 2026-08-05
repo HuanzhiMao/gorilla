@@ -26,6 +26,9 @@ from bfcl_eval.eval_checker.eval_runner_helper import load_file
 from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import load_all_server_patches
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.local_inference.base_oss_handler import OSSHandler
+from bfcl_eval.dataset_loader import load_dataset_entries
+from bfcl_eval.schemas.entries import TestEntry
+from bfcl_eval.schemas.results import ModelResultEntry
 from bfcl_eval.utils import *
 from tqdm import tqdm
 
@@ -134,7 +137,7 @@ def get_involved_test_entries(test_category_args, run_ids):
     else:
         all_test_categories = parse_test_category_argument(test_category_args)
         for test_category in all_test_categories:
-            all_test_entries_involved.extend(load_dataset_entry(test_category))
+            all_test_entries_involved.extend(load_dataset_entries(test_category))
 
     return (
         all_test_categories,
@@ -191,12 +194,12 @@ def collect_test_cases(
                     # It's not implemented yet, but it won't affect the accuracy, as those files will be overwritten anyway (assume generation success)
                     pass
 
-    existing_ids = [entry["id"] for entry in existing_result]
+    existing_ids = {entry["id"] for entry in existing_result}
 
     test_cases_to_generate = [
         test_case
         for test_case in all_test_entries_involved
-        if test_case["id"] not in existing_ids
+        if test_case.id not in existing_ids
     ]
 
     test_cases_to_generate = clean_up_memory_prereq_entries(test_cases_to_generate)
@@ -211,9 +214,11 @@ def collect_test_cases(
     return sorted(test_cases_to_generate, key=sort_key)
 
 
-def multi_threaded_inference(handler, test_case, include_input_log, exclude_state_log):
+def multi_threaded_inference(
+    handler, test_case: TestEntry, include_input_log, exclude_state_log
+) -> ModelResultEntry:
 
-    assert type(test_case["function"]) is list
+    assert isinstance(test_case.functions, list)
 
     try:
         result, metadata = handler.inference(
@@ -227,7 +232,7 @@ def multi_threaded_inference(handler, test_case, include_input_log, exclude_stat
         error_block = (
             "-" * 100
             + "\n❗️❗️ Error occurred during inference. Continuing to next test case.\n"
-            + f"❗️❗️ Test case ID: {test_case['id']}, Error: {str(e)}\n"
+            + f"❗️❗️ Test case ID: {test_case.id}, Error: {str(e)}\n"
             + traceback.format_exc(limit=10)
             + "-" * 100
         )
@@ -236,13 +241,7 @@ def multi_threaded_inference(handler, test_case, include_input_log, exclude_stat
         result = f"Error during inference: {str(e)}"
         metadata = {"traceback": traceback.format_exc()}
 
-    result_to_write = {
-        "id": test_case["id"],
-        "result": result,
-        **metadata,
-    }
-
-    return result_to_write
+    return ModelResultEntry.from_inference(test_case.id, result, metadata)
 
 
 def generate_results(args: Args, model_name, test_cases_total):
@@ -298,15 +297,14 @@ def generate_results(args: Args, model_name, test_cases_total):
 
         # ───── dependency bookkeeping ──────────────────────────────
         dependencies = {
-            test_case["id"]: set(test_case.get("depends_on", []))
-            for test_case in test_cases_total
+            test_case.id: set(test_case.depends_on) for test_case in test_cases_total
         }
         children_of = defaultdict(list)
         for test_case in test_cases_total:
-            for dependency_id in test_case.get("depends_on", []):
-                children_of[dependency_id].append(test_case["id"])
+            for dependency_id in test_case.depends_on:
+                children_of[dependency_id].append(test_case.id)
 
-        id_to_test_case = {test_case["id"]: test_case for test_case in test_cases_total}
+        id_to_test_case = {test_case.id: test_case for test_case in test_cases_total}
 
         ready_queue = [
             (sort_key(id_to_test_case[test_case_id]), test_case_id)
@@ -422,16 +420,34 @@ def main(args: Args):
     else:
         tqdm.write(f"Running full test cases for categories: {all_test_categories}.")
 
+    # Each rule needs BOTH halves to agree: the model has to understand the modality
+    # (`supports_*` on its registry row) and its handler has to be able to put that
+    # modality on the wire (`can_handle_*` on the handler class). Checking only the
+    # first would hand an image to a handler that silently drops it; checking only the
+    # second would send one to a text-only model behind a multimodal protocol.
     skip_rules = [
         (
             contain_native_audio_input,
-            lambda cfg: not cfg.supports_audio_input,
+            lambda cfg: not (
+                cfg.supports_audio_input and cfg.model_handler.can_handle_audio_input
+            ),
             "`True audio` test cases are only supported for models that support native audio input.",
         ),
         (
             contain_vision_input,
-            lambda cfg: not cfg.supports_image_input,
+            lambda cfg: not (
+                cfg.supports_image_input and cfg.model_handler.can_handle_image_input
+            ),
             "`Vision` test cases are only supported for models that support vision/image input.",
+        ),
+        (
+            contain_image_tool_response,
+            lambda cfg: not (
+                cfg.supports_image_input
+                and cfg.model_handler.can_handle_image_tool_response
+            ),
+            "Test cases whose tools return images are only supported for models whose "
+            "handler can deliver an image as a tool result.",
         ),
     ]
     for category_check, should_skip, reason in skip_rules:
@@ -464,7 +480,7 @@ def main(args: Args):
                 model_test_entries = [
                     entry
                     for entry in model_test_entries
-                    if not category_check(entry["id"])
+                    if not category_check(entry.id)
                 ]
 
         test_cases_total = collect_test_cases(

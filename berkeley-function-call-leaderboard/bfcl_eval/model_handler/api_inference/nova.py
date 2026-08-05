@@ -11,11 +11,23 @@ from bfcl_eval.model_handler.utils import (
     convert_to_function_call,
     convert_to_tool,
     extract_system_prompt,
+    render_messages_for_log,
     retry_with_backoff,
 )
+from bfcl_eval.schemas.entries import TestEntry
+from bfcl_eval.schemas.message import Message
 
 
 class NovaHandler(BaseHandler):
+    # Converse does define an `audio` content block (mp3 among its formats) and boto3
+    # will serialize one happily -- but no Nova model accepts it. Nova's speech support
+    # is Nova Sonic, which is a separate bidirectional-streaming API, not Converse. So
+    # the handler declines rather than sending a block that is only schema-valid.
+    can_handle_audio_input = False
+    can_handle_image_input = True
+    # Natively: `toolResult.content` takes the same image block a user message does.
+    can_handle_image_tool_response = True
+
     def __init__(
         self,
         model_name,
@@ -60,7 +72,7 @@ class NovaHandler(BaseHandler):
             system_prompt = []
 
         inference_data["inference_input_log"] = {
-            "message": repr(message),
+            "message": render_messages_for_log(message),
             "tools": tools,
             "system_prompt": system_prompt,
         }
@@ -82,23 +94,18 @@ class NovaHandler(BaseHandler):
         return self.generate_with_backoff(**kwargs)
 
     def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
-        for round_idx in range(len(test_entry["question"])):
-            test_entry["question"][round_idx] = combine_consecutive_user_prompts(
-                test_entry["question"][round_idx]
-            )
+        test_entry.conversation.map_turns(combine_consecutive_user_prompts)
 
         inference_data["message"] = []
 
-        system_prompt = extract_system_prompt(test_entry["question"][0])
+        system_prompt = extract_system_prompt(test_entry.conversation[0])
         if system_prompt:
             inference_data["system_prompt"] = [{"text": system_prompt}]
 
         return inference_data
 
-    def _compile_tools(self, inference_data: dict, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-
-        tools = convert_to_tool(functions, GORILLA_TO_OPENAPI, self.model_style)
+    def _compile_tools(self, inference_data: dict, test_entry: TestEntry) -> dict:
+        tools = convert_to_tool(test_entry.functions, GORILLA_TO_OPENAPI, self.model_style)
 
         inference_data["tools"] = tools
 
@@ -134,29 +141,42 @@ class NovaHandler(BaseHandler):
             "output_token": api_response["usage"]["outputTokens"],
         }
 
+    @staticmethod
+    def _image_block(mime_type: str, image_bytes: bytes) -> dict:
+        return {
+            "image": {
+                # Converse wants a bare format token ("jpeg"), not a mime type.
+                "format": mime_type.split("/")[-1],
+                # Raw bytes: botocore base64-encodes the blob on the way out.
+                "source": {"bytes": image_bytes},
+            }
+        }
+
+    def _render_message_content(self, message: Message) -> list[dict]:
+        """One message as Converse content blocks.
+
+        botocore validates client-side, so a ``{"text": None}`` block never reaches
+        AWS -- it raises ParamValidationError locally instead. Omit it when empty.
+        """
+        content: list[dict] = []
+        if message.content:
+            content.append({"text": message.content})
+        content.extend(
+            self._image_block(image.mime_type, image.image_bytes)
+            for image in message.images
+        )
+        return content or [{"text": message.content or ""}]
+
     def add_first_turn_message_FC(
-        self, inference_data: dict, first_turn_message: list[dict]
+        self, inference_data: dict, first_turn_message: list[Message]
     ) -> dict:
         for message in first_turn_message:
-            if "image_content" in message:
-                new_content = []
-                new_content.append({"text": message["content"]})
-                for image_content in message["image_content"]:
-                    new_content.append(
-                        {
-                            "image": {
-                                "format": image_content["type"].split("/")[-1],
-                                "source": {"bytes": image_content["image_bytes"]},
-                            }
-                        }
-                    )
-                del message["image_content"]
-                message["content"] = new_content
-            else:
-                message["content"] = [{"text": message["content"]}]
-            inference_data["message"].append(message)
-
-        inference_data["message"].extend(first_turn_message)
+            inference_data["message"].append(
+                {
+                    "role": message.role.value,
+                    "content": self._render_message_content(message),
+                }
+            )
         return inference_data
 
     def _add_next_turn_user_message_FC(
@@ -196,23 +216,15 @@ class NovaHandler(BaseHandler):
                     }
                 )
             elif execution_result["result_type"] == ResultType.IMAGE:
+                image = execution_result["result"]
                 tool_message["content"].append(
                     {
                         "toolResult": {
                             "toolUseId": tool_call_id,
                             "content": [
-                                {
-                                    "image": {
-                                        "format": execution_result["result"]["type"].split(
-                                            "/"
-                                        )[-1],
-                                        "source": {
-                                            "bytes": execution_result["result"][
-                                                "image_bytes"
-                                            ]
-                                        },
-                                    }
-                                }
+                                self._image_block(
+                                    image.get("type", "image/jpeg"), image["image_bytes"]
+                                )
                             ],
                         }
                     }

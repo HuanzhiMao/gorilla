@@ -306,6 +306,8 @@ api_inference_model_map = {
         license="Proprietary",
         model_handler=GeminiHandler,
         underscore_to_dot=True,
+        supports_image_input=True,
+        supports_audio_input=True,
     ),
     "gemini-3.5-flash": ModelConfig(
         model_name="gemini-3.5-flash",
@@ -317,6 +319,8 @@ api_inference_model_map = {
         input_price=0.5,
         output_price=3,
         underscore_to_dot=True,
+        supports_image_input=True,
+        supports_audio_input=True,
     ),
     "gemini-3.1-pro-preview": ModelConfig(
         model_name="gemini-3.1-pro-preview",
@@ -329,6 +333,7 @@ api_inference_model_map = {
         output_price=12,
         underscore_to_dot=True,
         supports_image_input=True,
+        supports_audio_input=True,
     ),
     # @HuanzhiMao FIXME: check if this is still available
     "palmyra-x5": ModelConfig(
@@ -339,6 +344,10 @@ api_inference_model_map = {
         license="Proprietary",
         model_handler=WriterHandler,
         underscore_to_dot=True,
+        # Writer's "chat with images" guide uses palmyra-x5 by name and gives the
+        # base64 data-URI recipe; the SDK's own docstring says the mixed-content image
+        # fragment "is only supported with the Palmyra X5 model". No audio.
+        supports_image_input=True,
     ),
     # Grok 4.5 exposes reasoning effort (low/medium/high) on a single model string;
     # we run it at xAI's default effort (high).
@@ -1043,9 +1052,12 @@ local_inference_model_map = {
     # (`thinkingmachines/Inkling-Small-NVFP4`, ~180GB) -- point `--local-model-path` at it
     # to reproduce on one node. The 975B Inkling is past the self-hosting line.
     #
-    # `supports_audio_input` describes the model, as it does for the gemma-4 entries;
-    # OSSHandler still inherits `can_handle_audio_input = False`, so that is what actually
-    # gates whether the audio categories run.
+    # `supports_audio_input` describes the model, as it does for the gemma-4 entries.
+    # It is one half of the gate: `skip_rules` in `_llm_response_generation.py` runs the
+    # audio categories only when this is True *and* the handler declares
+    # `can_handle_audio_input`. OSSHandler declares it, because vLLM's OpenAI-compatible
+    # server accepts `input_audio` content parts -- so for OSS models this flag is what
+    # decides.
     "thinkingmachines/Inkling-Small": OSSModelConfig(
         model_name="thinkingmachines/Inkling-Small",
         display_name="Inkling-Small",

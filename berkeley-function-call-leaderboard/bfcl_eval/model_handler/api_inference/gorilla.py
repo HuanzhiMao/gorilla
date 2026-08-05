@@ -6,9 +6,18 @@ import requests
 from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.constants.enums import ModelStyle
 from bfcl_eval.model_handler.utils import ast_parse
+from bfcl_eval.schemas.entries import TestEntry
+from bfcl_eval.schemas.message import Message
 
 
 class GorillaHandler(BaseHandler):
+    # Gorilla OpenFunctions is a text-in/text-out function-calling model served over a
+    # plain JSON endpoint: messages are `{"role", "content"}` with a string body, and
+    # there is no content-part vocabulary to carry anything else.
+    can_handle_audio_input = False
+    can_handle_image_input = False
+    can_handle_image_tool_response = False
+
     def __init__(
         self,
         model_name,
@@ -67,9 +76,9 @@ class GorillaHandler(BaseHandler):
         inference_data["message"] = []
         return inference_data
 
-    def _compile_tools(self, inference_data: dict, test_entry: dict) -> dict:
+    def _compile_tools(self, inference_data: dict, test_entry: TestEntry) -> dict:
         # Gorilla OpenFunctions does not require any pre-processing
-        inference_data["tools"] = test_entry["function"]
+        inference_data["tools"] = [doc.to_dict() for doc in test_entry.functions]
 
         return inference_data
 
@@ -82,16 +91,20 @@ class GorillaHandler(BaseHandler):
         }
 
     def add_first_turn_message_FC(
-        self, inference_data: dict, first_turn_message: list[dict]
+        self, inference_data: dict, first_turn_message: list[Message]
     ) -> dict:
-        inference_data["message"].extend(first_turn_message)
+        # Text only, and `content` is never None here: the base handler refuses a turn
+        # carrying audio or images before it reaches this method.
+        inference_data["message"].extend(
+            {"role": message.role.value, "content": message.content or ""}
+            for message in first_turn_message
+        )
         return inference_data
 
     def _add_next_turn_user_message_FC(
-        self, inference_data: dict, user_message: list[dict]
+        self, inference_data: dict, user_message: list[Message]
     ) -> dict:
-        inference_data["message"].extend(user_message)
-        return inference_data
+        return self.add_first_turn_message_FC(inference_data, user_message)
 
     def _add_assistant_message_FC(
         self, inference_data: dict, model_response_data: dict
