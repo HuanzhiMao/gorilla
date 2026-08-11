@@ -109,11 +109,6 @@ Here is the content of your memory system from previous interactions:
 
 VISION_TOOL_RESPONSE_TEXT_PROMPT = "This tool returns an image as its response. The image will be provided in the next user message."
 
-# Opening line of the synthetic user message that carries images a tool returned, for
-# providers whose tool-result message may only contain text (OpenAI Chat Completions
-# and everything that speaks its protocol). Per-image sentences are appended to it.
-VISION_TOOL_RESPONSE_USER_MESSAGE_PREFIX = "The user gives no new instructions. "
-
 
 
 #### Audio Prompts ####

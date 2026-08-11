@@ -3,10 +3,7 @@ import os
 import time
 from typing import Any
 
-from bfcl_eval.constants.default_prompts import (
-    VISION_TOOL_RESPONSE_TEXT_PROMPT,
-    VISION_TOOL_RESPONSE_USER_MESSAGE_PREFIX,
-)
+from bfcl_eval.constants.default_prompts import VISION_TOOL_RESPONSE_TEXT_PROMPT
 from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
@@ -225,7 +222,7 @@ class OpenAICompletionsHandler(BaseHandler):
         # image tool result is delivered in two parts: a text placeholder that closes
         # out the tool_call_id, and one trailing user message carrying every image
         # produced this round.
-        image_note = VISION_TOOL_RESPONSE_USER_MESSAGE_PREFIX
+        image_note = ""
         tool_response_images: list[ImageContent] = []
 
         # Add the execution results to the current round result, one at a time

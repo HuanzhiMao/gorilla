@@ -5,10 +5,7 @@ import time
 from typing import Any
 
 import cohere
-from bfcl_eval.constants.default_prompts import (
-    VISION_TOOL_RESPONSE_TEXT_PROMPT,
-    VISION_TOOL_RESPONSE_USER_MESSAGE_PREFIX,
-)
+from bfcl_eval.constants.default_prompts import VISION_TOOL_RESPONSE_TEXT_PROMPT
 from bfcl_eval.constants.enums import ModelStyle, ResultType
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
 from bfcl_eval.model_handler.base_handler import BaseHandler
@@ -201,7 +198,7 @@ class CohereHandler(BaseHandler):
             execution_results
         ), "Number of execution result must match number of tool calls from last turn!"
 
-        image_note = VISION_TOOL_RESPONSE_USER_MESSAGE_PREFIX
+        image_note = ""
         tool_response_images: list[ImageContent] = []
 
         for tool_call, execution_result in zip(tool_calls, execution_results):
