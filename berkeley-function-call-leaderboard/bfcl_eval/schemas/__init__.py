@@ -15,12 +15,13 @@ from bfcl_eval.schemas.category import (
     CATEGORY_SPECS,
     CategoryFamily,
     CategorySpec,
+    AST_STRATEGIES,
     EvalStrategy,
     TestCategory,
     all_categories,
 )
 from bfcl_eval.schemas.entries import (
-    AgenticTestEntry,
+    FreeTextAnswerTestEntry,
     AstTestEntry,
     FailingToolsTestEntry,
     MemoryPrereqTestEntry,
@@ -76,11 +77,12 @@ __all__ = [
     "CATEGORY_SPECS",
     "CategoryFamily",
     "CategorySpec",
+    "AST_STRATEGIES",
     "EvalStrategy",
     "TestCategory",
     "all_categories",
     # entries
-    "AgenticTestEntry",
+    "FreeTextAnswerTestEntry",
     "AstTestEntry",
     "FailingToolsTestEntry",
     "MemoryPrereqTestEntry",

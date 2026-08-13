@@ -145,7 +145,6 @@ class WalmartAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -170,7 +169,6 @@ class WalmartAPI(PatchableMixin):
         self.competitor_prices = scenario.get("competitor_prices", DEFAULT_STATE_COPY["competitor_prices"])
         self.price_match_requests = scenario.get("price_match_requests", DEFAULT_STATE_COPY["price_match_requests"])
         self.auto_reorders = scenario.get("auto_reorders", DEFAULT_STATE_COPY["auto_reorders"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, WalmartAPI):

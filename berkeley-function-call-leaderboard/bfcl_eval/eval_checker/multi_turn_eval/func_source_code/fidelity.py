@@ -110,7 +110,6 @@ class FidelityAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -130,7 +129,6 @@ class FidelityAPI(PatchableMixin):
         self.baskets = scenario.get("baskets", DEFAULT_STATE_COPY["baskets"])
         self.stock_alerts = scenario.get("stock_alerts", DEFAULT_STATE_COPY["stock_alerts"])
         self.research_reports = scenario.get("research_reports", DEFAULT_STATE_COPY["research_reports"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, FidelityAPI):

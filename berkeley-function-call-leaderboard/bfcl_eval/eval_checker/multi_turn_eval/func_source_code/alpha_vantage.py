@@ -95,7 +95,6 @@ class AlphaVantageAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         default_state = deepcopy(DEFAULT_STATE)
         self._rng = random.Random(
@@ -121,7 +120,6 @@ class AlphaVantageAPI(PatchableMixin):
         self.economic_indicators = scenario.get(
             "economic_indicators", default_state["economic_indicators"]
         )
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, AlphaVantageAPI):

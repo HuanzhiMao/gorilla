@@ -139,7 +139,6 @@ class InstacartAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -165,7 +164,6 @@ class InstacartAPI(PatchableMixin):
         self.issues = scenario.get("issues", DEFAULT_STATE_COPY["issues"])
         self.recipes = scenario.get("recipes", DEFAULT_STATE_COPY["recipes"])
         self.purchase_history = scenario.get("purchase_history", DEFAULT_STATE_COPY["purchase_history"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, InstacartAPI):

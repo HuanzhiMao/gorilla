@@ -58,9 +58,6 @@ def multi_turn_checker(
                     involved_classes=involved_classes,
                     model_name=model_name,
                     test_entry_id=test_entry_id,
-                    long_context=(
-                        "long_context" in test_category or "composite" in test_category
-                    ),
                     is_evaL_run=True,
                     failure_injection=turn_failure_injection,
                 )
@@ -76,9 +73,6 @@ def multi_turn_checker(
                 involved_classes=involved_classes,
                 model_name=model_name + "_ground_truth",
                 test_entry_id=test_entry_id,
-                long_context=(
-                    "long_context" in test_category or "composite" in test_category
-                ),
                 is_evaL_run=True,
                 failure_injection=turn_failure_injection,
             )

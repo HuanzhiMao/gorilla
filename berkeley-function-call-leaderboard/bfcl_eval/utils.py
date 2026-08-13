@@ -17,6 +17,7 @@ from bfcl_eval.constants.default_prompts import (
 )
 from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.executable_backend_config import (
+    LONG_CONTEXT_CONFIG_KEY,
     MULTI_TURN_FUNC_DOC_FILE_MAPPING,
     UPDATED_TOOL_LIST_CLASSES,
 )
@@ -562,6 +563,7 @@ def load_dataset_entry(
             all_entries = load_file(modality_path / f"{base_category}.json")
 
     all_entries = resolve_initial_config_file_paths(all_entries, SERVER_INITIAL_CONFIG_VARIANT_PATH)
+    all_entries = mark_long_context_entries(all_entries, base_category)
     all_entries = process_agentic_test_case(all_entries)
     all_entries = populate_test_cases_with_predefined_functions(all_entries)
 
@@ -1060,6 +1062,30 @@ def clean_up_memory_prereq_entries(test_cases: list[dict]) -> list[dict]:
             if dep_id in test_case_ids_to_generate
         ]
 
+    return test_cases
+
+
+def mark_long_context_entries(test_cases: list[dict], base_category: str) -> list[dict]:
+    """Legacy-loader counterpart of the ``MARK_LONG_CONTEXT`` stage.
+
+    Kept in step with ``bfcl_eval.dataset_loader.stages.typed.mark_long_context`` so the
+    two loaders stay comparable entry for entry; see ``load_dataset_entry``'s note on
+    why this module is retained as an independent reference implementation.
+    """
+    # Imported lazily, as elsewhere in this module: the category registry imports back
+    # into the constants this file re-exports.
+    from bfcl_eval.schemas.category import CATEGORY_SPECS
+
+    spec = CATEGORY_SPECS.get(base_category)
+    if spec is None or not spec.long_context:
+        return test_cases
+    for entry in test_cases:
+        init_config = entry.get("initial_config")
+        if not isinstance(init_config, dict):
+            continue
+        for class_config in init_config.values():
+            if isinstance(class_config, dict):
+                class_config[LONG_CONTEXT_CONFIG_KEY] = True
     return test_cases
 
 

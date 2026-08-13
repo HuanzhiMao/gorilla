@@ -85,6 +85,9 @@ class StageId(str, Enum):
 
     # Replace `initial_config` path strings with the JSON they point at.
     RESOLVE_INITIAL_CONFIG = "resolve_initial_config"
+    # Stamp `long_context` into `initial_config` for the categories that want it, so
+    # the backends read it as data rather than receiving it as a threaded argument.
+    MARK_LONG_CONTEXT = "mark_long_context"
     # Prepend the system prompt asking for a parseable final answer.
     STRUCTURED_ANSWER_PROMPT = "structured_answer_prompt"
     # Materialize the tool list from the entry's backend classes.
@@ -96,17 +99,37 @@ class StageId(str, Enum):
 
 
 class EvalStrategy(str, Enum):
-    """Which runner scores a category.
+    """Which checker scores a category, at full resolution.
 
     Replaces the order-sensitive if-chain in ``evaluate_task`` with a dict lookup.
+
+    The three ``AST_*`` members are one runner but three different comparisons, and
+    they are separate members so that this field alone decides scoring. Folded into a
+    single ``AST``, the choice between them had to be recovered inside ``ast_checker``
+    by reading :class:`CategoryFamily` -- which made a category's *identity* an input
+    to how it was scored. Nothing in the eval path reads ``family`` now.
     """
 
-    AST = "ast"
+    # Exactly one call expected, compared against exactly one candidate function.
+    AST_SIMPLE = "ast_simple"
+    # One call expected, but several candidate functions to choose between.
+    AST_MULTIPLE = "ast_multiple"
+    # Several calls expected, matched without regard to order. Serves
+    # parallel_multiple too: it differs from parallel in how the question is posed,
+    # not in how the answer is compared.
+    AST_PARALLEL = "ast_parallel"
     MULTI_TURN_STATE = "multi_turn_state"
     SUBSTRING_ANSWER = "substring_answer"
     GEO_DISTANCE = "geo_distance"
     RELEVANCE = "relevance"
     FUNC_CALL_CONSTRAINT = "func_call_constraint"
+
+
+# The strategies ``ast_file_runner`` serves. It takes a different argument list than
+# the other runners, so the group needs a name at the sites that special-case it.
+AST_STRATEGIES: frozenset[EvalStrategy] = frozenset(
+    {EvalStrategy.AST_SIMPLE, EvalStrategy.AST_MULTIPLE, EvalStrategy.AST_PARALLEL}
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -127,7 +150,12 @@ class CategorySpec:
     load_stages: tuple[StageId, ...] = ()
 
     language: Language = Language.PYTHON
-    is_live: bool = False
+    # Whether the backends pad their starting state with the bulk records in
+    # ``func_source_code/long_context.py``. The only reader is the
+    # ``MARK_LONG_CONTEXT`` load stage, which writes the flag into the entry's
+    # ``initial_config``; from there it travels as data to every backend, and to the
+    # evaluator, which re-loads the same entries. Nothing downstream consults this
+    # field, so generation and scoring cannot disagree about what long context means.
     long_context: bool = False
     # Whether the model gets multiple tool-calling steps rather than one shot.
     is_multi_step: bool = False
@@ -278,14 +306,6 @@ class TestCategory:
         )
 
     @property
-    def is_live(self) -> bool:
-        return self.spec.is_live
-
-    @property
-    def is_non_live(self) -> bool:
-        return not (self.is_live or self.is_multi_turn or self.is_agentic)
-
-    @property
     def contains_multi_turn_irrelevance(self) -> bool:
         return self.base_name in ("multi_turn_miss_func", "multi_turn_miss_param")
 
@@ -423,6 +443,9 @@ class TestCategory:
 COMMON_STAGES: tuple[StageId, ...] = (
     StageId.PARSE,
     StageId.RESOLVE_INITIAL_CONFIG,
+    # After RESOLVE_INITIAL_CONFIG so it never has to reason about the path strings
+    # that stage replaces.
+    StageId.MARK_LONG_CONTEXT,
     StageId.STRUCTURED_ANSWER_PROMPT,
     StageId.RESOLVE_TOOLS,
     StageId.RESOLVE_HOLDOUT_DOCS,
@@ -445,26 +468,36 @@ VISION_ONLY = frozenset({Modality.VISION})
 TEXT_AND_AUDIO = frozenset({Modality.TEXT, Modality.TRUE_AUDIO, Modality.TEXT_AUDIO})
 
 
+# How each AST family is compared. The one place the two axes are allowed to meet:
+# a family picks its strategy here, once, and no later code re-derives it. Note the
+# many-to-one -- parallel and parallel_multiple are scored identically -- which is why
+# the strategy cannot simply be the family under another name.
+_AST_STRATEGY_BY_FAMILY: dict[CategoryFamily, EvalStrategy] = {
+    CategoryFamily.SIMPLE: EvalStrategy.AST_SIMPLE,
+    CategoryFamily.MULTIPLE: EvalStrategy.AST_MULTIPLE,
+    CategoryFamily.PARALLEL: EvalStrategy.AST_PARALLEL,
+    CategoryFamily.PARALLEL_MULTIPLE: EvalStrategy.AST_PARALLEL,
+}
+
+
 def _ast(
     base_name: str,
     family: CategoryFamily,
     *,
     language: Language = Language.PYTHON,
-    is_live: bool = False,
 ) -> CategorySpec:
     return CategorySpec(
         base_name=base_name,
         family=family,
-        eval_strategy=EvalStrategy.AST,
+        eval_strategy=_AST_STRATEGY_BY_FAMILY[family],
         ground_truth_kind=GroundTruthKind.AST_CALLS,
         supported_modalities=TEXT_AND_AUDIO,
         load_stages=_pipeline(),
         language=language,
-        is_live=is_live,
     )
 
 
-def _relevance(base_name: str, family: CategoryFamily, *, is_live: bool = False) -> CategorySpec:
+def _relevance(base_name: str, family: CategoryFamily) -> CategorySpec:
     """relevance / irrelevance ship no ground-truth file at all."""
     return CategorySpec(
         base_name=base_name,
@@ -473,7 +506,6 @@ def _relevance(base_name: str, family: CategoryFamily, *, is_live: bool = False)
         ground_truth_kind=GroundTruthKind.NONE,
         supported_modalities=TEXT_AND_AUDIO,
         load_stages=_pipeline(),
-        is_live=is_live,
     )
 
 
@@ -575,12 +607,12 @@ _SPEC_LIST: list[CategorySpec] = [
     _ast("parallel_multiple", CategoryFamily.PARALLEL_MULTIPLE),
     _relevance("irrelevance", CategoryFamily.IRRELEVANCE),
     # ---- text, live (user-contributed) ----
-    _ast("live_simple", CategoryFamily.SIMPLE, is_live=True),
-    _ast("live_multiple", CategoryFamily.MULTIPLE, is_live=True),
-    _ast("live_parallel", CategoryFamily.PARALLEL, is_live=True),
-    _ast("live_parallel_multiple", CategoryFamily.PARALLEL_MULTIPLE, is_live=True),
-    _relevance("live_irrelevance", CategoryFamily.IRRELEVANCE, is_live=True),
-    _relevance("live_relevance", CategoryFamily.RELEVANCE, is_live=True),
+    _ast("live_simple", CategoryFamily.SIMPLE),
+    _ast("live_multiple", CategoryFamily.MULTIPLE),
+    _ast("live_parallel", CategoryFamily.PARALLEL),
+    _ast("live_parallel_multiple", CategoryFamily.PARALLEL_MULTIPLE),
+    _relevance("live_irrelevance", CategoryFamily.IRRELEVANCE),
+    _relevance("live_relevance", CategoryFamily.RELEVANCE),
     # ---- multi-turn ----
     _multi_turn("multi_turn_base"),
     _multi_turn("multi_turn_miss_func"),

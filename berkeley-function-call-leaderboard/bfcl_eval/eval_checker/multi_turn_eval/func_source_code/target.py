@@ -134,7 +134,6 @@ class TargetAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -160,7 +159,6 @@ class TargetAPI(PatchableMixin):
         self.registries = scenario.get("registries", DEFAULT_STATE_COPY["registries"])
         self.circle_earnings = scenario.get("circle_earnings", DEFAULT_STATE_COPY["circle_earnings"])
         self.birthday_offer = scenario.get("birthday_offer", DEFAULT_STATE_COPY["birthday_offer"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, TargetAPI):

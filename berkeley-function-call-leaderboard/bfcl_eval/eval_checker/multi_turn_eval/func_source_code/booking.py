@@ -100,7 +100,6 @@ class BookingAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -117,7 +116,6 @@ class BookingAPI(PatchableMixin):
         self.bookings = scenario.get("bookings", DEFAULT_STATE_COPY["bookings"])
         self.genius_status = scenario.get("genius_status", DEFAULT_STATE_COPY["genius_status"])
         self.price_alerts = scenario.get("price_alerts", DEFAULT_STATE_COPY["price_alerts"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, BookingAPI):

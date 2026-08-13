@@ -156,7 +156,7 @@ class TradingBot:
         self.transaction_history: List[Dict[str, Union[str, float, int]]]
         self._api_description = "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information."
 
-    def _load_scenario(self, scenario: dict, long_context=False) -> None:
+    def _load_scenario(self, scenario: dict) -> None:
         """
         Load a scenario into the TradingBot.
 
@@ -185,7 +185,7 @@ class TradingBot:
         self.transaction_history = scenario.get(
             "transaction_history", DEFAULT_STATE_COPY["transaction_history"]
         )
-        self.long_context = long_context
+        self.long_context = scenario.get("long_context", False)
         self._random = random.Random(
             (scenario.get("random_seed", DEFAULT_STATE_COPY["random_seed"]))
         )

@@ -51,6 +51,7 @@ def _register() -> None:
     _TYPED_STAGES.update(
         {
             StageId.RESOLVE_INITIAL_CONFIG: typed.resolve_initial_config,
+            StageId.MARK_LONG_CONTEXT: typed.mark_long_context,
             StageId.STRUCTURED_ANSWER_PROMPT: typed.structured_answer_prompt,
             StageId.RESOLVE_TOOLS: typed.resolve_tools,
             StageId.RESOLVE_HOLDOUT_DOCS: typed.resolve_holdout_docs,

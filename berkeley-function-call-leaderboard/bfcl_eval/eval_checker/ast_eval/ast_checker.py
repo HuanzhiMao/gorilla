@@ -9,7 +9,7 @@ from bfcl_eval.eval_checker.ast_eval.type_convertor.java_type_converter import (
 from bfcl_eval.eval_checker.ast_eval.type_convertor.js_type_converter import (
     js_type_converter,
 )
-from bfcl_eval.schemas.category import CategoryFamily, TestCategory
+from bfcl_eval.schemas.category import EvalStrategy, TestCategory
 from bfcl_eval.schemas.function_doc import FunctionDoc
 from bfcl_eval.schemas.ground_truth import ExpectedFunctionCall
 
@@ -46,31 +46,43 @@ def ast_checker(
     ``model_output`` is the handler's ``decode_ast`` output: a list of
     ``{func_name: {param: value}}`` dicts.
 
-    Which sub-checker runs is decided by the category's family rather than by
-    substring-matching its name, but the partition is the same one the substring
-    tests produced: the parallel families first, then multiple, then simple.
+    Which sub-checker runs is a lookup on the category's ``eval_strategy``. The three
+    ``AST_*`` strategies are disjoint, so unlike the substring tests this replaced --
+    and unlike the family check that replaced *those* -- nothing here depends on the
+    order the cases are written in.
     """
-    if category.spec.family in (CategoryFamily.PARALLEL, CategoryFamily.PARALLEL_MULTIPLE):
-        return parallel_function_checker_no_order(
-            func_descriptions, model_output, expected_calls, language, model_name
-        )
+    try:
+        checker = _CHECKER_BY_STRATEGY[category.eval_strategy]
+    except KeyError:
+        raise ValueError(
+            f"{category.value} is scored by {category.eval_strategy}, not by the AST checker"
+        ) from None
+    return checker(func_descriptions, model_output, expected_calls, language, model_name)
 
-    elif category.spec.family is CategoryFamily.MULTIPLE:
-        return multiple_function_checker(
-            func_descriptions, model_output, expected_calls, language, model_name
-        )
 
-    else:
-        if len(model_output) != 1:
-            return {
-                "valid": False,
-                "error": ["Wrong number of functions."],
-                "error_type": "simple_function_checker:wrong_count",
-            }
+def _single_call_checker(
+    func_descriptions: list[FunctionDoc],
+    model_output,
+    expected_calls: list[ExpectedFunctionCall],
+    language: Language,
+    model_name: str,
+):
+    """One expected call against one candidate function.
 
-        return simple_function_checker(
-            func_descriptions[0], model_output[0], expected_calls[0], language, model_name
-        )
+    Wraps :func:`simple_function_checker`, which takes the singular forms, in the
+    plural signature the other two sub-checkers share -- including the count guard,
+    since "exactly one call" is the check rather than a precondition.
+    """
+    if len(model_output) != 1:
+        return {
+            "valid": False,
+            "error": ["Wrong number of functions."],
+            "error_type": "simple_function_checker:wrong_count",
+        }
+
+    return simple_function_checker(
+        func_descriptions[0], model_output[0], expected_calls[0], language, model_name
+    )
 
 
 #### Helper functions for AST ####
@@ -622,3 +634,13 @@ def multiple_function_checker(
         language,
         model_name,
     )
+
+
+# Defined last because the sub-checkers are defined above. Membership here is what
+# makes a strategy "an AST strategy" at the checker level; `AST_STRATEGIES` is the
+# same partition expressed on the registry side, and the parity test pins them equal.
+_CHECKER_BY_STRATEGY = {
+    EvalStrategy.AST_SIMPLE: _single_call_checker,
+    EvalStrategy.AST_MULTIPLE: multiple_function_checker,
+    EvalStrategy.AST_PARALLEL: parallel_function_checker_no_order,
+}

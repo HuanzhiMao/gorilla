@@ -59,7 +59,6 @@ def execute_multi_turn_func_call(
     involved_classes: list,
     model_name: str,
     test_entry_id: str,
-    long_context: bool = False,
     is_evaL_run: bool = False,
     failure_injection: list | None = None,
 ) -> tuple[list[dict], dict]:
@@ -79,7 +78,6 @@ def execute_multi_turn_func_call(
         involved_classes: A list of class name strings to instantiate and expose methods from.
         model_name: The model name, used as part of the instance cache key.
         test_entry_id: The test entry ID, used as part of the instance cache key.
-        long_context: Whether to load the scenario in long-context mode.
         is_evaL_run: If True, appends "_eval" to the model name for cache isolation.
         failure_injection: Optional list of {"method": ClassName.method_name, "patch": patch_name} dicts
             to apply after instance creation (turn 0 only).
@@ -110,9 +108,7 @@ def execute_multi_turn_func_call(
                 # Deep copy the initial configuration to avoid mutation issues
                 # @HuanzhiMao TODO: update multi turn initial config format for reusability
                 # "WeatherCom": "./data/multi_turn_initial_state/weather_com.json",
-                class_instance._load_scenario(
-                    copy.deepcopy(class_initial_config), long_context=long_context
-                )
+                class_instance._load_scenario(copy.deepcopy(class_initial_config))
             globals()[instance_name] = class_instance
         # This happens in subsequent turns
         else:

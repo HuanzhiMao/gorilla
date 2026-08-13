@@ -98,7 +98,6 @@ class YahooFinanceAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         default_state = deepcopy(DEFAULT_STATE)
         self._rng = random.Random(
@@ -125,7 +124,6 @@ class YahooFinanceAPI(PatchableMixin):
         self.trending_tickers = scenario.get(
             "trending_tickers", default_state["trending_tickers"]
         )
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, YahooFinanceAPI):

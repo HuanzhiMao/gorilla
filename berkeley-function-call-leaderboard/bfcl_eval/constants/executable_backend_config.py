@@ -3,6 +3,15 @@ from pathlib import Path
 
 BACKEND_PATH_PREFIX = "bfcl_eval.eval_checker.multi_turn_eval.func_source_code"
 
+# The key that carries long-context mode into the backends.
+#
+# It is written into an entry's ``initial_config`` by the ``MARK_LONG_CONTEXT`` load
+# stage, as a sibling of the class names, and `execute_multi_turn_func_call` copies it
+# into each per-class blob before handing that blob to ``_load_scenario``. Backends
+# then read it like any other scenario key. Snake case, so it can never collide with a
+# backend class name; absent means off, so only the categories that want it carry it.
+LONG_CONTEXT_CONFIG_KEY = "long_context"
+
 _FUNC_SOURCE_DIR = (
     Path(__file__).resolve().parents[1]
     / "eval_checker"

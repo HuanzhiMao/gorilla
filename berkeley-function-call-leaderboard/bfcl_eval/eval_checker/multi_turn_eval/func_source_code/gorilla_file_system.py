@@ -154,7 +154,7 @@ class GorillaFileSystem:
             return False
         return self.root == other.root
 
-    def _load_scenario(self, scenario: dict, long_context: bool = False) -> None:
+    def _load_scenario(self, scenario: dict) -> None:
         """
         Load a scenario into the file system.
 
@@ -195,7 +195,7 @@ class GorillaFileSystem:
         }
         """
         DEFAULT_STATE_COPY = deepcopy(DEFAULT_STATE)
-        self.long_context = long_context
+        self.long_context = scenario.get("long_context", False)
         self.root = DEFAULT_STATE_COPY["root"]
         if "root" in scenario:
             root_dir = Directory(list(scenario["root"].keys())[0], None)

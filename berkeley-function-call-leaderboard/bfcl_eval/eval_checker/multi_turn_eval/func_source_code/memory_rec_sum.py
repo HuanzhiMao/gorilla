@@ -19,7 +19,7 @@ class MemoryAPI_rec_sum(MemoryAPI):
         self._api_description = """This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization."""
         self.snapshot_folder = None
 
-    def _load_scenario(self, initial_config: dict, long_context: bool = False):
+    def _load_scenario(self, initial_config: dict):
         # Set up paths & load snapshots
         memory_data = self._prepare_snapshot(initial_config)
 

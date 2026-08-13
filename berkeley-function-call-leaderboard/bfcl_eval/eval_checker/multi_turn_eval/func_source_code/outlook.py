@@ -132,7 +132,6 @@ class OutlookAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -150,7 +149,6 @@ class OutlookAPI(PatchableMixin):
         self.quick_steps = scenario.get("quick_steps", DEFAULT_STATE_COPY["quick_steps"])
         self.categories = scenario.get("categories", DEFAULT_STATE_COPY["categories"])
         self.pinned_emails = scenario.get("pinned_emails", DEFAULT_STATE_COPY["pinned_emails"])
-        self.long_context = long_context
         # Auto-activate the sole user when the profile is single-user so that
         # self.user_id is set before any method that calls _require_user runs.
         # Multi-user profiles still require the agent to call switch_user().

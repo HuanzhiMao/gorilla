@@ -128,7 +128,6 @@ class AmazonAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -152,7 +151,6 @@ class AmazonAPI(PatchableMixin):
         self.subscriptions = scenario.get("subscriptions", DEFAULT_STATE_COPY["subscriptions"])
         self.price_alerts = scenario.get("price_alerts", DEFAULT_STATE_COPY["price_alerts"])
         self.price_history = scenario.get("price_history", DEFAULT_STATE_COPY["price_history"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, AmazonAPI):

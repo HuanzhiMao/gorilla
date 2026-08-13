@@ -106,7 +106,6 @@ class LyftAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -126,7 +125,6 @@ class LyftAPI(PatchableMixin):
         self.wait_and_save = scenario.get("wait_and_save", DEFAULT_STATE_COPY["wait_and_save"])
         self.ride_challenges = scenario.get("ride_challenges", deepcopy(DEFAULT_STATE_COPY["ride_challenges"]))
         self.ride_streak = scenario.get("ride_streak", deepcopy(DEFAULT_STATE_COPY["ride_streak"]))
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, LyftAPI):

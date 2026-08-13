@@ -29,7 +29,7 @@ from dataclasses import dataclass, field
 from typing import Any, Iterator
 
 from bfcl_eval.constants.enums import Modality
-from bfcl_eval.schemas.category import TestCategory
+from bfcl_eval.schemas.category import CategoryFamily, TestCategory
 from bfcl_eval.schemas.environment import (
     FailureInjection,
     MissedClassRule,
@@ -200,12 +200,28 @@ class MultiTurnTestEntry(TestEntry):
 
 
 @dataclass(kw_only=True)
-class AgenticTestEntry(TestEntry):
-    """Free-text answer against a live tool backend: web_search, geoguessr."""
+class FreeTextAnswerTestEntry(TestEntry):
+    """Scored on the final answer rather than on the calls that produced it.
+
+    The base for every category whose deliverable is a natural-language answer the
+    model reaches by working a tool backend over several steps: web_search, geoguessr,
+    memory, vision_web_search. Contrast :class:`AstTestEntry` (scored on the emitted
+    call), :class:`MultiTurnTestEntry` (scored on resulting backend state) and
+    :class:`FailingToolsTestEntry` (scored on call constraints).
+
+    web_search and geoguessr use it directly, because neither adds a wire key and a
+    subclass per family would carry no information. That is a claim about entry
+    *shape* alone. The two remain different families and diverge elsewhere -- most
+    visibly in ``TestCategory.is_agentic``, which covers web_search but not geoguessr.
+
+    Named for the shape and not the task for exactly that reason: as
+    ``AgenticTestEntry`` it read as the class-level spelling of ``is_agentic`` while
+    holding a different set of categories.
+    """
 
 
 @dataclass(kw_only=True)
-class MemoryTestEntry(AgenticTestEntry):
+class MemoryTestEntry(FreeTextAnswerTestEntry):
     """memory_kv / memory_vector / memory_rec_sum."""
 
     scenario: str | None = None
@@ -238,7 +254,7 @@ class MemoryPrereqTestEntry(MemoryTestEntry):
 
 
 @dataclass(kw_only=True)
-class VisionTestEntry(AgenticTestEntry):
+class VisionTestEntry(FreeTextAnswerTestEntry):
     """vision_web_search_*.
 
     ``image_file_name`` and ``img_source`` exist on disk but are consumed by the
@@ -285,7 +301,7 @@ class FailingToolsTestEntry(TestEntry):
 _SUBCLASS_WIRE_KEYS: dict[type[TestEntry], frozenset[str]] = {
     AstTestEntry: frozenset(),
     MultiTurnTestEntry: frozenset(),
-    AgenticTestEntry: frozenset(),
+    FreeTextAnswerTestEntry: frozenset(),
     MemoryTestEntry: frozenset({"scenario"}),
     MemoryPrereqTestEntry: frozenset({"scenario", "topic"}),
     VisionTestEntry: frozenset({"image_file_name", "img_source"}),
@@ -300,20 +316,43 @@ def entry_class_for(category: TestCategory) -> type[TestEntry]:
     write-conversations that must run first, and those have a different shape -- so the
     argument is the per-entry category rather than the one being loaded. It arrives via
     :data:`CATEGORY_STAMP`, which is why this needs no entry id to inspect.
+
+    Every family is listed, and there is no fall-through: a family added to the
+    registry without a shape raises here rather than silently parsing as an
+    :class:`AstTestEntry` and losing whatever wire keys it carries. Because the arms
+    are disjoint, none of this depends on the order they are written in -- which the
+    ``is_memory_prereq``-before-``is_memory`` if-chain this replaced did.
+    ``test_entry_class_covers_every_family`` pins the totality.
     """
-    if category.is_memory_prereq:
-        return MemoryPrereqTestEntry
-    if category.is_memory:
-        return MemoryTestEntry
-    if category.is_failing_tools:
-        return FailingToolsTestEntry
-    if category.is_multi_turn:
-        return MultiTurnTestEntry
-    if category.is_vision_web_search:
-        return VisionTestEntry
-    if category.is_geoguessr or category.is_web_search:
-        return AgenticTestEntry
-    return AstTestEntry
+    match category.spec.family:
+        case CategoryFamily.MEMORY_PREREQ:
+            return MemoryPrereqTestEntry
+        case CategoryFamily.MEMORY:
+            return MemoryTestEntry
+        case CategoryFamily.MULTI_TURN:
+            return MultiTurnTestEntry
+        case CategoryFamily.FAILING_TOOLS:
+            return FailingToolsTestEntry
+        case CategoryFamily.VISION_WEB_SEARCH:
+            return VisionTestEntry
+        # One shape, two families: neither adds a wire key. See
+        # `FreeTextAnswerTestEntry` on why that is not the same set as `is_agentic`.
+        case CategoryFamily.WEB_SEARCH | CategoryFamily.GEOGUESSR:
+            return FreeTextAnswerTestEntry
+        case (
+            CategoryFamily.SIMPLE
+            | CategoryFamily.MULTIPLE
+            | CategoryFamily.PARALLEL
+            | CategoryFamily.PARALLEL_MULTIPLE
+            | CategoryFamily.RELEVANCE
+            | CategoryFamily.IRRELEVANCE
+        ):
+            return AstTestEntry
+
+    # Unreachable while the match above is exhaustive -- which is the point: a type
+    # checker flags this line as dead today and stops doing so the moment a family is
+    # added without an arm, at which point the raise is what fires at run time.
+    raise ValueError(f"no entry class registered for family {category.spec.family}")
 
 
 def parse_test_entry(raw: dict, category: TestCategory) -> TestEntry:

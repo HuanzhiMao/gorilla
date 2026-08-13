@@ -122,7 +122,6 @@ class VenmoAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -141,7 +140,6 @@ class VenmoAPI(PatchableMixin):
         self.group_payments = scenario.get("group_payments", DEFAULT_STATE_COPY["group_payments"])
         self.debit_card = scenario.get("debit_card", DEFAULT_STATE_COPY["debit_card"])
         self.debit_card_transactions = scenario.get("debit_card_transactions", DEFAULT_STATE_COPY["debit_card_transactions"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, VenmoAPI):

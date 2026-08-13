@@ -127,7 +127,6 @@ class AppleMusicAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -156,7 +155,6 @@ class AppleMusicAPI(PatchableMixin):
         self.sing_catalog = scenario.get("sing_catalog", DEFAULT_STATE_COPY["sing_catalog"])
         self.replay = scenario.get("replay", DEFAULT_STATE_COPY["replay"])
         self.audio_settings = scenario.get("audio_settings", DEFAULT_STATE_COPY["audio_settings"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, AppleMusicAPI):

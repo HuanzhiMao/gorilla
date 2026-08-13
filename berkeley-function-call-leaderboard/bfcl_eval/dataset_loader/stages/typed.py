@@ -19,7 +19,10 @@ from bfcl_eval.constants.eval_config import (
     MULTI_TURN_FUNC_DOC_PATH,
     SERVER_INITIAL_CONFIG_VARIANT_PATH,
 )
-from bfcl_eval.constants.executable_backend_config import MULTI_TURN_FUNC_DOC_FILE_MAPPING
+from bfcl_eval.constants.executable_backend_config import (
+    LONG_CONTEXT_CONFIG_KEY,
+    MULTI_TURN_FUNC_DOC_FILE_MAPPING,
+)
 from bfcl_eval.dataset_loader.jsonl import read_entries
 from bfcl_eval.dataset_loader.pipeline import LoadContext
 from bfcl_eval.schemas.entries import TestEntry
@@ -55,6 +58,40 @@ def resolve_initial_config(entries: list[TestEntry], ctx: LoadContext) -> list[T
                     f"{entry.annotations.get('_source', 'N/A')}) names an initial_config "
                     f"for {class_name} that cannot be read: {path} ({exc})"
                 ) from exc
+    return entries
+
+
+def mark_long_context(entries: list[TestEntry], ctx: LoadContext) -> list[TestEntry]:
+    """Record long-context mode in each backend's ``initial_config`` blob.
+
+    Long context is a property of the *starting state*: the backends splice bulk records
+    from ``func_source_code/long_context.py`` into the state they build in
+    ``_load_scenario``. Writing it into ``initial_config`` puts it where that state
+    already lives, so it reaches the backends as data.
+
+    That matters because two callers build those backends -- the handler during
+    generation and the checker during scoring -- and both already thread
+    ``initial_config`` through. Carrying the flag alongside it means they cannot
+    disagree; the checker used to re-derive it by testing whether ``"long_context"``
+    appeared in the category name.
+
+    Written into each per-class blob rather than as one key beside them, because a blob
+    is exactly what ``_load_scenario`` receives: nothing between here and the backend
+    then has to know this flag exists. It also keeps ``initial_config`` a plain mapping
+    of class name to config, which ``resolve_initial_config`` above and the executor
+    both assume.
+
+    Written only when true. An absent key is off, so every other category's
+    ``initial_config`` is left byte-identical to what the dataset file holds.
+
+    Read per entry rather than off ``ctx.category``, because a load can yield entries
+    from more than one category: a memory load also emits its prerequisite entries,
+    whose spec is its own. ``structured_answer_prompt`` splits on the same seam.
+    """
+    for entry in entries:
+        if entry.category.long_context:
+            for class_config in entry.environment.initial_config.values():
+                class_config[LONG_CONTEXT_CONFIG_KEY] = True
     return entries
 
 

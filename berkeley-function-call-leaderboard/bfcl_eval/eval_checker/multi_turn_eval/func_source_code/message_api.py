@@ -66,7 +66,7 @@ class MessageAPI:
         self.current_user: Optional[str]
         self._api_description = "This tool belongs to the Message API, which is used to manage user interactions in a workspace."
 
-    def _load_scenario(self, scenario: dict, long_context=False) -> None:
+    def _load_scenario(self, scenario: dict) -> None:
         """
         Load a scenario into the MessageAPI.
 

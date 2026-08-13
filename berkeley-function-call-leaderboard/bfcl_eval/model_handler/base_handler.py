@@ -220,7 +220,6 @@ class BaseHandler:
             involved_classes,
             self.model_name_underline_replaced,
             test_entry_id,
-            long_context=category.long_context,
             is_evaL_run=False,
             failure_injection=failure_injection,
         )
@@ -458,7 +457,6 @@ class BaseHandler:
                         involved_classes,
                         self.model_name_underline_replaced,
                         test_entry_id,
-                        long_context=category.long_context,
                         is_evaL_run=False,
                     )
 

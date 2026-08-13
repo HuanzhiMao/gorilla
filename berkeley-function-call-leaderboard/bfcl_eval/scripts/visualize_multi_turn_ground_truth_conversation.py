@@ -37,7 +37,6 @@ for test_category in test_categories_total:
             involved_classes,
             "ground_truth_conversation",  # the model_name is not important here, could use any string
             test_entry_id,
-            long_context=("long_context" in test_category or "composite" in test_category),
             is_evaL_run=False,
             failure_injection=failure_injection,
         )
@@ -73,9 +72,6 @@ for test_category in test_categories_total:
                 involved_classes,
                 "ground_truth_conversation",  # the model_name is not important here, could use any string
                 test_entry_id,
-                long_context=(
-                    "long_context" in test_category or "composite" in test_category
-                ),
                 is_evaL_run=False,
             )
 

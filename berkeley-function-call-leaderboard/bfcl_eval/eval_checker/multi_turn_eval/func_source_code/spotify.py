@@ -125,7 +125,6 @@ class SpotifyAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -152,7 +151,6 @@ class SpotifyAPI(PatchableMixin):
         self.blends = scenario.get("blends", DEFAULT_STATE_COPY["blends"])
         self.jam_sessions = scenario.get("jam_sessions", DEFAULT_STATE_COPY["jam_sessions"])
         self.listening_stats = scenario.get("listening_stats", DEFAULT_STATE_COPY["listening_stats"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, SpotifyAPI):

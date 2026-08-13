@@ -35,7 +35,6 @@ class MemoryAPI(ABC):
         Returns:
             Optional[dict]: The previously saved memory snapshot if it exists, otherwise `None`.
         """
-        # We don't care about the ``long_context`` parameter here – subclasses keep that
         model_result_dir: Path = initial_config["model_result_dir"]
         self.test_id: str = initial_config["test_id"]
         self.scenario: str = initial_config["scenario"]
@@ -76,7 +75,7 @@ class MemoryAPI(ABC):
             return json.load(f)
 
     @abstractmethod
-    def _load_scenario(self, initial_config: dict, long_context: bool = False):
+    def _load_scenario(self, initial_config: dict):
         pass
 
     @abstractmethod

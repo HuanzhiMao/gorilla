@@ -129,7 +129,6 @@ class GmailAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -147,7 +146,6 @@ class GmailAPI(PatchableMixin):
         self.snoozed_emails = scenario.get("snoozed_emails", DEFAULT_STATE_COPY["snoozed_emails"])
         self.scheduled_emails = scenario.get("scheduled_emails", DEFAULT_STATE_COPY["scheduled_emails"])
         self.templates = scenario.get("templates", DEFAULT_STATE_COPY["templates"])
-        self.long_context = long_context
         # Auto-activate the sole user when the profile is single-user so that
         # self.user_id is set before any method that calls _require_user runs.
         # Multi-user profiles still require the agent to call switch_user().

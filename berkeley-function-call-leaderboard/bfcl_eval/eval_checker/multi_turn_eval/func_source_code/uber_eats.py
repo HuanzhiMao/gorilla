@@ -105,7 +105,6 @@ class UberEatsAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -129,7 +128,6 @@ class UberEatsAPI(PatchableMixin):
         self.grocery_stores = scenario.get("grocery_stores", DEFAULT_STATE_COPY["grocery_stores"])
         self.grocery_catalog = scenario.get("grocery_catalog", DEFAULT_STATE_COPY["grocery_catalog"])
         self.group_orders = scenario.get("group_orders", DEFAULT_STATE_COPY["group_orders"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, UberEatsAPI):

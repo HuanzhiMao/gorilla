@@ -110,7 +110,6 @@ class NotionAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -127,7 +126,6 @@ class NotionAPI(PatchableMixin):
         self.databases = scenario.get("databases", DEFAULT_STATE_COPY["databases"])
         self.database_entries = scenario.get("database_entries", DEFAULT_STATE_COPY["database_entries"])
         self.shares = scenario.get("shares", DEFAULT_STATE_COPY["shares"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, NotionAPI):

@@ -120,7 +120,6 @@ class YahooWeatherAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -157,7 +156,6 @@ class YahooWeatherAPI(PatchableMixin):
         self.historical_averages = scenario.get(
             "historical_averages", DEFAULT_STATE_COPY["historical_averages"]
         )
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, YahooWeatherAPI):

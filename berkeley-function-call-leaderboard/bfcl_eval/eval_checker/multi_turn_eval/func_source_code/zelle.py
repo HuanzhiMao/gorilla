@@ -119,7 +119,6 @@ class ZelleAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -136,7 +135,6 @@ class ZelleAPI(PatchableMixin):
         self.requests = scenario.get("requests", DEFAULT_STATE_COPY["requests"])
         self.funding_sources = scenario.get("funding_sources", DEFAULT_STATE_COPY["funding_sources"])
         self.scheduled_payments = scenario.get("scheduled_payments", DEFAULT_STATE_COPY["scheduled_payments"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, ZelleAPI):

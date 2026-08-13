@@ -38,9 +38,9 @@ class WebSearchAPI:
         # This one is used to determine the content of the error message
         self._rng = random.Random(1053)
 
-    def _load_scenario(self, initial_config: dict, long_context: bool = False):
-        # We don't care about the long_context parameter here
-        # It's there to match the signature of functions in the multi-turn evaluation code
+    def _load_scenario(self, initial_config: dict):
+        # No `long_context` handling: this backend has no bulk state to pad, and the
+        # web-search categories never set the flag.
         self.show_snippet = initial_config["show_snippet"]
 
     def search_engine_query(

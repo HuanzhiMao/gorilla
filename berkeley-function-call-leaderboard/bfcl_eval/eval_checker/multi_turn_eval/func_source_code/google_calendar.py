@@ -119,7 +119,6 @@ class GoogleCalendarAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -137,7 +136,6 @@ class GoogleCalendarAPI(PatchableMixin):
         self.appointment_slots = scenario.get("appointment_slots", DEFAULT_STATE_COPY["appointment_slots"])
         self.working_hours = scenario.get("working_hours", DEFAULT_STATE_COPY["working_hours"])
         self.out_of_office = scenario.get("out_of_office", DEFAULT_STATE_COPY["out_of_office"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, GoogleCalendarAPI):

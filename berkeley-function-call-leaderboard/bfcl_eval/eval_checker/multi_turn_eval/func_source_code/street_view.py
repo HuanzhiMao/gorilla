@@ -103,7 +103,6 @@ class StreetViewAPI:
     def _load_scenario(
         self,
         scenario: Dict[str, float],
-        long_context: bool = False,
     ) -> None:
         """
         Set the starting coordinates for the scenario.

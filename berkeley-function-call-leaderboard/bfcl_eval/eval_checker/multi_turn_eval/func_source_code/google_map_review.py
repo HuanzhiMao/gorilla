@@ -111,7 +111,6 @@ class GoogleMapReviewAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -130,7 +129,6 @@ class GoogleMapReviewAPI(PatchableMixin):
         self.local_guide = scenario.get("local_guide", DEFAULT_STATE_COPY["local_guide"])
         self.photo_contributions = scenario.get("photo_contributions", DEFAULT_STATE_COPY["photo_contributions"])
         self.place_questions = scenario.get("place_questions", DEFAULT_STATE_COPY["place_questions"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, GoogleMapReviewAPI):

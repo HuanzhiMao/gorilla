@@ -40,7 +40,7 @@ VISION_SUFFIX_MAP = {
 }
 
 
-def qualified_id(raw_id: str, category: TestCategory) -> str:
+def compose_id(raw_id: str, category: TestCategory) -> str:
     """Compose an entry's final id: ``memory_prereq_0-customer-0`` ->
     ``text:memory_kv_prereq_0-customer-0``.
 
@@ -69,7 +69,7 @@ def qualified_id(raw_id: str, category: TestCategory) -> str:
 def assign_ids(entries: list[dict], ctx: LoadContext) -> list[dict]:
     """Give every entry the id it will keep."""
     for entry in entries:
-        entry["id"] = qualified_id(entry["id"], ctx.category)
+        entry["id"] = compose_id(entry["id"], ctx.category)
     return entries
 
 
@@ -86,7 +86,7 @@ def memory_prereq_link(entries: list[dict], ctx: LoadContext) -> list[dict]:
 
     The questions arrive with ids already assigned. The prerequisites do not -- they are
     read from a second file here, after ``assign_ids`` has run -- so this is the one
-    other caller of :func:`qualified_id`. They are stamped with the derived
+    other caller of :func:`compose_id`. They are stamped with the derived
     ``*_prereq`` category, which is how a single load yields two correctly-labelled
     kinds of entry without anyone parsing an id to tell them apart.
     """
@@ -103,7 +103,7 @@ def memory_prereq_link(entries: list[dict], ctx: LoadContext) -> list[dict]:
         for entry in prereq_entries:
             # Qualified against the *parent* category: these entries live in the
             # `memory_kv` id namespace and carry their own `_prereq` segment already.
-            entry["id"] = qualified_id(entry["id"], ctx.category)
+            entry["id"] = compose_id(entry["id"], ctx.category)
             entry[CATEGORY_STAMP] = prereq_category
             entry["depends_on"] = deepcopy(prereq_ids)
             entry["involved_classes"] = [backend_class]

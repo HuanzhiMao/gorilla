@@ -78,7 +78,7 @@ class VehicleControlAPI:
         self.rearRightTirePressure: float
         self._api_description = "This tool belongs to the vehicle control system, which allows users to control various aspects of the car such as engine, doors, climate control, lights, and more."
 
-    def _load_scenario(self, scenario: dict, long_context=False) -> None:
+    def _load_scenario(self, scenario: dict) -> None:
         """
         Loads the scenario for the vehicle control.
         Args:
@@ -155,7 +155,7 @@ class VehicleControlAPI:
             "rearRightTirePressure", DEFAULT_STATE_COPY["rearRightTirePressure"]
         )
 
-        self.long_context = long_context
+        self.long_context = scenario.get("long_context", False)
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, VehicleControlAPI):

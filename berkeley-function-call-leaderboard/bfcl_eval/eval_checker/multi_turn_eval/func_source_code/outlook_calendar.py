@@ -129,7 +129,6 @@ class OutlookCalendarAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -147,7 +146,6 @@ class OutlookCalendarAPI(PatchableMixin):
         self.working_hours = scenario.get("working_hours", DEFAULT_STATE_COPY["working_hours"])
         self.scheduling_polls = scenario.get("scheduling_polls", DEFAULT_STATE_COPY["scheduling_polls"])
         self.rooms = scenario.get("rooms", DEFAULT_STATE_COPY["rooms"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, OutlookCalendarAPI):

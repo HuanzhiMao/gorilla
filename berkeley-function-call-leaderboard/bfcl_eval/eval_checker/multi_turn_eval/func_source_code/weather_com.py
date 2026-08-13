@@ -130,7 +130,6 @@ class WeatherComAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -170,7 +169,6 @@ class WeatherComAPI(PatchableMixin):
         self.pollen_data = scenario.get(
             "pollen_data", DEFAULT_STATE_COPY["pollen_data"]
         )
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, WeatherComAPI):

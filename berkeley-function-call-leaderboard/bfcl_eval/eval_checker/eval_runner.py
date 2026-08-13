@@ -23,7 +23,7 @@ from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
 from bfcl_eval.eval_checker.vision_eval.vision_checker import vision_checker
 from bfcl_eval.dataset_loader import load_dataset_entries, load_ground_truth_entries
 from bfcl_eval.model_handler.base_handler import BaseHandler
-from bfcl_eval.schemas.category import EvalStrategy, TestCategory
+from bfcl_eval.schemas.category import AST_STRATEGIES, EvalStrategy, TestCategory
 from bfcl_eval.schemas.entries import TestEntry
 from bfcl_eval.schemas.ground_truth import GroundTruth, GroundTruthKind
 from bfcl_eval.utils import *
@@ -935,7 +935,7 @@ def evaluate_task(
         accuracy, total_count = relevance_file_runner(
             handler, model_result, prompt, model_name, test_category, score_dir
         )
-    elif category.eval_strategy is EvalStrategy.AST:
+    elif category.eval_strategy in AST_STRATEGIES:
         accuracy, total_count = ast_file_runner(
             handler, model_result, prompt, possible_answer, category, model_name, score_dir
         )

@@ -41,7 +41,6 @@ class TravelAPI:
     def _load_scenario(
         self,
         scenario: Dict[str, Union[Dict, str, int, float]],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder
@@ -71,7 +70,7 @@ class TravelAPI:
             "user_last_name", DEFAULT_STATE_COPY["user_last_name"]
         )
         self.budget_limit = scenario.get("budget_limit", DEFAULT_STATE_COPY["budget_limit"])
-        self.long_context = long_context
+        self.long_context = scenario.get("long_context", False)
 
         if self.long_context:
             self._add_credit_cards()  # Add credit card extension for long context

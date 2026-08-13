@@ -106,7 +106,6 @@ class DoorDashAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -130,7 +129,6 @@ class DoorDashAPI(PatchableMixin):
         self.doubledash_stores = scenario.get("doubledash_stores", DEFAULT_STATE_COPY["doubledash_stores"])
         self.doubledash_catalog = scenario.get("doubledash_catalog", DEFAULT_STATE_COPY["doubledash_catalog"])
         self.gift_orders = scenario.get("gift_orders", DEFAULT_STATE_COPY["gift_orders"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, DoorDashAPI):

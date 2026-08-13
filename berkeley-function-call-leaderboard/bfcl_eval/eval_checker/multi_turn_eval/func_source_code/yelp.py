@@ -108,7 +108,6 @@ class YelpAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -126,7 +125,6 @@ class YelpAPI(PatchableMixin):
         self.check_ins = scenario.get("check_ins", DEFAULT_STATE_COPY["check_ins"])
         self.collections = scenario.get("collections", DEFAULT_STATE_COPY["collections"])
         self.questions = scenario.get("questions", DEFAULT_STATE_COPY["questions"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, YelpAPI):

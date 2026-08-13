@@ -121,7 +121,6 @@ class VanguardAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -142,7 +141,6 @@ class VanguardAPI(PatchableMixin):
         self.contributions = scenario.get("contributions", DEFAULT_STATE_COPY["contributions"])
         self.target_allocation = scenario.get("target_allocation", DEFAULT_STATE_COPY["target_allocation"])
         self.rmd_info = scenario.get("rmd_info", DEFAULT_STATE_COPY["rmd_info"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, VanguardAPI):

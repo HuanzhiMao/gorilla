@@ -106,7 +106,6 @@ class ConfluenceAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -122,7 +121,6 @@ class ConfluenceAPI(PatchableMixin):
         self.pages = scenario.get("pages", DEFAULT_STATE_COPY["pages"])
         self.comments = scenario.get("comments", DEFAULT_STATE_COPY["comments"])
         self.shares = scenario.get("shares", DEFAULT_STATE_COPY["shares"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, ConfluenceAPI):

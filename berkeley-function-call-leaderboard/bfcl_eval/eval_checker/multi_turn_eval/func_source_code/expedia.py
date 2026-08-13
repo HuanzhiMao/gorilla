@@ -99,7 +99,6 @@ class ExpediaAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -116,7 +115,6 @@ class ExpediaAPI(PatchableMixin):
         self.bookings = scenario.get("bookings", DEFAULT_STATE_COPY["bookings"])
         self.trip_boards = scenario.get("trip_boards", DEFAULT_STATE_COPY["trip_boards"])
         self.insurance_options = scenario.get("insurance_options", DEFAULT_STATE_COPY["insurance_options"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, ExpediaAPI):

@@ -131,7 +131,6 @@ class RobinhoodAPI(PatchableMixin):
     def _load_scenario(
         self,
         scenario: Dict[str, Any],
-        long_context: bool = False,
     ) -> None:
         """
         Load a scenario from the scenarios folder.
@@ -154,7 +153,6 @@ class RobinhoodAPI(PatchableMixin):
         self.options_positions = scenario.get("options_positions", DEFAULT_STATE_COPY["options_positions"])
         self.options_orders = scenario.get("options_orders", DEFAULT_STATE_COPY["options_orders"])
         self.collections = scenario.get("collections", DEFAULT_STATE_COPY["collections"])
-        self.long_context = long_context
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, RobinhoodAPI):
