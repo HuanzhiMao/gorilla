@@ -259,8 +259,8 @@ class GeminiHandler(BaseHandler):
                         parts=[
                             FunctionResponsePart(
                                 inline_data=FunctionResponseBlob(
-                                    data=execution_result["result"]["image_bytes"],
-                                    mime_type=execution_result["result"]["type"],
+                                    data=execution_result["result"].image_bytes,
+                                    mime_type=execution_result["result"].mime_type,
                                 ),
                             )
                         ],

@@ -11,6 +11,7 @@ from bfcl_eval.utils import (
 from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     STATELESS_CLASSES,
     execute_multi_turn_func_call,
+    redact_execution_results,
 )
 from bfcl_eval.constants.category_mapping import TEXT_MULTI_TURN_CATEGORY
 test_categories_total = parse_test_category_argument(["text:multi_turn"])
@@ -105,7 +106,9 @@ for test_category in test_categories_total:
                 current_turn_inference_log.append(
                     {
                         "role": "tool",
-                        "content": result_content,
+                        # An image result gets its payload stripped -- this log is
+                        # written to disk and meant to be read.
+                        "content": redact_execution_results(result_content),
                     }
                 )
 

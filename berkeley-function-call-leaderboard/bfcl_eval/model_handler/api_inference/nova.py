@@ -222,9 +222,7 @@ class NovaHandler(BaseHandler):
                         "toolResult": {
                             "toolUseId": tool_call_id,
                             "content": [
-                                self._image_block(
-                                    image.get("type", "image/jpeg"), image["image_bytes"]
-                                )
+                                self._image_block(image.mime_type, image.image_bytes)
                             ],
                         }
                     }

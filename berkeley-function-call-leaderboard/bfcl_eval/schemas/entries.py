@@ -126,9 +126,9 @@ class TestEntry:
         One atomic operation, replacing an ``entry["function"].extend(...)`` and a
         separate ``rule["_released"] = True`` that had to be kept in sync by hand.
         """
-        self.functions.extend(rule.holdout_docs)
+        self.functions.extend(rule.holdout_tools)
         rule.released = True
-        return rule.holdout_docs
+        return rule.holdout_tools
 
     def replace_backend_tools(self, docs: list[FunctionDoc], replaced_names: set[str]) -> None:
         """Swap in a refreshed tool list for one backend, mid-episode."""

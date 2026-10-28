@@ -880,7 +880,7 @@ def ast_file_runner(
 # take different arguments: relevance has no ground truth, and the AST runner needs
 # the parsed category to pick a language.
 _RUNNER_BY_STRATEGY = {
-    EvalStrategy.MULTI_TURN_STATE: lambda *a: multi_turn_runner(*a),
+    EvalStrategy.MULTI_TURN_EXECUTION: lambda *a: multi_turn_runner(*a),
     EvalStrategy.SUBSTRING_ANSWER: lambda *a: agentic_runner(*a),
     EvalStrategy.GEO_DISTANCE: lambda *a: vision_geoguessr_runner(*a),
     EvalStrategy.FUNC_CALL_CONSTRAINT: lambda *a: failing_tools_runner(*a),
@@ -899,7 +899,7 @@ def evaluate_task(
 
     record_cost_latency(leaderboard_table, model_name, test_category, model_result)
 
-    category = TestCategory.parse(test_category)
+    category = TestCategory.from_value(test_category)
 
     # Find the corresponding prompt entries
     prompt = load_dataset_entries(

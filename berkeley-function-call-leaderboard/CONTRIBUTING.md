@@ -239,7 +239,7 @@ To see what a category actually does on load:
 ```python
 >>> from bfcl_eval.dataset_loader.pipeline import describe
 >>> from bfcl_eval.schemas.category import TestCategory
->>> describe(TestCategory.parse("text:memory_kv"))
+>>> describe(TestCategory.from_value("text:memory_kv"))
 ['memory_prereq_link', 'prefix_ids', 'parse', 'resolve_initial_config',
  'structured_answer_prompt', 'resolve_tools', 'resolve_holdout_docs', 'language_hint']
 ```

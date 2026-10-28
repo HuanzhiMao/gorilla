@@ -273,8 +273,8 @@ class ClaudeHandler(BaseHandler):
                                 "type": "image",
                                 "source": {
                                     "type": "base64",
-                                    "data": execution_result["result"]["image_base64"],
-                                    "media_type": execution_result["result"]["type"],
+                                    "data": execution_result["result"].image_base64,
+                                    "media_type": execution_result["result"].mime_type,
                                 },
                             }
                         ],

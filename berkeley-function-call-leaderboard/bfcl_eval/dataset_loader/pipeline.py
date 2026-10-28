@@ -5,7 +5,7 @@ The transforms a category needs used to live in an if/elif chain inside
 meant reading the whole function. Now each category declares an ordered list of
 :class:`~bfcl_eval.schemas.category.StageId` and this module runs it.
 
-The pipeline has two halves, separated by ``StageId.PARSE``:
+The pipeline has two halves, separated by ``StageId.PARSE_ENTRIES``:
 
 * before it, stages take and return ``list[dict]`` -- they change an entry's identity
   or rebuild it outright, so the typed object cannot exist yet;
@@ -43,19 +43,19 @@ def _register() -> None:
     _RAW_STAGES.update(
         {
             StageId.ASSIGN_IDS: raw.assign_ids,
-            StageId.MEMORY_PREREQ_LINK: raw.memory_prereq_link,
+            StageId.LINK_MEMORY_PREREQ: raw.link_memory_prereq,
             StageId.VISION_ATTACH_IMAGE: raw.vision_attach_image,
-            StageId.AUDIO_MATERIALIZE: raw.audio_materialize,
+            StageId.AUDIO_REPLACE_TEXT: raw.audio_replace_text,
         }
     )
     _TYPED_STAGES.update(
         {
             StageId.RESOLVE_INITIAL_CONFIG: typed.resolve_initial_config,
             StageId.MARK_LONG_CONTEXT: typed.mark_long_context,
-            StageId.STRUCTURED_ANSWER_PROMPT: typed.structured_answer_prompt,
-            StageId.RESOLVE_TOOLS: typed.resolve_tools,
-            StageId.RESOLVE_HOLDOUT_DOCS: typed.resolve_holdout_docs,
-            StageId.LANGUAGE_HINT: typed.language_hint,
+            StageId.ADD_STRUCTURED_ANSWER_PROMPT: typed.add_structured_answer_prompt,
+            StageId.LOAD_BACKEND_TOOLS: typed.load_backend_tools,
+            StageId.RESOLVE_HOLDOUT_TOOLS: typed.resolve_holdout_tools,
+            StageId.ADD_LANGUAGE_HINT: typed.add_language_hint,
         }
     )
 
@@ -70,10 +70,10 @@ def run_pipeline(raw_entries: list[dict], ctx: LoadContext) -> list:
     _register()
 
     stages = ctx.category.load_stages
-    if StageId.PARSE not in stages:
+    if StageId.PARSE_ENTRIES not in stages:
         raise ValueError(
-            f"{ctx.category.value} declares no PARSE stage, so its entries would never "
-            f"become typed objects"
+            f"{ctx.category.value} declares no PARSE_ENTRIES stage, so its entries would "
+            f"never become typed objects"
         )
 
     from bfcl_eval.schemas.entries import parse_test_entry
@@ -81,7 +81,7 @@ def run_pipeline(raw_entries: list[dict], ctx: LoadContext) -> list:
     entries = raw_entries
     parsed = False
     for stage in stages:
-        if stage is StageId.PARSE:
+        if stage is StageId.PARSE_ENTRIES:
             entries = [parse_test_entry(raw, ctx.category) for raw in entries]
             parsed = True
             continue
@@ -92,7 +92,7 @@ def run_pipeline(raw_entries: list[dict], ctx: LoadContext) -> list:
         except KeyError:
             side = "after" if parsed else "before"
             raise ValueError(
-                f"{ctx.category.value} declares stage {stage.value!r} {side} PARSE, "
+                f"{ctx.category.value} declares stage {stage.value!r} {side} PARSE_ENTRIES, "
                 f"but no {'typed' if parsed else 'raw'} implementation is registered "
                 f"for it"
             ) from None

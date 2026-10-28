@@ -86,7 +86,7 @@ def mark_long_context(entries: list[TestEntry], ctx: LoadContext) -> list[TestEn
 
     Read per entry rather than off ``ctx.category``, because a load can yield entries
     from more than one category: a memory load also emits its prerequisite entries,
-    whose spec is its own. ``structured_answer_prompt`` splits on the same seam.
+    whose spec is its own. ``add_structured_answer_prompt`` splits on the same seam.
     """
     for entry in entries:
         if entry.category.long_context:
@@ -95,7 +95,7 @@ def mark_long_context(entries: list[TestEntry], ctx: LoadContext) -> list[TestEn
     return entries
 
 
-def structured_answer_prompt(entries: list[TestEntry], ctx: LoadContext) -> list[TestEntry]:
+def add_structured_answer_prompt(entries: list[TestEntry], ctx: LoadContext) -> list[TestEntry]:
     """Ask agentic categories to end with a parseable final answer.
 
     The checker for these categories reads the model's last non-tool-call message, so
@@ -118,8 +118,8 @@ def _backend_func_docs(class_name: str) -> list[FunctionDoc]:
     return [FunctionDoc.from_dict(doc) for doc in raw]
 
 
-def resolve_tools(entries: list[TestEntry], ctx: LoadContext) -> list[TestEntry]:
-    """Materialize the tool list for entries that name backend classes.
+def load_backend_tools(entries: list[TestEntry], ctx: LoadContext) -> list[TestEntry]:
+    """Build the tool list for entries that name backend classes.
 
     Multi-turn and agentic entries do not spell out their tools -- they name the API
     server classes they run against, and the tool docs come from those. Entries that
@@ -136,7 +136,7 @@ def resolve_tools(entries: list[TestEntry], ctx: LoadContext) -> list[TestEntry]
     return entries
 
 
-def resolve_holdout_docs(entries: list[TestEntry], ctx: LoadContext) -> list[TestEntry]:
+def resolve_holdout_tools(entries: list[TestEntry], ctx: LoadContext) -> list[TestEntry]:
     """Withhold the tools a holdout rule covers, keeping them on the rule.
 
     ``multi_turn_miss_func`` and ``failing_tools`` test whether a model copes when a
@@ -167,7 +167,7 @@ def resolve_holdout_docs(entries: list[TestEntry], ctx: LoadContext) -> list[Tes
                         entry.functions.pop(index)
                         break
 
-            rule.holdout_docs = withheld
+            rule.holdout_tools = withheld
     return entries
 
 
@@ -225,7 +225,7 @@ def _javascript_parameter_hint(schema: ParameterSchema) -> ParameterSchema:
     )
 
 
-def language_hint(entries: list[TestEntry], ctx: LoadContext) -> list[TestEntry]:
+def add_language_hint(entries: list[TestEntry], ctx: LoadContext) -> list[TestEntry]:
     """Tell the model how a non-Python language's types arrive.
 
     Java and JavaScript calls are evaluated as strings, so every parameter is declared

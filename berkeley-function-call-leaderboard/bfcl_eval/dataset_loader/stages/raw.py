@@ -73,7 +73,7 @@ def assign_ids(entries: list[dict], ctx: LoadContext) -> list[dict]:
     return entries
 
 
-def memory_prereq_link(entries: list[dict], ctx: LoadContext) -> list[dict]:
+def link_memory_prereq(entries: list[dict], ctx: LoadContext) -> list[dict]:
     """Expand a memory category into its questions plus their prerequisites.
 
     Each memory question is answered from memory that a *prerequisite* conversation
@@ -200,7 +200,7 @@ def vision_attach_image(entries: list[dict], ctx: LoadContext) -> list[dict]:
     return rebuilt
 
 
-def audio_materialize(entries: list[dict], ctx: LoadContext) -> list[dict]:
+def audio_replace_text(entries: list[dict], ctx: LoadContext) -> list[dict]:
     """Replace each user message's text with its spoken form.
 
     Delegates to the original implementation rather than reimplementing it, because

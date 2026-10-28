@@ -4,6 +4,7 @@ import re
 from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
     execute_multi_turn_func_call,
     is_empty_execute_response,
+    redact_execution_results,
 )
 from bfcl_eval.schemas.entries import TestEntry
 from bfcl_eval.schemas.ground_truth import CallConstraintGroundTruth
@@ -25,9 +26,7 @@ def multi_turn_checker(
     initial_config: dict = environment.initial_config
     involved_classes: list = environment.involved_classes
     test_entry_id: str = test_entry.id
-    # The entry knows its own category; this used to be re-derived from the id, which
-    # silently shadowed the caller's `test_category` argument.
-    test_category: str = test_entry.category.value
+
     failure_injection = (
         [injection.to_dict() for injection in environment.failure_injections] or None
     )
@@ -96,7 +95,7 @@ def multi_turn_checker(
                     "error_message": f"Model response list is empty for turn {turn_index}",
                     "error_type": "multi_turn:empty_turn_model_response",
                     "details": {
-                        "execution_result": execution_results,
+                        "execution_result": redact_execution_results(execution_results),
                     },
                 }
 
@@ -115,7 +114,9 @@ def multi_turn_checker(
         # Check the state of the instances
         state_check_result = state_checker(model_instances, ground_truth_instances)
         if not state_check_result["valid"]:
-            state_check_result["execution_result"] = execution_results
+            state_check_result["execution_result"] = redact_execution_results(
+                execution_results
+            )
             return state_check_result
 
         # Check the response of the function calls
@@ -220,9 +221,13 @@ def response_checker(
             "error_message": f"Model response execution results so far does not contain all the ground truth response execution results for turn {turn_index}.",
             "error_type": "multi_turn:execution_response_mismatch",
             "details": {
-                "missing_items": missing_items,
-                "model_response (including all previous turns)": model_response_list,
-                "ground_truth_response (only the current turn)": ground_truth_response_list,
+                "missing_items": redact_execution_results(missing_items),
+                "model_response (including all previous turns)": redact_execution_results(
+                    model_response_list
+                ),
+                "ground_truth_response (only the current turn)": redact_execution_results(
+                    ground_truth_response_list
+                ),
             },
         }
 

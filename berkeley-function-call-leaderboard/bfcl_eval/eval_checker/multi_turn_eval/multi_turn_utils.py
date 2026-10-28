@@ -84,8 +84,9 @@ def execute_multi_turn_func_call(
 
     Returns:
         A tuple of (execution_results, involved_instances) where:
-        - execution_results is a list of dicts, each with "result" (str or dict) and
-          "result_type" (ResultType.TEXT or ResultType.IMAGE).
+        - execution_results is a list of dicts, each with "result" (a str, or an
+          `ImageResult` when the tool returned an image) and "result_type"
+          (ResultType.TEXT or ResultType.IMAGE).
         - involved_instances is a dict mapping class names to their instantiated objects.
     """
     if is_evaL_run:
@@ -162,8 +163,11 @@ def execute_multi_turn_func_call(
 
             # Every result should be a dict with "result" and "result_type" keys
             if isinstance(func_call_result, ImageResult):
+                # Held as the object, not flattened to a dict: the payload attributes
+                # are what handlers want, and anything writing this to disk goes
+                # through `redact_execution_results` / the payload-free repr instead of
+                # dumping a megabyte of base64 into a score file.
                 result_type = ResultType.IMAGE
-                func_call_result = func_call_result.to_dict()
             elif isinstance(func_call_result, dict):
                 try:
                     func_call_result = json.dumps(func_call_result)
@@ -172,7 +176,6 @@ def execute_multi_turn_func_call(
             elif not isinstance(func_call_result, str):
                 func_call_result = str(func_call_result)
 
-            # @HuanzhiMao FIXME: update all related code for this new format
             execution_results.append(
                 {
                     "result": func_call_result,
@@ -189,6 +192,26 @@ def execute_multi_turn_func_call(
             )
 
     return execution_results, involved_instances
+
+
+def redact_execution_results(value):
+    """Recursively replace every `ImageResult` with its redacted dict form.
+
+    For execution results bound for a score file. `make_json_serializable` would fall
+    back to `str()` on an `ImageResult` -- harmless, since its repr carries no payload,
+    but a bare repr string in place of a dict loses the shape a reader expects.
+    Redacting explicitly keeps the structure and drops the base64.
+
+    Shaped like `model_handler.utils._elide_payloads`, which does the same job for a
+    rendered provider request.
+    """
+    if isinstance(value, ImageResult):
+        return value.to_dict(redact_binary=True)
+    if isinstance(value, dict):
+        return {key: redact_execution_results(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [redact_execution_results(item) for item in value]
+    return value
 
 
 def _sanitize_class_instance_name(name: str) -> str:

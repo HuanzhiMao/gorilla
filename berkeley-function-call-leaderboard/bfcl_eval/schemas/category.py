@@ -60,7 +60,7 @@ class StageId(str, Enum):
     tracing an if/elif chain inside the loader. Implementations live in
     ``bfcl_eval.dataset_loader.stages``; this enum is the contract between the two.
 
-    Stages before ``PARSE`` operate on raw JSON objects, because they change an
+    Stages before ``PARSE_ENTRIES`` operate on raw JSON objects, because they change an
     entry's identity or rebuild it wholesale. Everything after operates on typed
     ``TestEntry`` objects.
 
@@ -74,14 +74,14 @@ class StageId(str, Enum):
     ASSIGN_IDS = "assign_ids"
     # Expand a memory category into its questions plus the prerequisite
     # write-conversations they depend on.
-    MEMORY_PREREQ_LINK = "memory_prereq_link"
+    LINK_MEMORY_PREREQ = "link_memory_prereq"
     # Rebuild a vision entry around the base64 image its question refers to.
     VISION_ATTACH_IMAGE = "vision_attach_image"
     # Swap transcript text for audio bytes, or for ASR output.
-    AUDIO_MATERIALIZE = "audio_materialize"
+    AUDIO_REPLACE_TEXT = "audio_replace_text"
 
     # The dict -> TestEntry boundary.
-    PARSE = "parse"
+    PARSE_ENTRIES = "parse_entries"
 
     # Replace `initial_config` path strings with the JSON they point at.
     RESOLVE_INITIAL_CONFIG = "resolve_initial_config"
@@ -89,13 +89,14 @@ class StageId(str, Enum):
     # the backends read it as data rather than receiving it as a threaded argument.
     MARK_LONG_CONTEXT = "mark_long_context"
     # Prepend the system prompt asking for a parseable final answer.
-    STRUCTURED_ANSWER_PROMPT = "structured_answer_prompt"
-    # Materialize the tool list from the entry's backend classes.
-    RESOLVE_TOOLS = "resolve_tools"
+    ADD_STRUCTURED_ANSWER_PROMPT = "add_structured_answer_prompt"
+    # Build the tool list by reading the func docs of the backend classes the entry
+    # names. Entries that ship an explicit tool list are left alone.
+    LOAD_BACKEND_TOOLS = "load_backend_tools"
     # Move withheld tools off the tool list and onto their holdout rules.
-    RESOLVE_HOLDOUT_DOCS = "resolve_holdout_docs"
+    RESOLVE_HOLDOUT_TOOLS = "resolve_holdout_tools"
     # Fold Java/JavaScript type information into tool descriptions.
-    LANGUAGE_HINT = "language_hint"
+    ADD_LANGUAGE_HINT = "add_language_hint"
 
 
 class EvalStrategy(str, Enum):
@@ -118,7 +119,12 @@ class EvalStrategy(str, Enum):
     # parallel_multiple too: it differs from parallel in how the question is posed,
     # not in how the answer is compared.
     AST_PARALLEL = "ast_parallel"
-    MULTI_TURN_STATE = "multi_turn_state"
+    # Execute the model's calls and the ground truth's calls against the same starting
+    # backend state, then compare *both* halves of what execution produced: the end
+    # state of every backend instance, and the values the calls returned. Named for
+    # the execution rather than for either check, because failing either one fails
+    # the entry.
+    MULTI_TURN_EXECUTION = "multi_turn_execution"
     SUBSTRING_ANSWER = "substring_answer"
     GEO_DISTANCE = "geo_distance"
     RELEVANCE = "relevance"
@@ -209,11 +215,8 @@ class TestCategory:
     # ---- construction ----------------------------------------------------
 
     @classmethod
-    def parse(cls, value: str) -> "TestCategory":
-        """``"text:simple_python"`` -> ``TestCategory``.
-
-        Replaces ``parse_full_category`` / ``get_base_category`` /
-        ``get_category_modality``.
+    def from_value(cls, value: str) -> "TestCategory":
+        """``"text:simple_python"`` -> ``TestCategory``, inverting :attr:`value`.
 
         Strict on purpose, and the only constructor. Every caller is a boundary where a
         name arrives as text -- the ``--test-category`` flag, the evaluator's category
@@ -397,14 +400,14 @@ class TestCategory:
     def load_stages(self) -> tuple[StageId, ...]:
         """The loading pipeline for this (modality, category) pair.
 
-        ``AUDIO_MATERIALIZE`` is a *modality* concern rather than a category one: the
+        ``AUDIO_REPLACE_TEXT`` is a *modality* concern rather than a category one: the
         same base category is delivered as text and as speech, and only the spoken
         form needs its messages turned into audio. It therefore prepends here rather
         than appearing on any spec row -- ahead of ``ASSIGN_IDS``, because it rewrites
         message content and has no interest in ids.
         """
         if self.modality in (Modality.TRUE_AUDIO, Modality.TEXT_AUDIO):
-            return (StageId.AUDIO_MATERIALIZE, *self.spec.load_stages)
+            return (StageId.AUDIO_REPLACE_TEXT, *self.spec.load_stages)
         return self.spec.load_stages
 
     # ---- file resolution -------------------------------------------------
@@ -437,29 +440,32 @@ class TestCategory:
 # Registry
 # ---------------------------------------------------------------------------
 
-# Every category runs these, in this order, after its own materialization stages.
+# Every category runs these, in this order, after its own raw stages.
 # Shared rather than repeated per row because they genuinely are universal: each one
 # no-ops for the categories it does not apply to.
 COMMON_STAGES: tuple[StageId, ...] = (
-    StageId.PARSE,
+    StageId.PARSE_ENTRIES,
     StageId.RESOLVE_INITIAL_CONFIG,
     # After RESOLVE_INITIAL_CONFIG so it never has to reason about the path strings
     # that stage replaces.
     StageId.MARK_LONG_CONTEXT,
-    StageId.STRUCTURED_ANSWER_PROMPT,
-    StageId.RESOLVE_TOOLS,
-    StageId.RESOLVE_HOLDOUT_DOCS,
-    StageId.LANGUAGE_HINT,
+    StageId.ADD_STRUCTURED_ANSWER_PROMPT,
+    StageId.LOAD_BACKEND_TOOLS,
+    StageId.RESOLVE_HOLDOUT_TOOLS,
+    StageId.ADD_LANGUAGE_HINT,
 )
 
 
-def _pipeline(*materialize: StageId) -> tuple[StageId, ...]:
-    """``ASSIGN_IDS``, this category's materialization stages, then the common tail.
+def _pipeline(*raw_stages: StageId) -> tuple[StageId, ...]:
+    """``ASSIGN_IDS``, this category's own raw stages, then the common tail.
 
-    ``ASSIGN_IDS`` leads unconditionally: the materialization stages copy ids into
-    ``depends_on`` and into rebuilt entries, so they must see final ones.
+    "Raw" in the sense ``dataset_loader.stages.raw`` means it: these run before
+    ``PARSE_ENTRIES``, on JSON objects rather than on ``TestEntry`` objects.
+
+    ``ASSIGN_IDS`` leads unconditionally: the raw stages copy ids into ``depends_on``
+    and into rebuilt entries, so they must see final ones.
     """
-    return (StageId.ASSIGN_IDS, *materialize, *COMMON_STAGES)
+    return (StageId.ASSIGN_IDS, *raw_stages, *COMMON_STAGES)
 
 
 TEXT_ONLY = frozenset({Modality.TEXT})
@@ -513,7 +519,7 @@ def _multi_turn(base_name: str, *, long_context: bool = False) -> CategorySpec:
     return CategorySpec(
         base_name=base_name,
         family=CategoryFamily.MULTI_TURN,
-        eval_strategy=EvalStrategy.MULTI_TURN_STATE,
+        eval_strategy=EvalStrategy.MULTI_TURN_EXECUTION,
         ground_truth_kind=GroundTruthKind.MULTI_TURN_CALLS,
         supported_modalities=TEXT_AND_AUDIO,
         load_stages=_pipeline(),
@@ -525,8 +531,8 @@ def _multi_turn(base_name: str, *, long_context: bool = False) -> CategorySpec:
 def _web_search(base_name: str) -> CategorySpec:
     """Both web-search categories draw questions and answers from one shared file.
 
-    Needs no materialization stage of its own: ``ASSIGN_IDS`` already renames the
-    shared file's ids after the category reading them.
+    Needs no raw stage of its own: ``ASSIGN_IDS`` already renames the shared file's
+    ids after the category reading them.
     """
     return CategorySpec(
         base_name=base_name,
@@ -550,7 +556,7 @@ def _memory(backend: str, *, prereq: bool) -> CategorySpec:
         eval_strategy=EvalStrategy.SUBSTRING_ANSWER,
         ground_truth_kind=GroundTruthKind.TEXT_ANSWERS,
         supported_modalities=TEXT_ONLY,
-        load_stages=_pipeline(StageId.MEMORY_PREREQ_LINK),
+        load_stages=_pipeline(StageId.LINK_MEMORY_PREREQ),
         is_multi_step=True,
         # The prerequisite write-conversations are explicitly excluded from the
         # structured-answer prompt: they populate memory, they do not answer anything.

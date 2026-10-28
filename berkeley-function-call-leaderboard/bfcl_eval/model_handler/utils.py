@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Callable, List, Optional, Type, Union
 from bfcl_eval.constants.default_prompts import *
 from bfcl_eval.constants.enums import ModelStyle, ReturnFormat
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
+from bfcl_eval.eval_checker.multi_turn_eval.func_source_code import ImageResult
 from bfcl_eval.model_handler.parser.java_parser import parse_java_function_call
 from bfcl_eval.model_handler.parser.js_parser import parse_javascript_function_call
 from bfcl_eval.schemas.function_doc import FunctionDoc
@@ -492,17 +493,16 @@ def render_messages_for_log(messages) -> str:
 def image_content_from_execution_result(execution_result: dict) -> ImageContent:
     """Adapt one ``ResultType.IMAGE`` execution result into an :class:`ImageContent`.
 
-    ``ImageResult.to_dict`` emits ``{"image_base64", "image_bytes", "type"}`` and no
-    path -- the image was produced by a tool at run time, not read off disk. Handlers
-    that deliver an image tool result as a user message need it in the same shape as a
-    dataset image so one rendering path serves both.
+    An ``ImageResult`` carries no path -- the image was produced by a tool at run time,
+    not read off disk. Handlers that deliver an image tool result as a user message need
+    it in the same shape as a dataset image so one rendering path serves both.
     """
-    result = execution_result["result"]
+    result: ImageResult = execution_result["result"]
     return ImageContent(
         image_path="",
-        mime_type=result.get("type", "image/jpeg"),
-        image_base64=result["image_base64"],
-        image_bytes=result["image_bytes"],
+        mime_type=result.mime_type,
+        image_base64=result.image_base64,
+        image_bytes=result.image_bytes,
     )
 
 

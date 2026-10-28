@@ -297,17 +297,22 @@ class BaseHandler:
                     })
                     test_entry.release_holdout(holdout_rule)
                     inference_data = self._compile_tools(inference_data, test_entry)
-                    assert (
-                        len(current_turn_message) == 0
-                    ), "Holdout turn should not have user message."
                     # TODO: Move this to before pre_query_processing_FC.
                     # Shouldn't be happening in the inference loop.
-                    current_turn_message = [
-                        Message(
-                            role=Role.USER,
-                            content=DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
-                        )
-                    ]
+                    if not current_turn_message:
+                        # The text datasets mark the holdout turn by leaving it empty,
+                        # so the prompt telling the model to retry is generated here.
+                        # The audio datasets ship it as a real turn instead: it has to
+                        # exist as text before it can be recorded as speech, and there
+                        # is no TTS at inference time. Injecting on top of that would
+                        # say it twice, so a shipped turn wins. Release itself does not
+                        # depend on either -- `is_triggered` only compares turn indices.
+                        current_turn_message = [
+                            Message(
+                                role=Role.USER,
+                                content=DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
+                            )
+                        ]
 
             # Binary payloads are stripped from the log rather than deep-copied out of
             # it. Unconditionally: keying this on `contains_vision_input` left the mp3
@@ -467,21 +472,21 @@ class BaseHandler:
                     )
 
                     for execution_result in execution_results:
-                        # @HuanzhiMao FIXME: Update for prompting method as well.
-                        if execution_result["result_type"] == "image":
-                            current_step_inference_log.append(
-                                {
-                                    "role": "tool",
-                                    "content": "This is an image result. Removed for logging purpose.",
-                                }
-                            )
-                        else:
-                            current_step_inference_log.append(
-                                {
-                                    "role": "tool",
-                                    "content": execution_result["result"],
-                                }
-                            )
+                        result = execution_result["result"]
+                        current_step_inference_log.append(
+                            {
+                                "role": "tool",
+                                # An image result is an `ImageResult`, whose redacted
+                                # form names the mime type, size and digest instead of
+                                # writing the payload into the result file.
+                                "content": (
+                                    result.to_dict(redact_binary=True)
+                                    if execution_result["result_type"]
+                                    == ResultType.IMAGE
+                                    else result
+                                ),
+                            }
+                        )
 
                     # Check if holdout functions should be released after this invocation
                     for holdout_rule in missed_classes_rules:

@@ -50,8 +50,11 @@ KNOWN_UNMODELED_KEYS = frozenset(
         "path",  # multi_turn: the intended tool trajectory, never read
         "excluded_function",  # multi_turn: never read
         # The pre-`missed_classes` spelling of holdout rules, and a different shape
-        # entirely (turn index -> function names). Survives only in the audio
-        # datasets, which do not currently load at all.
+        # entirely (turn index -> function names). The two live audio files have been
+        # migrated off it; it survives only in `unused_datasets/` and in the
+        # `old_versions/` and `test/` staging copies under `audio/text_audio/`, which
+        # dataset discovery excludes. Kept so that re-running the audio transform from
+        # those inputs does not warn.
         "missed_function",
     }
 )

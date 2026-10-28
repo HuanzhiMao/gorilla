@@ -235,11 +235,7 @@ class OpenAIResponsesHandler(BaseHandler):
                 image = execution_result["result"]
                 # A list of content parts is a documented `output` value here, so no
                 # placeholder-plus-user-message dance is needed.
-                output = [
-                    self._image_part(
-                        image.get("type", "image/jpeg"), image["image_base64"]
-                    )
-                ]
+                output = [self._image_part(image.mime_type, image.image_base64)]
             else:
                 output = execution_result["result"]
 

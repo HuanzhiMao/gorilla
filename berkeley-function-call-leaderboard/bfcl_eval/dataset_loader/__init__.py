@@ -29,7 +29,7 @@ from bfcl_eval.schemas.ground_truth import GroundTruth, GroundTruthKind, parse_g
 
 
 def _as_category(category: TestCategory | str) -> TestCategory:
-    return category if isinstance(category, TestCategory) else TestCategory.parse(category)
+    return category if isinstance(category, TestCategory) else TestCategory.from_value(category)
 
 
 def load_dataset_entries(

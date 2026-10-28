@@ -42,7 +42,7 @@ class MissedClassRule:
                                "target_function": "WeatherComAPI.compare_locations",
                                "holdout_classes": ["YahooWeatherAPI"]}
 
-    ``holdout_docs`` is populated by the loader from the per-class function-doc
+    ``holdout_tools`` is populated by the loader from the per-class function-doc
     files. ``released`` and ``invocations`` are runtime state written during
     inference; neither is serialized back.
 
@@ -58,8 +58,9 @@ class MissedClassRule:
     invoke_threshold: int | None = None
     target_function: str | None = None
 
-    # Filled by the loader; the docs stripped out of ``entry.functions``.
-    holdout_docs: list[FunctionDoc] = field(default_factory=list, repr=False)
+    # Wire key ``holdout_func_docs``. Filled by the loader with the tools stripped out
+    # of ``entry.functions``.
+    holdout_tools: list[FunctionDoc] = field(default_factory=list, repr=False)
     # Runtime state, not on disk.
     released: bool = field(default=False, compare=False)
     invocations: int = field(default=0, compare=False)
@@ -82,13 +83,23 @@ class MissedClassRule:
         if self.condition is HoldoutCondition.AFTER_N_TURNS:
             if self.turn_index is None:
                 raise ValueError("an after_n_turns holdout rule requires 'value'")
+            if not isinstance(self.turn_index, int):
+                # `is_triggered` compares this against the loop counter with `==`, so a
+                # string "3" never equals 3: the rule would never fire, silently. No
+                # crash, no holdout, and a category scored as though it had none. The
+                # retired `missed_function` spelling keyed its turns by string, which is
+                # exactly how such a value reaches here.
+                raise ValueError(
+                    f"an after_n_turns holdout rule needs an integer 'value', "
+                    f"got {self.turn_index!r}"
+                )
         elif self.condition is HoldoutCondition.AFTER_N_INVOKE:
             if self.invoke_threshold is None or self.target_function is None:
                 raise ValueError("an after_n_invoke holdout rule requires 'n' and 'target_function'")
 
     @property
     def holdout_function_names(self) -> list[str]:
-        return [doc.name for doc in self.holdout_docs]
+        return [doc.name for doc in self.holdout_tools]
 
     @property
     def bare_target_function(self) -> str | None:
@@ -130,7 +141,7 @@ class MissedClassRule:
             turn_index=known.get("value"),
             invoke_threshold=known.get("n"),
             target_function=known.get("target_function"),
-            holdout_docs=[FunctionDoc.from_dict(d) for d in known.get("holdout_func_docs") or []],
+            holdout_tools=[FunctionDoc.from_dict(d) for d in known.get("holdout_func_docs") or []],
             extras=dump_extras({}, annotations, extras),
         )
 
@@ -146,10 +157,11 @@ class MissedClassRule:
             out["value"] = self.turn_index
         if self.holdout_functions:
             out["holdout_functions"] = list(self.holdout_functions)
-        if self.holdout_docs:
+        if self.holdout_tools:
             # Injected by the loader, not present in the shipped dataset files. Emitted
-            # only once populated, so a raw-file round trip stays exact.
-            out["holdout_func_docs"] = [doc.to_dict() for doc in self.holdout_docs]
+            # only once populated, so a raw-file round trip stays exact. The wire key
+            # keeps its ``_func_docs`` spelling: result files on disk already use it.
+            out["holdout_func_docs"] = [doc.to_dict() for doc in self.holdout_tools]
         return dump_extras(out, self.extras)
 
 
