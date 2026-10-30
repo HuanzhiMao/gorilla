@@ -17,7 +17,7 @@ def agentic_checker(model_response: str, possible_answer_list: list[str]) -> dic
     ]
     # Sometimes the model response is a list of one string
     if type(model_response) is list:
-        model_response = model_response[0]
+        model_response = model_response[0] if model_response else ""
     if type(model_response) is not str:
         model_response = str(model_response)
 
@@ -36,7 +36,14 @@ def agentic_checker(model_response: str, possible_answer_list: list[str]) -> dic
 
     standardized_extracted = standardize_string(str(extracted_answer))
     for possible_answer in standardized_possible_answer_list:
-        if re.search(rf"\b{re.escape(possible_answer)}\b", standardized_extracted):
+        # A candidate can start/end with currency, percent signs, brackets, or
+        # quotation marks. Word boundaries require a word character on one side,
+        # so they reject even an exact "$12" or "2.3%" answer. Check the characters
+        # outside the entire candidate instead, while still rejecting 21 in 121
+        # and names embedded in longer words.
+        if possible_answer and re.search(
+            rf"(?<!\w){re.escape(possible_answer)}(?!\w)", standardized_extracted
+        ):
             return {"valid": True, "error": []}
 
     return {
@@ -54,17 +61,6 @@ def agentic_checker(model_response: str, possible_answer_list: list[str]) -> dic
 
 
 #### Helper functions ####
-
-
-# def standardize_string(input_string: str):
-#     """
-#     This function standardizes the string by removing all the whitespace, ",./-_*^()" punctuation, and converting it to lowercase
-#     It will also convert all the single quotes to double quotes
-#     This is used to compare the model output with the possible answers
-#     We don't want to punish model for answer like April 1, 2024 vs April 1,2024, vs April 1 2024
-#     """
-#     regex_string = r"[\,\.\/\-\_\*\^\(\)]"
-#     return re.sub(regex_string, "", input_string).lower().replace("'", '"')
 
 
 def extract_answer_field(model_response: str) -> Optional[str]:
@@ -119,10 +115,10 @@ def extract_answer_field(model_response: str) -> Optional[str]:
 
 def standardize_string(input_string: str):
     """
-    This function standardizes the string by removing all whitespace, punctuation characters ",./-_*^()", quotation marks, and converting the result to lowercase
-    This is used to compare the model output with the possible answers
-    We don't want to punish model for answer like April 1, 2024 vs April 1,2024, vs April 1 2024
+    Normalize case, the benchmark's ignored punctuation, and whitespace.
+
+    Keep word separation: removing every space would let unrelated words merge
+    into a candidate. Currency and percent signs remain part of the answer.
     """
-    # @HuanzhiMao fixme, all quotation marks are removed because dataset is not clean enough. 
     regex_string = r"[\,\.\/\-\_\*\^\(\)\"']"
-    return re.sub(regex_string, "", input_string).lower()
+    return " ".join(re.sub(regex_string, "", input_string).lower().split())

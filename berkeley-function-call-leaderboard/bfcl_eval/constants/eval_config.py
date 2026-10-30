@@ -38,17 +38,20 @@ DATA_FOLDER_PATH = PACKAGE_ROOT / "data"
 TEXT_DATASET_PATH = DATA_FOLDER_PATH / "text"
 VISION_DATASET_PATH = DATA_FOLDER_PATH / "vision"
 AUDIO_DATASET_PATH = DATA_FOLDER_PATH / "audio"
+# The enriched sidecars contain ASR for both clean and noisy recordings. The older
+# text_audio/ files have the spoken transcript but no recognition output.
+AUDIO_METADATA_PATH = AUDIO_DATASET_PATH / "text_audio_noisy"
 
 IMAGE_PATH = VISION_DATASET_PATH / "images"
-AUDIO_FILE_PATH = AUDIO_DATASET_PATH / "audio_recording"
+AUDIO_FILE_PATH = AUDIO_DATASET_PATH / "audio_recording_clean"
 
 # Mapping from modality value to the directory containing its test-case JSONs.
 MODALITY_DATASET_PATH = {
     Modality.TEXT: TEXT_DATASET_PATH,
     Modality.VISION: VISION_DATASET_PATH,
     # Both True Audio and Text Audio modalities use the same dataset
-    Modality.TRUE_AUDIO: AUDIO_DATASET_PATH,
-    Modality.TEXT_AUDIO: AUDIO_DATASET_PATH,
+    Modality.TRUE_AUDIO: AUDIO_METADATA_PATH,
+    Modality.TEXT_AUDIO: AUDIO_METADATA_PATH,
 }
 
 MULTI_TURN_FUNC_DOC_PATH = DATA_FOLDER_PATH / "multi_turn_func_doc"

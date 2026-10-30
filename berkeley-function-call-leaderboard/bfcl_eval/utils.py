@@ -214,7 +214,7 @@ def parse_test_category_argument(test_category_args: list[str]) -> list[str]:
     return sorted(list(test_name_total))
 
 
-def load_test_entries_from_id_file(id_file_path: Path):
+def load_test_entries_from_id_file(id_file_path: Path, *, category_filter=None):
     """
     Helper function to load the test entries from the id file (e.g. `test_case_ids_to_generate.json.example`)
     """
@@ -229,11 +229,13 @@ def load_test_entries_from_id_file(id_file_path: Path):
         # Skip categories that have an empty ID list
         if not test_ids:
             continue
+        categories.append(category)
+        if category_filter is not None and not category_filter(category):
+            continue
         # Extend the entries list with only those whose id is present in the ID list
         entries.extend(
             [entry for entry in load_dataset_entries(category) if entry.id in test_ids]
         )
-        categories.append(category)
 
     return categories, entries
 
@@ -242,7 +244,7 @@ def load_test_entries_from_id_file(id_file_path: Path):
 
 
 def is_true_audio(test_category):
-    return "audio" in test_category
+    return test_category.startswith(f"{Modality.TRUE_AUDIO.value}:")
 
 
 def is_text_audio(test_category):
@@ -261,7 +263,7 @@ def could_allow_clarification(test_category):
     Check if the test category allows the model to ask for clarification.
     Only audio tasks (true_audio and text_audio) allow clarification.
     """
-    return is_true_audio(test_category)
+    return is_true_audio(test_category) or is_text_audio(test_category)
 
 
 def is_vision_web_search(test_category: str) -> bool:
@@ -523,7 +525,9 @@ def load_dataset_entry(
 
     if modality in [Modality.TRUE_AUDIO, Modality.TEXT_AUDIO]:
         # True Audio or Text Audio categories
-        all_entries = load_file(modality_path / f"{base_category}.json")
+        from bfcl_eval.schemas.category import TestCategory
+
+        all_entries = load_file(TestCategory.from_value(test_category).dataset_path())
         all_entries = process_audio_test_case(all_entries, modality=modality)
 
     elif modality is Modality.VISION:
@@ -1262,36 +1266,15 @@ def process_geoguessr_test_case(test_cases: list[dict]) -> list[dict]:
 
 
 def load_audio(path: str) -> bytes:
-    """Load audio file from disk given a prefix of the filename.
+    """Read the exact recording named by a corpus-relative or absolute path.
 
-    The provided *path* is expected to be only a prefix of the actual filename that
-    lives inside the ``AUDIO_FILE_PATH`` directory (e.g. ``live_simple_0-0-0_openai``)
-    while the real file might be something like
-    ``live_simple_0-0-0_openai_audio_mumbling_background_noise_mosquito_db-5_network_cut_n10.mp3``.
-
-    We search for files whose names start with the given prefix and ensure exactly
-    one match is found.
+    The source directory distinguishes clean from noisy speech. Prefix matching is
+    unsafe here: ``simple_python_1.mp3`` also prefixes entries 10 through 199.
     """
-
-    # Ensure we are only dealing with the filename part in case a path is passed in
-    prefix = Path(path).name.split(".")[0]  # Strip any possible directories
-
-    # Perform prefix matching recursively inside AUDIO_FILE_PATH and its sub-directories
-    candidates = [p for p in AUDIO_FILE_PATH.rglob(f"{prefix}*.*") if p.is_file()]
-
-    if not candidates:
-        raise FileNotFoundError(
-            f"No audio file found in '{AUDIO_FILE_PATH}' with prefix '{prefix}'."
-        )
-    if len(candidates) > 1:
-        raise RuntimeError(
-            "Multiple audio files match the given prefix "
-            f"'{prefix}': {[c.name for c in candidates]}"
-        )
-
-    audio_path = candidates[0]
-    with open(audio_path, "rb") as f:
-        return f.read()
+    audio_path = Path(path)
+    if not audio_path.is_absolute():
+        audio_path = AUDIO_DATASET_PATH / audio_path
+    return audio_path.read_bytes()
 
 
 def audio_to_base64(data: bytes) -> str:
@@ -1299,39 +1282,49 @@ def audio_to_base64(data: bytes) -> str:
 
 
 def process_audio_test_case(test_cases: list[dict], modality: Modality) -> list[dict]:
+    """Select speech or genuine ASR, preserving provenance for clarification.
+
+    ``BFCL_AUDIO_VARIANT`` selects ``noisy`` (default) or ``clean`` for both
+    modalities. Text audio uses the corpus's OpenAI ASR for that exact variant;
+    unlike Deepgram, it covers every recorded message, including non-English ones.
+    Missing recordings/ASR are errors, never exclusions or substitutes of the
+    intended request.
     """
-    This function loads the audio query content from the path specified in the test entry.
-    """
+    if modality not in (Modality.TRUE_AUDIO, Modality.TEXT_AUDIO):
+        raise ValueError(f"{modality} is not an audio modality")
+    variant = os.getenv("BFCL_AUDIO_VARIANT", "noisy")
+    if variant not in {"clean", "noisy"}:
+        raise ValueError("BFCL_AUDIO_VARIANT must be 'clean' or 'noisy'")
+    path_key = "audio_path" if variant == "clean" else "audio_path_noisy"
+    asr_key = f"asr_openai_audio_{variant}"
+
     for entry in test_cases:
-        for turn in entry["question"]:
-            for msg in turn:
+        for turn_index, turn in enumerate(entry["question"]):
+            for message_index, msg in enumerate(turn):
                 if msg["role"] != "user":
                     continue
-
-                assert (
-                    "audio_path" in msg
-                ), f"Audio path should be specified in the test entry: {entry['id']}"
-
+                location = (
+                    f"{entry['id']} turn {turn_index} message {message_index}"
+                )
+                if not isinstance(msg.get(path_key), str) or not msg[path_key]:
+                    raise ValueError(
+                        f"Missing {path_key} for {location}; the audio corpus needs "
+                        "a recording for this user message."
+                    )
+                msg["original_content"] = msg.get("content", "")
+                msg["selected_audio_path"] = msg[path_key]
+                msg["selected_asr_key"] = asr_key
                 if modality == Modality.TRUE_AUDIO:
-                    msg["audio_content"] = load_audio(msg["audio_path"])
-                    # msg["audio_format"] = "wav"
-                    del msg["content"]
+                    msg["audio_content"] = load_audio(msg[path_key])
+                    msg["audio_format"] = Path(msg[path_key]).suffix.lstrip(".")
+                    msg.pop("content", None)
                 else:
-                    assert (
-                        modality == Modality.TEXT_AUDIO
-                    ), f"Modality {modality} is not a valid modality for audio test cases."
-                    # FIXME: uncomment this to determine which text to use
-                    # msg["content"] = msg["transcript"]
-                    # msg["content"] = msg["asr_output_openai"]
-                    # msg["content"] = msg["asr_output_elevenlabs"]
-                    msg["original_content"] = msg["content"]
-                    msg["content"] = msg["asr_output_deepgram"]
-
-                del msg["transcript"]
-                del msg["audio_path"]
-                del msg["asr_output_openai"]
-                del msg["asr_output_elevenlabs"]
-                del msg["asr_output_deepgram"]
+                    if not isinstance(msg.get(asr_key), str):
+                        raise ValueError(
+                            f"Missing {asr_key} for {location}; refusing to replace "
+                            "ASR with the intended request or transcript."
+                        )
+                    msg["content"] = msg[asr_key]
         # Merge any existing system prompts with the default audio agent prompt.
         combined_prompts: list[str] = [SYSTEM_PROMPT_FOR_AUDIO_AGENT]
 

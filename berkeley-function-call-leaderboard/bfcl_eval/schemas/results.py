@@ -30,6 +30,30 @@ from bfcl_eval.schemas.serde import dump_extras, split_known
 TokenCount = "int | float | list[list[int | float]] | None"
 
 
+def validate_audio_variant(
+    records: list[dict], expected_variant: str, *, artifact: str = "audio results"
+) -> None:
+    """Reject reuse of an audio artifact with different or unknown input noise.
+
+    Clean and noisy runs intentionally share category names. Persisted provenance
+    is therefore required before resuming or scoring them; missing metadata in an
+    older result cannot safely be assumed to mean clean speech.
+    """
+    if expected_variant not in ("clean", "noisy"):
+        raise ValueError("BFCL_AUDIO_VARIANT must be 'clean' or 'noisy'")
+    for record in records:
+        recorded_variant = record.get("audio_variant")
+        if recorded_variant != expected_variant:
+            entry_id = record.get("id", "score header")
+            raise ValueError(
+                f"Cannot reuse {artifact}: {entry_id} has audio_variant="
+                f"{recorded_variant!r}, but BFCL_AUDIO_VARIANT={expected_variant!r}. "
+                "Use separate result/score directories for clean and noisy runs, "
+                "or fully regenerate with --allow-overwrite without --run-ids and "
+                "reevaluate. Audio artifacts without variant metadata must be regenerated."
+            )
+
+
 @dataclass(slots=True)
 class ModelResultEntry:
     """One line of a ``*_result.json`` file.
@@ -50,6 +74,8 @@ class ModelResultEntry:
     reasoning_content: Any = None
     # Present instead of real metadata when inference raised.
     traceback: str | None = None
+    # Which recording/ASR variant was actually provided to the model.
+    audio_variant: str | None = None
     extras: dict[str, Any] = field(default_factory=dict, repr=False)
 
     _WIRE_KEYS = frozenset(
@@ -62,6 +88,7 @@ class ModelResultEntry:
             "inference_log",
             "reasoning_content",
             "traceback",
+            "audio_variant",
         }
     )
 
@@ -81,6 +108,7 @@ class ModelResultEntry:
             inference_log=known.get("inference_log"),
             reasoning_content=known.get("reasoning_content"),
             traceback=known.get("traceback"),
+            audio_variant=known.get("audio_variant"),
             extras=dump_extras({}, annotations, extras),
         )
 
@@ -98,6 +126,7 @@ class ModelResultEntry:
             "inference_log",
             "reasoning_content",
             "traceback",
+            "audio_variant",
         ):
             value = getattr(self, name)
             if value is not None:
@@ -115,10 +144,11 @@ class ScoreHeader:
     # geoguessr type1 reports distribution stats alongside the mean score.
     score_variance: float | None = None
     score_std: float | None = None
+    audio_variant: str | None = None
     extras: dict[str, Any] = field(default_factory=dict, repr=False)
 
     _WIRE_KEYS = frozenset(
-        {"accuracy", "correct_count", "total_count", "score_variance", "score_std"}
+        {"accuracy", "correct_count", "total_count", "score_variance", "score_std", "audio_variant"}
     )
 
     @classmethod
@@ -130,6 +160,7 @@ class ScoreHeader:
             total_count=known["total_count"],
             score_variance=known.get("score_variance"),
             score_std=known.get("score_std"),
+            audio_variant=known.get("audio_variant"),
             extras=dump_extras({}, annotations, extras),
         )
 
@@ -143,6 +174,8 @@ class ScoreHeader:
             out["score_variance"] = self.score_variance
         if self.score_std is not None:
             out["score_std"] = self.score_std
+        if self.audio_variant is not None:
+            out["audio_variant"] = self.audio_variant
         return dump_extras(out, self.extras)
 
 

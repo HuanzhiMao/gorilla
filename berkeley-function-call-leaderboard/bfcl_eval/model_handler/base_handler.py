@@ -1,4 +1,5 @@
 import json
+import logging
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 from tqdm import tqdm
@@ -34,6 +35,8 @@ from bfcl_eval.schemas.message import Message, Role
 from bfcl_eval.schemas.results import ModelResultEntry
 from bfcl_eval.utils import *
 from overrides import final
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from bfcl_eval.eval_checker.multi_turn_eval.func_source_code.memory_api_metaclass import (
@@ -183,6 +186,48 @@ class BaseHandler:
         exclude_state_log: bool,
     ) -> tuple[list[list], dict]:
         environment = test_entry.environment
+        # Initialize once, then retain the instances even if a provider call or
+        # response parser fails before the conversation completes.
+        _, involved_instances = execute_multi_turn_func_call(
+            [],
+            environment.initial_config,
+            environment.involved_classes,
+            self.model_name_underline_replaced,
+            test_entry.id,
+            is_evaL_run=False,
+            failure_injection=(
+                [injection.to_dict() for injection in environment.failure_injections]
+                or None
+            ),
+        )
+        try:
+            return self._inference_multi_turn_FC(
+                test_entry, include_input_log, exclude_state_log, involved_instances
+            )
+        finally:
+            for class_name, class_instance in involved_instances.items():
+                if class_name in END_SESSION_AFTER_EVAL_CLASSES:
+                    try:
+                        class_instance._end_session()
+                    except Exception:
+                        # Preserve a completed result or the original inference
+                        # error when the cleanup request itself fails.
+                        logger.warning(
+                            "Failed to close %s session for %s",
+                            class_name,
+                            test_entry.id,
+                            exc_info=True,
+                        )
+
+    @final
+    def _inference_multi_turn_FC(
+        self,
+        test_entry: TestEntry,
+        include_input_log: bool,
+        exclude_state_log: bool,
+        involved_instances: dict,
+    ) -> tuple[list[list], dict]:
+        environment = test_entry.environment
         initial_config: dict = environment.initial_config
         involved_classes: list = environment.involved_classes
         test_entry_id: str = test_entry.id
@@ -211,18 +256,6 @@ class BaseHandler:
         force_quit = False  # Whether the model has been forced to quit. If True, this whole entry will be failed.
 
         all_reasoning_content: list[list] = []
-
-        # Execute no function call, but just to get a reference to all the instances to get the initial state for logging purpose
-        # Also applies failure_injection patches at instance creation time (turn 0).
-        _, involved_instances = execute_multi_turn_func_call(
-            [],
-            initial_config,
-            involved_classes,
-            self.model_name_underline_replaced,
-            test_entry_id,
-            is_evaL_run=False,
-            failure_injection=failure_injection,
-        )
 
         if failure_injection:
             all_inference_log.append(
@@ -278,14 +311,6 @@ class BaseHandler:
         all_multi_turn_messages = test_entry.conversation
         for turn_idx, current_turn_message in enumerate(all_multi_turn_messages):
             current_turn_message: list[Message]
-
-            if any(
-                class_name in UPDATED_TOOL_LIST_CLASSES for class_name in involved_classes
-            ):
-                test_entry = update_available_tool_list_in_test_case(
-                    test_entry, involved_instances
-                )
-                self._compile_tools(inference_data, test_entry)
 
             released_holdout_log = []
             for holdout_rule in missed_classes_rules:
@@ -348,6 +373,17 @@ class BaseHandler:
             clarification_count = 0
 
             while True:
+                # Navigation can change after each tool call within a single
+                # user turn. Advertise the current backend actions on every step.
+                if any(
+                    class_name in UPDATED_TOOL_LIST_CLASSES
+                    for class_name in involved_classes
+                ):
+                    test_entry = update_available_tool_list_in_test_case(
+                        test_entry, involved_instances
+                    )
+                    inference_data = self._compile_tools(inference_data, test_entry)
+
                 # @HuanzhiMao FIXME: check if allow clarification
                 tqdm.write(
                     f"{'-' * 100}\nID: {test_entry_id}, Turn: {turn_idx}, Step: {step_count}, Clarification Count: {clarification_count}"
@@ -645,11 +681,6 @@ class BaseHandler:
             ), "Memory category should only involve one class."
             memory_instance: "MemoryAPI" = list(involved_instances.values())[0]
             memory_instance._flush_memory_to_local_file()
-
-        # Clean up, close sessions if needed.
-        for class_name, class_instance in involved_instances.items():
-            if class_name in END_SESSION_AFTER_EVAL_CLASSES:
-                class_instance._end_session()
 
         metadata = {
             "input_token_count": total_input_token_count,

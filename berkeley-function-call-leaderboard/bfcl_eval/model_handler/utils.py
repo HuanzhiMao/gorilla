@@ -721,12 +721,10 @@ def extract_clarification_context(
     ``allowed_clarifications`` and could never approve a follow-up clarification. This
     is called once per step, so it has to be a pure read.
 
-    ``original_user_request`` falls back to the audio sidecar's ground-truth
-    transcript. Only ``true_audio`` can reach that fallback, since ``text_audio``
-    always has ``original_content`` -- and today it yields nothing there either,
-    because ``process_audio_test_case`` deletes ``transcript`` before the typed parse.
-    It is written for the loader the audio corpus needs rather than the one it has;
-    ``AudioSource`` already models the field.
+    The audio loader preserves the original request and its transcription sidecar.
+    ``original_user_request`` normally uses ``original_content``; the source
+    transcript is a fallback for manually constructed entries. Neither field is
+    sent to the evaluated model.
 
     Returns:
         (allowed_clarifications, original_user_request, asr_output)
@@ -736,11 +734,17 @@ def extract_clarification_context(
     original_user_request = last_message.original_content or ""
     if not original_user_request and last_message.audio_source is not None:
         original_user_request = last_message.audio_source.transcript or ""
-    # `true_audio` shows the model no transcript at all -- it hears the recording -- so
-    # this is "" and `check_for_clarification` declines up front. That is deliberate:
-    # the judge prompt is written around comparing an ASR transcript against the
-    # intended request, and for native audio there is no transcript to compare.
+    # The native-audio model hears only the recording. Its matching ASR is evidence
+    # for the clarification judge, not an extra transcript sent to the model. Use
+    # precisely the selected variant; the intended request is never an ASR fallback.
     asr_output = last_message.content or ""
+    if last_message.has_audio and last_message.audio_source is not None:
+        source = last_message.audio_source
+        selected_key = source.selected_asr_key
+        asr_output = (
+            source.asr.get(selected_key.removeprefix(source.ASR_PREFIX), "")
+            if selected_key else ""
+        )
     return allowed_clarifications, original_user_request, asr_output
 
 
@@ -763,11 +767,11 @@ def check_for_clarification(
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     user_prompt = """
-You are a judge for an audio-chat scenario where a user speaks and an ASR system transcribes their speech for the assistant. The assistant only sees text (the ASR transcript), which is likely to contain transcription errors.
+You are a judge for a spoken conversation. The assistant either hears the user's recording directly or receives an ASR transcription of it. Both can lead to misheard names, numbers, and other exact values. A reference ASR transcription of the selected recording is provided as evidence for you; in native-audio mode the assistant did not see this transcript.
 
 You are given:
 - intended_request: the user's original, ground-truth intent.
-- asr_text: the ASR-transcribed text the assistant saw.
+- asr_text: the reference ASR transcription of the selected recording; this is also the assistant's input in ASR-text mode.
 - allowed_clarifications: a set of fields with canonical spellings/values the user can confirm (e.g., names, IDs, emails, dates, numbers).
 - assistant_message: the assistant's latest message.
 
@@ -775,7 +779,7 @@ Your job: decide whether assistant_message is a clarifying question specifically
 
 Decision rules:
 1. Classify the message as a spelling confirmation only if it explicitly asks to verify the exact spelling/format/value of one or more items (e.g., “Is it Mikaela or Michaela?”, “Can you spell the email?”, “Is the order number A1B-52?”).
-2. The request must be reasonable given the ASR risk (i.e., the item is a proper noun, key value, or easily misheard token relevant to the task).
+2. The request must be reasonable given speech recognition risk (i.e., the item is a proper noun, key value, or easily misheard token relevant to the task).
 3. To approve (allowed=true), all the topics the assistant asks to confirm must be present in allowed_clarifications. If any requested item is absent or ambiguous, set allowed=false.
 4. Output only a JSON object with two fields:
 - allowed: boolean
@@ -798,7 +802,7 @@ Edge cases:
         "The user's original intended request is:\n"
         + original_user_request
         + "\n\n"
-        + "The ASR-transcribed output is:\n"
+        + "The selected recording's reference ASR transcription is:\n"
         + asr_output
         + "\n\n"
         + "assistant_message:\n"

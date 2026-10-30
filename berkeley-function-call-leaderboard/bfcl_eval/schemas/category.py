@@ -7,17 +7,16 @@ encodes three real behaviors as *coincidences* of spelling:
 * ``is_agentic("vision_web_search_base")`` is true only because ``"web_search"``
   happens to be a substring. That is how the structured-answer system prompt reaches
   vision entries.
-* ``is_true_audio(c)`` is ``"audio" in c``, so it is also true for the
-  ``text_audio`` modality -- which is what makes clarification available there.
+* Native audio capability and permission to ask clarifying questions are separate:
+  ASR-text entries allow clarification without requiring an audio-capable model.
 * The runner if-chain must test ``geoguessr`` before ``agentic`` and
   ``vision_web_search`` before ``web_search``, an ordering nothing records.
 
 This module makes each of those an explicit field on a :class:`CategorySpec` row.
 Every field without a default is a decision a new category is *forced* to make.
 
-Behavior is preserved exactly, including the two audio quirks above: every trait here
-was checked against the corresponding legacy predicate for every registered category
-before the predicates were retired.
+Each trait records the corresponding behavior explicitly, so similarly named
+modalities cannot accidentally acquire one another's capability requirements.
 """
 
 from __future__ import annotations
@@ -341,13 +340,8 @@ class TestCategory:
 
     @property
     def is_true_audio(self) -> bool:
-        """Both audio modalities.
-
-        The legacy predicate is ``"audio" in test_category``, which is true for
-        ``text_audio`` as well as ``true_audio``. Preserved deliberately: it is what
-        enables clarification for both, and narrowing it would change scoring.
-        """
-        return self.modality in (Modality.TRUE_AUDIO, Modality.TEXT_AUDIO)
+        """Native speech input, as distinct from an ASR transcript."""
+        return self.modality is Modality.TRUE_AUDIO
 
     @property
     def is_text_audio(self) -> bool:
@@ -359,7 +353,7 @@ class TestCategory:
 
     @property
     def allows_clarification(self) -> bool:
-        return self.is_true_audio
+        return self.modality in (Modality.TRUE_AUDIO, Modality.TEXT_AUDIO)
 
     @property
     def language(self) -> Language:
@@ -413,6 +407,13 @@ class TestCategory:
     # ---- file resolution -------------------------------------------------
 
     def dataset_path(self) -> Path:
+        if self.modality in (Modality.TRUE_AUDIO, Modality.TEXT_AUDIO):
+            # Audio transformations keep the original entry ids, but the two
+            # holdout datasets and their enriched ASR sidecars use longer filenames.
+            stem = self.base_name
+            if stem in {"multi_turn_miss_func", "multi_turn_miss_param"}:
+                stem += "_transformed"
+            return MODALITY_DATASET_PATH[self.modality] / f"{stem}_noisy.json"
         return MODALITY_DATASET_PATH[self.modality] / self.spec.dataset_file_name()
 
     def ground_truth_path(self) -> Path | None:
@@ -639,6 +640,7 @@ _SPEC_LIST: list[CategorySpec] = [
         supported_modalities=TEXT_ONLY,
         load_stages=_pipeline(),
         is_multi_step=True,
+        scoring=False,
     ),
     # ---- vision ----
     *[

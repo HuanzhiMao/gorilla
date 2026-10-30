@@ -58,9 +58,8 @@ TEXT_FAILING_TOOLS_CATEGORY = [
 
 TEXT_SINGLE_TURN_CATEGORY = TEXT_NON_LIVE_CATEGORY + TEXT_LIVE_CATEGORY
 TEXT_AGENTIC_CATEGORY = TEXT_MEMORY_CATEGORY + TEXT_WEB_SEARCH_CATEGORY
-# Non-scoring categories are excluded from leaderboard aggregation. Currently empty
-# (the format_sensitivity category was retired together with prompting mode).
-NON_SCORING_CATEGORY = []
+# These categories can be run and scored individually but have no leaderboard weight.
+NON_SCORING_CATEGORY = TEXT_FAILING_TOOLS_CATEGORY
 
 #### Vision Modality ####
 
@@ -129,8 +128,7 @@ ALL_MODALITY_CATEGORIES = ALL_MODALITY_SCORING_CATEGORIES + NON_SCORING_CATEGORY
 
 TEST_COLLECTION_MAPPING = {
     # Aggregate categories
-    "all": TEXT_FAILING_TOOLS_CATEGORY,
-    # "all": ALL_MODALITY_CATEGORIES,
+    "all": ALL_MODALITY_CATEGORIES,
     "all_scoring": ALL_MODALITY_SCORING_CATEGORIES,
     "all_text": ALL_TEXT_CATEGORIES,
     "all_text_scoring": ALL_TEXT_SCORING_CATEGORIES,

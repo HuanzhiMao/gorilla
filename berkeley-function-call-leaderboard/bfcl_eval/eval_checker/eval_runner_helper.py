@@ -8,9 +8,9 @@ import pandas as pd
 
 from bfcl_eval.constants.column_headers import *
 from bfcl_eval.constants.eval_config import *
-from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING
-from bfcl_eval.dataset_loader import load_dataset_entries
-from bfcl_eval.schemas.results import ScoreHeader
+from bfcl_eval.constants.model_config import DIR_NAME_TO_REGISTRY, MODEL_CONFIG_MAPPING
+from bfcl_eval.dataset_loader import count_dataset_entries
+from bfcl_eval.schemas.results import ScoreHeader, validate_audio_variant
 from bfcl_eval.utils import *
 
 
@@ -193,6 +193,11 @@ def save_eval_results(
         accuracy=accuracy,
         correct_count=correct_count,
         total_count=len(model_result),
+        audio_variant=(
+            os.getenv("BFCL_AUDIO_VARIANT", "noisy")
+            if get_category_modality(test_category) in (Modality.TRUE_AUDIO, Modality.TEXT_AUDIO)
+            else None
+        ),
         **(extra_header_fields or {}),
     )
 
@@ -268,11 +273,7 @@ def get_category_score(modality_dict: dict, base_category: str, modality: str) -
         return score
     else:
         full_category = f"{modality}:{base_category}"
-        num_entry = len(
-            load_dataset_entries(
-                full_category, include_prereq=False, include_language_specific_hint=False
-            )
-        )
+        num_entry = count_dataset_entries(full_category)
         # If a category is not being evaluated, it needs to be distinguished from the situation where the evaluation score is 0
         # It will still be considered 0 in the overall score calculation though
         # We use `display_accuracy` to special handle
@@ -515,7 +516,7 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
     data_combined = []
 
     for model_name, value in leaderboard_table.items():
-        model_name_escaped = model_name.replace("_", "/")
+        model_name_escaped = DIR_NAME_TO_REGISTRY.get(model_name, model_name)
         model_config = MODEL_CONFIG_MAPPING[model_name_escaped]
 
         # Aggregate cost/latency across all modalities
@@ -648,11 +649,14 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
 
         # ---- Vision Modality ---- #
         vision_data = value.get("vision", {})
-        vision_geo_t1 = get_category_score(vision_data, "geoguessr_type1", "vision")
-        vision_geo_t2 = get_category_score(vision_data, "geoguessr_type2", "vision")
-        vision_geo_t3 = get_category_score(vision_data, "geoguessr_type3", "vision")
+        vision_scores = [
+            get_category_score(vision_data, get_base_category(category), "vision")
+            for category in ALL_VISION_CATEGORY
+        ]
+        # Every registered vision scoring category contributes equally, including
+        # the web-search perturbations and the GeoGuessr competition variant.
         vision_overall = calculate_unweighted_accuracy(
-            [vision_geo_t1, vision_geo_t2, vision_geo_t3],
+            vision_scores,
             display_na_if_category_missing=False,
         )
 
@@ -661,9 +665,7 @@ def generate_leaderboard_csv(leaderboard_table, output_path):
                 "N/A",
                 model_config.display_name,
                 vision_overall["display_accuracy"],
-                vision_geo_t1["display_accuracy"],
-                vision_geo_t2["display_accuracy"],
-                vision_geo_t3["display_accuracy"],
+                *(score["display_accuracy"] for score in vision_scores),
             ]
         )
 
@@ -834,6 +836,11 @@ def update_leaderboard_table_with_local_score_file(
             metadata = ScoreHeader.from_dict(load_file(model_score_json)[0]).to_dict()
             base_category = extract_test_category(model_score_json)
             modality = detect_modality_from_path(model_score_json, subdir)
+            if modality in (Modality.TRUE_AUDIO.value, Modality.TEXT_AUDIO.value):
+                validate_audio_variant(
+                    [metadata], os.getenv("BFCL_AUDIO_VARIANT", "noisy"),
+                    artifact=f"audio score file {model_score_json}",
+                )
             if model_name not in leaderboard_table:
                 leaderboard_table[model_name] = {}
             if modality not in leaderboard_table[model_name]:

@@ -1,11 +1,11 @@
-import json
+import logging
 import os
 import time
-from pickle import NONE
-from tkinter import NO
 from typing import Any, Dict, List, Optional
 import requests
 from bfcl_eval.eval_checker.multi_turn_eval.func_source_code import ImageResult
+
+logger = logging.getLogger(__name__)
 
 
 class StreetViewAPI:
@@ -13,17 +13,20 @@ class StreetViewAPI:
     StreetView API.
     """
 
+    _INIT_ATTEMPTS = 3
+    _INIT_RETRY_DELAY = 5
+
     def __init__(self):
         """Create a new StreetView API client."""
         self._api_description = "This tool belongs to the StreetView API, which is used to navigate and capture street views."
 
         self._base_url = os.getenv("GEOGUESSR_SERVER_URL", "http://127.0.0.1:18000")
         self._session = requests.Session()
-        self._timeout = (15, None)  # (connect timeout, read timeout)
+        self._timeout = (15, 120)  # (connect timeout, read timeout), in seconds
         # The client only retains the session identifier. All other state lives
         # on the server and can be fetched via GET /state when needed.
         self.session_id: Optional[str] = None
-        self.available_moves: List[str] = None
+        self.available_moves: List[str] = []
 
     # ------------------------------------------------------------------
     #  helper functions
@@ -109,15 +112,36 @@ class StreetViewAPI:
         Args:
             scenario (Dict[str, float]): Configuration dict. Forwarded to the server.
         """
-        while True:
+        for attempt in range(1, self._INIT_ATTEMPTS + 1):
             try:
                 self._connect_host()
                 result = self._call("POST", "/init_panorama", scenario)
                 self.available_moves = result.get("available_moves", [])
                 return result
-            except RuntimeError as e:
-                print(f"WARNING: Failed to connect to server: {e}. Retrying in 5 seconds...")
-                time.sleep(5)
+            except Exception as error:
+                # /connect may have succeeded before /init_panorama failed. End
+                # that session before retrying or leaving initialization.
+                try:
+                    self._end_session()
+                except Exception:
+                    logger.warning(
+                        "Failed to close StreetView session after initialization failure",
+                        exc_info=True,
+                    )
+                if not isinstance(error, RuntimeError):
+                    raise
+                if attempt == self._INIT_ATTEMPTS:
+                    raise RuntimeError(
+                        f"StreetView initialization failed after {attempt} attempts: {error}"
+                    ) from error
+                logger.warning(
+                    "StreetView initialization failed (%s/%s): %s. Retrying in %s seconds.",
+                    attempt,
+                    self._INIT_ATTEMPTS,
+                    error,
+                    self._INIT_RETRY_DELAY,
+                )
+                time.sleep(self._INIT_RETRY_DELAY)
 
     def __eq__(self, value: object) -> bool:
         """Check equality based on session identity.
@@ -376,8 +400,14 @@ class StreetViewAPI:
 
     def _end_session(self) -> Dict[str, Any]:
         """End the current session on the server and clear local session id."""
-        result = self._call("POST", "/end_session")
-        # Server drops the session. Clear client-side session routing info.
-        self.session_id = None
-        self._session.headers.pop("X-Session-ID", None)
-        return result
+        try:
+            if self.session_id is not None:
+                return self._call("POST", "/end_session")
+            return {}
+        finally:
+            # A failed teardown must not leave the next attempt routed to a stale
+            # session, and local connections still need closing.
+            self.session_id = None
+            self.available_moves = []
+            self._session.headers.pop("X-Session-ID", None)
+            self._session.close()

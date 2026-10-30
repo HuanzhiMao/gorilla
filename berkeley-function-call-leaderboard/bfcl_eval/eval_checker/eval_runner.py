@@ -1,8 +1,9 @@
 import argparse
+import os
 import statistics
 from collections import defaultdict
 
-from bfcl_eval.constants.enums import Language, ReturnFormat
+from bfcl_eval.constants.enums import Language, Modality, ReturnFormat
 from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.model_config import (
     DIR_NAME_TO_REGISTRY,
@@ -26,6 +27,7 @@ from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.schemas.category import AST_STRATEGIES, EvalStrategy, TestCategory
 from bfcl_eval.schemas.entries import TestEntry
 from bfcl_eval.schemas.ground_truth import GroundTruth, GroundTruthKind
+from bfcl_eval.schemas.results import validate_audio_variant
 from bfcl_eval.utils import *
 from dotenv import load_dotenv
 from tqdm import tqdm
@@ -69,8 +71,6 @@ def _subset_entries_by_model_ids(
             f"Length of model result ({len(model_result_entries)}) does not match length of test entries ({len(prompt_entries)}). If you intended to run only on a subset (eg. entries present in the model result), please pass the `--partial-eval` flag."
         )
 
-    all_present_ids = {entry["id"]: entry for entry in model_result_entries}
-
     # Pair each prompt with its ground truth by *id*. This used to be done by list
     # index, because ground-truth ids were prefixed with the Modality enum's repr and
     # so never matched a prompt id; now that they agree, pairing by id means a
@@ -82,11 +82,20 @@ def _subset_entries_by_model_ids(
         else None
     )
 
+    prompts_by_id = {entry.id: entry for entry in prompt_entries}
+    seen_ids = set()
     filtered_prompt_entries: list[TestEntry] = []
     filtered_ground_truth_entries: list[GroundTruth] = []
-    for prompt_entry in prompt_entries:
-        if prompt_entry.id not in all_present_ids:
-            continue
+    # Preserve the result order: every runner pairs these lists by position.
+    for result_entry in model_result_entries:
+        entry_id = result_entry["id"]
+        if entry_id in seen_ids:
+            raise ValueError(f"Duplicate model result ID: {entry_id}")
+        seen_ids.add(entry_id)
+        try:
+            prompt_entry = prompts_by_id[entry_id]
+        except KeyError:
+            raise ValueError(f"No prompt for model result ID: {entry_id}") from None
         filtered_prompt_entries.append(prompt_entry)
         if ground_truth_by_id is not None:
             try:
@@ -98,6 +107,19 @@ def _subset_entries_by_model_ids(
                 ) from None
 
     return filtered_prompt_entries, filtered_ground_truth_entries
+
+
+def _single_turn_response(result):
+    """Read the final step of a single-turn result, including audio clarification.
+
+    The unified inference loop writes ``[[step, ...]]`` even for AST and relevance
+    entries. Older files contain the provider response directly: a string, a list
+    of text chunks, or a list of call dictionaries. Only unwrap the turn/step
+    envelope; never flatten a provider's parallel calls or their argument values.
+    """
+    if isinstance(result, list) and len(result) == 1 and isinstance(result[0], list):
+        return result[0][-1] if result[0] else []
+    return result
 
 
 def _evaluate_single_vision_geoguessr_entry(
@@ -510,7 +532,9 @@ def _evaluate_single_relevance_entry(
 
     try:
         decoded_result = handler.decode_ast(
-            model_result_item, language=ReturnFormat.PYTHON, has_tool_call_tag=False
+            _single_turn_response(model_result_item),
+            language=ReturnFormat.PYTHON,
+            has_tool_call_tag=False,
         )
         # Decode successfully, which means the model output is in valid function call format
         contain_func_call = True
@@ -573,7 +597,7 @@ def _evaluate_single_ast_entry(
     try:
         model_result_item_raw = model_result_item
         model_result_item = handler.decode_ast(
-            model_result_item, return_format, has_tool_call_tag
+            _single_turn_response(model_result_item), return_format, has_tool_call_tag
         )
     except Exception as e:
         return {
@@ -897,9 +921,15 @@ def evaluate_task(
 ):
     tqdm.write(f"🔍 Running test: {test_category}")
 
-    record_cost_latency(leaderboard_table, model_name, test_category, model_result)
-
     category = TestCategory.from_value(test_category)
+    if category.modality in (Modality.TRUE_AUDIO, Modality.TEXT_AUDIO):
+        validate_audio_variant(
+            model_result,
+            os.getenv("BFCL_AUDIO_VARIANT", "noisy"),
+            artifact=f"{test_category} results",
+        )
+
+    record_cost_latency(leaderboard_table, model_name, test_category, model_result)
 
     # Find the corresponding prompt entries
     prompt = load_dataset_entries(
@@ -912,15 +942,7 @@ def evaluate_task(
         prompt, _ = _subset_entries_by_model_ids(
             model_result, prompt, None, allow_missing=allow_missing
         )
-    elif category.is_vision:
-        possible_answer = load_ground_truth_entries(category)
-        # NOTE: the vision categories deliberately skip subsetting, so --partial-eval
-        # does not apply to them and the runners' length assertion fires instead.
-        # Preserved as-is. The ground truth is now complete -- vision_base.json holds
-        # all 250 entries, restored from the `vision` branch -- so that assertion
-        # passes for every vision web-search category.
     else:
-        # @HuanzhiMao TODO: check if this works for audio cases.
         possible_answer = load_ground_truth_entries(category)
         # Sanity: prompt and ground truth should be 1:1
         assert len(prompt) == len(

@@ -119,9 +119,8 @@ class AudioSource:
     """On-disk audio provenance for a message.
 
     The audio datasets ship a sidecar of transcription and noise metadata alongside
-    each user message.  The loader currently deletes these keys outright; modeling
-    them means the choice of which text to use ("clean deepgram ASR" vs "the human
-    transcript") becomes a one-line policy instead of three commented-out lines.
+    each user message. The loader retains them for audit and clarification; provider
+    handlers send only the selected content or media, never this sidecar.
 
     ``asr`` is keyed by the suffix after ``asr_`` -- e.g. ``"deepgram_audio_clean"``
     for the wire key ``asr_deepgram_audio_clean``.  The real corpus uses
@@ -132,6 +131,8 @@ class AudioSource:
     speech_like_features: Any = None
     audio_path: str | None = None
     audio_path_noisy: str | None = None
+    selected_audio_path: str | None = None
+    selected_asr_key: str | None = None
     base_content: str | None = None
     noise_effects_applied: Any = None
     noise_processing_success: Any = None
@@ -146,6 +147,8 @@ class AudioSource:
             "speech_like_features",
             "audio_path",
             "audio_path_noisy",
+            "selected_audio_path",
+            "selected_asr_key",
             "base_content",
             "noise_effects_applied",
             "noise_processing_success",
@@ -168,6 +171,8 @@ class AudioSource:
             speech_like_features=raw.get("speech_like_features"),
             audio_path=raw.get("audio_path"),
             audio_path_noisy=raw.get("audio_path_noisy"),
+            selected_audio_path=raw.get("selected_audio_path"),
+            selected_asr_key=raw.get("selected_asr_key"),
             base_content=raw.get("base_content"),
             noise_effects_applied=raw.get("noise_effects_applied"),
             noise_processing_success=raw.get("noise_processing_success"),
@@ -182,6 +187,8 @@ class AudioSource:
             "audio_path",
             "base_content",
             "audio_path_noisy",
+            "selected_audio_path",
+            "selected_asr_key",
             "noise_effects_applied",
             "noise_processing_success",
         ):
@@ -256,7 +263,7 @@ class Message:
         else:
             audio = AudioContent(
                 audio_bytes=raw_audio,
-                audio_path=audio_keys.get("audio_path"),
+                audio_path=audio_keys.get("selected_audio_path") or audio_keys.get("audio_path"),
                 audio_format=known.get("audio_format", "mp3"),
             )
 

@@ -77,4 +77,16 @@ def load_ground_truth_entries(category: TestCategory | str) -> list[GroundTruth]
     return [parse_ground_truth(raw, category.ground_truth_kind) for raw in raw_entries]
 
 
-__all__ = ["load_dataset_entries", "load_ground_truth_entries"]
+def count_dataset_entries(category: TestCategory | str) -> int:
+    """Count scored questions without loading images, recordings, or backends.
+
+    Memory prerequisites are derived during loading and are not scored questions.
+    All other loading stages preserve the number of source entries.
+    """
+    category = _as_category(category)
+    if not category.is_loadable:
+        raise ValueError(f"{category.value} is a derived category")
+    return len(read_entries(category.dataset_path()))
+
+
+__all__ = ["load_dataset_entries", "load_ground_truth_entries", "count_dataset_entries"]

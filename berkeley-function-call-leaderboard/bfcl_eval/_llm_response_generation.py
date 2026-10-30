@@ -28,7 +28,7 @@ from bfcl_eval.model_handler.base_handler import BaseHandler
 from bfcl_eval.model_handler.local_inference.base_oss_handler import OSSHandler
 from bfcl_eval.dataset_loader import load_dataset_entries
 from bfcl_eval.schemas.entries import TestEntry
-from bfcl_eval.schemas.results import ModelResultEntry
+from bfcl_eval.schemas.results import ModelResultEntry, validate_audio_variant
 from bfcl_eval.utils import *
 from tqdm import tqdm
 
@@ -58,7 +58,7 @@ def get_args() -> Args:
     # Refer to model_choice for supported models.
     parser.add_argument("--model", type=str, required=True, nargs="+")
     # Refer to test_categories for supported categories.
-    parser.add_argument("--test-category", type=str, default="vision", nargs="+")
+    parser.add_argument("--test-category", type=str, default=["all"], nargs="+")
 
     # Parameters for the model that you want to test.
     parser.add_argument("--temperature", type=float, default=0.01)
@@ -127,16 +127,19 @@ def build_handler(model_name, temperature):
     return handler
 
 
-def get_involved_test_entries(test_category_args, run_ids):
+def get_involved_test_entries(test_category_args, run_ids, *, category_filter=None):
+    """Keep requested categories for diagnostics, loading only eligible datasets."""
     all_test_categories, all_test_entries_involved = [], []
     if run_ids:
         all_test_categories, all_test_entries_involved = load_test_entries_from_id_file(
-            TEST_IDS_TO_GENERATE_PATH
+            TEST_IDS_TO_GENERATE_PATH, category_filter=category_filter
         )
 
     else:
         all_test_categories = parse_test_category_argument(test_category_args)
         for test_category in all_test_categories:
+            if category_filter is not None and not category_filter(test_category):
+                continue
             all_test_entries_involved.extend(load_dataset_entries(test_category))
 
     return (
@@ -169,15 +172,22 @@ def collect_test_cases(
 
         for file_path in result_file_paths:
             if file_path.exists():
-                # Not allowing overwrite, we will load the existing results
-                if not args.allow_overwrite:
-                    existing_result.extend(load_file(file_path))
-                # Allow overwrite and not running specific test ids, we will delete the existing result file before generating new results
-                elif not args.run_ids:
+                # Full regeneration can replace another audio variant safely.
+                # Partial overwrites retain other rows, so validate those too.
+                if args.allow_overwrite and not args.run_ids:
                     file_path.unlink()
-                # Allow overwrite and running specific test ids, we will do nothing here
                 else:
-                    pass
+                    file_results = load_file(file_path)
+                    if get_category_modality(test_category) in (
+                        Modality.TRUE_AUDIO, Modality.TEXT_AUDIO
+                    ):
+                        validate_audio_variant(
+                            file_results,
+                            os.getenv("BFCL_AUDIO_VARIANT", "noisy"),
+                            artifact=str(file_path),
+                        )
+                    if not args.allow_overwrite:
+                        existing_result.extend(file_results)
 
         if is_memory(test_category):
             # We also need to special handle the pre-requisite entries and the snapshot result for memory test cases
@@ -214,11 +224,28 @@ def collect_test_cases(
     return sorted(test_cases_to_generate, key=sort_key)
 
 
+def _entry_audio_variant(test_case: TestEntry) -> str | None:
+    """Tag the input actually loaded, even if the environment changes afterward."""
+    if test_case.modality not in (Modality.TRUE_AUDIO, Modality.TEXT_AUDIO):
+        return None
+    variants = {
+        message.audio_source.selected_asr_key.removeprefix("asr_openai_audio_")
+        for _, _, message in test_case.iter_messages()
+        if message.audio_source is not None and message.audio_source.selected_asr_key
+    }
+    if not variants:
+        variants = {os.getenv("BFCL_AUDIO_VARIANT", "noisy")}
+    if len(variants) != 1 or not variants <= {"clean", "noisy"}:
+        raise ValueError(f"Entry {test_case.id} has inconsistent audio variants: {variants}")
+    return variants.pop()
+
+
 def multi_threaded_inference(
     handler, test_case: TestEntry, include_input_log, exclude_state_log
 ) -> ModelResultEntry:
 
     assert isinstance(test_case.functions, list)
+    audio_variant = _entry_audio_variant(test_case)
 
     try:
         result, metadata = handler.inference(
@@ -241,6 +268,8 @@ def multi_threaded_inference(
         result = f"Error during inference: {str(e)}"
         metadata = {"traceback": traceback.format_exc()}
 
+    if audio_variant is not None:
+        metadata["audio_variant"] = audio_variant
     return ModelResultEntry.from_inference(test_case.id, result, metadata)
 
 
@@ -249,7 +278,7 @@ def generate_results(args: Args, model_name, test_cases_total):
 
     # Load server failure patches on the main thread so worker threads see a
     # fully-populated registry. Only needed for the failing_tools category.
-    if any(is_failing_tools(category) for category in args.test_category):
+    if any(test_case.category.is_failing_tools for test_case in test_cases_total):
         load_all_server_patches()
 
     if isinstance(handler, OSSHandler):
@@ -401,11 +430,6 @@ def main(args: Args):
     if type(args.test_category) is not list:
         args.test_category = [args.test_category]
 
-    (
-        all_test_categories,
-        all_test_entries_involved,
-    ) = get_involved_test_entries(args.test_category, args.run_ids)
-
     for model_name in args.model:
         if model_name not in MODEL_CONFIG_MAPPING:
             raise ValueError(
@@ -413,13 +437,6 @@ def main(args: Args):
                 "• For officially supported models, please refer to `SUPPORTED_MODELS.md`.\n"
                 "• For running new models, please refer to `README.md` and `CONTRIBUTING.md`."
             )
-    # @HuanzhiMao TODO: get the progress bar to work properly
-    tqdm.write(f"Generating results for {args.model}")
-    if args.run_ids:
-        tqdm.write("Running specific test cases. Ignoring `--test-category` argument.")
-    else:
-        tqdm.write(f"Running full test cases for categories: {all_test_categories}.")
-
     # Each rule needs BOTH halves to agree: the model has to understand the modality
     # (`supports_*` on its registry row) and its handler has to be able to put that
     # modality on the wire (`can_handle_*` on the handler class). Checking only the
@@ -450,6 +467,32 @@ def main(args: Args):
             "handler can deliver an image as a tool result.",
         ),
     ]
+
+    def supported_by_selected_model(category):
+        return any(
+            not any(
+                category_check(category) and should_skip(MODEL_CONFIG_MAPPING[model_name])
+                for category_check, should_skip, _ in skip_rules
+            )
+            for model_name in args.model
+        )
+
+    # The loader reads image/audio bytes eagerly. Filter before loading so text-only
+    # runs do not require native-audio recordings or images they will never use.
+    (
+        all_test_categories,
+        all_test_entries_involved,
+    ) = get_involved_test_entries(
+        args.test_category, args.run_ids, category_filter=supported_by_selected_model
+    )
+
+    # @HuanzhiMao TODO: get the progress bar to work properly
+    tqdm.write(f"Generating results for {args.model}")
+    if args.run_ids:
+        tqdm.write("Running specific test cases. Ignoring `--test-category` argument.")
+    else:
+        tqdm.write(f"Running full test cases for categories: {all_test_categories}.")
+
     for category_check, should_skip, reason in skip_rules:
         skipped_categories = [tc for tc in all_test_categories if category_check(tc)]
         if skipped_categories:

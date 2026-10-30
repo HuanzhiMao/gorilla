@@ -1,3 +1,5 @@
+from bfcl_eval.constants.category_mapping import ALL_VISION_CATEGORY
+
 #### Text Modality ####
 
 COLUMNS_TEXT_NON_LIVE = [
@@ -112,13 +114,26 @@ COLUMNS_AUDIO_OVERALL = [
 
 #### Vision Modality ####
 
+VISION_CATEGORY_LABELS = {
+    "vision:vision_web_search_base": "Vision Web Search Base",
+    "vision:vision_web_search_crop_169": "Vision Web Search Crop 16:9",
+    "vision:vision_web_search_crop_43": "Vision Web Search Crop 4:3",
+    "vision:vision_web_search_resize_169": "Vision Web Search Resize 16:9",
+    "vision:vision_web_search_resize_43": "Vision Web Search Resize 4:3",
+    "vision:vision_web_search_bw": "Vision Web Search Black and White",
+    "vision:vision_web_search_edge": "Vision Web Search Edge",
+    "vision:vision_web_search_rg": "Vision Web Search RG",
+    "vision:geoguessr_type1": "GeoGuessr Type 1",
+    "vision:geoguessr_type1_competition": "GeoGuessr Type 1 Competition",
+    "vision:geoguessr_type2": "GeoGuessr Type 2",
+    "vision:geoguessr_type3": "GeoGuessr Type 3",
+}
+
 COLUMNS_VISION_OVERALL = [
     "Rank",
     "Model",
     "Vision Overall Acc",
-    "geoguessr Type 1",
-    "geoguessr Type 2",
-    "geoguessr Type 3",
+    *(VISION_CATEGORY_LABELS[category] for category in ALL_VISION_CATEGORY),
 ]
 
 #### Master Cross-Modality Overall ####

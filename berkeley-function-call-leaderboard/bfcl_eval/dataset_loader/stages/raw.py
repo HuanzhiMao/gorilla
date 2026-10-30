@@ -201,23 +201,7 @@ def vision_attach_image(entries: list[dict], ctx: LoadContext) -> list[dict]:
 
 
 def audio_replace_text(entries: list[dict], ctx: LoadContext) -> list[dict]:
-    """Replace each user message's text with its spoken form.
-
-    Delegates to the original implementation rather than reimplementing it, because
-    this stage is currently **unreachable** and so an untested reimplementation of
-    ~60 lines would be a liability rather than an improvement. Two defects make it
-    unreachable:
-
-    * ``MODALITY_DATASET_PATH`` maps both audio modalities to ``data/audio/``, but that
-      directory contains only sub-directories (``text_audio/``, ``audio_recording_clean/``,
-      ...) -- there is no ``data/audio/<category>.json`` to read, so the load fails
-      before any stage runs.
-    * Even given the files, the delegate deletes ``asr_output_openai`` /
-      ``asr_output_elevenlabs`` / ``asr_output_deepgram``, while the audio corpus spells
-      those ``asr_{engine}_audio_{clean,noisy}`` -- so it would raise ``KeyError``.
-
-    Once the dataset side is fixed, this is the place to write a typed implementation.
-    """
+    """Select a recording or its matching ASR while retaining source metadata."""
     from bfcl_eval.utils import process_audio_test_case
 
     return process_audio_test_case(entries, modality=ctx.category.modality)
