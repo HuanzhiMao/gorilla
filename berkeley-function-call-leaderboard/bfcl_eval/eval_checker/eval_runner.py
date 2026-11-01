@@ -1132,7 +1132,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    load_dotenv(dotenv_path=DOTENV_PATH, verbose=True, override=True)  # Load the .env file
+    # Use .env as defaults while preserving explicit shell settings.
+    load_dotenv(dotenv_path=DOTENV_PATH, verbose=True, override=False)
     main(
         args.model,
         args.test_category,

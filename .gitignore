@@ -25,6 +25,9 @@ berkeley-function-call-leaderboard/result/
 # Ignore leaderboard score
 berkeley-function-call-leaderboard/score/
 
+# Generated clarification annotations and resumable API checkpoints
+berkeley-function-call-leaderboard/annotation_runs/
+
 # Ignore environment variables
 berkeley-function-call-leaderboard/.env
 !berkeley-function-call-leaderboard/bfcl_eval/.env.example

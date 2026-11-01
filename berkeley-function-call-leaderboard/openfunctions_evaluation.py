@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 # It is recommended to use the new `bfcl xxx` cli commands instead.
 # We will remove this in the next major release.
 if __name__ == "__main__":
-    load_dotenv(dotenv_path=DOTENV_PATH, verbose=True, override=True)  # Load the .env file
+    # Use .env as defaults while preserving explicit shell settings.
+    load_dotenv(dotenv_path=DOTENV_PATH, verbose=True, override=False)
 
     main(get_args())

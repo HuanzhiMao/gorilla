@@ -138,6 +138,9 @@ cp $(python -c "import bfcl_eval; print(bfcl_eval.__path__[0])")/.env.example $B
 If you are running any proprietary models, make sure the model API keys are included in your `.env` file. Models like GPT, Claude, Mistral, Gemini, Nova, will require them.
 
 The library looks for the `.env` file in the project root, i.e. `$BFCL_PROJECT_ROOT/.env`.
+Values already set in the shell take precedence over `.env`; the file supplies
+only unset variables. For example, `BFCL_AUDIO_VARIANT=clean bfcl generate ...`
+selects clean audio even if `.env` contains `BFCL_AUDIO_VARIANT=noisy`.
 
 #### Configuring SerpAPI for Web Search Category
 

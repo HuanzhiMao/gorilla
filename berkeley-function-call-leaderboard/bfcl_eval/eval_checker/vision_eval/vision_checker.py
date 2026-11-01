@@ -56,29 +56,18 @@ def extract_coordinates_from_response(
     response: str | list[str],
 ) -> tuple[float, float] | None:
     """
-    Extract (latitude, longitude) from model response.
-    
-    Handles formats like:
-        - "{'answer': '(78.2259000, 15.6486000)', ...}"
-        - "(78.2259, 15.6486)"
-        - "78.2259, 15.6486"
-        - "I do not know" -> returns None
+    Extract (latitude, longitude) from the answer field of a complete
+    {'answer': ..., 'context': ...} response. Invalid responses return None.
     """
     response = normalize_model_response(response)
+    answer = extract_answer_field(response)
+    if answer is None:
+        return None
 
     # Match coordinate pattern: optional parens, lat, lon
     pattern = r"\(?\s*([+-]?\d+\.?\d*)\s*,\s*([+-]?\d+\.?\d*)\s*\)?"
 
-    answer = extract_answer_field(response)
-    if answer is not None:
-        response = answer
-    elif re.fullmatch(pattern, response.strip()) is None:
-        # Legacy responses can be a bare coordinate pair. Anything structured
-        # must have a parseable answer field: scanning its context would credit
-        # discarded guesses or an explicit "I do not know" answer.
-        return None
-
-    matches = re.findall(pattern, response)
+    matches = re.findall(pattern, answer)
     for match in matches:
         try:
             lat = float(match[0])

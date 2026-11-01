@@ -8,7 +8,7 @@ from typing import Optional
 
 def agentic_checker(model_response: str | list[str], possible_answer_list: list[str]) -> dict:
     """
-    Extract the structured {'answer': ...} dict from the model response and check if the
+    Parse the structured {'answer': ..., 'context': ...} dict and check if the
     'answer' field matches one of the possible answers (ignoring case, whitespace, and punctuation).
     If extraction fails, the response is marked as invalid (0 score).
     """
@@ -22,7 +22,7 @@ def agentic_checker(model_response: str | list[str], possible_answer_list: list[
     if extracted_answer is None:
         return {
             "valid": False,
-            "error_message": "Could not extract a structured {'answer': ...} dict from the model response.",
+            "error_message": "Could not parse a complete {'answer': ..., 'context': ...} dict from the model response.",
             "error_type": "agentic:answer_extraction_failed",
             "details": {
                 "model_response": model_response,
@@ -74,60 +74,17 @@ def normalize_model_response(model_response: str | list[str]) -> str:
 
 def extract_answer_field(model_response: str) -> Optional[str]:
     """
-    Try to extract the 'answer' field from a structured dict in the model response.
-    The model is prompted to output: {'answer': ..., 'context': ...}
-    Returns the answer value as a string, or None if extraction fails.
+    Parse the complete response as the prompted {'answer': ..., 'context': ...} dict.
+    Accept Python literals or JSON, returning the answer as a string.
+    Return None for malformed responses or missing required fields.
     """
-    # Parse complete objects first: braces inside quoted context are text,
-    # and must not interfere with finding the answer field.
     for parse in (ast.literal_eval, json.loads):
         try:
-            parsed = parse(model_response)
-            if isinstance(parsed, dict) and "answer" in parsed:
-                return str(parsed["answer"])
+            parsed = parse(model_response.strip())
         except (ValueError, SyntaxError):
-            pass
-
-    # Find all dict-like patterns containing 'answer' key
-    # Matches both {'answer': ...} and {"answer": ...}
-    # Use a greedy search from the last occurrence (models tend to put the final answer at the end)
-    candidates = list(re.finditer(r"\{[^{}]*['\"]answer['\"]", model_response))
-    if not candidates:
-        return None
-
-    for match in reversed(candidates):
-        start = match.start()
-        # Find the matching closing brace
-        brace_depth = 0
-        end = None
-        for i in range(start, len(model_response)):
-            if model_response[i] == '{':
-                brace_depth += 1
-            elif model_response[i] == '}':
-                brace_depth -= 1
-                if brace_depth == 0:
-                    end = i + 1
-                    break
-        if end is None:
             continue
-
-        dict_str = model_response[start:end]
-
-        # Try parsing as Python literal first (handles single quotes)
-        try:
-            parsed = ast.literal_eval(dict_str)
-            if isinstance(parsed, dict) and "answer" in parsed:
-                return str(parsed["answer"])
-        except (ValueError, SyntaxError):
-            pass
-
-        # Try parsing as JSON (handles double quotes)
-        try:
-            parsed = json.loads(dict_str)
-            if isinstance(parsed, dict) and "answer" in parsed:
-                return str(parsed["answer"])
-        except (json.JSONDecodeError, ValueError):
-            pass
+        if isinstance(parsed, dict) and "answer" in parsed and "context" in parsed:
+            return str(parsed["answer"])
 
     return None
 

@@ -186,7 +186,8 @@ def generate(
         max_lora_rank=max_lora_rank,
         lora_modules=lora_modules,
     )
-    load_dotenv(dotenv_path=DOTENV_PATH, verbose=True, override=True)  # Load the .env file
+    # Use .env as defaults while preserving explicit shell settings.
+    load_dotenv(dotenv_path=DOTENV_PATH, verbose=True, override=False)
     generation_main(args)
 
 
@@ -278,7 +279,8 @@ def evaluate(
     Evaluate results from run of one or more models on a test-category (same as eval_runner.py).
     """
 
-    load_dotenv(dotenv_path=DOTENV_PATH, verbose=True, override=True)  # Load the .env file
+    # Use .env as defaults while preserving explicit shell settings.
+    load_dotenv(dotenv_path=DOTENV_PATH, verbose=True, override=False)
     evaluation_main(model, test_category, result_dir, score_dir, partial_eval)
 
 
