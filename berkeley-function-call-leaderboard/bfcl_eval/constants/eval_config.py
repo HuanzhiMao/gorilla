@@ -38,8 +38,8 @@ DATA_FOLDER_PATH = PACKAGE_ROOT / "data"
 TEXT_DATASET_PATH = DATA_FOLDER_PATH / "text"
 VISION_DATASET_PATH = DATA_FOLDER_PATH / "vision"
 AUDIO_DATASET_PATH = DATA_FOLDER_PATH / "audio"
-# The enriched sidecars contain ASR for both clean and noisy recordings. The older
-# text_audio/ files have the spoken transcript but no recognition output.
+# The enriched sidecars contain ASR for both clean and noisy recordings, so both
+# BFCL_AUDIO_VARIANT settings read from here despite the directory name.
 AUDIO_METADATA_PATH = AUDIO_DATASET_PATH / "text_audio_noisy"
 
 IMAGE_PATH = VISION_DATASET_PATH / "images"
