@@ -21,6 +21,7 @@ from bfcl_eval.constants.executable_backend_config import (
     UPDATED_TOOL_LIST_CLASSES,
 )
 from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (
+    evict_multi_turn_backend_instance,
     execute_multi_turn_func_call,
     is_empty_execute_response,
 )
@@ -217,6 +218,16 @@ class BaseHandler:
                             class_name,
                             test_entry.id,
                             exc_info=True,
+                        )
+                    finally:
+                        # Turns share a backend within an episode; a later run of
+                        # this entry must initialize a fresh session, even when
+                        # remote teardown failed.
+                        evict_multi_turn_backend_instance(
+                            self.model_name_underline_replaced,
+                            test_entry.id,
+                            class_name,
+                            class_instance,
                         )
 
     @final

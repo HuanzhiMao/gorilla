@@ -53,6 +53,31 @@ def _apply_failure_injections(involved_instances: dict, failure_injection: list)
         involved_instances[class_name]._apply_patch(method_name, patch_name)
 
 
+def _backend_instance_name(
+    model_name: str, test_entry_id: str, class_name: str, is_evaL_run: bool = False
+) -> str:
+    if is_evaL_run:
+        model_name += "_eval"
+    return _sanitize_class_instance_name(
+        f"{model_name}_{test_entry_id}_{class_name}_instance"
+    )
+
+
+def evict_multi_turn_backend_instance(
+    model_name: str,
+    test_entry_id: str,
+    class_name: str,
+    class_instance: object,
+    is_evaL_run: bool = False,
+) -> None:
+    """Forget this episode's closed backend without removing another instance."""
+    instance_name = _backend_instance_name(
+        model_name, test_entry_id, class_name, is_evaL_run
+    )
+    if globals().get(instance_name) is class_instance:
+        del globals()[instance_name]
+
+
 def execute_multi_turn_func_call(
     func_call_list: list[str],  # a list of strings of func calls
     initial_config: dict,
@@ -89,16 +114,14 @@ def execute_multi_turn_func_call(
           (ResultType.TEXT or ResultType.IMAGE).
         - involved_instances is a dict mapping class names to their instantiated objects.
     """
-    if is_evaL_run:
-        model_name += "_eval"
-
     class_method_name_mapping = {}
     involved_instances = {}
     newly_created = False
     for class_name in involved_classes:
         module_name = CLASS_FILE_PATH_MAPPING[class_name]
-        instance_name = f"{model_name}_{test_entry_id}_{class_name}_instance"
-        instance_name = _sanitize_class_instance_name(instance_name)
+        instance_name = _backend_instance_name(
+            model_name, test_entry_id, class_name, is_evaL_run
+        )
         if instance_name not in globals():
             newly_created = True
             module = importlib.import_module(module_name)

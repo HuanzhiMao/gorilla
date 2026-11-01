@@ -6,7 +6,7 @@ from typing import Optional
 #### Main functions ####
 
 
-def agentic_checker(model_response: str, possible_answer_list: list[str]) -> dict:
+def agentic_checker(model_response: str | list[str], possible_answer_list: list[str]) -> dict:
     """
     Extract the structured {'answer': ...} dict from the model response and check if the
     'answer' field matches one of the possible answers (ignoring case, whitespace, and punctuation).
@@ -15,11 +15,7 @@ def agentic_checker(model_response: str, possible_answer_list: list[str]) -> dic
     standardized_possible_answer_list = [
         standardize_string(possible_answer) for possible_answer in possible_answer_list
     ]
-    # Sometimes the model response is a list of one string
-    if type(model_response) is list:
-        model_response = model_response[0] if model_response else ""
-    if type(model_response) is not str:
-        model_response = str(model_response)
+    model_response = normalize_model_response(model_response)
 
     # Extract the structured answer field
     extracted_answer = extract_answer_field(model_response)
@@ -63,12 +59,35 @@ def agentic_checker(model_response: str, possible_answer_list: list[str]) -> dic
 #### Helper functions ####
 
 
+def normalize_model_response(model_response: str | list[str]) -> str:
+    """Combine a provider's text blocks without changing their contents.
+
+    A structured answer can span blocks, including inside a quoted string, so
+    inserting separators would change the answer or make its JSON invalid.
+    """
+    if isinstance(model_response, list) and all(
+        isinstance(block, str) for block in model_response
+    ):
+        return "".join(model_response)
+    return model_response if isinstance(model_response, str) else str(model_response)
+
+
 def extract_answer_field(model_response: str) -> Optional[str]:
     """
     Try to extract the 'answer' field from a structured dict in the model response.
     The model is prompted to output: {'answer': ..., 'context': ...}
     Returns the answer value as a string, or None if extraction fails.
     """
+    # Parse complete objects first: braces inside quoted context are text,
+    # and must not interfere with finding the answer field.
+    for parse in (ast.literal_eval, json.loads):
+        try:
+            parsed = parse(model_response)
+            if isinstance(parsed, dict) and "answer" in parsed:
+                return str(parsed["answer"])
+        except (ValueError, SyntaxError):
+            pass
+
     # Find all dict-like patterns containing 'answer' key
     # Matches both {'answer': ...} and {"answer": ...}
     # Use a greedy search from the last occurrence (models tend to put the final answer at the end)

@@ -294,26 +294,20 @@ def scores(
     Display the leaderboard.
     """
 
-    def truncate(text, length=22):
-        return (text[:length] + "...") if len(text) > length else text
-
     if score_dir is None:
         score_dir = SCORE_PATH
     else:
         score_dir = (PROJECT_ROOT / score_dir).resolve()
-    # files = ["./score/score_non_live.csv", "./score/score_live.csv", "./score/score_overall.csv"]
     file = score_dir / "score_overall.csv"
 
     selected_columns = [
         "Rank",
         "Model",
         "Overall Acc",
-        "Non-Live AST Acc",
-        "Non-Live Exec Acc",
-        "Live Acc",
-        "Multi Turn Acc",
-        "Relevance Detection",
-        "Irrelevance Detection",
+        "Text Acc",
+        "True Audio Acc",
+        "Text Audio Acc",
+        "Vision Acc",
     ]
 
     if file.exists():
@@ -324,10 +318,6 @@ def scores(
             data = [
                 [row[i] for i in column_indices] for row in reader
             ]  # Read the rest of the data
-            selected_columns = selected_columns[:-2] + [
-                "Relevance",
-                "Irrelevance",
-            ]  # Shorten the column names
             print(tabulate(data, headers=selected_columns, tablefmt="grid"))
     else:
         print(f"\nFile {file} not found.\n")

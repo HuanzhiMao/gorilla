@@ -2,8 +2,13 @@ import re
 import numpy as np
 from geopy.distance import geodesic
 
+from bfcl_eval.eval_checker.agentic_eval.agentic_checker import (
+    extract_answer_field,
+    normalize_model_response,
+)
 
-def vision_checker(model_response: str, possible_answer_list: list[str]) -> dict:
+
+def vision_checker(model_response: str | list[str], possible_answer_list: list[str]) -> dict:
     """
     Check model's coordinate prediction against ground truth coordinates.
     
@@ -47,7 +52,9 @@ def vision_checker(model_response: str, possible_answer_list: list[str]) -> dict
     }
 
 
-def extract_coordinates_from_response(response: str) -> tuple[float, float] | None:
+def extract_coordinates_from_response(
+    response: str | list[str],
+) -> tuple[float, float] | None:
     """
     Extract (latitude, longitude) from model response.
     
@@ -57,12 +64,20 @@ def extract_coordinates_from_response(response: str) -> tuple[float, float] | No
         - "78.2259, 15.6486"
         - "I do not know" -> returns None
     """
-    if not isinstance(response, str):
-        response = str(response)
-    
+    response = normalize_model_response(response)
+
     # Match coordinate pattern: optional parens, lat, lon
-    pattern = r"\(?([+-]?\d+\.?\d*)\s*,\s*([+-]?\d+\.?\d*)\)?"
-    
+    pattern = r"\(?\s*([+-]?\d+\.?\d*)\s*,\s*([+-]?\d+\.?\d*)\s*\)?"
+
+    answer = extract_answer_field(response)
+    if answer is not None:
+        response = answer
+    elif re.fullmatch(pattern, response.strip()) is None:
+        # Legacy responses can be a bare coordinate pair. Anything structured
+        # must have a parseable answer field: scanning its context would credit
+        # discarded guesses or an explicit "I do not know" answer.
+        return None
+
     matches = re.findall(pattern, response)
     for match in matches:
         try:
