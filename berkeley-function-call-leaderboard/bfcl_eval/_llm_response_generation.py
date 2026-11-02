@@ -11,7 +11,9 @@ from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from copy import deepcopy
 from pathlib import Path
 
+from bfcl_eval._geoguessr_concurrency import GeoGuessrAdmissionError
 from bfcl_eval.constants.eval_config import (
+    GEOGUESSR_DEFAULT_NUM_THREADS,
     PROJECT_ROOT,
     RESULT_FILE_PATTERN,
     RESULT_PATH,
@@ -251,6 +253,9 @@ def multi_threaded_inference(
         result, metadata = handler.inference(
             test_case, include_input_log, exclude_state_log
         )
+    except GeoGuessrAdmissionError:
+        # A broken capacity gate is an infrastructure failure, not a model result.
+        raise
     except Exception as e:
         # This is usually the case when the model getting stuck on one particular test case.
         # For example, timeout error or FC model returning invalid JSON response.
@@ -295,6 +300,13 @@ def generate_results(args: Args, model_name, test_cases_total):
         handler: BaseHandler
         is_oss_model = False
         num_threads = args.num_threads if args.num_threads is not None else 1
+
+    # GeoGuessr episodes share a Street View server, so keep its default load low.
+    # Mixed-category runs use this same pool; explicit --num-threads takes precedence.
+    if args.num_threads is None and any(
+        test_case.category.is_geoguessr for test_case in test_cases_total
+    ):
+        num_threads = min(num_threads, GEOGUESSR_DEFAULT_NUM_THREADS)
 
     # Use a separate thread to write the results to the file to avoid concurrent IO issues
     def _writer():

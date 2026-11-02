@@ -1,8 +1,11 @@
 import json
 import logging
+import os
+from contextlib import nullcontext
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 from tqdm import tqdm
+from bfcl_eval._geoguessr_concurrency import geoguessr_episode_slot
 from bfcl_eval.constants.default_prompts import (
     DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC,
 )
@@ -175,9 +178,15 @@ class BaseHandler:
         # This method is used to retrive model response for each model.
         # Only function-calling (FC) inference is supported; the prompting
         # (chat-based tool calling) pathway has been retired.
-        return self.inference_multi_turn_FC(
-            test_entry, include_input_log, exclude_state_log
+        # Admission happens before initialization opens the Street View connection.
+        admission = (
+            geoguessr_episode_slot(os.getenv("GEOGUESSR_SERVER_URL", "http://127.0.0.1:18000"))
+            if test_entry.category.is_geoguessr else nullcontext()
         )
+        with admission:
+            return self.inference_multi_turn_FC(
+                test_entry, include_input_log, exclude_state_log
+            )
 
     @final
     def inference_multi_turn_FC(

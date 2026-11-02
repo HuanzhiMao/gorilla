@@ -329,7 +329,10 @@ class StreetViewAPI:
         Rotate the camera view to the left (counter-clockwise). Returns an image of the view.
 
         Args:
-            deg (float): Degrees to rotate left. Positive value expected; negative values are treated as their absolute value.
+            deg (float): Degrees to rotate left. Converted to 30-degree steps using
+                round(abs(deg) / 30), with ties rounded to the nearest even step count.
+                Heading wraps modulo 360 degrees. Values that round to 0 steps leave
+                the view unchanged.
         """
         result = self._call("POST", "/scroll/left", {"delta": deg})
         self.available_moves = result.get("available_moves", [])
@@ -340,7 +343,10 @@ class StreetViewAPI:
         Rotate the camera view to the right (clockwise). Returns an image of the view.
 
         Args:
-            deg (float): Degrees to rotate right. Positive value expected; negative values are treated as their absolute value.
+            deg (float): Degrees to rotate right. Converted to 30-degree steps using
+                round(abs(deg) / 30), with ties rounded to the nearest even step count.
+                Heading wraps modulo 360 degrees. Values that round to 0 steps leave
+                the view unchanged.
         """
         result = self._call("POST", "/scroll/right", {"delta": deg})
         self.available_moves = result.get("available_moves", [])
@@ -351,7 +357,10 @@ class StreetViewAPI:
         Tilt the camera view upward. Returns an image of the view.
 
         Args:
-            deg (float): Degrees to tilt up. Clamped so the resulting pitch does not exceed 90.
+            deg (float): Degrees to tilt up. Converted to 15-degree steps using
+                round(abs(deg) / 15), with ties rounded to the nearest even step count.
+                Pitch is clamped to [-30, 30] degrees. Values that round to 0 steps
+                leave the view unchanged.
         """
         result = self._call("POST", "/scroll/up", {"delta": deg})
         self.available_moves = result.get("available_moves", [])
@@ -362,7 +371,10 @@ class StreetViewAPI:
         Tilt the camera view downward. Returns an image of the view.
 
         Args:
-            deg (float): Degrees to tilt down. Clamped so the resulting pitch does not go below -90.
+            deg (float): Degrees to tilt down. Converted to 15-degree steps using
+                round(abs(deg) / 15), with ties rounded to the nearest even step count.
+                Pitch is clamped to [-30, 30] degrees. Values that round to 0 steps
+                leave the view unchanged.
         """
         result = self._call("POST", "/scroll/down", {"delta": deg})
         self.available_moves = result.get("available_moves", [])
@@ -377,7 +389,10 @@ class StreetViewAPI:
         Zoom the camera view in (increase magnification). Returns an image of the view.
 
         Args:
-            delta (float): Zoom increment to add. Positive value expected; negative values are treated as their absolute value.
+            delta (float): Zoom increment to add. Converted to whole zoom steps using
+                round(abs(delta)), with ties rounded to the nearest even step count.
+                Zoom is clamped to [0, 2]. Values that round to 0 steps leave the view
+                unchanged.
         """
         result = self._call("POST", "/zoom/in", {"delta": delta})
         self.available_moves = result.get("available_moves", [])
@@ -388,7 +403,10 @@ class StreetViewAPI:
         Zoom the camera view out (decrease magnification). Returns an image of the view.
 
         Args:
-            delta (float): Zoom decrement to subtract. Positive value expected; negative values are treated as their absolute value. The resulting zoom level is clamped at 0.
+            delta (float): Zoom decrement to subtract. Converted to whole zoom steps
+                using round(abs(delta)), with ties rounded to the nearest even step
+                count. Zoom is clamped to [0, 2]. Values that round to 0 steps leave
+                the view unchanged.
         """
         result = self._call("POST", "/zoom/out", {"delta": delta})
         self.available_moves = result.get("available_moves", [])

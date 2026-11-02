@@ -4,6 +4,7 @@ from bfcl_eval.constants.enums import Modality
 
 LOCAL_SERVER_PORT = 1055
 LOCAL_SERVER_MAX_CONCURRENT_REQUEST = 100
+GEOGUESSR_DEFAULT_NUM_THREADS = 8
 
 MAXIMUM_STEP_LIMIT = {
     Modality.TEXT: 20,

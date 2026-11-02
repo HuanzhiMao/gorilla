@@ -11,7 +11,7 @@
     - [Extra Dependencies for Self-Hosted Models](#extra-dependencies-for-self-hosted-models)
     - [Configuring Project Root Directory](#configuring-project-root-directory)
     - [Setting up Environment Variables](#setting-up-environment-variables)
-      - [Configuring SerpAPI for Web Search Category](#configuring-serpapi-for-web-search-category)
+      - [Configuring SerpAPI for Text and Vision Web Search](#configuring-serpapi-for-text-and-vision-web-search)
   - [Running Evaluations](#running-evaluations)
     - [Generating LLM Responses](#generating-llm-responses)
       - [Selecting Models and Test Categories](#selecting-models-and-test-categories)
@@ -142,9 +142,15 @@ Values already set in the shell take precedence over `.env`; the file supplies
 only unset variables. For example, `BFCL_AUDIO_VARIANT=clean bfcl generate ...`
 selects clean audio even if `.env` contains `BFCL_AUDIO_VARIANT=noisy`.
 
-#### Configuring SerpAPI for Web Search Category
+#### Configuring SerpAPI for Text and Vision Web Search
 
-For the `web_search` test category, we use the [SerpAPI](https://serpapi.com/) service to perform web search. You need to sign up for an API key and add it to your `.env` file. You can also switch to other web search APIs by changing the `search_engine_query` function in `bfcl_eval/eval_checker/multi_turn_eval/func_source_code/web_search.py`.
+The `text:web_search` and `vision:web_search` test categories both use [SerpAPI](https://serpapi.com/) to perform web search. This includes all vision web-search image variants. Before generating responses for either group, sign up for an API key with available search credits and set it in your project-root `.env` file:
+
+```dotenv
+SERPAPI_API_KEY=your_serpapi_api_key
+```
+
+To use another web search service, update `search_engine_query` in [web_search.py](bfcl_eval/eval_checker/multi_turn_eval/func_source_code/web_search.py) for text or [vision_web_search.py](bfcl_eval/eval_checker/multi_turn_eval/func_source_code/vision_web_search.py) for vision.
 
 ---
 
@@ -233,6 +239,8 @@ bfcl generate \
 ```
 
 - Choose your backend using `--backend sglang` or `--backend vllm`. The default backend is `vllm`.
+- Parallel inference defaults to 100 workers, or 8 when the run includes GeoGuessr entries. Mixed-category runs share that lower default. Use `--num-threads` to override the worker count; API-based models still default to 1 worker.
+- GeoGuessr also has an enforced limit of 8 active episodes per server across BFCL processes on the same machine. Extra workers wait before opening a Street View connection, even with a larger `--num-threads`. A shared set of OS file locks in `/tmp/bfcl-geoguessr-slots` on Unix coordinates runs independently of their model or result directories. The slot stays held through session teardown and is released if the process exits. Runs should use the same server URL; loopback aliases (`localhost`, `127.0.0.1`, `::1`) share one budget. Other categories do not use this admission limit.
 - Control GPU usage by adjusting `--num-gpus` (default `1`, relevant for multi-GPU tensor parallelism) and `--gpu-memory-utilization` (default `0.9`), which can help avoid out-of-memory errors.
 - `--local-model-path` (optional): Point this flag at a directory that already contains the model's files (`config.json`, tokenizer, weights, etc.). Use it only when you've pre-downloaded the model and the weights live somewhere other than the default `$HF_HOME` cache.
 - `--enable-lora` (optional): Enable LoRA for the vLLM backend. This flag is required to use LoRA modules. This only works when backend is `vllm`.

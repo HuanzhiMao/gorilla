@@ -42,6 +42,7 @@ score file but has no overall leaderboard weight.
 Vision web-search categories use the `vision:vision_web_search_` prefix followed
 by `base`, `crop_169`, `crop_43`, `resize_169`, `resize_43`, `bw`, `edge`, or `rg`.
 Each variant contains 250 questions with its corresponding image transformation.
+These categories require `SERPAPI_API_KEY`; see [SerpAPI setup](./README.md#configuring-serpapi-for-text-and-vision-web-search).
 
 GeoGuessr categories are `vision:geoguessr_type1` (80 questions),
 `vision:geoguessr_type1_competition` (42), `vision:geoguessr_type2` (80), and
