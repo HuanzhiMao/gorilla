@@ -15,7 +15,6 @@ class ModelStyle(Enum):
     FIREWORK_AI = "firework_ai"
     OSSMODEL = "ossmodel"
     COHERE = "cohere"
-    WRITER = "writer"
 
 
 class Language(Enum):

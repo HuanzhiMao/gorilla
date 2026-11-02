@@ -13,7 +13,8 @@ from bfcl_eval.constants.category_mapping import *
 from bfcl_eval.constants.default_prompts import (
     ADDITIONAL_SYSTEM_PROMPT_FOR_AGENTIC_RESPONSE_FORMAT,
     DEFAULT_SYSTEM_PROMPT_FORMAT,
-    SYSTEM_PROMPT_FOR_AUDIO_AGENT,
+    SYSTEM_PROMPT_FOR_ASR_AUDIO_AGENT,
+    SYSTEM_PROMPT_FOR_NATIVE_AUDIO_AGENT,
 )
 from bfcl_eval.constants.eval_config import *
 from bfcl_eval.constants.executable_backend_config import (
@@ -1297,6 +1298,11 @@ def process_audio_test_case(test_cases: list[dict], modality: Modality) -> list[
         raise ValueError("BFCL_AUDIO_VARIANT must be 'clean' or 'noisy'")
     path_key = "audio_path" if variant == "clean" else "audio_path_noisy"
     asr_key = f"asr_openai_audio_{variant}"
+    audio_system_prompt = (
+        SYSTEM_PROMPT_FOR_NATIVE_AUDIO_AGENT
+        if modality == Modality.TRUE_AUDIO
+        else SYSTEM_PROMPT_FOR_ASR_AUDIO_AGENT
+    )
 
     for entry in test_cases:
         for turn_index, turn in enumerate(entry["question"]):
@@ -1325,8 +1331,8 @@ def process_audio_test_case(test_cases: list[dict], modality: Modality) -> list[
                             "ASR with the intended request or transcript."
                         )
                     msg["content"] = msg[asr_key]
-        # Merge any existing system prompts with the default audio agent prompt.
-        combined_prompts: list[str] = [SYSTEM_PROMPT_FOR_AUDIO_AGENT]
+        # Merge any existing system prompts with the selected audio agent prompt.
+        combined_prompts: list[str] = [audio_system_prompt]
 
         # Collect contents of all existing system messages across all turns and remove them.
         for turn in entry["question"]:

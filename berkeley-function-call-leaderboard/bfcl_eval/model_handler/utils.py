@@ -126,11 +126,8 @@ def convert_to_tool(functions: list["FunctionDoc"], mapping, model_style):
             item["inputSchema"] = {"json": item["parameters"]}
             del item["parameters"]
 
-        if model_style in [
-            ModelStyle.GOOGLE,
-            ModelStyle.WRITER,
-        ]:
-            # Remove fields that are not supported by Gemini or Palmyra.
+        if model_style == ModelStyle.GOOGLE:
+            # Remove fields that are not supported by Gemini.
             # No `optional` field in function schema.
             if "optional" in item["parameters"]:
                 del item["parameters"]["optional"]
@@ -140,7 +137,7 @@ def convert_to_tool(functions: list["FunctionDoc"], mapping, model_style):
                     return
                 if "description" not in params:
                     params["description"] = ""
-                # No `default` field in GOOGLE or Palmyra's schema.
+                # No `default` field in Gemini's schema.
                 if "default" in params:
                     params["description"] += f" Default is: {str(params['default'])}."
                     del params["default"]
@@ -175,11 +172,7 @@ def convert_to_tool(functions: list["FunctionDoc"], mapping, model_style):
                     ] += f" Additional properties: {str(params['additionalProperties'])}."
                     del params["additionalProperties"]
                 # For Gemini, only `enum` field when the type is `string`.
-                # For Palmyra, `enum` field is not supported.
-                if "enum" in params and (
-                    model_style == ModelStyle.WRITER
-                    or (model_style == ModelStyle.GOOGLE and params.get("type") != "string")
-                ):
+                if "enum" in params and params.get("type") != "string":
                     params["description"] += f" Enum values: {str(params['enum'])}."
                     del params["enum"]
                 # No `format` when type is `string`
@@ -203,7 +196,6 @@ def convert_to_tool(functions: list["FunctionDoc"], mapping, model_style):
                 ModelStyle.ANTHROPIC,
                 ModelStyle.GOOGLE,
                 ModelStyle.FIREWORK_AI,
-                ModelStyle.WRITER,
                 ModelStyle.AMAZON,
                 ModelStyle.OSSMODEL,
             ]:
@@ -227,7 +219,6 @@ def convert_to_tool(functions: list["FunctionDoc"], mapping, model_style):
             ModelStyle.OSSMODEL,
             ModelStyle.MISTRAL,
             ModelStyle.FIREWORK_AI,
-            ModelStyle.WRITER,
         ]:
             oai_tool.append({"type": "function", "function": item})
         elif model_style == ModelStyle.AMAZON:

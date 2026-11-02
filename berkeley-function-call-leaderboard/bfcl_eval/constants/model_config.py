@@ -25,7 +25,6 @@ from bfcl_eval.model_handler.api_inference.qwen import (
     QwenAgentThinkHandler,
     QwenAPIHandler,
 )
-from bfcl_eval.model_handler.api_inference.writer import WriterHandler
 from bfcl_eval.model_handler.local_inference.base_oss_handler import OSSHandler
 
 
@@ -334,20 +333,6 @@ api_inference_model_map = {
         underscore_to_dot=True,
         supports_image_input=True,
         supports_audio_input=True,
-    ),
-    # @HuanzhiMao FIXME: check if this is still available
-    "palmyra-x5": ModelConfig(
-        model_name="palmyra-x5",
-        display_name="palmyra-x5",
-        url="https://dev.writer.com/home/models#palmyra-x5",
-        org="Writer",
-        license="Proprietary",
-        model_handler=WriterHandler,
-        underscore_to_dot=True,
-        # Writer's "chat with images" guide uses palmyra-x5 by name and gives the
-        # base64 data-URI recipe; the SDK's own docstring says the mixed-content image
-        # fragment "is only supported with the Palmyra X5 model". No audio.
-        supports_image_input=True,
     ),
     # Grok 4.5 exposes reasoning effort (low/medium/high) on a single model string;
     # we run it at xAI's default effort (high).

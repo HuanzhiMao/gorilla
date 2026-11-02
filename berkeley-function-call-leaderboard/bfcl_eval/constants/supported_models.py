@@ -28,7 +28,6 @@ SUPPORTED_MODELS = [
     "gemini-3.1-flash-lite-preview",
     "gemini-3.5-flash",
     "gemini-3.1-pro-preview",
-    "palmyra-x5",
     "grok-4.5",
     "glm-5.2",
     "glm-5v-turbo",

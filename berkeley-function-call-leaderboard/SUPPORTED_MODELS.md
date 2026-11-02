@@ -56,7 +56,6 @@ Below is a comprehensive table of models supported for running leaderboard evalu
 | Muse-Spark-1.1                         | Meta          | muse-spark-1.1                                    |
 | Nanbeige3.5-Pro-Thinking               | Nanbeige      | Nanbeige3.5-Pro-Thinking                          |
 | Nanbeige4.2-3B                         | Self-hosted 💻 | Nanbeige/Nanbeige4.2-3B                           |
-| palmyra-x5                             | Writer        | palmyra-x5                                        |
 | Phi-4-mini-instruct                    | Self-hosted 💻 | microsoft/Phi-4-mini-instruct                     |
 | Qwen3.5-0.8B                           | Self-hosted 💻 | Qwen/Qwen3.5-0.8B                                 |
 | Qwen3.5-122B-A10B                      | Self-hosted 💻 | Qwen/Qwen3.5-122B-A10B                            |
